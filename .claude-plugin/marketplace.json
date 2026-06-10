@@ -1,0 +1,31 @@
+{
+  "name": "yobolabs",
+  "owner": {
+    "name": "YoboLabs",
+    "email": "hello@yobolabs.ai"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for YoboLabs apps — landing pages, campaigns, and more",
+    "version": "1.0.0",
+    "pluginRoot": "./"
+  },
+  "plugins": [
+    {
+      "name": "yobolabs",
+      "source": "./yobolabs",
+      "description": "Configure YoboLabs apps from Claude Code — create, edit, and publish Slides landing pages (microsites) via the REST API",
+      "version": "1.0.0",
+      "keywords": [
+        "yobolabs",
+        "landing-pages",
+        "microsites",
+        "slides",
+        "puck",
+        "cms"
+      ],
+      "author": {
+        "name": "YoboLabs"
+      }
+    }
+  ]
+}

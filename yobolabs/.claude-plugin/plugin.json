@@ -1,0 +1,18 @@
+{
+  "name": "yobolabs",
+  "description": "Configure YoboLabs apps from Claude Code — create, edit, and publish Slides landing pages (microsites) via the REST API",
+  "version": "1.0.0",
+  "author": {
+    "name": "YoboLabs"
+  },
+  "keywords": [
+    "yobolabs",
+    "landing-pages",
+    "microsites",
+    "slides",
+    "puck",
+    "cms",
+    "rest-api",
+    "publish"
+  ]
+}
