@@ -5,9 +5,30 @@ description: Use when creating short-form campaign ads (product demos, explainer
 
 # Ad Engine
 
-Data-driven pipeline for compiling short-form campaign ads into CapCut drafts from a single JSON spec. One command reads the spec, copies media into the project directory, trims clips, lays the timeline, stamps captions, and writes the CapCut draft files ready to open.
+Build a short-form campaign ad from a single JSON **ad spec** — the spec is the source of truth, and **Claude edits it on the user's behalf**. The user never touches CapCut; they describe changes ("swap clip 2", "make the hook bigger", "1:1 format"), Claude edits the spec and re-runs the build, and both outputs regenerate.
 
-Relies on `content-creation:capcut` for native draft authoring and is designed to feed `content-creation:remotion-overlays` (motion-graphics layer, currently deferred — see Feature Status below).
+`produce.py` compiles one spec into **both** outputs at once:
+- a **finished `.mp4`** — rendered by `content-creation:remotion-overlays` (clips, trims, captions, transitions, motion-graphic overlays, music). This is the polished video the user watches.
+- an **editable CapCut project** — the raw assembled timeline (clips, trims, captions, canvas) for downstream human editing. Built by `content-creation:capcut`.
+
+**Transitions + overlays live in the mp4** (baked by Remotion). The **CapCut draft is the editable raw cut** — no transitions/overlays; a human refines it in CapCut if they want. (Native CapCut transitions/effects are a future enhancement — they need a CapCut schema round-trip.)
+
+## Produce both outputs (primary command)
+
+```bash
+# one-time: install the Remotion render deps
+cd content-creation/skills/remotion-overlays && npm install
+
+# build the mp4 + CapCut draft from a spec (CapCut must be CLOSED)
+python3.11 content-creation/skills/ad-engine/scripts/produce.py ad.json \
+  --mp4 /abs/out/ad.mp4 [--seed DIR] [--capcut-out DIR] [--public DIR]
+```
+
+- `--seed` defaults to the shipped real CapCut seed (`content-creation/skills/capcut/fixtures/seed`).
+- `--capcut-out` defaults to the local CapCut drafts dir; `--public` defaults to a temp dir.
+- Prints `{"capcut": "<project dir>", "mp4": "<file>"}`.
+
+To build only the editable CapCut draft (no render), use `build_ad.py` (documented below). For fast variants of either, use `variants.py`.
 
 ---
 
@@ -27,10 +48,12 @@ All keys parsed by `ad_spec.py`. Run `build_ad.py` against the spec; `SpecError`
 
 | Key | Type | Default | Notes |
 |---|---|---|---|
-| `brand` | object | `{}` | Brand tokens. `font` (string path) is the only field consumed by the builder today — falls back to the CapCut system font when absent. `primary` / `secondary` color tokens are parsed but not yet applied (deferred). |
-| `music` | object \| null | absent | Object with `track` (file path, resolved relative to the spec file). Path is resolved at load time but music assembly is deferred (see Feature Status). |
-| `captions` | array | `[]` | Global (non-slot) caption list. Parsed but not yet assembled into the draft — deferred. Use per-slot `caption` for live caption support. |
-| `overlays` | array | `[]` | Remotion motion-graphics overlay list. Parsed but not yet assembled — deferred (Plan 2). |
+| `brand` | object | `{}` | Brand tokens: `primary`, `secondary`, `font`. Applied in the mp4 (overlay colors + fonts). In the CapCut draft, `font` is used for captions; colors are not applied there. |
+| `fps` | number | `30` | Frame rate of the rendered mp4. |
+| `music` | object \| null | `null` | `{ track, volume }` — background music, mixed into the mp4. `track` resolved relative to the spec file. (Not added to the CapCut draft.) |
+| `transition` | object | `{type:"fade",durationInFrames:12}` | Transition between slots in the mp4: `type` ∈ `none\|fade\|slide-left\|slide-right\|slide-up\|slide-down\|wipe`. (mp4 only.) |
+| `overlays` | array | `[]` | Motion-graphics overlays baked into the mp4. Each: `{ type, at, durationInFrames, props }` — `type` ∈ `intro\|kinetic-hook\|callout\|cta`; `at` = seconds or `"end"`; `props` forwarded to the overlay (see `content-creation:remotion-overlays`). (mp4 only.) |
+| `captions` | array | `[]` | Reserved (global captions). Use per-slot `caption` for captions in both outputs. |
 
 ### `format` — string preset or custom object
 
@@ -197,29 +220,29 @@ The script strips tracks, materials, and resets IDs, leaving only the structural
 
 ### Live now
 
-| Feature | Mechanism |
-|---|---|
-| Data-driven assembly | Spec JSON → CapCut draft in one command |
-| Auto-silence trim | `media_probe.silence_trim()` via ffmpeg silencedetect |
-| Manual trim | `slot.trim = [start_s, end_s]` |
-| Per-slot text captions | Bold white pill, lower third (y=0.36), slot duration |
-| Format / canvas config | `format` preset or custom object → `canvas_config` |
-| Media auto-copy | `copy_media()` copies every clip into the project dir; CapCut sandbox cannot read `/Volumes/` |
-| Variants — single override | `variants.py --set key=value` |
-| Variants — batch | `variants.py --batch dir/` |
-| Root-meta registration | `--register` appends to `root_meta_info.json` |
-
-### Deferred — do not implement until schema is verified
-
-| Feature | Plan | Blocker |
+| Feature | Output | Mechanism |
 |---|---|---|
-| Transitions between clips | Plan 3 | Run `inspect_draft.py` on a CapCut draft with a real transition to get the verified schema first |
-| Clip animations (in/out) | Plan 3 | Run `inspect_draft.py feature=animation` on reference draft |
-| Keyframes | Plan 3 | Run `inspect_draft.py feature=keyframe` on reference draft |
-| Audio / music track assembly | Plan 3 | `music.track` is path-resolved but not wired into the draft builder |
-| Global `captions[]` list | Plan 3 | Parsed but not assembled; use per-slot `caption` for now |
-| Remotion motion-graphics overlays | Plan 2 | `overlays[]` parsed but not assembled; requires `content-creation:remotion-overlays` skill |
-| `brand.primary` / `brand.secondary` colors | Plan 3 | Tokens are in the spec schema but not consumed by the builder |
+| Dual build from one spec | both | `produce.py` → mp4 + CapCut draft |
+| Data-driven assembly | both | clips → trimmed timeline |
+| Auto-silence / manual trim | both | `media_probe.silence_trim()`; `slot.trim=[s,e]` |
+| Per-slot captions | both | lower-third pill |
+| Format presets / custom | both | `9x16\|1x1\|16x9` or object |
+| Transitions between clips | mp4 | `transition` → Remotion `TransitionSeries` (fade/slide/wipe) |
+| Motion-graphics overlays | mp4 | `overlays[]` → Remotion (intro/kinetic-hook/callout/cta) |
+| Brand colors + fonts | mp4 | applied in overlays/captions |
+| Background music | mp4 | `music` → Remotion `<Audio>` |
+| Variants | both | `variants.py --set` / `--batch` |
+| Root-meta registration | CapCut | `build_ad.py --register` |
+
+### Future enhancements (need a CapCut schema round-trip)
+
+Native CapCut versions of features that today live only in the mp4. Each needs CapCut's real schema, harvested by writing a best-effort version, opening CapCut so it canonicalizes, and reading it back (`inspect_draft.py`) — never guessed-and-shipped.
+
+| Feature | Note |
+|---|---|
+| Native CapCut transitions | so the editable draft also has transitions |
+| Native clip animations / keyframes | in/out animations, Ken-Burns in the draft |
+| Native CapCut audio track | music inside the draft (not just the mp4) |
 
 ---
 
@@ -238,4 +261,4 @@ The script strips tracks, materials, and resets IDs, leaving only the structural
 ## Related Skills
 
 - `content-creation:capcut` — low-level CapCut draft format, all verified schema fields, scripts for inspection and seed capture. Consult when the builder output looks wrong inside CapCut or when implementing any deferred native feature.
-- `content-creation:remotion-overlays` — motion-graphics overlay layer (deferred, Plan 2). Will consume the `overlays[]` array from the spec when implemented.
+- `content-creation:remotion-overlays` — the Remotion render project: renders the finished mp4 (clips/trims/captions/transitions/overlays/music) and the motion-graphics overlays. `produce.py` drives it; run `npm install` there once.

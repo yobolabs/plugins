@@ -1,7 +1,7 @@
 {
   "name": "content-creation",
-  "description": "Content creation workflows — CapCut video automation plus a data-driven campaign-ad engine (ad spec → CapCut draft, trims, captions, fast variant generation), ffmpeg media processing, silence detection, canvas blur",
-  "version": "1.1.0",
+  "description": "Build short-form campaign ads by talking to Claude — one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation",
+  "version": "1.2.0",
   "author": { "name": "YoboLabs" },
-  "keywords": ["capcut", "video", "media", "ffmpeg", "content", "editing", "trim", "captions", "campaign-ad", "ad-engine", "short-form", "variants"]
+  "keywords": ["capcut", "video", "media", "ffmpeg", "content", "editing", "trim", "captions", "campaign-ad", "ad-engine", "short-form", "variants", "remotion", "motion-graphics", "overlays", "mp4", "transitions"]
 }
