@@ -40,8 +40,14 @@ def main(argv):
     if len(argv) != 3:
         print("usage: inspect_draft.py <draft_info.json> <feature>", file=sys.stderr)
         return 2
-    info = json.load(open(argv[1], encoding="utf-8"))
-    print(json.dumps(feature_schema(info, argv[2]), ensure_ascii=False, indent=2))
+    with open(argv[1], encoding="utf-8") as f:
+        info = json.load(f)
+    try:
+        schema = feature_schema(info, argv[2])
+    except ValueError as e:
+        print(e, file=sys.stderr)
+        return 1
+    print(json.dumps(schema, ensure_ascii=False, indent=2))
     return 0
 
 if __name__ == "__main__":
