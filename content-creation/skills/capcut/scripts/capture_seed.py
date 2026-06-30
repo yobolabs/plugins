@@ -6,7 +6,10 @@ def capture(project_dir, dest_dir):
     os.makedirs(dest_dir, exist_ok=True)
     info = cd.load_json(os.path.join(project_dir, "draft_info.json"))
     meta = cd.load_json(os.path.join(project_dir, "draft_meta_info.json"))
-    info["id"] = "SEED"; info["name"] = "seed"; info["duration"] = 0; info["tracks"] = []
+    info["id"] = "SEED"
+    info["name"] = "seed"
+    info["duration"] = 0
+    info["tracks"] = []
     for k, v in info.get("materials", {}).items():
         if isinstance(v, list):
             info["materials"][k] = []

@@ -10,7 +10,11 @@ def test_capture_strips_timeline(tmp_path):
     (src / "draft_meta_info.json").write_text(json.dumps({"draft_materials": [{"value": [1]}]}), encoding="utf-8")
     dest = tmp_path / "seed"
     capture_seed.capture(str(src), str(dest))
-    info = json.load(open(dest / "draft_info.json", encoding="utf-8"))
+    with open(dest / "draft_info.json", encoding="utf-8") as f:
+        info = json.load(f)
     assert info["tracks"] == []
     assert info["materials"]["videos"] == []
     assert info["duration"] == 0
+    with open(dest / "draft_meta_info.json", encoding="utf-8") as f:
+        meta = json.load(f)
+    assert meta["draft_materials"][0]["value"] == []
