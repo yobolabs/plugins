@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Claude Code plugins for YoboLabs apps — landing pages, campaigns, and more",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "pluginRoot": "./"
   },
   "plugins": [
@@ -24,6 +24,25 @@
         "cms",
         "apps",
         "prototypes"
+      ],
+      "author": {
+        "name": "YoboLabs"
+      }
+    },
+    {
+      "name": "content-creation",
+      "source": "./content-creation",
+      "description": "Content creation workflows — CapCut video project automation, ffmpeg media processing, silence detection, trim points, captions, canvas blur",
+      "version": "1.0.0",
+      "keywords": [
+        "capcut",
+        "video",
+        "media",
+        "ffmpeg",
+        "content",
+        "editing",
+        "trim",
+        "captions"
       ],
       "author": {
         "name": "YoboLabs"

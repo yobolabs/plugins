@@ -1,0 +1,7 @@
+{
+  "name": "content-creation",
+  "description": "Content creation workflows — CapCut video project automation, ffmpeg media processing, silence detection, trim points, captions, canvas blur",
+  "version": "1.0.0",
+  "author": { "name": "YoboLabs" },
+  "keywords": ["capcut", "video", "media", "ffmpeg", "content", "editing", "trim", "captions"]
+}
