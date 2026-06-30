@@ -361,3 +361,90 @@ ffprobe -v quiet -show_streams -select_streams v "video.MP4" | grep -E "width|he
 - **Chinese filenames** — use `ensure_ascii=False` when writing JSON
 - **Both JSON files** — `draft_meta_info.json` also needs path updates or links will break
 - **Canvas blur requires aspect ratio mismatch** — blur background is invisible when canvas and video are the same ratio
+
+## Scripts
+
+Four scripts live in `content-creation/skills/capcut/scripts/`. All require `python3.11`.
+
+### `capcut_draft.py` — seed-based Draft authoring (module, not a CLI)
+
+High-level Python API for building a CapCut draft programmatically. Import and use in other scripts; do not invoke directly.
+
+Key API:
+```python
+import capcut_draft as cd
+
+# Create a new draft from a seed fixture (required — never build from scratch)
+d = cd.Draft.from_seed(seed_dir, project_dir, "My Project")
+
+d.set_canvas("9:16", 1080, 1920)           # set canvas config
+local = d.copy_media("/path/to/clip.mp4")  # copy into project dir, returns local path
+mid = d.add_video_material(local, dur_us, w, h, has_audio)
+d.add_video_segment(mid, src_start_us, src_dur_us, target_start_us)
+tmid = d.add_text_material("Caption", font_size=8.0, font_path="/path/to/font.ttf")
+d.add_text_segment(tmid, target_start_us=0, dur_us=src_dur_us, y=0.36)
+d.save()                                   # writes draft_info.json + draft_meta_info.json
+d.register("~/Movies/CapCut/.../root_meta_info.json")  # add to CapCut project list
+```
+
+Helper: `cd.s_to_us(seconds)` → microseconds.
+
+### `inspect_draft.py` — extract exact JSON schema of a CapCut feature
+
+Reads a real `draft_info.json` and extracts the field names + types of a native feature's first entry. Use this before implementing any deferred feature (transitions, animations, keyframes, audio) to get the verified schema instead of guessing.
+
+```bash
+python3.11 skills/capcut/scripts/inspect_draft.py \
+  ~/Movies/CapCut/User\ Data/Projects/com.lveditor.draft/<project>/draft_info.json \
+  <feature>
+```
+
+`<feature>` must be one of: `transition`, `animation`, `keyframe`, `audio`, `effect`.
+
+Output is JSON with `material_array`, `count`, `fields` (key → Python type name), and `example` (first item verbatim).
+
+### `capture_seed.py` — snapshot an empty CapCut project into a seed fixture
+
+Reads `draft_info.json` and `draft_meta_info.json` from a real CapCut project, strips tracks/materials/IDs, and saves the clean result as a reusable seed fixture for `build_ad.py` and `Draft.from_seed()`.
+
+```bash
+# Close CapCut first, then:
+python3.11 skills/capcut/scripts/capture_seed.py \
+  ~/Movies/CapCut/User\ Data/Projects/com.lveditor.draft/<empty-project>/ \
+  --dest ~/Movies/CapCut/_seeds/empty
+```
+
+`--dest` defaults to `skills/capcut/fixtures/seed` (relative to the script). Use `--dest` to place the seed where `build_ad.py --seed` expects it.
+
+### `media_probe.py` — ffprobe metadata + ffmpeg silence detection (module, not a CLI)
+
+```python
+import media_probe
+
+meta = media_probe.probe("/path/to/clip.mp4")
+# → {"dur_us": 15333333, "width": 1080, "height": 1920, "has_audio": True}
+
+start_us, end_us = media_probe.silence_trim("/path/to/clip.mp4")
+# runs silencedetect=noise=-35dB:d=0.2; returns (leading-silence-end, trailing-silence-start) in µs
+```
+
+Optional kwargs for `silence_trim`: `noise_db=-35` and `min_sil_s=0.2`.
+
+---
+
+## Schema Verification Status
+
+Features marked VERIFIED have been extracted from a real CapCut draft and are safe to implement. Features marked UNVERIFIED must not be implemented by guessing — run `inspect_draft.py` on a reference draft that contains the feature first.
+
+| Feature | Status | Notes |
+|---|---|---|
+| Video materials (`materials.videos`) | VERIFIED | Template in `capcut_draft._video_material()`; confirmed from real draft |
+| Segments + trim (`source_timerange` / `target_timerange`) | VERIFIED | `_video_segment()` confirmed; surgical trim pattern documented above |
+| `canvas_config` + canvas blur (`materials.canvases`) | VERIFIED | `set_canvas()` + `_canvas_material()`; blur type-swap confirmed |
+| Text captions (`materials.texts` + text track) | VERIFIED | `_text_material()` + `_text_segment()` confirmed; `content` field is JSON-encoded string |
+| File-link repair (`draft_info.json` + `draft_meta_info.json`) | VERIFIED | Path update pattern documented in Fixing Broken File Links section above |
+| New project via seed (`Draft.from_seed()`) | VERIFIED | `capture_seed.py` + `Draft.from_seed()` pipeline confirmed end-to-end |
+| Transitions (`materials.transitions`) | UNVERIFIED | Run `inspect_draft.py <draft> transition` on a draft with a real transition before implementing |
+| Clip animations (`materials.material_animations`) | UNVERIFIED | Run `inspect_draft.py <draft> animation` on a draft with an in/out animation |
+| Keyframes (`common_keyframes` on segments) | UNVERIFIED | Run `inspect_draft.py <draft> keyframe` on a draft with keyframe animation |
+| Audio (`materials.audios`) | UNVERIFIED | Run `inspect_draft.py <draft> audio` on a draft with a music or audio track |
