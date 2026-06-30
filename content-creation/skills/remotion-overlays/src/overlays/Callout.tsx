@@ -3,9 +3,9 @@ import { CalloutProps } from "../schema";
 import { springIn, inOut, anchorStyle } from "../lib";
 
 // A pill badge that pops in at an anchor with a subtle pulse — product feature callout.
-export const Callout: React.FC<CalloutProps> = ({ brand, text, anchor }) => {
+export const Callout: React.FC<CalloutProps> = ({ brand, text, anchor, durationInFrames }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, height } = useVideoConfig();
+  const { fps, height } = useVideoConfig();
   const s = springIn(frame, fps, 0);
   const scale = interpolate(s, [0, 1], [0.6, 1]);
   const pulse = 1 + 0.03 * Math.sin((frame / fps) * Math.PI * 2 * 1.2);

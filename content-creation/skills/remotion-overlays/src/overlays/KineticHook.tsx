@@ -4,9 +4,9 @@ import { springIn, inOut } from "../lib";
 
 // Word-by-word kinetic headline. Each word springs up in sequence; emphasis words
 // paint in brand.primary.
-export const KineticHook: React.FC<KineticHookProps> = ({ brand, text, emphasis }) => {
+export const KineticHook: React.FC<KineticHookProps> = ({ brand, text, emphasis, durationInFrames }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, height, width } = useVideoConfig();
+  const { fps, height, width } = useVideoConfig();
   const words = text.split(/\s+/).filter(Boolean);
   const vis = inOut(frame, fps, { inDur: 0.3, outDur: 0.4 }, durationInFrames);
   const stagger = 4; // frames between words

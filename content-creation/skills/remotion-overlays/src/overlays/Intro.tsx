@@ -2,9 +2,9 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } fr
 import { IntroProps } from "../schema";
 import { springIn, inOut } from "../lib";
 
-export const Intro: React.FC<IntroProps> = ({ brand, title }) => {
+export const Intro: React.FC<IntroProps> = ({ brand, title, durationInFrames }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, height } = useVideoConfig();
+  const { fps, height } = useVideoConfig();
 
   const s = springIn(frame, fps, 0);
   const scale = interpolate(s, [0, 1], [0.8, 1]);

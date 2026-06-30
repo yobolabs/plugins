@@ -3,9 +3,9 @@ import { CtaProps } from "../schema";
 import { springIn, inOut } from "../lib";
 
 // End-card: offer text + URL button slide up and hold.
-export const Cta: React.FC<CtaProps> = ({ brand, text, url }) => {
+export const Cta: React.FC<CtaProps> = ({ brand, text, url, durationInFrames }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, height } = useVideoConfig();
+  const { fps, height } = useVideoConfig();
   const s = springIn(frame, fps, 0);
   const y = interpolate(s, [0, 1], [height * 0.08, 0]);
   const btn = springIn(frame, fps, 8);

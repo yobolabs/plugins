@@ -13,6 +13,8 @@ import {
   CalloutProps,
   CtaProps,
 } from "./schema";
+import { Ad } from "./ad/Ad";
+import { zAd, AdProps } from "./ad/schema";
 
 // Every overlay renders as a transparent ProRes 4444 .mov (alpha) so it composites
 // over the video track in CapCut. Dimensions + duration come from the props.
@@ -31,9 +33,40 @@ const mkMeta =
     defaultProResProfile: "4444",
   });
 
+// The full ad renders as a normal opaque mp4 (h264). Duration = sum of slot
+// lengths minus the frames each transition overlaps.
+const adMeta: CalculateMetadataFunction<AdProps> = async ({ props }) => {
+  const fps = props.fps;
+  const slotFrames = props.slots.reduce(
+    (a, s) => a + Math.max(1, Math.round(s.trimDur * fps)),
+    0,
+  );
+  const useTrans = props.transition.type !== "none" && props.transition.durationInFrames > 0;
+  const transTotal = useTrans
+    ? Math.max(0, props.slots.length - 1) * props.transition.durationInFrames
+    : 0;
+  return {
+    width: props.width,
+    height: props.height,
+    fps,
+    durationInFrames: Math.max(1, slotFrames - transTotal),
+  };
+};
+
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="ad"
+        component={Ad}
+        schema={zAd}
+        defaultProps={zAd.parse({})}
+        calculateMetadata={adMeta}
+        durationInFrames={150}
+        fps={30}
+        width={1080}
+        height={1920}
+      />
       <Composition
         id="intro"
         component={Intro}
