@@ -47,4 +47,8 @@ def load_spec(path):
     spec.setdefault("captions", [])
     spec.setdefault("overlays", [])
     spec.setdefault("brand", {})
+    spec.setdefault("fps", 30)
+    # transition + overlays are consumed by the Remotion renderer (baked into the mp4);
+    # the CapCut draft is raw assembly and ignores them.
+    spec.setdefault("transition", {"type": "fade", "durationInFrames": 12})
     return spec
