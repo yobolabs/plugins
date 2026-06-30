@@ -16,6 +16,22 @@ def capture(project_dir, dest_dir):
     for g in meta.get("draft_materials", []):
         if isinstance(g.get("value"), list):
             g["value"] = []
+    # strip host-identifying + machine-specific values so the fixture is generic
+    info["path"] = ""
+    for pkey in ("platform", "last_modified_platform"):
+        p = info.get(pkey)
+        if isinstance(p, dict):
+            for hk in ("device_id", "hard_disk_id", "mac_address"):
+                if hk in p:
+                    p[hk] = ""
+    meta["draft_id"] = "SEED"
+    meta["draft_name"] = "seed"
+    for pk in ("draft_fold_path", "draft_root_path"):
+        if pk in meta:
+            meta[pk] = ""
+    for tk in ("tm_draft_create", "tm_draft_modified", "tm_draft_removed", "tm_duration"):
+        if tk in meta:
+            meta[tk] = 0
     cd.save_json(os.path.join(dest_dir, "draft_info.json"), info)
     cd.save_json(os.path.join(dest_dir, "draft_meta_info.json"), meta)
 

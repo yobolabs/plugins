@@ -1,11 +1,14 @@
 # content-creation/skills/capcut/scripts/capcut_draft.py
 """Surgical CapCut draft authoring. Start from a real seed draft; never build from scratch."""
-import json, os, uuid, copy, shutil
+import json, os, uuid, copy, shutil, time
 
 US_PER_S = 1_000_000
 
 def new_uuid():
     return str(uuid.uuid4()).upper()
+
+def _now_us():
+    return int(time.time() * US_PER_S)
 
 def s_to_us(seconds):
     return int(round(float(seconds) * US_PER_S))
@@ -93,6 +96,16 @@ class Draft:
         for g in meta.get("draft_materials", []):
             if isinstance(g.get("value"), list):
                 g["value"] = []
+        # Stamp per-project identity/paths/timestamps (real-draft meta schema).
+        now = _now_us()
+        abs_proj = os.path.abspath(project_dir)
+        info["path"] = ""
+        meta["draft_name"] = name
+        meta["draft_fold_path"] = abs_proj
+        meta["draft_root_path"] = os.path.dirname(abs_proj)
+        meta["tm_draft_create"] = now
+        meta["tm_draft_modified"] = now
+        meta["tm_duration"] = 0
         d = cls(info, meta, project_dir)
         # Pre-allocate video track in memory; appended to info["tracks"] lazily on first add_video_segment call.
         d._video_track = {"id": new_uuid(), "type": "video", "segments": [], "attribute": 0, "flag": 0}
@@ -151,17 +164,27 @@ class Draft:
     def save(self):
         os.makedirs(self.project_dir, exist_ok=True)
         self.meta["tm_duration"] = self.info["duration"]
+        self.meta["tm_draft_modified"] = _now_us()
         save_json(os.path.join(self.project_dir, "draft_info.json"), self.info)
         save_json(os.path.join(self.project_dir, "draft_meta_info.json"), self.meta)
 
     def register(self, root_meta_path):
         root = load_json(root_meta_path)
+        abs_proj = os.path.abspath(self.project_dir)
         store = root.setdefault("all_draft_store", [])
         store.append({
-            "draft_fold_path": self.project_dir,
-            "draft_json_file": os.path.join(self.project_dir, "draft_info.json"),
-            "draft_id": self.info["id"], "draft_name": self.info["name"],
+            "draft_fold_path": abs_proj,
+            "draft_json_file": os.path.join(abs_proj, "draft_info.json"),
+            "draft_id": self.info["id"],
+            "draft_name": self.info["name"],
             "draft_new_version": self.info.get("new_version", "167.0.0"),
+            "draft_root_path": os.path.dirname(abs_proj),
+            "draft_type": self.meta.get("draft_type", ""),
+            "tm_draft_create": self.meta.get("tm_draft_create", 0),
+            "tm_draft_modified": self.meta.get("tm_draft_modified", 0),
             "tm_duration": self.info["duration"],
         })
+        ids = root.get("draft_ids")
+        if isinstance(ids, list) and self.info["id"] not in ids:
+            ids.append(self.info["id"])
         save_json(root_meta_path, root)
