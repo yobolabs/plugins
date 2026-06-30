@@ -1,0 +1,12 @@
+{
+  "project_name": "summer-sale-demo",
+  "format": "9x16",
+  "brand": { "primary": "#FF5A1F", "secondary": "#1A1A1A", "font": "/System/Library/Fonts/Supplemental/Arial Bold.ttf" },
+  "music": null,
+  "slots": [
+    { "clip": "footage/demo1.mp4", "trim": "auto-silence", "caption": "Just add water" },
+    { "clip": "footage/demo2.mp4", "trim": [1.2, 4.8], "caption": "30 seconds, done" }
+  ],
+  "captions": [],
+  "overlays": []
+}
