@@ -76,12 +76,14 @@ class Draft:
         self.project_dir = project_dir
         self._video_track = None
         self._text_track = None
+        self._video_track_registered = False
 
     @classmethod
     def from_seed(cls, seed_dir, project_dir, name):
         info = copy.deepcopy(load_json(os.path.join(seed_dir, "draft_info.json")))
         meta = copy.deepcopy(load_json(os.path.join(seed_dir, "draft_meta_info.json")))
         info["id"] = new_uuid()
+        meta["draft_id"] = info["id"]
         info["name"] = name
         info["duration"] = 0
         info["tracks"] = []
@@ -117,8 +119,9 @@ class Draft:
 
     def add_video_segment(self, material_id, src_start_us, src_dur_us, target_start_us):
         # Lazily register the video track the first time a segment is added.
-        if self._video_track not in self.info["tracks"]:
+        if not self._video_track_registered:
             self.info["tracks"].insert(0, self._video_track)
+            self._video_track_registered = True
         sid, cid = new_uuid(), new_uuid()
         self.info["materials"]["canvases"].append(_canvas_material(cid))
         idx = len(self._video_track["segments"])

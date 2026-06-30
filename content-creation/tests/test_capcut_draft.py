@@ -38,5 +38,6 @@ def test_save_writes_both_files(seed_dir, tmp_path, media_file):
     d.save()
     assert os.path.exists(os.path.join(proj, "draft_info.json"))
     assert os.path.exists(os.path.join(proj, "draft_meta_info.json"))
-    info = json.load(open(os.path.join(proj, "draft_info.json"), encoding="utf-8"))
+    with open(os.path.join(proj, "draft_info.json"), encoding="utf-8") as f:
+        info = json.load(f)
     assert info["duration"] == 3_000_000
