@@ -436,6 +436,8 @@ Optional kwargs for `silence_trim`: `noise_db=-35` and `min_sil_s=0.2`.
 
 Features marked VERIFIED have been extracted from a real CapCut draft and are safe to implement. Features marked UNVERIFIED must not be implemented by guessing — run `inspect_draft.py` on a reference draft that contains the feature first.
 
+VERIFIED means a *field template* was sourced from a real draft. It does not by itself guarantee that a programmatically *assembled* draft opens cleanly — always confirm assembled output in CapCut. See **Builder output coverage** after the table for what the builder writes versus what real drafts contain.
+
 | Feature | Status | Notes |
 |---|---|---|
 | Video materials (`materials.videos`) | VERIFIED | Template in `capcut_draft._video_material()`; confirmed from real draft |
@@ -443,8 +445,16 @@ Features marked VERIFIED have been extracted from a real CapCut draft and are sa
 | `canvas_config` + canvas blur (`materials.canvases`) | VERIFIED | `set_canvas()` + `_canvas_material()`; blur type-swap confirmed |
 | Text captions (`materials.texts` + text track) | VERIFIED | `_text_material()` + `_text_segment()` confirmed; `content` field is JSON-encoded string |
 | File-link repair (`draft_info.json` + `draft_meta_info.json`) | VERIFIED | Path update pattern documented in Fixing Broken File Links section above |
-| New project via seed (`Draft.from_seed()`) | VERIFIED | `capture_seed.py` + `Draft.from_seed()` pipeline confirmed end-to-end |
+| New project via seed (`Draft.from_seed()`) | VERIFIED | Field templates from a real draft via `capture_seed.py` + `Draft.from_seed()`; assembled output coverage noted below |
 | Transitions (`materials.transitions`) | UNVERIFIED | Run `inspect_draft.py <draft> transition` on a draft with a real transition before implementing |
 | Clip animations (`materials.material_animations`) | UNVERIFIED | Run `inspect_draft.py <draft> animation` on a draft with an in/out animation |
 | Keyframes (`common_keyframes` on segments) | UNVERIFIED | Run `inspect_draft.py <draft> keyframe` on a draft with keyframe animation |
 | Audio (`materials.audios`) | UNVERIFIED | Run `inspect_draft.py <draft> audio` on a draft with a music or audio track |
+
+## Builder output coverage
+
+What `build_ad.py` / `Draft` currently write versus what real CapCut drafts contain. Extract the exact schema with `inspect_draft.py` on a real draft before closing any of these — never guess:
+
+1. **`draft_meta_info.json` media.** `Draft.add_video_material()` writes only `draft_info.json` (`materials.videos`); the meta file's `draft_materials` value arrays are left empty. Real drafts list each clip in a `draft_materials` group (with `file_Path`). Empty meta is a likely cause of CapCut media-panel "offline"/relink.
+2. **Segment `extra_material_refs`.** Each video segment references only its canvas material. Real CapCut segments also carry speed / placeholder / sound_channel_mapping refs, and populate `materials.speeds` even when the segment has inline `"speed": 1.0`.
+3. **`register()` root_meta entry.** Writes a minimal entry; real entries also carry `tm_draft_create` / `tm_draft_modified` / `draft_root_path` (see the Creating a New Project section above).

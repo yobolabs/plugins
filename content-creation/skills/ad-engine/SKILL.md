@@ -195,7 +195,7 @@ The script strips tracks, materials, and resets IDs, leaving only the structural
 
 ## Feature Status
 
-### Live now (Task 1–7 foundation)
+### Live now
 
 | Feature | Mechanism |
 |---|---|
