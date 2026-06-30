@@ -16,8 +16,7 @@ def resolve_format(fmt):
     if isinstance(fmt, str):
         if fmt not in FORMAT_PRESETS:
             raise SpecError(f"unknown format preset {fmt!r}; choose {sorted(FORMAT_PRESETS)}")
-        p = dict(FORMAT_PRESETS[fmt]); p["target_dur_s"] = None
-        return p
+        return {**FORMAT_PRESETS[fmt], "target_dur_s": None}
     if isinstance(fmt, dict):
         for k in ("ratio", "width", "height"):
             if k not in fmt:
@@ -42,8 +41,9 @@ def load_spec(path):
         if "clip" not in slot:
             raise SpecError("each slot needs a 'clip'")
         slot["clip"] = _resolve_path(base, slot["clip"])
-    if spec.get("music", {}).get("track"):
-        spec["music"]["track"] = _resolve_path(base, spec["music"]["track"])
+    music = spec.get("music")
+    if music and music.get("track"):
+        music["track"] = _resolve_path(base, music["track"])
     spec.setdefault("captions", [])
     spec.setdefault("overlays", [])
     spec.setdefault("brand", {})

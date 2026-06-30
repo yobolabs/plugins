@@ -9,6 +9,7 @@ def test_format_preset_expands():
 def test_format_object_passthrough():
     f = ad_spec.resolve_format({"ratio": "1:1", "width": 1080, "height": 1080, "target_dur_s": 15})
     assert f["width"] == 1080 and f["target_dur_s"] == 15
+    assert f["ratio"] == "1:1" and f["height"] == 1080
 
 def test_load_spec_resolves_paths(tmp_path):
     (tmp_path / "footage").mkdir()
@@ -29,3 +30,16 @@ def test_missing_required_raises(tmp_path):
         ad_spec.load_spec(str(p)); assert False
     except ad_spec.SpecError as e:
         assert "project_name" in str(e)
+
+def test_load_spec_null_music_ok(tmp_path):
+    spec = {"project_name": "p", "format": "9x16",
+            "slots": [{"clip": "clip.mp4"}], "music": None}
+    p = tmp_path / "ad.json"; p.write_text(json.dumps(spec), encoding="utf-8")
+    loaded = ad_spec.load_spec(str(p))  # must not raise
+
+def test_load_spec_resolves_music_track(tmp_path):
+    spec = {"project_name": "p", "format": "9x16",
+            "slots": [{"clip": "clip.mp4"}], "music": {"track": "audio/bg.mp3"}}
+    p = tmp_path / "ad.json"; p.write_text(json.dumps(spec), encoding="utf-8")
+    loaded = ad_spec.load_spec(str(p))
+    assert os.path.isabs(loaded["music"]["track"])
