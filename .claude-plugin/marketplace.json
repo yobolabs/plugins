@@ -32,8 +32,8 @@
     {
       "name": "content-creation",
       "source": "./content-creation",
-      "description": "Content creation workflows — CapCut video project automation, ffmpeg media processing, silence detection, trim points, captions, canvas blur",
-      "version": "1.0.0",
+      "description": "Content creation workflows — CapCut video automation plus a data-driven campaign-ad engine (ad spec → CapCut draft, trims, captions, fast variant generation), ffmpeg media processing, silence detection, canvas blur",
+      "version": "1.1.0",
       "keywords": [
         "capcut",
         "video",
@@ -42,7 +42,11 @@
         "content",
         "editing",
         "trim",
-        "captions"
+        "captions",
+        "campaign-ad",
+        "ad-engine",
+        "short-form",
+        "variants"
       ],
       "author": {
         "name": "YoboLabs"
