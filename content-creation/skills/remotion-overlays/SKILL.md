@@ -40,13 +40,13 @@ Output is **transparent ProRes 4444** (`yuva444` — alpha present), set by each
 
 Single overlay:
 ```bash
-cd content-creation/skills/remotion-overlays
+cd "${CLAUDE_PLUGIN_ROOT}/skills/remotion-overlays"
 npx remotion render kinetic-hook /abs/out/hook.mov --props=props.json
 ```
 
 Batch (what `ad-engine` calls — one `.mov` per `overlays[]` entry):
 ```bash
-node render-overlays.mjs manifest.json
+node "${CLAUDE_PLUGIN_ROOT}/skills/remotion-overlays/render-overlays.mjs" manifest.json
 # manifest.json: [{ "id": "kinetic-hook", "out": "/abs/hook.mov", "props": { ... } }, ...]
 ```
 

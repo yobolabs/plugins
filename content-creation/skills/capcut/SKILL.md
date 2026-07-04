@@ -394,7 +394,7 @@ Helper: `cd.s_to_us(seconds)` → microseconds.
 Reads a real `draft_info.json` and extracts the field names + types of a native feature's first entry. Use this before implementing any deferred feature (transitions, animations, keyframes, audio) to get the verified schema instead of guessing.
 
 ```bash
-python3.11 skills/capcut/scripts/inspect_draft.py \
+python3.11 "${CLAUDE_PLUGIN_ROOT}/skills/capcut/scripts/inspect_draft.py" \
   ~/Movies/CapCut/User\ Data/Projects/com.lveditor.draft/<project>/draft_info.json \
   <feature>
 ```
@@ -409,7 +409,7 @@ Reads `draft_info.json` and `draft_meta_info.json` from a real CapCut project, s
 
 ```bash
 # Close CapCut first, then:
-python3.11 skills/capcut/scripts/capture_seed.py \
+python3.11 "${CLAUDE_PLUGIN_ROOT}/skills/capcut/scripts/capture_seed.py" \
   ~/Movies/CapCut/User\ Data/Projects/com.lveditor.draft/<empty-project>/ \
   --dest ~/Movies/CapCut/_seeds/empty
 ```

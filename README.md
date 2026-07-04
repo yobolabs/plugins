@@ -1,8 +1,10 @@
 # YoboLabs — Claude Code plugins
 
 Claude Code plugins for working with **YoboLabs apps** (Slides landing pages /
-microsites, and more to come). This repository is a Claude Code **marketplace**
-named `yobolabs` containing the `yobolabs` plugin.
+microsites) and for **content creation** (short-form campaign ads, CapCut
+automation, motion-graphics overlays). This repository is a Claude Code
+**marketplace** named `yobolabs` containing two plugins: `yobolabs` and
+`content-creation`.
 
 ## Install
 
@@ -11,9 +13,10 @@ In a Claude Code session:
 ```text
 /plugin marketplace add yobolabs/plugins
 /plugin install yobolabs@yobolabs
+/plugin install content-creation@yobolabs
 ```
 
-Then reload plugins (`/reload-plugins`) if prompted.
+Install either or both. Then reload plugins (`/reload-plugins`) if prompted.
 
 > The marketplace lives at `github.com/yobolabs/plugins`. Update the
 > `marketplace add` argument if the repository slug differs.
@@ -29,7 +32,20 @@ Then reload plugins (`/reload-plugins`) if prompted.
 More YoboLabs skills (campaigns, segments, etc.) will be added to this plugin
 over time.
 
+### Plugin: `content-creation`
+
+Build short-form campaign ads by talking to Claude — one ad spec produces both a
+finished `.mp4` (Remotion) and an editable CapCut project.
+
+| Skill | What it does |
+|-------|--------------|
+| `ad-engine` | Build a short-form campaign ad from a single JSON ad spec — produces both a finished mp4 and an editable CapCut project, plus fast variant generation. Invoke with `/ad-engine`. |
+| `capcut` | Create, edit, and automate CapCut video projects programmatically (trims, silence detection, captions, canvas blur, aspect ratio). Invoke with `/capcut`. |
+| `remotion-overlays` | Render transparent motion-graphics overlays (animated intros, kinetic captions, product callouts, CTA end-cards) to composite over the video. Invoke with `/remotion-overlays`. |
+
 ## Setup
+
+### `yobolabs`
 
 The `landing-page` skill needs two environment variables:
 
@@ -45,13 +61,27 @@ Once installed and configured, ask Claude things like _"list my landing pages"_,
 _"add a pricing tier to landing page <id>"_, or _"publish the spring campaign
 page"_.
 
+### `content-creation`
+
+No API keys. The skills shell out to local tools — install these first:
+
+| Tool | Used by |
+|------|---------|
+| `python3.11` | `ad-engine`, `capcut` scripts |
+| `ffmpeg` / `ffprobe` | media probing, silence detection, trims |
+| Node.js + `npm` | `remotion-overlays` render project (run `npm install` in `content-creation/skills/remotion-overlays/` once) |
+| CapCut (macOS) | opening the assembled draft |
+
+Once installed, ask Claude things like _"build a 9x16 campaign ad from ad.json"_
+or _"generate 3 variants with different hooks"_.
+
 ## Repository layout
 
 ```text
 yobolabs-plugins/
   .claude-plugin/
     marketplace.json          # marketplace manifest (name: "yobolabs")
-  yobolabs/                    # the plugin
+  yobolabs/                    # plugin: yobolabs
     .claude-plugin/
       plugin.json             # plugin manifest (name: "yobolabs")
     skills/
@@ -59,6 +89,19 @@ yobolabs-plugins/
         SKILL.md
         scripts/lp.mjs         # REST helper CLI
         references/puck-components.md
+  content-creation/            # plugin: content-creation
+    .claude-plugin/
+      plugin.json             # plugin manifest (name: "content-creation")
+    skills/
+      ad-engine/               # build ads from a JSON spec (mp4 + CapCut draft)
+        SKILL.md
+        scripts/               # produce.py, build_ad.py, ad_spec.py, variants.py
+      capcut/                  # CapCut draft automation
+        SKILL.md
+        scripts/               # capcut_draft.py, capture_seed.py, inspect_draft.py, media_probe.py
+      remotion-overlays/       # Remotion motion-graphics render project
+        SKILL.md
+        render-overlays.mjs
   README.md
 ```
 
@@ -67,7 +110,8 @@ yobolabs-plugins/
 Edit files in this source repo (never in `~/.claude/plugins/…`, which is
 overwritten on install). After changes:
 
-1. Bump `version` in `yobolabs/.claude-plugin/plugin.json` and in
+1. Bump `version` in the changed plugin's `.claude-plugin/plugin.json`
+   (`yobolabs/` or `content-creation/`) and its entry in
    `.claude-plugin/marketplace.json`.
 2. Commit and push.
 3. Re-run `/plugin` to pull the update, then `/reload-plugins`.

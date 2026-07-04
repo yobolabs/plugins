@@ -17,10 +17,10 @@ Build a short-form campaign ad from a single JSON **ad spec** — the spec is th
 
 ```bash
 # one-time: install the Remotion render deps
-cd content-creation/skills/remotion-overlays && npm install
+cd "${CLAUDE_PLUGIN_ROOT}/skills/remotion-overlays" && npm install
 
 # build the mp4 + CapCut draft from a spec (CapCut must be CLOSED)
-python3.11 content-creation/skills/ad-engine/scripts/produce.py ad.json \
+python3.11 "${CLAUDE_PLUGIN_ROOT}/skills/ad-engine/scripts/produce.py" ad.json \
   --mp4 /abs/out/ad.mp4 [--seed DIR] [--capcut-out DIR] [--public DIR]
 ```
 
@@ -119,8 +119,7 @@ Three presets are defined in `ad_spec.py`. Use the preset name as the `format` s
 ## Build Command
 
 ```bash
-cd ~/path/to/content-creation
-python3.11 skills/ad-engine/scripts/build_ad.py <ad.json> \
+python3.11 "${CLAUDE_PLUGIN_ROOT}/skills/ad-engine/scripts/build_ad.py" <ad.json> \
   --seed ~/Movies/CapCut/_seeds/empty \
   [--out ~/Movies/CapCut/User\ Data/Projects/com.lveditor.draft] \
   [--register]
@@ -158,7 +157,7 @@ Generate multiple builds from one base spec by overriding individual fields.
 ### Single-run override
 
 ```bash
-python3.11 skills/ad-engine/scripts/variants.py ad.json \
+python3.11 "${CLAUDE_PLUGIN_ROOT}/skills/ad-engine/scripts/variants.py" ad.json \
   --set slots[0].caption="New hook line" \
   --set format=1x1 \
   --seed ~/Movies/CapCut/_seeds/empty
@@ -188,7 +187,7 @@ overrides/
 ```
 
 ```bash
-python3.11 skills/ad-engine/scripts/variants.py ad.json \
+python3.11 "${CLAUDE_PLUGIN_ROOT}/skills/ad-engine/scripts/variants.py" ad.json \
   --batch overrides/ \
   --seed ~/Movies/CapCut/_seeds/empty
 ```
@@ -207,7 +206,7 @@ A seed fixture is a snapshot of a real, empty CapCut project. It carries the pla
 # 3. Find the project directory:
 #    ~/Movies/CapCut/User Data/Projects/com.lveditor.draft/<project-name>/
 # 4. Capture the seed:
-python3.11 skills/capcut/scripts/capture_seed.py \
+python3.11 "${CLAUDE_PLUGIN_ROOT}/skills/capcut/scripts/capture_seed.py" \
   ~/Movies/CapCut/User\ Data/Projects/com.lveditor.draft/<project-name>/ \
   --dest ~/Movies/CapCut/_seeds/empty
 ```
