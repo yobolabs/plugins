@@ -28,6 +28,14 @@ Install either or both. Then reload plugins (`/reload-plugins`) if prompted.
 | Skill | What it does |
 |-------|--------------|
 | `landing-page` | Create, edit, configure, and publish Slides landing pages (microsites) through the REST API at `/api/v1/microsites` — including rewriting Puck page content. Invoke with `/landing-page`. |
+| `app` | Create, edit, configure, and publish Slides Apps (single-file code prototypes) through the REST API at `/api/v1/prototypes`. Invoke with `/app`. |
+
+| Command | What it does |
+|---------|--------------|
+| `/session-start` | Start a RAG-optimized development session file in the configured sessions dir. |
+| `/session-update` | Append detailed, RAG-optimized progress to the active session. |
+| `/session-end` | Close the active session with a comprehensive summary. |
+| `/session-from-transcript` | Reconstruct a session file (or a quick recap) by mining a past Claude Code session's raw `.jsonl` transcript with `jq` — for sessions that were never logged, or when `/resume` is blocked by the 1M-context billing gate. |
 
 More YoboLabs skills (campaigns, segments, etc.) will be added to this plugin
 over time.
@@ -84,11 +92,22 @@ yobolabs-plugins/
   yobolabs/                    # plugin: yobolabs
     .claude-plugin/
       plugin.json             # plugin manifest (name: "yobolabs")
+    commands/                  # session-lifecycle slash commands
+      session-start.md
+      session-update.md
+      session-end.md
+      session-from-transcript.md  # reconstruct a session from a raw .jsonl transcript
+    scripts/
+      mine.sh                  # one-pass transcript extractor (used by /session-from-transcript)
     skills/
       landing-page/
         SKILL.md
         scripts/lp.mjs         # REST helper CLI
         references/puck-components.md
+      app/
+        SKILL.md
+        scripts/app.mjs        # REST helper CLI
+        references/app-format.md
   content-creation/            # plugin: content-creation
     .claude-plugin/
       plugin.json             # plugin manifest (name: "content-creation")
