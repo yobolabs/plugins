@@ -1,0 +1,9 @@
+- **id:** netflix-price-anchor-shift
+- **mechanism:** tier-menu anchor management (ads tier below, premium above — same mid-tier reads different)
+- **lens:** pricing-economics
+- **context class:** consumer subscription (media)
+- **source:** Netflix tier launches + earnings-call commentary (2022-2024): ads tier introduction, basic retirement, premium price moves
+- **outcome:** class: plan-mix + ARPU management, magnitude: moderate — menu re-anchoring shifted mix without repricing the flagship; ads tier reset the entry reference
+- **confidence:** B — moves public, attribution partial
+- **caveats:** live example of managing reference prices on an EXISTING base — contrast with jcpenney-no-discount-disaster for what happens when you break the reference outright
+- **privacy check:** public earnings material

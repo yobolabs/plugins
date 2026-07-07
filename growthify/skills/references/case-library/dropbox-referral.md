@@ -1,0 +1,9 @@
+- **id:** dropbox-referral
+- **mechanism:** two-sided referral in product currency (both sides get storage; payout on referee activation)
+- **lens:** incentives-game-theory (also social-viral: incentivized loop)
+- **context class:** consumer/prosumer SaaS
+- **source:** Drew Houston's Startup Lessons Learned talk (2010): signups reportedly +60% permanently from the program; extensively corroborated in growth literature
+- **outcome:** class: referral-driven acquisition, magnitude: large — the canonical two-sided product-currency referral; storage denominated rewards self-selected for users who wanted the product
+- **confidence:** A — first-party talk + years of corroboration
+- **caveats:** product had inherent share-adjacent value (files); storage was near-zero marginal cost — cash-cost programs don't transplant cleanly
+- **privacy check:** public talks

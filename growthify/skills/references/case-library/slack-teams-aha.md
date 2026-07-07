@@ -1,0 +1,9 @@
+- **id:** slack-teams-aha
+- **mechanism:** behaviorally-derived activation target (the ~2000-messages-sent team threshold) <!-- validator:allow — cited threshold figure -->
+- **lens:** friction-cro
+- **context class:** B2B SaaS
+- **source:** Slack's published growth accounts (Stewart Butterfield interviews, First Round 2015): teams crossing ~2000 messages showed dramatically higher retention; onboarding rebuilt to push teams toward that threshold
+- **outcome:** class: activation definition + funnel focus, magnitude: large (organizationally) — the canonical example of DERIVING the aha from retained-cohort behavior then aiming everything at it
+- **confidence:** B — first-party accounts, correlational by admission
+- **caveats:** thresholds are correlational until causation-checked (Slack's own caveat); copying the NUMBER is cargo cult — copy the derivation method
+- **privacy check:** published interviews

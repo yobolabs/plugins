@@ -1,0 +1,9 @@
+- **id:** headspace-reminders
+- **mechanism:** user-scheduled smart triggers (meditation reminders chosen by the user at onboarding, anchored to their stated routine)
+- **lens:** hooks-habit
+- **context class:** consumer app (wellness)
+- **source:** Headspace product design coverage + behavioral-design literature citing it (choice-architecture on reminder opt-in), 2016-2021
+- **outcome:** class: session-cadence lift among opted-in users, magnitude: moderate — user-chosen timing converts the notification from interruption to kept appointment
+- **confidence:** C — widely cited pattern, thin public numbers
+- **caveats:** the opt-in + self-scheduling is the mechanism (a broadcast reminder at a fixed clock-time performs differently) <!-- validator:allow — cadence description -->; wellness has high intent-behavior gap, reminders bridge it only when the action stays small
+- **privacy check:** public design coverage

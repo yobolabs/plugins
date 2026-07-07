@@ -1,0 +1,9 @@
+- **id:** booking-urgency-backlash
+- **mechanism:** stacked urgency/scarcity messaging (NEGATIVE precedent — "only 1 room left!", "booked 4 times today", countdown pressure)
+- **lens:** friction-cro
+- **context class:** marketplace (travel)
+- **source:** UK CMA enforcement action on hotel-booking sites (2019 commitments by Booking.com, Expedia et al.: misleading scarcity/discount claims curbed); EU consumer-protection follow-ons
+- **outcome:** class: regulatory + trust cost of pressure mechanics, magnitude: large negative — conversion tactics that worked short-term drew enforcement, forced product changes, and a lasting "dark patterns" reputation for the category
+- **confidence:** A — regulator records
+- **caveats:** the fabricated-scarcity case study: real availability may speak, invented pressure may not; growthify's borderline rule exists because this line was crossed at industry scale
+- **privacy check:** public enforcement records

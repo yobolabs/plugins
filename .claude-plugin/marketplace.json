@@ -77,6 +77,44 @@
       "author": {
         "name": "YoboLabs"
       }
+    },
+    {
+      "name": "designify",
+      "source": "./designify",
+      "description": "Ad-creative craft capability-capture — an agency-model loop (recon, concept directions, human pick, director deepen, adversarial crit, judge gate) that produces craft files with positive AND negative gen-AI prompt guidance, authenticity-first judging, a proof-ladder execute skill over the existing actuators, and blind-replay calibration on real campaign outcomes",
+      "version": "1.0.0",
+      "keywords": [
+        "designify",
+        "ad-creative",
+        "graphic-design",
+        "authenticity",
+        "negative-prompts",
+        "craft-file",
+        "art-direction",
+        "wargame-family"
+      ],
+      "author": {
+        "name": "YoboLabs"
+      }
+    },
+    {
+      "name": "growthify",
+      "source": "./growthify",
+      "description": "Generative-first growth framework — turns a metric problem or a design surface into a ranked, evidence-grounded portfolio of growth, gamification, and game-theory mechanics, then deepens the winners into ship-ready experiment designs. The generative sibling to campaign-wargame: externalized lens packs, a role-separated generator, an anti-sycophancy judge gate, and blind calibration. Built for the team — no coding required.",
+      "version": "1.0.0",
+      "keywords": [
+        "growth",
+        "gamification",
+        "game-theory",
+        "mechanics",
+        "experiments",
+        "conversion",
+        "retention",
+        "calibration"
+      ],
+      "author": {
+        "name": "Yobo Labs"
+      }
     }
   ]
 }

@@ -1,0 +1,9 @@
+- **id:** github-contribution-graph
+- **mechanism:** contribution graph (public activity heatmap — completion + broadcast status)
+- **lens:** hooks-habit (also social-viral: broadcast status)
+- **context class:** B2B/prosumer developer tool
+- **source:** widely-documented GitHub feature (2013 launch); community analyses of "greening the graph" behavior; GitHub's own retrospectives
+- **outcome:** class: engagement-cadence + identity effect, magnitude: moderate — the graph became a developer-identity artifact (screenshotted in resumes/profiles); documented behavior shifts to preserve green
+- **confidence:** B — behavioral evidence strong, first-party metrics thin
+- **caveats:** gaming documented (empty commits) — Goodhart in the wild; identity effect strongest in a public-portfolio profession
+- **privacy check:** public product + public analyses

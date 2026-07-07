@@ -1,0 +1,9 @@
+- **id:** spotify-discover-weekly
+- **mechanism:** scheduled variable-reward reveal (weekly personalized playlist as habit anchor)
+- **lens:** hooks-habit
+- **context class:** consumer app (media)
+- **source:** Spotify press + engineering posts, 2015-2016; reported >40M users in year one (Spotify announcements, TechCrunch coverage 2016)
+- **outcome:** class: habitual return cadence created, magnitude: large — a fixed weekly anchor (Monday drop) with variable content became one of the most-cited habit anchors in consumer product
+- **confidence:** A — first-party numbers + broad corroboration
+- **caveats:** depends on genuinely good recommendations (real variance with high hit rate); weekly cadence fit listening, not forced
+- **privacy check:** public announcements

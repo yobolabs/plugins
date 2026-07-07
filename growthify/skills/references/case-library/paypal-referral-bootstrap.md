@@ -1,0 +1,9 @@
+- **id:** paypal-referral-bootstrap
+- **mechanism:** cash both-sides referral bootstrap (direct payments for signup+funding)
+- **lens:** incentives-game-theory
+- **context class:** consumer fintech
+- **source:** PayPal founding-era accounts (Thiel/Levchin interviews; "PayPal Wars", 2004) covering the 1999-2002 program; reported ~7-10% daily compounding growth during the program
+- **outcome:** class: acquisition bootstrap, magnitude: large — bought the network to critical density, then tapered rewards as network value took over
+- **confidence:** B — well-documented but retrospective founder accounts
+- **caveats:** cash rewards attract fraud + mercenaries (PayPal fought both); qualifying action (funding an account) was the fraud gate; taper was planned from the start
+- **privacy check:** published accounts

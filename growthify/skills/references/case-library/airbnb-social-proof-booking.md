@@ -1,0 +1,9 @@
+- **id:** airbnb-social-proof-booking
+- **mechanism:** decision-point social proof (reviews, "rare find", occupancy signals at the listing/booking step)
+- **lens:** friction-cro
+- **context class:** marketplace (travel)
+- **source:** Airbnb's documented review-system centrality (host/guest two-sided reviews) + published experiments culture (Airbnb engineering blog on ERF, 2014-2019)
+- **outcome:** class: booking conversion + trust formation, magnitude: large — two-sided reviews solved the stranger-trust problem that WAS the category's binding friction; proof placed exactly at the fear point
+- **confidence:** B — system centrality documented, per-widget lifts internal
+- **caveats:** "rare find"/urgency variants sit on the fabricated-scarcity boundary — defensible only while true; the trust problem was emotional friction, which no form-field optimization would have touched
+- **privacy check:** public engineering posts

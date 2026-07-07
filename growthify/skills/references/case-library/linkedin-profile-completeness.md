@@ -1,0 +1,9 @@
+- **id:** linkedin-profile-completeness
+- **mechanism:** profile-completeness meter (progress bar + next-step prompts)
+- **lens:** hooks-habit (completion mechanics; also friction-cro: progressive profiling)
+- **context class:** B2B/prosumer network
+- **source:** widely-documented early LinkedIn growth mechanic (2000s); cited in growth literature incl. early team members' talks (2005-2012 era feature; talks 2012-2016)
+- **outcome:** class: profile-data completion lift, magnitude: moderate-large — the completeness meter is the canonical Zeigarnik/goal-gradient example; profile depth fed the network's search value
+- **confidence:** B — canonical but mostly secondhand documentation
+- **caveats:** progress must map to real capability (profile depth genuinely improved matching); age of evidence
+- **privacy check:** public talks and literature

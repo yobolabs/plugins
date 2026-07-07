@@ -1,0 +1,9 @@
+- **id:** spotify-wrapped
+- **mechanism:** shareable-artifact engineering at cadence (annual personalized recap cards designed for social feeds)
+- **lens:** social-viral
+- **context class:** consumer app (media)
+- **source:** yearly Wrapped coverage 2019-2023; Spotify reported 156M Wrapped engagements in 2022 (first-party newsroom) <!-- validator:allow — cited figure -->
+- **outcome:** class: brand-wave + reactivation spike, magnitude: large — identity-flattering artifacts (your taste, made beautiful) saturate feeds each December; drives app opens and signups
+- **confidence:** A — first-party numbers + observable saturation
+- **caveats:** identity work is the engine — the artifact says something about the SHARER; annual scarcity keeps it an event (always-on recaps would habituate)
+- **privacy check:** public campaigns

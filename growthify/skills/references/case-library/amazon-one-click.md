@@ -1,0 +1,9 @@
+- **id:** amazon-one-click
+- **mechanism:** funnel-step deletion at the extreme (patented single-click purchase using stored payment/address)
+- **lens:** friction-cro
+- **context class:** e-commerce
+- **source:** Amazon 1-Click (patented 1999, licensed to Apple); universally cited as the canonical checkout-friction removal; patent expiry 2017 followed by industry-wide adoption
+- **outcome:** class: checkout conversion + repeat-purchase rate, magnitude: large — deleting every decision between intent and purchase; considered valuable enough to patent and license
+- **confidence:** A for the pattern's effect (industry adoption on expiry is the strongest evidence); exact lift numbers were never public
+- **caveats:** needs stored credentials + trust already established; single-click on first purchase is impossible — this is a REPEAT-buyer mechanic
+- **privacy check:** public record

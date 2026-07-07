@@ -1,0 +1,18 @@
+{
+  "name": "growthify",
+  "description": "Generative-first growth framework for the team — turns a metric problem or a design surface into a ranked, evidence-grounded portfolio of growth, gamification, and game-theory mechanics, then deepens the winners into ship-ready experiment designs. The generative sibling in the wargame family (wargame, spar, campaign-wargame): externalized lens packs, role-separated generation, an anti-sycophancy judge gate, and blind calibration. Built for the team — no coding required.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Yobo Labs"
+  },
+  "keywords": [
+    "growth",
+    "gamification",
+    "game-theory",
+    "mechanics",
+    "experiments",
+    "conversion",
+    "retention",
+    "calibration"
+  ]
+}

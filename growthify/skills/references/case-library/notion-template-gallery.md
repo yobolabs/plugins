@@ -1,0 +1,9 @@
+- **id:** notion-template-gallery
+- **mechanism:** UGC template flywheel (user-built templates as acquisition content, creator credit as status payout)
+- **lens:** social-viral
+- **context class:** B2B/prosumer SaaS
+- **source:** Notion community/growth retrospectives (2019-2022); template gallery + ambassador program widely analyzed as the community-led-growth exemplar
+- **outcome:** class: acquisition + activation (templates double as onboarding), magnitude: moderate-large — creators produced the long-tail content that both acquires (search/social) and activates (start-from-template)
+- **confidence:** B — pattern extensively documented, numbers private
+- **caveats:** 1/9/90 — the program serves a small creator minority whose output serves everyone; seeded first-party before organic took over; template quality moderation is real debt
+- **privacy check:** public analyses

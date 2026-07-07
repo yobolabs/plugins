@@ -1,0 +1,9 @@
+- **id:** starbucks-rewards-liability
+- **mechanism:** points/stored-value economy at scale (stars + preloaded cards)
+- **lens:** incentives-game-theory
+- **context class:** consumer retail/F&B
+- **source:** Starbucks 10-K filings (2019-2023) — stored value card liability >$1.5B (validator:allow — cited filing figure); rewards members repeatedly reported as majority of US company-operated revenue (2020s filings)
+- **outcome:** class: repeat-purchase retention + float, magnitude: large — the benchmark loyalty economy; also the benchmark WARNING: unredeemed value is a real balance-sheet liability
+- **confidence:** A — audited filings
+- **caveats:** works on high-frequency purchase cadence; the liability lesson applies to ANY minted currency (fund, cap, or expire honestly)
+- **privacy check:** public filings

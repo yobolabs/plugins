@@ -1,0 +1,9 @@
+- **id:** airline-status-devaluation-backlash
+- **mechanism:** tier/status devaluation (NEGATIVE precedent — raising earn thresholds, cutting perks on earned status)
+- **lens:** incentives-game-theory
+- **context class:** consumer travel loyalty
+- **source:** documented backlashes: Delta SkyMiles 2023 changes (rolled back partially after elite outcry — CEO public apology, Oct 2023), similar cycles at United/AA (2010s-2020s coverage)
+- **outcome:** class: trust damage from loss-imposition, magnitude: large negative — devaluing EARNED status triggers loss aversion at full force plus public revolt; partial rollbacks rarely restore prior trust
+- **confidence:** A — public, repeated, cross-carrier
+- **caveats:** the one-way-door case study: ship status economies assuming you can never cheaply devalue them; growthify ranks such mechanics reversibility=one-way and offers the wargame escalation
+- **privacy check:** public reporting

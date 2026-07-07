@@ -1,0 +1,9 @@
+- **id:** uber-driver-guarantees
+- **mechanism:** side-subsidy for liquidity (guaranteed hourly earnings for early supply in new markets) <!-- validator:allow — earnings guarantee is the mechanism's name, not a schedule -->
+- **lens:** incentives-game-theory
+- **context class:** marketplace (rides)
+- **source:** extensively reported city-launch playbook (2013-2016 coverage: driver guarantees, incentive spend in S-1 risk factors)
+- **outcome:** class: cold-start liquidity, magnitude: large — subsidizing the binding side until density made organic matching work; replicated city by city
+- **confidence:** A — S-1 + years of reporting
+- **caveats:** enormously capital-intensive; mercenary supply churns when subsidies taper (documented); taper-on-milestones, not calendar, was the surviving lesson
+- **privacy check:** public reporting and filings

@@ -1,0 +1,9 @@
+- **id:** superhuman-onboarding-wall
+- **mechanism:** high-touch qualification wall + product-market-fit survey gating (concierge onboarding, "very disappointed" PMF metric to focus who to serve)
+- **lens:** pricing-economics (paywall/positioning; also friction-cro: deliberate friction as qualifier)
+- **context class:** B2B/prosumer SaaS (premium email)
+- **source:** Rahul Vohra's published PMF engine (First Round Review, 2018) + Superhuman's documented onboarding model
+- **outcome:** class: willingness-to-pay + retention via deliberate friction, magnitude: moderate — ADDED friction (waitlist, 1:1 onboarding) as premium positioning; the PMF survey focused roadmap on the segment that would churn least
+- **confidence:** B — first-party method posts, outcome numbers private
+- **caveats:** counter-lens case: friction-cro says delete friction — this shows STRATEGIC friction as filter+signal for premium pricing; works only at high price points with real scarcity of service capacity
+- **privacy check:** published method

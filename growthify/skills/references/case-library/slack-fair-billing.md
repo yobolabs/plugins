@@ -1,0 +1,9 @@
+- **id:** slack-fair-billing
+- **mechanism:** value-metric alignment + fairness policy (per-active-user billing; credits back inactive seats)
+- **lens:** pricing-economics
+- **context class:** B2B SaaS
+- **source:** Slack's published Fair Billing Policy + growth-era coverage (2014-2019)
+- **outcome:** class: trust-driven expansion, magnitude: moderate-large — paying only for active seats removed the buyer's overbuy fear, easing expansion; the policy itself became marketing
+- **confidence:** A — policy first-party, effect corroborated by expansion-revenue coverage
+- **caveats:** costs revenue short-term by construction; the trust dividend pays on expansion and word-of-mouth — needs a product with real seat-spread dynamics
+- **privacy check:** public policy + coverage

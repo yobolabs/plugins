@@ -1,0 +1,9 @@
+- **id:** figma-multiplayer-files
+- **mechanism:** collaborative-core loop (multiplayer files; share-to-edit as the default workflow)
+- **lens:** social-viral
+- **context class:** B2B SaaS (design tools)
+- **source:** Figma growth retrospectives + Kwokchain "Why Figma Wins" (2020) — the canonical inherent-loop analysis
+- **outcome:** class: organic seat expansion inside orgs, magnitude: large — the file link IS the invite; designers pulled in PMs/engineers/stakeholders as usage, not referral
+- **confidence:** A — outcome (market win, org-spread pattern) broadly documented
+- **caveats:** the product was BUILT multiplayer-first; bolting collaboration onto solo tools does not replicate this
+- **privacy check:** public analyses

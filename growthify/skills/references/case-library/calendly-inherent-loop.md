@@ -1,0 +1,9 @@
+- **id:** calendly-inherent-loop
+- **mechanism:** inherent usage-loop (every scheduling link exposes the product to a non-user counterpart)
+- **lens:** social-viral
+- **context class:** B2B/prosumer SaaS
+- **source:** Calendly growth coverage (bootstrapped to ~$70M ARR by 2020 with minimal marketing — Forbes/press 2020-2021) <!-- validator:allow — cited figure -->
+- **outcome:** class: acquisition via usage artifact, magnitude: large — recipients of booking links became users; the loop runs on core utility, zero incentive spend
+- **confidence:** B — trajectory documented, internals private
+- **caveats:** the counterpart RECEIVES value (easy booking) — loops where the exposed party gets nothing don't run; single-player value existed from the start <!-- validator:allow — idiom, not an estimate -->
+- **privacy check:** public coverage

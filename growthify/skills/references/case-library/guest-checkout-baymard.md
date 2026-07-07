@@ -1,0 +1,9 @@
+- **id:** guest-checkout-baymard
+- **mechanism:** guest checkout (deleting forced account creation from purchase)
+- **lens:** friction-cro
+- **context class:** e-commerce (cross-industry research)
+- **source:** Baymard Institute cart-abandonment research (continuously updated 2011-2024): forced account creation persistently a top-3 stated abandonment reason (~24-26% of abandoners in survey waves) <!-- validator:allow — cited research figures -->
+- **outcome:** class: checkout completion lift, magnitude: moderate — deleting one emotional+labor step recovers a documented abandonment slice
+- **confidence:** A for the pattern (largest standing e-comm UX research corpus); magnitudes vary by store
+- **caveats:** survey-stated reasons ≠ per-store lift; pair with a POST-purchase account-conversion moment or lifetime value leaks
+- **privacy check:** published research

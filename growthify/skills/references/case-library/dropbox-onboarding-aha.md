@@ -1,0 +1,9 @@
+- **id:** dropbox-onboarding-aha
+- **mechanism:** aha-first onboarding (install → put a file in the folder → see it sync; everything else deferred)
+- **lens:** friction-cro
+- **context class:** consumer/prosumer SaaS
+- **source:** early Dropbox growth retrospectives (Houston talks 2010; ChenLi Wang growth-team accounts, 2014-2017) — onboarding centered on the first sync moment
+- **outcome:** class: activation lift, magnitude: moderate-large — the product demo WAS the product; the famous demo video pre-sold the aha, onboarding delivered it in minutes <!-- validator:allow — descriptive, not an estimate -->
+- **confidence:** B — retrospective accounts
+- **caveats:** the aha was genuinely one action away — products whose value needs setup must DEFER setup, not fake the aha
+- **privacy check:** public talks

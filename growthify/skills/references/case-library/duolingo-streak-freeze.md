@@ -1,0 +1,9 @@
+- **id:** duolingo-streak-freeze
+- **mechanism:** streak repair/freeze tokens (equip to survive a missed streak interval) <!-- validator:allow — mechanic description -->
+- **lens:** hooks-habit (also incentives-game-theory: earned-value protection)
+- **context class:** consumer app (education)
+- **source:** Duolingo product blog + talks on streak-freeze economics, 2022-2023
+- **outcome:** class: churn-on-streak-break reduction, magnitude: moderate — freezes documented as reducing the break→quit path; freeze inventory became a top reward/purchase item
+- **confidence:** B — first-party posts, directional numbers only
+- **caveats:** works because base streak mechanic is strong; a freeze on a weak streak protects nothing
+- **privacy check:** published first-party material

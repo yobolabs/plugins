@@ -1,0 +1,9 @@
+- **id:** wordle-daily-cadence
+- **mechanism:** scarcity-cadence habit (one puzzle per calendar date, same for everyone) + shareable artifact (emoji grid) <!-- validator:allow — cadence description -->
+- **lens:** hooks-habit (also social-viral: artifact loop)
+- **context class:** consumer app (game)
+- **source:** documented growth Nov 2021 (~90 players) → Jan 2022 (millions daily); NYT acquisition reporting 2022 (Guardian, NYT own coverage)
+- **outcome:** class: daily-return habit + viral spread, magnitude: large — the one-per-date limit CREATED the habit slot <!-- validator:allow — cadence description --> and the scarcity; the spoiler-free grid drove k
+- **confidence:** A — extensively documented trajectory
+- **caveats:** counter-example to "more engagement surface = better": limiting supply built the habit; lightning-in-a-bottle context
+- **privacy check:** public reporting

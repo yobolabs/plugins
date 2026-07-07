@@ -1,0 +1,9 @@
+- **id:** linkedin-contact-import-backlash
+- **mechanism:** aggressive contact-import + repeated invite mails (NEGATIVE precedent)
+- **lens:** social-viral
+- **context class:** B2B/prosumer network
+- **source:** Perkins v. LinkedIn class action — $13M settlement (2015) over "add connections" follow-up emails sent as if from users <!-- validator:allow — cited settlement figure -->
+- **outcome:** class: legal + trust damage, magnitude: large negative — silent/over-aggressive network-permission use produced litigation, settlement, and a decade of user distrust of import flows industry-wide
+- **confidence:** A — court record
+- **caveats:** the consent-erosion case study: every import must preview exactly what sends, send nothing silently; growth "wins" from dark network mechanics carry deferred costs
+- **privacy check:** public court records

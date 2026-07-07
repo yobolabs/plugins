@@ -1,0 +1,32 @@
+# growthify privacy banlist
+#
+# Purpose: growthify is a DISTRIBUTED, team-facing plugin. Its committed files
+# hold METHOD + GENERALIZED insight only (spec INV-3 / NFR 6.3) — never raw
+# merchant numbers, customer data, or identifiers from our own estate.
+#
+# The privacy validator scope (`node scripts/validate.mjs --scope privacy`)
+# scans every .md file under growthify/ and FAILS on any line that contains one
+# of the literal strings below (case-insensitive substring match). These are
+# our-estate org / brand / infra identifiers that must never leak into a plugin
+# shipped to the team. Case entries and exemplars must use generic CONTEXT
+# CLASSES ("B2B SaaS", "consumer app", "marketplace", "e-commerce") instead.
+#
+# Format: one banned literal per line. Blank lines and lines starting with `#`
+# are ignored. Surrounding single/double quotes are stripped.
+#
+# Escape hatch: any line that itself contains the marker `validator:allow` is
+# exempt from ALL privacy checks — use it (sparingly) on a line that must state
+# a ban rule or quote a forbidden token for documentation.
+#
+# Built-in checks NOT expressed as list entries (implemented in validate.mjs):
+#   - currency-amount pattern  /\$\s?\d{3,}/   (e.g. "$500", "$ 1200") — raw
+#     money figures are banned; use magnitude classes / honest bands instead.
+#   - time-estimate lexicon    weeks|days|hours|wks|hrs|timebox|"week <n>"
+#     (standing no-time-estimates rule, spec NFR 6.2).
+
+# --- our-estate org / brand / infra identifiers (banned literals) ---
+qraved
+weeloy
+cadraos
+jetdevs
+ep-blue-mouse

@@ -1,0 +1,9 @@
+- **id:** duolingo-streaks
+- **mechanism:** streaks (daily-practice count with visible flame)
+- **lens:** hooks-habit
+- **context class:** consumer app (education)
+- **source:** Duolingo S-1 filing (2021) + Duolingo engineering/growth blog posts on streak mechanics, 2021-2023
+- **outcome:** class: retention lift, magnitude: large — company repeatedly credits streaks as a top retention driver; S-1 cites engagement records around streak milestones; DAU growth sustained across years of streak-centric iteration
+- **confidence:** A — multiple primary sources (S-1, first-party engineering posts, third-party teardowns)
+- **caveats:** education has natural daily-practice fit; streak anxiety documented (mitigated by freezes — see duolingo-streak-freeze); survivorship: most-cited gamification company
+- **privacy check:** public-company filings and published posts

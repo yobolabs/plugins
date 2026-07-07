@@ -1,0 +1,9 @@
+- **id:** opentable-points-liquidity
+- **mechanism:** demand-side points subsidy in a two-sided booking market (diner points for off-peak bookings)
+- **lens:** incentives-game-theory
+- **context class:** marketplace (restaurant booking)
+- **source:** OpenTable program documentation + IPO-era filings (2009+); points steered demand to low-utilization inventory
+- **outcome:** class: liquidity smoothing + habitual booking, magnitude: moderate — points concentrated on off-peak slots priced demand into the inventory restaurants needed filled
+- **confidence:** B — program well documented, impact numbers partial
+- **caveats:** points funded by the supply side's commission — economy must balance at scale; direct relevance to booking/F&B verticals
+- **privacy check:** public program + filings

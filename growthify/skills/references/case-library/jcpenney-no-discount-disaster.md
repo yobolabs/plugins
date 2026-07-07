@@ -1,0 +1,9 @@
+- **id:** jcpenney-no-discount-disaster
+- **mechanism:** reference-price removal (NEGATIVE precedent — "fair and square" everyday pricing replacing coupons/sales)
+- **lens:** pricing-economics
+- **context class:** consumer retail
+- **source:** JCPenney 2012-2013 under Ron Johnson: revenue fell ~25% in the first year of the strategy; CEO out in ~17 months; coverage + case studies (HBS et al.) <!-- validator:allow — cited case figures -->
+- **outcome:** class: revenue collapse from reference destruction, magnitude: large negative — customers' purchase behavior was anchored on the discount ritual; honest-but-alien pricing read as expensive
+- **confidence:** A — public financials + extensive case literature
+- **caveats:** the discount-training warning at civilization scale: the existing reference frame is an asset/liability you inherit; changing it is a one-way door needing migration design, not proclamation
+- **privacy check:** public case

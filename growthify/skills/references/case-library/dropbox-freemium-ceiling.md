@@ -1,0 +1,9 @@
+- **id:** dropbox-freemium-ceiling
+- **mechanism:** freemium ceiling on the value metric (free storage cap; upgrade when full)
+- **lens:** pricing-economics
+- **context class:** consumer/prosumer SaaS
+- **source:** Dropbox S-1 (2018) — registered-user → paying-user conversion documented in single-digit %, with paid conversion driven by hitting storage limits + referral-earned space deepening lock-in
+- **outcome:** class: free→paid conversion at scale, magnitude: large in absolute terms (hundreds of millions of registered users), single-digit in rate — the ceiling sits exactly on accumulated value (your files)
+- **confidence:** A — S-1
+- **caveats:** the ceiling binds because switching cost grows WITH the stored value; freemium at this width needs near-zero marginal cost per free user
+- **privacy check:** public filing

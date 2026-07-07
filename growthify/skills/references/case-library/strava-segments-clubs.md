@@ -1,0 +1,9 @@
+- **id:** strava-segments-clubs
+- **mechanism:** broadcast status + community competition (segments/leaderboards, clubs, kudos)
+- **lens:** social-viral (also hooks-habit: tribe reward)
+- **context class:** consumer app (fitness)
+- **source:** Strava growth coverage + first-party Year In Sport reports; segment leaderboards long documented as the retention/differentiation core
+- **outcome:** class: retention + network lock-in, magnitude: moderate-large — activity becomes social proof among athletes; local leaderboards keep the bottom 90% engaged where global ranks would demoralize
+- **confidence:** B — pattern well documented, metric internals private
+- **caveats:** works because athletes are PROUD of the activity (broadcast precondition); privacy incidents (heatmap 2018) show the consent-erosion edge of default-public
+- **privacy check:** public reporting

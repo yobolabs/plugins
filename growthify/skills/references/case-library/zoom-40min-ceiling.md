@@ -1,0 +1,9 @@
+- **id:** zoom-40min-ceiling
+- **mechanism:** freemium ceiling on session length (40-minute cap on free group meetings) <!-- validator:allow — the cap IS the mechanism's public name -->
+- **lens:** pricing-economics
+- **context class:** B2B SaaS (communications)
+- **source:** Zoom's long-standing free-tier design; S-1 (2019) + pandemic-era coverage of the cap as upgrade driver
+- **outcome:** class: free→paid conversion trigger, magnitude: moderate-large — the ceiling fires mid-value (meeting cut short in front of colleagues), converting at the moment the pain is social; free tier still complete enough to spread virally
+- **confidence:** B — design public, conversion attribution partial
+- **caveats:** the ceiling lands on TIME-IN-SESSION because that maps to meeting value; the social visibility of hitting it is the multiplier — a private ceiling converts weaker
+- **privacy check:** public product design + filing

@@ -1,0 +1,9 @@
+- **id:** economist-decoy
+- **mechanism:** decoy pricing / asymmetric dominance (print-only tier priced equal to print+web)
+- **lens:** pricing-economics
+- **context class:** consumer subscription (media)
+- **source:** Dan Ariely, Predictably Irrational (2008) — the canonical experiment: with decoy 84% chose the bundle vs 32% without <!-- validator:allow — cited study figures -->
+- **outcome:** class: plan-mix shift to target tier, magnitude: large (in-experiment) — the decoy made the bundle read as obviously dominant
+- **confidence:** A for the effect (replicated lab + field variants); B for any specific magnitude in YOUR menu
+- **caveats:** decoys must be honest products; effect size decays with buyer sophistication and repeat exposure
+- **privacy check:** published research

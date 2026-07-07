@@ -1,0 +1,9 @@
+- **id:** canva-templates-first
+- **mechanism:** start-from-template onboarding (design begins inside a pre-made artifact, not a blank canvas)
+- **lens:** friction-cro
+- **context class:** consumer/prosumer SaaS (design)
+- **source:** Canva growth coverage + first-party onboarding retrospectives (2018-2022); template-first widely analyzed as its activation core
+- **outcome:** class: activation lift (first-design completion), magnitude: moderate-large — the blank canvas was the cognitive cliff; templates deleted the hardest decision (starting)
+- **confidence:** B — pattern documented, internals private
+- **caveats:** template quality IS the activation surface (bad templates = bad first output = churn); doubles as a UGC flywheel at scale (see notion-template-gallery)
+- **privacy check:** public coverage

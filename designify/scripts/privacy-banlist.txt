@@ -1,0 +1,37 @@
+# privacy-banlist.txt — forbidden-string patterns for `validate.mjs --scope privacy`
+#
+# WHAT THIS IS
+#   Each non-comment, non-blank line below is a case-insensitive JavaScript
+#   regular expression. The privacy scope greps every authored *.md file in the
+#   plugin against all of these patterns AND against the built-in time-estimate
+#   lexicon (weeks|days|hours|wks|hrs|timebox + week-numbered phases). A match is
+#   a failure — one reported line per match.
+#
+# WHY IT EXISTS (specs SS6.3 / INV-3, the privacy split)
+#   The plugin is team-distributed and holds METHOD + generalized craft knowledge
+#   ONLY. Raw merchant/customer data and real campaign numbers live in mission
+#   dirs under `_context/{project}/design/{slug}/`, never in this repo. These
+#   patterns catch the most common leak shapes: money amounts and real
+#   performance metrics pasted in from a live campaign.
+#
+# THE ESCAPE HATCH — `validator:allow`
+#   Any line that legitimately contains one of these shapes (e.g. a rule that
+#   quotes the ban itself, or an illustrative craft example) is exempted by
+#   putting the marker `validator:allow` anywhere on that same line. Use it
+#   sparingly and only where the match is provably not real merchant data.
+#
+# THIS LIST IS SEED-SIZED ON PURPOSE. It grows as real leaks are caught in
+# calibration/feedback; do not pad it with guessed merchant names — add only
+# patterns you can defend.
+#
+# --- currency amounts -------------------------------------------------------
+# Real ad spend / revenue / order values. A generalized craft file never needs
+# a concrete dollar figure; recon output (in _context/) does.  validator:allow
+\$[0-9][0-9,]*(\.[0-9]+)?
+#
+# --- campaign performance metrics (number coupled to a metric noun) ---------
+# A percentage bound to a named ad metric is a real campaign number, not durable
+# craft. Bare percentages are deliberately NOT banned (illustrative "converted
+# 40%" is fine). Both word orders are covered.  validator:allow
+[0-9]+(\.[0-9]+)?\s*%\s*(ctr|roas|cpm|cpc|cpa|cvr|open[-\s]?rate|click[-\s]?through|conversion[-\s]?rate|engagement[-\s]?rate)
+(ctr|roas|cpm|cpc|cpa|cvr|open[-\s]?rate|click[-\s]?through|conversion[-\s]?rate|engagement[-\s]?rate)\s*(of|=|:|was|hit|reached|at)?\s*[0-9]+(\.[0-9]+)?\s*%
