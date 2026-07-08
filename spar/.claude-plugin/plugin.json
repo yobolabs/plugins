@@ -1,0 +1,17 @@
+{
+  "name": "spar",
+  "description": "General-domain sparring partner + war-gaming \u2014 steelman-then-assault challenge of ideas, proposals, designs, and goals; fought-on-paper missions for irreversible decisions; per-domain expertise earned via research and compounding domain packs.",
+  "version": "0.3.0",
+  "author": {
+    "name": "Sean Liao"
+  },
+  "keywords": [
+    "sparring",
+    "wargame",
+    "red-team",
+    "foresight",
+    "decision",
+    "anti-sycophancy",
+    "domain-research"
+  ]
+}

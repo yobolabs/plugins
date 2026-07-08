@@ -1,9 +1,9 @@
 {
   "name": "campaign-wargame",
   "description": "War-game your campaigns before you launch them — fight the plan on paper first. Five review roles (researcher, devil's advocate, ripple-effects, opportunity scout, reviewer) stress-test campaign plans, drip flows, segments, offers, and creative batches: what could go wrong, what it costs, what to watch mid-flight, and when to stop. Built for the Yobo operations team — no coding required.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
-    "name": "YoboLabs"
+    "name": "Sean Liao"
   },
   "keywords": [
     "wargame",

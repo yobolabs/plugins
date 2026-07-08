@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Claude Code plugins for YoboLabs apps — landing pages, campaigns, and more",
-    "version": "1.3.0",
+    "version": "1.6.0",
     "pluginRoot": "./"
   },
   "plugins": [
@@ -14,7 +14,7 @@
       "name": "yobolabs",
       "source": "./yobolabs",
       "description": "Configure YoboLabs apps from Claude Code — create, edit, and publish Slides landing pages (microsites) via the REST API",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "keywords": [
         "yobolabs",
         "landing-pages",
@@ -28,14 +28,14 @@
         "transcript"
       ],
       "author": {
-        "name": "YoboLabs"
+        "name": "Sean Liao"
       }
     },
     {
       "name": "content-creation",
       "source": "./content-creation",
       "description": "Build short-form campaign ads by talking to Claude — one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "keywords": [
         "capcut",
         "video",
@@ -56,14 +56,14 @@
         "transitions"
       ],
       "author": {
-        "name": "YoboLabs"
+        "name": "Sean Liao"
       }
     },
     {
       "name": "campaign-wargame",
       "source": "./campaign-wargame",
       "description": "War-game campaigns before launch — five review roles (researcher, devil's advocate, ripple-effects, opportunity scout, reviewer) stress-test campaign plans, drip flows, segments, offers, and creatives on paper first; plus a simulation mode that trains the team and builds the trap library from past campaigns",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "keywords": [
         "wargame",
         "campaign-planning",
@@ -75,14 +75,14 @@
         "simulation"
       ],
       "author": {
-        "name": "YoboLabs"
+        "name": "Sean Liao"
       }
     },
     {
       "name": "designify",
       "source": "./designify",
       "description": "Ad-creative craft capability-capture — an agency-model loop (recon, concept directions, human pick, director deepen, adversarial crit, judge gate) that produces craft files with positive AND negative gen-AI prompt guidance, authenticity-first judging, a proof-ladder execute skill over the existing actuators, and blind-replay calibration on real campaign outcomes",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "keywords": [
         "designify",
         "ad-creative",
@@ -94,14 +94,14 @@
         "wargame-family"
       ],
       "author": {
-        "name": "YoboLabs"
+        "name": "Sean Liao"
       }
     },
     {
       "name": "growthify",
       "source": "./growthify",
       "description": "Generative-first growth framework — turns a metric problem or a design surface into a ranked, evidence-grounded portfolio of growth, gamification, and game-theory mechanics, then deepens the winners into ship-ready experiment designs. The generative sibling to campaign-wargame: externalized lens packs, a role-separated generator, an anti-sycophancy judge gate, and blind calibration. Built for the team — no coding required.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "keywords": [
         "growth",
         "gamification",
@@ -113,7 +113,67 @@
         "calibration"
       ],
       "author": {
-        "name": "Yobo Labs"
+        "name": "Sean Liao"
+      }
+    },
+    {
+      "name": "spar",
+      "source": "./spar",
+      "description": "General-domain sparring partner + war-gaming — steelman-then-assault challenge of ideas, proposals, designs, and goals; fought-on-paper missions for irreversible decisions; per-domain expertise earned via research and compounding domain packs.",
+      "version": "0.3.0",
+      "keywords": [
+        "sparring",
+        "wargame",
+        "red-team",
+        "foresight",
+        "decision",
+        "anti-sycophancy",
+        "domain-research"
+      ],
+      "author": {
+        "name": "Sean Liao"
+      }
+    },
+    {
+      "name": "wargame",
+      "source": "./wargame",
+      "description": "War-gaming framework that lets any model see around corners — externalized foresight via adversarial agent roles (recon, red-team, cascade, scout, judge), epistemic tagging, order-N consequence + opportunity propagation, trap libraries from real incidents, and Fable-5-direct exemplars as ground truth. Turns plans into fought-on-paper missions any executor model can run.",
+      "version": "1.1.0",
+      "keywords": [
+        "wargame",
+        "foresight",
+        "planning",
+        "harness",
+        "red-team",
+        "consequence-cascade",
+        "opportunity",
+        "epistemics",
+        "first-principles",
+        "fable"
+      ],
+      "author": {
+        "name": "Sean Liao"
+      }
+    },
+    {
+      "name": "gtm-lifecycle",
+      "source": "./gtm-lifecycle",
+      "description": "End-to-end GTM strategy process — elicit the real situation, draft a positioning brief with falsifiable bets, spar every bet adversarially, war-game the one-way doors, synthesize a challenged strategy. Use for \"gtm\", \"go to market\", \"positioning\", \"find the wedge\", \"launch strategy\", \"who's the buyer\". Depends on the spar plugin (spar:spar + spar:wargame).",
+      "version": "0.2.0",
+      "keywords": [
+        "gtm",
+        "go-to-market",
+        "positioning",
+        "wedge",
+        "launch-strategy",
+        "pricing",
+        "icp",
+        "product-led-growth",
+        "strategy",
+        "red-team"
+      ],
+      "author": {
+        "name": "Sean Liao"
       }
     }
   ]

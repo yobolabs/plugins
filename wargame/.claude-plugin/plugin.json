@@ -1,0 +1,20 @@
+{
+  "name": "wargame",
+  "description": "War-gaming framework that lets any model see around corners — externalized foresight via adversarial agent roles (recon, red-team, cascade, scout, judge), epistemic tagging, order-N consequence + opportunity propagation, trap libraries from real incidents, and Fable-5-direct exemplars as ground truth. Turns plans into fought-on-paper missions any executor model can run.",
+  "version": "1.1.0",
+  "author": {
+    "name": "Sean Liao"
+  },
+  "keywords": [
+    "wargame",
+    "foresight",
+    "planning",
+    "harness",
+    "red-team",
+    "consequence-cascade",
+    "opportunity",
+    "epistemics",
+    "first-principles",
+    "fable"
+  ]
+}

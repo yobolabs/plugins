@@ -1,0 +1,20 @@
+{
+  "name": "gtm-lifecycle",
+  "description": "End-to-end GTM strategy process \u2014 elicit the real situation, draft a positioning brief with falsifiable bets, spar every bet adversarially, war-game the one-way doors, synthesize a challenged strategy. Use for \"gtm\", \"go to market\", \"positioning\", \"find the wedge\", \"launch strategy\", \"who's the buyer\". Depends on the spar plugin (spar:spar + spar:wargame).",
+  "version": "0.2.0",
+  "author": {
+    "name": "Sean Liao"
+  },
+  "keywords": [
+    "gtm",
+    "go-to-market",
+    "positioning",
+    "wedge",
+    "launch-strategy",
+    "pricing",
+    "icp",
+    "product-led-growth",
+    "strategy",
+    "red-team"
+  ]
+}
