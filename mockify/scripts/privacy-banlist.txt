@@ -1,0 +1,41 @@
+# privacy-banlist.txt — forbidden-string patterns for `validate.mjs --scope privacy`
+#
+# WHAT THIS IS
+#   Each non-comment, non-blank line below is a case-insensitive JavaScript
+#   regular expression. The privacy scope greps every authored *.md file in the
+#   plugin against all of these patterns AND against the built-in time-estimate
+#   lexicon (weeks|days|hours|wks|hrs|timebox + week-numbered phases). A match is
+#   a failure — one reported line per match.
+#
+# WHY IT EXISTS (INV-3, modified per design.md D7)
+#   The plugin holds METHOD + generalized app-design craft ONLY. Mission
+#   artifacts — real screens, briefs, user data — live in mission dirs under
+#   `_context/{project}/mockify/{slug}/`, never in this repo. Unlike designify,
+#   jetdevs component/token/design-system NAMES are explicitly allowed here
+#   (ecosystem-native, D3/D7); what stays banned is real end-user/customer data
+#   and real usage numbers.
+#
+# THE ESCAPE HATCH — `validator:allow`
+#   Any line that legitimately contains one of these shapes (e.g. a rule that
+#   quotes the ban itself, or an illustrative craft example) is exempted by
+#   putting the marker `validator:allow` anywhere on that same line. Use it
+#   sparingly and only where the match is provably not real user data.
+#
+# THIS LIST IS SEED-SIZED ON PURPOSE. It grows as real leaks are caught in
+# feedback/grading; add only patterns you can defend.
+#
+# --- currency amounts -------------------------------------------------------
+# Real revenue / order values pasted from a live app. Generalized craft never
+# needs a concrete dollar figure; mission output (in _context/) does.  validator:allow
+\$[0-9][0-9,]*(\.[0-9]+)?
+#
+# --- email addresses (real accounts / credentials leak shape) ---------------
+# A concrete mailbox in plugin docs is either a real user or a real credential.
+# Placeholder guidance should describe the shape, not carry an address.  validator:allow
+[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}
+#
+# --- usage metrics (number coupled to a product-analytics noun) --------------
+# A number bound to a named product metric is a real usage figure, not durable
+# craft. Bare percentages stay allowed (illustrative "40% smaller" is fine).  validator:allow
+[0-9]+(\.[0-9]+)?\s*%\s*(dau|mau|wau|retention|churn|activation|conversion[-\s]?rate|signup[-\s]?rate|task[-\s]?completion)
+(dau|mau|wau|retention|churn|activation|conversion[-\s]?rate|signup[-\s]?rate|task[-\s]?completion)\s*(of|=|:|was|hit|reached|at)?\s*[0-9]+(\.[0-9]+)?\s*%
