@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Claude Code plugins for YoboLabs apps — landing pages, campaigns, and more",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "pluginRoot": "./"
   },
   "plugins": [
@@ -91,6 +91,24 @@
         "negative-prompts",
         "craft-file",
         "art-direction",
+        "wargame-family"
+      ],
+      "author": {
+        "name": "Sean Liao"
+      }
+    },
+    {
+      "name": "mockify",
+      "source": "./mockify",
+      "description": "App-design (UI/UX) capability-capture — an agency-model loop (ecosystem recon, concept directions with rendered HTML mockups, human pick, director deepen, adversarial crit, usability-first judge gate) that produces buildable design specs + mockups for jetdevs ecosystem apps, with post-implementation grading via screenshot diffs and human verdicts",
+      "version": "1.0.0",
+      "keywords": [
+        "mockify",
+        "app-design",
+        "ui-ux",
+        "mockups",
+        "design-spec",
+        "design-system",
         "wargame-family"
       ],
       "author": {
