@@ -21,4 +21,5 @@ Filename: `{lens}-{mechanism-slug}-{worked|failed|calibration}.md`
 - **Privacy:** no raw metrics, no merchant/org names, no revenue figures. Context class + outcome class carry the signal. The validator privacy scope scans this directory like any other.
 - Generalize to the mechanism level: "referral payout on signup attracted fraud" is an insight; "merchant X lost $Y" is a leak. <!-- validator:allow -->
 - One insight per file — grep-ability beats prose.
+- **`source` is the judge's self-answer key:** the novelty check SKIPS any insight whose `source` equals the slug of the initiative currently under test, so a re-replay/re-`feedback` of the same initiative never grades against its own prior entry (first replays are clean; only re-runs of the same slug are affected). Keep `source` accurate — a wrong or blank `source` either leaks an insight into its own re-run or fails to be excluded.
 - Insights are never deleted; a later reversal gets its own entry citing the earlier one.
