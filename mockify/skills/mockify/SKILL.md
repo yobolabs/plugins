@@ -12,7 +12,7 @@ Templates, rubrics, packs, and traps live under `../references/`. The agents (`m
 ## Care level
 
 Ask once at intake, or infer and confirm:
-- **quick** — 2 concept directions, light crit (design-system-drift scan + trap scan only)
+- **quick** — 2 concept directions, light crit (all five attack classes, walked lightly)
 - **deep** — 3 concept directions, full five-class crit
 
 Bounds are artifact counts, never time.
