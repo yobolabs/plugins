@@ -96,7 +96,7 @@ The `../exemplars/` directory starts empty; `../exemplars/README.md` defines how
 
 ## 7. Trap cross-references
 
-- `../traps/ai-slop-ui.md` - padding maximalism, card gardens, and icon confetti that dissolve working density (violates VH-2, VH-4, VH-5)
+- `../traps/ai-slop-ui.md` - gratuitous garnish and decorative-icon ornament stealing the emphasis budget; whitespace-maximalist heroes hollowing out working density (violates VH-2, VH-5)
 - `../traps/ai-slop-ui.md` - the everything-is-a-hero grammar import, brochure composition on working screens (violates VH-3)
 - `../traps/flow-friction.md` - competing primary actions that make the next step ambiguous (violates VH-1)
 - `../traps/state-blindness.md` - hierarchy tuned only for pretty placeholder data, collapsing at real volume or at empty (violates VH-7)

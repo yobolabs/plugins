@@ -94,8 +94,7 @@ The `../exemplars/` directory starts empty; `../exemplars/README.md` defines how
 
 ## 7. Trap cross-references
 
-- `../traps/design-system-drift.md` - hex leaks, raw palette classes, and invented hover tints bypassing the theme's semantic tokens (violates CT-1, CT-6's derive rule)
+- `../traps/design-system-drift.md` - hex leaks, raw palette classes, and invented hover tints bypassing the theme's semantic tokens (violates CT-1 and the derive-not-invent principle)
 - `../traps/ai-slop-ui.md` - gradient washes, glow effects, and saturation-everywhere styling that reads as generated-by-default (violates CT-6)
 - `../traps/state-blindness.md` - state colors never designed because only the happy path was mocked; disabled and error renderings missing (violates CT-4, CT-7)
-- `../traps/responsive-failures.md` - contrast judged on a bright desktop canvas only, failing at small sizes and dark theme (violates CT-2, CT-3)
-- `../traps/flow-friction.md` - a destructive action styled at primary-accent strength, inviting the misclick (violates CT-4)
+- `../traps/responsive-failures.md` - destructive actions placed beside frequent ones where a misclick lands, with no spacing or confirmation asymmetry (violates CT-4)

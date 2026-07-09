@@ -94,9 +94,8 @@ The `../exemplars/` directory starts empty; `../exemplars/README.md` defines how
 
 ## 7. Trap cross-references
 
-- `../traps/flow-friction.md` - the home file for this lens: needless depth, unjustified fields, confirm-dialog reflexes, dead ends, and vocabulary mazes (violates UX-1 through UX-7)
-- `../traps/flow-friction.md` - generic "Submit"/"OK" labeling and jargon leaking from the schema into the UI (violates UX-7)
+- `../traps/flow-friction.md` - the home file for this lens: needless depth, unjustified fields, confirm-dialog reflexes, buried primary actions, and dead ends (violates UX-1 through UX-6)
 - `../traps/state-blindness.md` - flows mapped only for success, with no designed route out of a failed step (violates UX-1)
-- `../traps/ai-slop-ui.md` - wizard costumes and stepper theater added for visual interest rather than dependency (violates UX-5)
+- `../traps/flow-friction.md` - wizard costumes and stepper theater added for visual interest rather than genuine step dependency (violates UX-5)
 - `../traps/design-system-drift.md` - navigation paradigms invented per feature against the app's established shell and DESIGN.md conventions (violates UX-2)
 - `../traps/responsive-failures.md` - journeys that dead-end on mobile because a step's affordance never survived the collapse (violates UX-1)

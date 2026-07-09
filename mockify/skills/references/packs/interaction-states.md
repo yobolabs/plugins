@@ -94,8 +94,8 @@ The `../exemplars/` directory starts empty; `../exemplars/README.md` defines how
 
 ## 7. Trap cross-references
 
-- `../traps/state-blindness.md` - the home file for this lens: happy-path-only mocks, missing empties, undesigned errors, silent optimistic failures (violates IS-1 through IS-5)
+- `../traps/state-blindness.md` - the home file for this lens: happy-path-only mocks, missing empties, undesigned errors, silent optimistic failures, and mystery-disabled or pending controls (violates IS-1 through IS-6)
 - `../traps/ai-slop-ui.md` - pretty placeholder perfection that hides every state a real user meets (violates IS-1)
-- `../traps/design-system-drift.md` - toast usage and per-screen invented feedback patterns against the ecosystem's inline-feedback convention (violates IS-2)
-- `../traps/flow-friction.md` - feedback rendered far from its cause, mystery-disabled controls, and validation that punishes typing (violates IS-2, IS-6, IS-7)
+- `../traps/design-system-drift.md` - per-screen invented feedback patterns forked from the ecosystem's inline-feedback convention (violates IS-2)
+- `../traps/flow-friction.md` - toast reliance rendering feedback far from its cause, divorcing outcome from the action that produced it (violates IS-2)
 - `../traps/responsive-failures.md` - pending and feedback states legible on desktop but invisible at mobile sizes (violates IS-4)

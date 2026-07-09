@@ -30,7 +30,7 @@ Not covered here: the color of text against its background (color-tokens-a11y pa
 **UT-2 - Size for structure, weight for emphasis**
 - principle: within a text level, emphasis comes from weight (medium, semibold) before a size jump; size jumps are reserved for structural tier changes.
 - preconditions: any region needing internal stress - a value inside a sentence, the changed field in a diff, the total row of a table.
-- failure modes: emphasis by enlarging until tiers blur (visual-hierarchy VH-5's ladder collapses); emphasis by color alone (color-tokens-a11y owns why that fails).
+- failure modes: emphasis by enlarging until tiers blur (visual-hierarchy VH-3's ladder collapses); emphasis by color alone (color-tokens-a11y owns why that fails).
 - spec hooks: spec names the emphasis mechanism per region; avoid-list bans size-based emphasis inside a tier.
 
 **UT-3 - Write the truncation plan**
@@ -98,4 +98,4 @@ The `../exemplars/` directory starts empty; `../exemplars/README.md` defines how
 - `../traps/ai-slop-ui.md` - marketing display type inside working screens, oversized headings announcing what the data already says (violates UT-1, UT-2)
 - `../traps/state-blindness.md` - placeholder-width strings hiding truncation and overflow failures until real data arrives (violates UT-3, UT-7)
 - `../traps/responsive-failures.md` - type and truncation tested only at full desktop width (violates UT-7)
-- `../traps/flow-friction.md` - labels and values styled so alike the user re-reads to parse them (violates UT-5)
+- `../traps/design-system-drift.md` - label-value pairs styled two different ways across sibling screens, resetting the learned parse (violates UT-5)

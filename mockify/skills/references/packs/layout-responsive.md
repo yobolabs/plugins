@@ -97,6 +97,6 @@ The `../exemplars/` directory starts empty; `../exemplars/README.md` defines how
 - `../traps/responsive-failures.md` - the home file for this lens: detached sticky headers, 100vh clipping, desktop-only mocks, horizontal body scroll (violates LR-1 through LR-5)
 - `../traps/responsive-failures.md` - hover-only affordances and sub-44px targets shipping a cursor-only product (violates LR-4)
 - `../traps/state-blindness.md` - layouts tuned to one content volume, breaking when panes fill or empty (violates LR-6)
-- `../traps/design-system-drift.md` - per-screen custom breakpoints and reinvented drawer patterns off the framework's shell (violates LR-3)
+- `../traps/design-system-drift.md` - reinvented drawer and navigation patterns off the framework's shell instead of reusing its collapse grammar (violates LR-3)
 - `../traps/ai-slop-ui.md` - decorative full-height heroes and device-frame chrome pasted into working screens, fighting the shell (violates LR-1)
 - `../traps/flow-friction.md` - actions stranded below the fold or behind a collapse with no path to them (violates LR-2, LR-3)
