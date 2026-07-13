@@ -6,10 +6,33 @@
   },
   "metadata": {
     "description": "Claude Code plugins for YoboLabs apps — landing pages, campaigns, and more",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "pluginRoot": "./"
   },
   "plugins": [
+    {
+      "name": "crm",
+      "source": "./crm",
+      "description": "Update the Yobo CRM directly from Claude Code — create, read, and update companies, deals, leads, people, tasks, notes, custom fields, lifecycles, and GTM campaigns via the REST API",
+      "version": "1.0.0",
+      "keywords": [
+        "crm",
+        "companies",
+        "deals",
+        "leads",
+        "people",
+        "contacts",
+        "tasks",
+        "pipeline",
+        "gtm",
+        "gtm-campaigns",
+        "rest-api",
+        "openapi"
+      ],
+      "author": {
+        "name": "Sean Liao"
+      }
+    },
     {
       "name": "yobolabs",
       "source": "./yobolabs",
