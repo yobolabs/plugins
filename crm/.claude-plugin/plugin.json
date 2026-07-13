@@ -1,7 +1,7 @@
 {
   "name": "crm",
   "description": "Update the Yobo CRM directly from Claude Code — create, read, and update companies, deals, leads, people, tasks, notes, custom fields, lifecycles, and GTM campaigns via the REST API",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Sean Liao"
   },

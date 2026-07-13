@@ -19,10 +19,17 @@ Two environment variables drive everything:
 | `CRM_API_KEY` | A `jetai_…` key with the permissions for the verbs you use (e.g. `companies:read`, `deals:update`, `leads:create`, `gtm:transition`) |
 | `CRM_API_URL` | Base origin of the CRM app, no trailing slash. Dev: `http://localhost:4100` (crm `pnpm dev` port). Set to your deployed CRM origin in prod. |
 
-**Getting a key**: in the CRM, open **Settings → API Keys** → create one (it
-shows once — copy it). Keys are scoped to one organization; every call only sees
-and edits that org's data. A `403` means the key lacks the permission for that
-verb — mint a key with the needed scope.
+**Getting a key**: in the CRM, go to **Backoffice → Settings → API Keys**
+(`/backoffice/settings/api-keys`) → create one (it shows once — copy it). This
+key **auto-inherits your admin role's full permission set** (companies, deals,
+leads, people, tasks, notes, lifecycles, GTM — everything), so there's no
+checklist to fill. Keys are scoped to one organization; every call only sees and
+edits that org's data.
+
+> ⚠️ Do NOT use the **profile menu → API Keys** dialog — that one is the
+> **Slides / microsites** key creator (Landing Pages / Sites / Prototypes perms
+> only) and will NOT authorize CRM calls. A `403` from a CRM call usually means
+> you minted a microsites key by mistake, or your admin role lacks that perm.
 
 Confirm the live API contract anytime at `GET {CRM_API_URL}/api/v1/docs`
 (OpenAPI) — or run `crm docs` (below). **The OpenAPI is the source of truth; when
