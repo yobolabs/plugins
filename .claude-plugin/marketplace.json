@@ -58,7 +58,7 @@
       "name": "content-creation",
       "source": "./content-creation",
       "description": "Build short-form campaign ads by talking to Claude — one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation",
-      "version": "1.2.2",
+      "version": "1.2.3",
       "keywords": [
         "capcut",
         "video",
