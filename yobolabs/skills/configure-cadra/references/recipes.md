@@ -95,6 +95,12 @@ For Codex, put that function plus a pointer to this skill's `SKILL.md` and
 `entities.md` in the repo's `AGENTS.md`, so the model has the field contracts
 without re-deriving them.
 
+**Do not assume Codex has this skill installed.** Codex keeps its own marketplace
+clones, separate from Claude Code's, under a temp path — they lag, and they do not
+necessarily include the marketplace this skill ships in. The `AGENTS.md` route
+above needs no plugin install and is the one to rely on; check the skill into the
+repo (or vendor `cadra.mjs`) if Codex must work offline from the marketplace.
+
 ## CI / scripted use
 
 ```bash
