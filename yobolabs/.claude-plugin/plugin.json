@@ -1,12 +1,21 @@
 {
   "name": "yobolabs",
-  "description": "Configure YoboLabs apps from Claude Code — create, edit, and publish Slides landing pages (microsites) via the REST API",
-  "version": "1.2.1",
+  "description": "Configure YoboLabs apps from Claude Code, Codex, or CI via their REST APIs — CadraOS agents, roles, skills and tools, plus Slides landing pages (microsites)",
+  "version": "1.3.0",
   "author": {
     "name": "Sean Liao"
   },
   "keywords": [
     "yobolabs",
+    "cadra",
+    "cadraos",
+    "agents",
+    "agent-roles",
+    "skills",
+    "tools",
+    "mcp",
+    "teams",
+    "agentic-boards",
     "landing-pages",
     "microsites",
     "slides",
