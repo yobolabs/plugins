@@ -36,8 +36,8 @@
     {
       "name": "yobolabs",
       "source": "./yobolabs",
-      "description": "Configure YoboLabs apps from Claude Code, Codex, or CI via their REST APIs — CadraOS agents, roles, skills and tools, plus Slides landing pages (microsites)",
-      "version": "1.3.0",
+      "description": "Configure YoboLabs apps from Claude Code, Codex, or CI via their REST APIs — CadraOS agents, roles, skills and tools (with a config auditor), plus Slides landing pages (microsites)",
+      "version": "1.4.0",
       "keywords": [
         "yobolabs",
         "cadra",

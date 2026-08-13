@@ -147,6 +147,19 @@ A **role** is a reusable starter config that pre-fills a new agent, and (as a
 *product role*, `agentType: "ROLE"`) the unit a team spawns at runtime. Roles have
 their own versioning + golden-lock lifecycle — see `references/roles.md`.
 
+**Building one big agent with many roles?** Read
+`references/multi-role-agents.md` first — wear-vs-spawn, the prompt budget that
+caps how much one agent can hold, and the when-to-use / NOT-for description rule
+the platform gates on.
+
+A role description **must** carry both sections or the publish gate fails:
+
+```
+When to use: writing and iterating ad creative — headlines, body copy, image briefs.
+Not for: choosing WHO to send to (segmentation owns that) or sending in Klaviyo
+(lifecycle owns that).
+```
+
 ```bash
 cadra role apply @roles/researcher.json
 cadra agent create '{"name":"Researcher #2","roleUuid":"<role-uuid>"}'
@@ -216,11 +229,34 @@ A key minted from the UI carries the **role's** permission set. Deploying needs
 both `agents:publish` and `agents:deploy` — a key missing `agents:publish` fails
 at the first half of `deploy`.
 
+## Auditing what exists
+
+`list` tells you what is there; it does not tell you whether it is sound. The
+bundled auditor answers the second question — read-only, exit 1 on any error, so it
+doubles as a CI gate:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/configure-cadra/scripts/audit.mjs"
+node "${CLAUDE_PLUGIN_ROOT}/skills/configure-cadra/scripts/audit.mjs" --json
+node "${CLAUDE_PLUGIN_ROOT}/skills/configure-cadra/scripts/audit.mjs" --only role-description,role-overlap
+```
+
+Eight checks over agents, roles, tools and teams: role description discipline,
+routing overlap, spawnability, prompt budget, tool legibility, dead agents,
+duplicate names, unresolvable model providers. The routing checks mirror
+cadra-web's own publish-time lint — same markers, same stopwords, same 0.50
+threshold — so a finding here is the finding the platform will report.
+
+Work the report in order: **descriptions → overlap → budget.** Overlap results are
+meaningless until descriptions pass (a role with no when-to-use never overlaps).
+
 ## Reference
 
 - `references/entities.md` — every entity: exact create/update fields, permissions, id semantics. **Read before authoring.**
-- `references/agent-authoring.md` — writing an agent that actually works.
+- `references/multi-role-agents.md` — **structuring a big agent**: wear vs spawn, prompt budget, role/tool/connector boundaries, the master system instruction, the audit rubric.
+- `references/agent-authoring.md` — writing a single agent that actually works.
 - `references/tool-authoring.md` — API/MCP/WEBHOOK tool definitions.
 - `references/roles.md` — roles, product roles, golden locks, spawning.
 - `references/recipes.md` — git-backed definitions, promoting local → dev, Codex usage.
+- `scripts/audit.mjs` — the auditor (`--help` for checks and flags).
 - Live OpenAPI: `GET {CADRA_API_URL}/api/v1/docs`.
