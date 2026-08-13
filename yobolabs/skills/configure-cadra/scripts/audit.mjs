@@ -301,6 +301,23 @@ function checkDuplicateNames(kind, records, nameField = "name") {
   }
 }
 
+/**
+ * KNOWN BLIND SPOT — read before trusting a clean result here.
+ *
+ * `/api/v1/providers` returns no org-scope field (no orgId, no scope), so this
+ * check cannot tell an ORG-SCOPED provider from a PLATFORM-WIDE one. It catches
+ * only the loud case: a provider available nowhere.
+ *
+ * It CANNOT catch the quiet one — an agent that resolves solely through the
+ * platform-wide key. Such an agent runs today, but on the platform's key rather
+ * than the org's: usage bills to the platform, and it stops the day that
+ * fallback closes. No agent should be in that state.
+ *
+ * The in-app assistant's `audit_configuration` reads the provider rows directly,
+ * so it DOES report that case (as an error, skipping the assistant itself, which
+ * is the one sanctioned consumer of the platform key). For provider verdicts,
+ * that audit is authoritative and this one is a subset.
+ */
 function checkModelResolvable(agents, providers) {
   if (!providers.length) return; // no providers:read — cannot judge
   const known = new Set(
@@ -313,8 +330,8 @@ function checkModelResolvable(agents, providers) {
         "ERROR",
         "model-resolvable",
         `agent/${a.name}`,
-        `modelProvider "${a.modelProvider}" has no matching provider row in this org`,
-        'At run time this resolves to no API key — the execution can stick at "running" with 0 iterations rather than failing loudly.'
+        `modelProvider "${a.modelProvider}" matches no provider available to this org`,
+        'At run time this resolves to no API key — the execution can stick at "running" with 0 iterations rather than failing loudly. NOTE: a clean result here does NOT prove every agent is on your own key; this API cannot see platform-wide providers. Ask the in-app assistant to "audit my agents" for that.'
       );
     }
   }

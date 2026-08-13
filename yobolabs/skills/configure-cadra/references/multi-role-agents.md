@@ -206,10 +206,19 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/configure-cadra/scripts/audit.mjs" --only rol
 | `tool-legibility` | WARN/ERROR | tools with no `description`/`agentInstructions` |
 | `agent-capability` | WARN/ERROR | specialists with no tools or skills; agents with no instruction |
 | `duplicate-names` | WARN | names the model — and `apply` — cannot disambiguate |
-| `model-resolvable` | ERROR | `modelProvider` with no provider row in this org |
+| `model-resolvable` | ERROR | `modelProvider` matching no provider available to the org |
 
 Exit code is 1 when any ERROR is present, 0 otherwise, so it works as a CI gate.
 Read-only — it never writes.
+
+**What this audit cannot see.** The REST API exposes no org-scope field on
+providers, so `model-resolvable` catches only a provider available nowhere. It
+cannot detect an agent running on the **platform-wide key** — which works today,
+but bills to the platform and stops the day that fallback closes. No agent should
+be in that state. The in-app assistant's own audit reads the provider rows
+directly and does report it; ask it to *"audit my agents"* for the provider
+verdict, and treat a clean result here as "no agent is broken", not "every agent
+is on your own key".
 
 Order of work when the report is long: **descriptions → overlap → budget.** The
 first two gate the third's meaning, and overlap results are not trustworthy until
