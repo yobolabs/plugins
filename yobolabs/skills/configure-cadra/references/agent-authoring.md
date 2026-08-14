@@ -156,3 +156,46 @@ diff meaningful.
 - [ ] guardrail profile attached if it spends money or touches customers
 - [ ] deployed
 - [ ] one real execution inspected end to end
+
+---
+
+## Cloning an existing agent
+
+The platform's own **Duplicate** button (`AgentsRepository.clone`,
+`src/extensions/agents/repository.ts`) copies **skills and tools only** — no
+connectors, no wardrobe, no Core role, and no instruction rewrite. A REST clone
+that also sets `connectorIds` is already the more faithful copy. Three traps:
+
+1. **The system instruction hardcodes the agent's own uuid.** A role-handoff
+   contract of the form *"always call `handoff_to_agent` with agentUuid set to this
+   agent UUID: …"* is copied byte-for-byte, so an unedited clone hands every role
+   spawn to **the source agent** — silently, and only in production behaviour.
+   The uuid cannot be known before create, so the sequence is create → rewrite the
+   instruction → deploy. The private Core role's instruction usually repeats the
+   same uuid; patch both.
+2. **The auto-created Core role is seeded with the agent's full system
+   instruction**, not a Core routing instruction. Left alone, the clone pays the
+   entire prefix twice on every turn. Copy the source Core's own (much shorter)
+   text across, uuid rewritten.
+3. **The source's Core role cannot be attached to the clone.** It is
+   lifecycle-bound to its agent (`is_core`, `core_agent_id`) and excluded from the
+   shared library. The clone gets its own automatically — populate it, don't
+   reassign.
+
+`iterationLimit` / `maxSubtasks` do not survive a REST clone at all — see
+`entities.md`. Neither does the wardrobe.
+
+## New agents land in the creator's PERSONAL workspace
+
+`workspaceId` defaults to the personal workspace of the key's `created_by` user
+*inside the key's org* — a `type:'personal'` workspace, auto-created on first use.
+Workspaces scope agents, so an API-created agent is **invisible** from the org's
+shared views (`General` and the team workspaces) even though the row carries the
+correct `org_id`. This is the usual cause of "the API said it created the agent but
+I can't see it in the app".
+
+Roles, skills, tools and teams are **not** workspace-scoped — only agents are. So a
+role created over REST shows up immediately while the agent from the same script
+does not.
+
+Pass `workspaceId` explicitly at create time to avoid it.

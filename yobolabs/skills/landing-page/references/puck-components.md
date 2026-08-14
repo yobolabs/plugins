@@ -30,7 +30,7 @@ Every entry in `content[]` (and inside zones) is:
 
 - **`type`** — the component name (exactly as in the catalog below, PascalCase).
 - **`props.id`** — REQUIRED and MUST be unique across the whole page, in the
-  format `"<Type>-<uuid>"`, e.g. `"Heading-4293accc-772b-4ef7-aa2e-4ab4ed0581e1"`.
+  format `"<Type>-<uuid>"`, e.g. `"Heading-ffffffff-1111-4222-8333-444444444444"`.
   Use the helper: `node lp.mjs new-id Heading`. **A missing or duplicate `id`
   breaks the editor.**
 - Remaining props are component-specific (see catalog). Omitted props fall back

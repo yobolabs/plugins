@@ -276,3 +276,49 @@ Same generic verbs, contracts via `cadra schema <entity> create`:
 
 `provider` is read-only over REST — provider **credentials** are configured in
 the app, never through this helper.
+
+---
+
+## Verified coverage gaps
+
+Full verb sweep against a **production** origin (2026-08-14). Everything not listed
+here passed: `ping`, `entities`, `docs`, `schema`, `--dry-run`, `--quiet`, `list`
+(20 entities), `find`/`get`/`export`, `create`, `update`, `set-tools`, `set-skills`,
+`deploy`, `runs`, `apply` (idempotency confirmed), `delete`, `kb list`/`docs`,
+`board list`.
+
+| Entity / verb | Status | Detail |
+|---|---|---|
+| **wardrobe (worn/spawn roles)** | ✗ no REST at all | Write path is tRPC `agents.assignRole` (`src/extensions/agents/router.ts`). The only REST surface is `GET /api/v1/internal/agents/{uuid}/worn-roles` — **internal-key**, not a builder key. `assignWornRoleSchema` carries no `mode`, so wear-vs-spawn is a separate p53 tRPC call. **Attaching roles to an agent cannot be scripted**: the multi-role flow this plugin documents ends in the app UI. |
+| `project` | ✗ broken | `404 INTERNAL_ERROR: No procedure found on path "projects,list"` — the route bridges to an unregistered tRPC procedure. |
+| `artifact list` | ✗ 404 | `src/app/api/v1/artifacts/` contains only `[artifactId]`; there is no collection route, though `artifact` is listed as an entity. |
+| `rule`, `decision-table` | ⚠ ungrantable | Routes demand `rules:read` / `decisioning:read`. `src/permissions/registry.ts` defines only `rule:read` (**singular**) and `copilot:configure_decisioning` — so **no role can grant them** and no UI-minted key reaches these entities. Both work the instant the slug exists (proved by writing it straight into `api_keys.permissions`, which is what `validateApiKey` reads). |
+| `kb query` | ✗ retired | `503 SERVICE_UNAVAILABLE` — "Direct knowledge-base vector search over this REST endpoint has been retired. Use an agent with the knowledge base attached (native retrieval via cadra-api)." |
+
+⚠ The permission families in *The rest* table above are aspirational for three
+rows: `rule → rules:*`, `project → projects:*`, `decision-table → decisioning:*`
+name families the registry does not define.
+
+**Environments drift.** A deployed origin can sit many commits behind the branch
+these docs are written against — a route that exists in the repo may still 404 in
+production. `cadra ping` does not detect it. Probe the specific route
+unauthenticated before concluding a payload is wrong: **404 = route absent from
+that origin, 401 = route present.**
+
+## Item routes take the uuid, not the numeric id
+
+`get` / `update` / `delete` on an item route return `422 VALIDATION_ERROR
+(Invalid uuid)` when handed the numeric id that `list` prints. `find` already
+returns the **uuid** in its `id` field, so `find` → `get` chains correctly.
+Numeric ids are for the capability arrays (`skillIds`, `toolIds`, `connectorIds`)
+and for `set-tools` / `set-skills` — nowhere else.
+
+## Fields no REST verb can set
+
+`iterationLimit` and `maxSubtasks` appear in **neither** `createAgentSchema` nor
+`updateAgentSchema`, and have no `.tsx` surface anywhere in the app — the DB or the
+p49 config-io import are the only paths. Worse, the v1 route docblock
+(`src/app/api/v1/agents/route.ts`) documents `iterationLimit (1-10, default 3)`
+as if it were accepted; it is **silently stripped**, and real orchestrators run
+values above that documented maximum. An orchestrator created over REST therefore
+inherits the default and stalls part-way through a delegation round-trip.

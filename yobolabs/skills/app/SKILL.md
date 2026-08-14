@@ -54,13 +54,13 @@ entire `html` blob, so never construct a partial — start from the current one.
 app(){ node "${CLAUDE_PLUGIN_ROOT}/skills/app/scripts/app.mjs" "$@"; }
 
 # 1. Pull the current source to a file
-app get-source 3a0420fa-c4bd-453b-91f6-1942c424d3d9 > /tmp/app.html
+app get-source aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee > /tmp/app.html
 
 # 2. Edit /tmp/app.html — rewrite the single-file source.
 #    See references/app-format.md for the language model + servability rules.
 
 # 3. Write the whole blob back
-app set-source 3a0420fa-c4bd-453b-91f6-1942c424d3d9 /tmp/app.html
+app set-source aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee /tmp/app.html
 ```
 
 For metadata (name/slug/status/description/language) use `patch`:

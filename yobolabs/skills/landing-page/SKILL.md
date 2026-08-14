@@ -54,7 +54,7 @@ the entire page body, so never construct a partial — start from the current on
 lp(){ node "${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/lp.mjs" "$@"; }
 
 # 1. Pull the current content to a file
-lp get-content 3a0420fa-c4bd-453b-91f6-1942c424d3d9 > /tmp/page.json
+lp get-content aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee > /tmp/page.json
 
 # 2. Edit /tmp/page.json — mutate the `content[]` array (add/remove/reorder/edit
 #    components). See references/puck-components.md for the model + catalog.
@@ -62,7 +62,7 @@ lp get-content 3a0420fa-c4bd-453b-91f6-1942c424d3d9 > /tmp/page.json
 lp new-id Heading        # → Heading-<uuid>
 
 # 3. Write the whole object back
-lp set-content 3a0420fa-c4bd-453b-91f6-1942c424d3d9 /tmp/page.json
+lp set-content aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee /tmp/page.json
 ```
 
 For metadata (name/slug/status/description) use `patch`:

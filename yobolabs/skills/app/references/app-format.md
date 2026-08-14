@@ -8,7 +8,7 @@ and a `language` tag.
 
 ```json
 {
-  "id": "3a0420fa-c4bd-453b-91f6-1942c424d3d9",
+  "id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
   "name": "Pricing Calculator",
   "slug": "pricing-calculator",
   "language": "html",
