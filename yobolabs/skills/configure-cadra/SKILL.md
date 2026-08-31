@@ -1,6 +1,6 @@
 ---
 name: configure-cadra
-description: Use when creating, updating, or managing CadraOS building blocks through the REST API — agents, roles, skills, tools, teams, agentic boards, knowledge bases, prompts, guardrails, models, providers, rules, projects, workflows or channels. Also use when the user mentions "cadra agent", "create an agent", "update an agent", "agent role", "role template", "cadra skill", "cadra tool", "register a tool", "MCP tool", "agent team", "deploy agent", "cadra board", "agentic board", "publish board", "knowledge base", "guardrail profile", or a `/api/v1/...` CadraOS path.
+description: Use when creating, updating, or managing CadraOS building blocks through the REST API — agents, roles, skills, tools, teams, agentic boards, knowledge bases, prompts, guardrails, models, providers, rules, projects, workflows or channels. Also use when the user mentions "cadra agent", "create an agent", "update an agent", "agent role", "role template", "cadra skill", "cadra tool", "register a tool", "MCP tool", "agent team", "deploy agent", "cadra board", "agentic board", "publish board", "knowledge base", "guardrail profile", "fleet task", "fleet agent task", "daily brief", "scheduled brief", "get_daily_brief", "agent is not deployed", "set-tools", or a `/api/v1/...` CadraOS path.
 ---
 
 # Configure CadraOS (agents, roles, skills, tools, teams, boards, KBs)
@@ -197,6 +197,69 @@ cadra tool create '{
 `implementation` is `API | MCP | WEBHOOK`. Multi-endpoint tools, MCP servers,
 credential binding, and the `viewPath` link-enrichment contract are all in
 `references/tool-authoring.md`.
+
+## Fleet tasks (yobo p37) — the Cadra half
+
+A **fleet task** runs one Cadra agent once per merchant on a schedule. It is split
+across two repos, and this skill owns exactly one side:
+
+| Half | Lives in | Managed by |
+|---|---|---|
+| the task — key, schedule, audience, channel, limits | yobo `agent_task_definitions` | yobo backoffice `/backoffice/agent-tasks`, tRPC `bo.upsertDefinition` |
+| **the agent it points at, and the tools it calls** | Cadra | **this skill** |
+
+There is no `cadra fleet-task` command and there should not be — the definition
+is not a Cadra entity. What breaks a fleet task is almost always the Cadra half,
+and it fails **silently**: the task dispatches, the execution 500s or the tap
+returns nothing, and the merchant sees no brief.
+
+### Before a fleet task is activated, prove three things
+
+```bash
+# 1. the agent exists, and its uuid is the one on the definition
+cadra agent find "Daily Brief"
+cadra agent get <id>                # confirm uuid, status, visibility
+
+# 2. it is DEPLOYED — a draft agent 500s the internal execution route with
+#    "Agent is not deployed. Current visibility: draft, status: DRAFT"
+cadra agent deploy <id>             # publish + activate, the full step
+
+# 3. its tool belt carries the tools the brief actually calls
+cadra agent get <id>                # inspect the linked tools
+```
+
+**`visibility`, not `status`, is what the caller sees.** The internal execution
+route admits `visibility = 'deployed'` OR `status = 'ACTIVE'`, and the two drift
+independently — an agent reading `ACTIVE` in a list can still be
+`visibility: draft`. Read both; `cadra agent deploy` sets them together.
+
+### The tap tool (`pull` channels)
+
+A WhatsApp fleet task is a **two-step pull**: the merchant gets a CTA, taps it,
+and only then is the brief produced by a tool call. That tool is split too — the
+handler is yobo's, the **definition is a Cadra `tools` row plus an `agent_tools`
+link**, and this skill owns that half.
+
+Missing the Cadra half is the failure most likely to ship: the send works
+perfectly and the merchant taps into silence, with no error anywhere.
+
+```bash
+cadra tool find get_daily_brief      # no hit ⇒ the tap answers nothing
+cadra tool create @tools/get_daily_brief.json
+cadra agent set-tools <agentId> '{"tools":[{"toolId":<id>}, …]}'
+```
+
+⚠️ **`set-tools` REPLACES the whole belt.** Every existing link is deleted and
+recreated. Send the FULL list, never the one tool you are adding — dropping a
+sensing tool this way has blinded a live agent for days. Re-read the agent after
+any tools change and confirm the belt is what you meant.
+
+### Per-environment, every time
+
+Tool rows are **per-org** and agent uuids differ per environment. A definition
+exported from dev carries a dev uuid; applying it to prod points the task at an
+agent that does not exist there. Re-resolve `agent_uuid` per environment, and
+run the three checks above against **that** origin.
 
 ## Lifecycle rules that bite
 
