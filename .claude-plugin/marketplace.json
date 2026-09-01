@@ -37,7 +37,7 @@
       "name": "yobolabs",
       "source": "./yobolabs",
       "description": "Configure YoboLabs apps from Claude Code, Codex, or CI via their REST APIs — CadraOS agents, roles, skills and tools (with a config auditor), plus Slides landing pages (microsites)",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "keywords": [
         "yobolabs",
         "cadra",
@@ -57,7 +57,10 @@
         "rest-api",
         "publish",
         "sessions",
-        "transcript"
+        "transcript",
+        "fleet-tasks",
+        "agent-tasks",
+        "daily-brief"
       ],
       "author": {
         "name": "Sean Liao"
