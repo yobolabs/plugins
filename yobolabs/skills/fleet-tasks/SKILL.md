@@ -157,14 +157,35 @@ never threw it. Two live tasks were lost that way. Nothing to toggle now.
 
 Only an inbound message opens Meta's 24-hour window, and a quick-reply tap is an inbound
 message. So `running → notified` sends an **approved UTILITY template with a quick-reply
-button**, and the brief is produced only when the merchant taps: `notified → viewed`, or
+button**, and the brief TEXT reaches the merchant only when they tap: `notified → viewed`, or
 `notified → expired` when the reminder allowance runs out.
+
+⚠️ **The brief is GENERATED BEFORE the CTA is sent — the tap only DELIVERS it.** (Corrected
+2026-09-03; this section used to say "produced only when the merchant taps", which contradicted
+the mock-delivery trap below and is wrong.) `agent-task-runner.worker.ts:16-24` dispatches to
+Cadra at **step 4** and sends the CTA at **step 7b**; on tap `on-demand.ts:162-171` **reads
+back** that execution and fails `brief-unavailable` if its output is empty. There is no second
+generation, and `agent-task-runner.worker.ts:54` states it as an invariant with a structural
+test — the runner must NEVER call `deliverOnDemand`.
+
+MEASURED on dev run `8b6b045c` (org 6864): execution completed **21:55:09**, CTA `notified_at`
+**21:55:11**. The brief finished two seconds before the CTA went out, with nothing tapped.
+
+Two consequences, both about money:
+
+- **Every enrolled merchant costs a full LLM run whether or not anyone taps.** A brief nobody
+  reads is written and thrown away — the body is never persisted, only a fingerprint
+  (`agent-task-runner.worker.ts:44`). Cost the fleet on the AUDIENCE, never on expected taps.
+- What starts *after* the tap is the **WhatsApp responder agent** composing its reply. Its
+  `get_daily_brief` call is a FETCH of already-written text, not authoring. Confusing the two
+  agents is what made this section wrong for months.
 
 The adapter implements `notify` + `deliverOnDemand` and deliberately has **no `deliver`** — a
 brief cannot be pushed on this channel even by mistake. The tap answer must land in the SAME
 turn as the `get_daily_brief` tool result, because msg-api's composer distrusts price- and
-percent-shaped text unless a same-turn tool result backs it. Pre-loading the brief silently
-re-breaks that guard.
+percent-shaped text unless a same-turn tool result backs it. Pre-loading the brief into the
+responder's context silently re-breaks that guard — which is why the runner is barred from
+`deliverOnDemand` even though the brief already exists by then.
 
 `get_daily_brief` is **split across two repos**: the handler is yobo
 (`src/server/tools/get-daily-brief.ts`, reached through the single dispatcher
