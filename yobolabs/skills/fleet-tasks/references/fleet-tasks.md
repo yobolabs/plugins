@@ -38,6 +38,12 @@ never re-enable what ops disabled.
 
 ### `agent_task_runs` — the outbox
 
+Since 2026-09-02 the unique index is `(task_id, org_id, run_local_date, run_local_slot)`;
+`run_local_slot` is `'day'` for daily/weekly and the merchant-local `'HH:MM'` slot start for
+`interval` schedules. The scanner writes it from the resolver's due result and emits
+`agent_task.scanner.claimed.slot.<slot>` per tick; reconcile never schedules a reminder or
+`alternative_on_exhaustion` for a slot row.
+
 `unique(task_id, org_id, run_local_date)` is both the idempotency key and the scanner's claim:
 `INSERT … ON CONFLICT DO NOTHING RETURNING id` hands an id to exactly one pod, so exactly one
 pod enqueues. An integration test fires three concurrent claims and asserts one winner.

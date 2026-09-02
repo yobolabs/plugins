@@ -5,7 +5,7 @@
     "email": "hello@yobolabs.ai"
   },
   "metadata": {
-    "description": "Claude Code plugins for YoboLabs apps — landing pages, campaigns, and more",
+    "description": "Claude Code plugins for YoboLabs apps \u2014 landing pages, campaigns, and more",
     "version": "1.8.1",
     "pluginRoot": "./"
   },
@@ -13,7 +13,7 @@
     {
       "name": "crm",
       "source": "./crm",
-      "description": "Update the Yobo CRM directly from Claude Code — create, read, and update companies, deals, leads, people, tasks, notes, custom fields, lifecycles, and GTM campaigns via the REST API",
+      "description": "Update the Yobo CRM directly from Claude Code \u2014 create, read, and update companies, deals, leads, people, tasks, notes, custom fields, lifecycles, and GTM campaigns via the REST API",
       "version": "1.0.1",
       "keywords": [
         "crm",
@@ -36,8 +36,8 @@
     {
       "name": "yobolabs",
       "source": "./yobolabs",
-      "description": "Configure YoboLabs apps from Claude Code, Codex, or CI via their REST APIs — CadraOS agents, roles, skills and tools (with a config auditor), plus Slides landing pages (microsites)",
-      "version": "1.7.0",
+      "description": "Configure YoboLabs apps from Claude Code, Codex, or CI via their REST APIs \u2014 CadraOS agents, roles, skills and tools (with a config auditor), plus Slides landing pages (microsites)",
+      "version": "1.7.1",
       "keywords": [
         "yobolabs",
         "cadra",
@@ -69,7 +69,7 @@
     {
       "name": "content-creation",
       "source": "./content-creation",
-      "description": "Build short-form campaign ads by talking to Claude — one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation",
+      "description": "Build short-form campaign ads by talking to Claude \u2014 one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation",
       "version": "1.2.3",
       "keywords": [
         "capcut",
@@ -97,7 +97,7 @@
     {
       "name": "campaign-wargame",
       "source": "./campaign-wargame",
-      "description": "War-game campaigns before launch — five review roles (researcher, devil's advocate, ripple-effects, opportunity scout, reviewer) stress-test campaign plans, drip flows, segments, offers, and creatives on paper first; plus a simulation mode that trains the team and builds the trap library from past campaigns",
+      "description": "War-game campaigns before launch \u2014 five review roles (researcher, devil's advocate, ripple-effects, opportunity scout, reviewer) stress-test campaign plans, drip flows, segments, offers, and creatives on paper first; plus a simulation mode that trains the team and builds the trap library from past campaigns",
       "version": "1.0.1",
       "keywords": [
         "wargame",
@@ -116,7 +116,7 @@
     {
       "name": "designify",
       "source": "./designify",
-      "description": "Ad-creative craft capability-capture — an agency-model loop (recon, concept directions, human pick, director deepen, adversarial crit, judge gate) that produces craft files with positive AND negative gen-AI prompt guidance, authenticity-first judging, a proof-ladder execute skill over the existing actuators, and blind-replay calibration on real campaign outcomes",
+      "description": "Ad-creative craft capability-capture \u2014 an agency-model loop (recon, concept directions, human pick, director deepen, adversarial crit, judge gate) that produces craft files with positive AND negative gen-AI prompt guidance, authenticity-first judging, a proof-ladder execute skill over the existing actuators, and blind-replay calibration on real campaign outcomes",
       "version": "1.0.1",
       "keywords": [
         "designify",
@@ -135,7 +135,7 @@
     {
       "name": "mockify",
       "source": "./mockify",
-      "description": "App-design (UI/UX) capability-capture — an agency-model loop (ecosystem recon, concept directions with rendered HTML mockups, human pick, director deepen, adversarial crit, usability-first judge gate) that produces buildable design specs + mockups for jetdevs ecosystem apps, with post-implementation grading via screenshot diffs and human verdicts",
+      "description": "App-design (UI/UX) capability-capture \u2014 an agency-model loop (ecosystem recon, concept directions with rendered HTML mockups, human pick, director deepen, adversarial crit, usability-first judge gate) that produces buildable design specs + mockups for jetdevs ecosystem apps, with post-implementation grading via screenshot diffs and human verdicts",
       "version": "1.0.0",
       "keywords": [
         "mockify",
@@ -153,7 +153,7 @@
     {
       "name": "growthify",
       "source": "./growthify",
-      "description": "Generative-first growth framework — turns a metric problem or a design surface into a ranked, evidence-grounded portfolio of growth, gamification, and game-theory mechanics, then deepens the winners into ship-ready experiment designs. The generative sibling to campaign-wargame: externalized lens packs, a role-separated generator, an anti-sycophancy judge gate, and blind calibration. Built for the team — no coding required.",
+      "description": "Generative-first growth framework \u2014 turns a metric problem or a design surface into a ranked, evidence-grounded portfolio of growth, gamification, and game-theory mechanics, then deepens the winners into ship-ready experiment designs. The generative sibling to campaign-wargame: externalized lens packs, a role-separated generator, an anti-sycophancy judge gate, and blind calibration. Built for the team \u2014 no coding required.",
       "version": "1.0.2",
       "keywords": [
         "growth",
@@ -172,7 +172,7 @@
     {
       "name": "spar",
       "source": "./spar",
-      "description": "General-domain sparring partner + war-gaming — steelman-then-assault challenge of ideas, proposals, designs, and goals; fought-on-paper missions for irreversible decisions; per-domain expertise earned via research and compounding domain packs.",
+      "description": "General-domain sparring partner + war-gaming \u2014 steelman-then-assault challenge of ideas, proposals, designs, and goals; fought-on-paper missions for irreversible decisions; per-domain expertise earned via research and compounding domain packs.",
       "version": "0.3.0",
       "keywords": [
         "sparring",
@@ -190,7 +190,7 @@
     {
       "name": "wargame",
       "source": "./wargame",
-      "description": "War-gaming framework that lets any model see around corners — externalized foresight via adversarial agent roles (recon, red-team, cascade, scout, judge), epistemic tagging, order-N consequence + opportunity propagation, trap libraries from real incidents, and Fable-5-direct exemplars as ground truth. Turns plans into fought-on-paper missions any executor model can run.",
+      "description": "War-gaming framework that lets any model see around corners \u2014 externalized foresight via adversarial agent roles (recon, red-team, cascade, scout, judge), epistemic tagging, order-N consequence + opportunity propagation, trap libraries from real incidents, and Fable-5-direct exemplars as ground truth. Turns plans into fought-on-paper missions any executor model can run.",
       "version": "1.1.0",
       "keywords": [
         "wargame",
@@ -211,7 +211,7 @@
     {
       "name": "gtm-lifecycle",
       "source": "./gtm-lifecycle",
-      "description": "End-to-end GTM strategy process — elicit the real situation, draft a positioning brief with falsifiable bets, spar every bet adversarially, war-game the one-way doors, synthesize a challenged strategy. Use for \"gtm\", \"go to market\", \"positioning\", \"find the wedge\", \"launch strategy\", \"who's the buyer\". Depends on the spar plugin (spar:spar + spar:wargame).",
+      "description": "End-to-end GTM strategy process \u2014 elicit the real situation, draft a positioning brief with falsifiable bets, spar every bet adversarially, war-game the one-way doors, synthesize a challenged strategy. Use for \"gtm\", \"go to market\", \"positioning\", \"find the wedge\", \"launch strategy\", \"who's the buyer\". Depends on the spar plugin (spar:spar + spar:wargame).",
       "version": "0.2.0",
       "keywords": [
         "gtm",

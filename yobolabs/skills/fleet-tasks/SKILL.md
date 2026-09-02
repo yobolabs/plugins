@@ -38,6 +38,19 @@ Vercel — a Vercel deploy does not rebuild them.
 Surfaces: `/backoffice/agent-tasks` (ops, gated on `admin:agent_tasks_read` / `_manage`,
 granted to **Super User only** by migration 0269) and `/settings/scheduled-briefs` (merchant).
 
+## Interval schedules (since `9da1d3406`, 2026-09-02)
+
+`schedule.kind` is `daily`, `weekly`, or **`interval` `{everyMinutes ≥15 multipleOf 5, fromHour, toHour (exclusive), dow?}`**. The
+runs idempotency key grew a `run_local_slot` column — `'day'` for daily/weekly, `'HH:MM'` (slot start,
+merchant-local) for interval — so an interval task claims one row per slot per merchant-local day.
+Gate 7 picks the LATEST due slot only, with the catch-up window shrunk to `min(60, everyMinutes)`;
+missed slots are never backfilled. `subscription.send_time_hour` is ignored for interval tasks.
+Preflight FAILs `whatsapp` and any reminder allowance on an interval task (heartbeats are
+`cadra_channel`/`in_app`/`email`/`mock`), and WARNs the monthly-cap arithmetic
+(`slots/day × audience × perRunCostCapUsd × 30`). Editing the schedule of a LIVE task withdraws
+activation (tRPC) / `412 preview_required` (REST) exactly like an audience edit. Spec:
+`_context/yobo-merchant/_specs/p37-fleet-agent-tasks/SPEC-CHANGE-interval-schedule.md`.
+
 ## The JSON field — the single biggest source of confusion
 
 The ops form's one free-text box, **Task input (JSON)**, writes `input_template`. Its Zod type
@@ -241,9 +254,7 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 - **Destination ladder never reads `users.phone`** — subscription `destination.phone` (E.164),
   then `daily_digest_configs.phone_number`. Email falls back to the org's active owner.
   `cadra_channel` has **no** fallback and fails `no-destination`.
-- **`skipDefaultConfig: true`** on the send means the global `org_id IS NULL`
-  `message_phone_numbers` row is not a fallback — each participating org needs its own row
-  carrying the WABA that owns the template.
+- **`skipDefaultConfig: true` does NOT make a missing `message_phone_numbers` row fatal** (CORRECTED 2026-09-01, runbook §1.5): `getOrgWabaConfig` falls back to `sender_label=META_DEFAULT` and the gateway picks its default sender. The real check is that the prod gateway's META_DEFAULT sender sits on the WABA that owns the CTA template.
 - **Mock delivery still costs an LLM run.** The runner dispatches to Cadra *before* delivery;
   `mock` only suppresses the send. Watch `limits.monthlyCostCapUsd` or expect `budget-cap`.
 - **The preview gate is deliberate.** Activate is unavailable until the audience currently in
@@ -254,13 +265,17 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 
 ## Prod procedure
 
-⚠️ **`_context/_runbooks/yobo-fleet-agent-tasks-prod.md` DOES NOT EXIST** (checked 2026-08-31).
-Earlier versions of this skill cited it as written. Do not go looking for it, and do not treat
-its absence as "the procedure is somewhere else" — nobody has written one.
+**The runbook EXISTS: `_context/_runbooks/yobo-fleet-agent-tasks-prod.md`** (written 2026-09-01; earlier skill versions wrongly said it did not). Read it before touching prod — it corrects three things this skill used to get wrong: an org does NOT need its own `message_phone_numbers` row (sends fall through to the gateway's META_DEFAULT sender), the prod worker is a raw `docker run` on the prod merchant box (`hosts.qraved-merchant` in `server-inventory.yaml`), not Coolify, and `AGENT_TASKS_ENABLED` needs a container RECREATE.
 
-Until it is written, prod state is: **nothing is provisioned.** Verified 2026-08-31 as
-`neondb_owner` on prod — 0 definitions, 0 subscriptions, 0 runs, 0 `agent_task:*` flags. Rollback
-needs no code either way, because every gate is data:
+**The REST management API is on prod since `9da1d3406` (2026-09-02)** — `X-Internal-API-Key` with the prod `INTERNAL_API_KEY`, same routes as dev. Before that cut the only prod write paths were the backoffice UI as Super User or SQL as `neondb_owner` with preview + preflight done by hand. `GET /definitions` returns `data.items` (not `definitions`).
+
+**A template approved at Meta must ALSO be registered in the gateway** (`whatsapp_templates`, the sending `client_id`) or every send 500s `failed to get template: record not found` while preflight passes — see `yobo:whatsapp`. The wamid of a sent run is at `payload_snapshot.notifications[0].providerRef`.
+
+**"Every org whose owner has a phone" cannot be an `audience` filter** (keys are org columns only) and the destination ladder never reads `users.phone`. Encode it as audience `all`, `auto_enrol=false`, one enabled subscription per org with `destination.phone` = the owner's E.164 phone. Check `orgs.timezone` on the cohort first — a UTC default makes "07:00 local" fire at 14:00 WIB.
+
+Provisioned 2026-09-01 (inert, `is_active=false`, kill-switch flag false): see `_ai/sessions/2026-09-01-[yobo]-morning-brief-prod-recon.md`.
+
+Rollback needs no code, because every gate is data:
 
 | Scope | Action |
 |---|---|
