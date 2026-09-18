@@ -1,6 +1,6 @@
 ---
 name: fleet-tasks
-description: Use when working on p37 Fleet Agent Tasks — yobo's per-merchant scheduled agent fan-out, where ops says "run this agent for every merchant" and each merchant gets their own run, brief and delivery. Also use when the user mentions "fleet task", "fleet agent task", "agent task", "agent_task_definitions", "agent_task_runs", "agent_task_subscriptions", "daily brief", "morning brief", "scheduled brief", "brief CTA", "AGENT_TASK_CTA", "get_daily_brief", "dev_smoke_brief", "the JSON field" or "Task input (JSON)" on a task, "input_template", "dataGate", "audience preview", "auto_enrol", "agent_tasks" feature flag, "AGENT_TASKS_ENABLED", "task-inactive / feature-disabled / bo-disabled / not-in-audience / snoozed / merchant-disabled / not-due", "skipped_no_data", "skipped_unreliable", "notified / viewed / expired" run states, "template-unresolved", "template-not-approved", "template-category-drift", "132000", "localizable_params", "backoffice/agent-tasks", "settings/scheduled-briefs", "budget-cap", "monthlyCostCapUsd", or Jira YMS-191, "schedule minute", "send_time_hour", "catch-up window", "preflight", "Merchants tab", "enrolment", "can receive", "send mode", "mock gateway", "wamid", "notified but not delivered", or "cost_usd". ALSO use when a fleet task shows no runs at all, or a query on `agent_task_*` returns 0 rows — "no definitions", "no runs", "table is empty", "nothing fired", "feature was never used", "false clean", "RLS", "app_user", "rolbypassrls" — those tables are RLS-gated and the app role reads empty. ALSO use for MANAGING fleet tasks over REST rather than through the ops UI — "manage fleet tasks from the plugin", "fleet task API", "agent-tasks API", "/api/v1/internal/agent-tasks", "internal API key", "X-Internal-API-Key", "INTERNAL_API_KEY", "create a fleet task with curl", "activate a task over REST", "previewToken", "preview token", "audience fingerprint", "AGENT_TASK_PREVIEW_SECRET", "preview_required", "audience-changed", "412", "activation endpoint", "explain skips endpoint", "retry a run", or "why did nobody get it".
+description: Use when working on p37 Fleet Agent Tasks — yobo's per-merchant scheduled agent fan-out, where ops says "run this agent for every merchant" and each merchant gets their own run, brief and delivery. Also use when the user mentions "fleet task", "fleet agent task", "agent task", "agent_task_definitions", "agent_task_runs", "agent_task_subscriptions", "daily brief", "morning brief", "scheduled brief", "brief CTA", "AGENT_TASK_CTA", "get_daily_brief", "dev_smoke_brief", "the JSON field" or "Task input (JSON)" on a task, "input_template", "dataGate", "audience preview", "auto_enrol", "agent_tasks" feature flag, "AGENT_TASKS_ENABLED", "task-inactive / feature-disabled / bo-disabled / not-in-audience / snoozed / merchant-disabled / not-due", "skipped_no_data", "skipped_unreliable", "notified / viewed / expired" run states, "template-unresolved", "template-not-approved", "template-category-drift", "132000", "localizable_params", "backoffice/agent-tasks", "settings/scheduled-briefs", "budget-cap", "monthlyCostCapUsd", or Jira YMS-191, "schedule minute", "send_time_hour", "catch-up window", "preflight", "Merchants tab", "enrolment", "can receive", "send mode", "mock gateway", "wamid", "notified but not delivered", or "cost_usd". ALSO use when a fleet task shows no runs at all, or a query on `agent_task_*` returns 0 rows — "no definitions", "no runs", "table is empty", "nothing fired", "feature was never used", "false clean", "RLS", "app_user", "rolbypassrls" — those tables are RLS-gated and the app role reads empty. ALSO use for MANAGING fleet tasks over REST rather than through the ops UI — "manage fleet tasks from the plugin", "fleet task API", "agent-tasks API", "/api/v1/internal/agent-tasks", "internal API key", "X-Internal-API-Key", "INTERNAL_API_KEY", "create a fleet task with curl", "activate a task over REST", "previewToken", "preview token", "audience fingerprint", "AGENT_TASK_PREVIEW_SECRET", "preview_required", "audience-changed", "412", "activation endpoint", "explain skips endpoint", "retry a run", or "why did nobody get it". ALSO use when a merchant got the brief from the WRONG WhatsApp number or MORE THAN ONCE — "wrong number", "different WABA", "second thread", "platform sender", "platform-notify", "AGENT_TASK_PLATFORM_SENDER", "no_platform_conversation", "duplicate brief", "brief twice", "reminders", "reminderMaxCount".
 ---
 
 # fleet-tasks (p37 Fleet Agent Tasks)
@@ -32,8 +32,8 @@ Three tables, two lanes plus an outbox (`src/db/schema/agent-tasks.ts`):
 
 Workers (`src/server/workers/agent-task-{scanner,runner,reconcile}.worker.ts`): scanner every
 5 min, runner at `limits.concurrency`, reconcile every 30 min. All three gated on
-`AGENT_TASKS_ENABLED=true` and they run in the **`worker-service` container on Coolify**, not
-Vercel — a Vercel deploy does not rebuild them.
+`AGENT_TASKS_ENABLED=true` and they run in the hand-deployed **`worker-service` container** (a raw
+`docker run`, NOT Coolify — corrected 2026-09-18), not Vercel — a Vercel deploy does not rebuild them.
 
 Surfaces: `/backoffice/agent-tasks` (ops, gated on `admin:agent_tasks_read` / `_manage`,
 granted to **Super User only** by migration 0269) and `/settings/scheduled-briefs` (merchant).
@@ -195,6 +195,34 @@ send half works perfectly without it and the merchant taps into silence.
 
 Full detail: `references/fleet-tasks.md`.
 
+## Which number the CTA leaves from — the platform sender
+
+Yobo runs **more than one platform WhatsApp line** (msg-api `channel_connections` with
+`identity_gate IS NOT NULL` — one per region, and more get added). Each merchant talks to the
+agent on ONE of them. The CTA must leave on that same line: the tap reply follows the CTA's
+line, so a CTA on another line opens a **second thread** with the agent.
+
+| `AGENT_TASK_PLATFORM_SENDER` | Sender | Result |
+|---|---|---|
+| `true` (**prod since 2026-09-18**) | `platformSender` (`src/lib/msg-api/platform-notify.ts`) → msg-api `POST /api/v1/platform-notify` → the line the merchant has spoken on most | right line. No platform conversation → refused `no_platform_conversation`, run `failed`, no brief — by design, never a fallback |
+| anything else | `defaultSender` → `resolveYoboSender()` → the ONE `message_phone_numbers` row with `org_id IS NULL` and category `DAILY_DIGEST` | every merchant on that one line |
+
+The flag is read in **two** places: the worker (it sends) and Vercel (preflight only,
+`preflight.ts:549`). Set both, or preflight grades a path the sender does not take.
+
+⚠️ **The fix sat behind this flag, off, for 15 days.** Built 2026-09-03, flipped on the prod
+worker 2026-09-18. Measured before the flip: all 191 CTAs in 8 days left from one WABA, and 62 of
+71 recipients belonged on another line. Nothing errors — Meta delivers, the run reads `notified`,
+the gateway says `READ`. The only symptom is a second thread on the merchant's phone. **Answer
+"which number did they get it from" in the gateway by wamid (`waba_id`), never in yobo.**
+
+⚠️ **A new platform line needs the CTA template on ITS WABA.** Approved at Meta on that WABA
+**and** registered in the gateway for client `msg-api` (registration is per `client_id` +
+`waba_id`, with a per-WABA `language`). Otherwise every merchant who resolves to that line
+fails `failed to get template: record not found`.
+
+Resolver predicates and the proof recipe: `references/fleet-tasks.md` → "WABA resolution".
+
 ## Where the brief is stored
 
 | Store | Org-scoped | Holds the text |
@@ -290,7 +318,22 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
   20 users). **It costs nothing**: destination resolves BEFORE dispatch, so these runs carry 0 Cadra
   executions and $0.00 (measured 2026-09-18 prod: 161 such runs, 0 executions, $0). The reset tool's
   source is NOT in the polyrepo, so its behaviour can only be read off `audit_logs`.
-- **`skipDefaultConfig: true` does NOT make a missing `message_phone_numbers` row fatal** (CORRECTED 2026-09-01, runbook §1.5): `getOrgWabaConfig` falls back to `sender_label=META_DEFAULT` and the gateway picks its default sender. The real check is that the prod gateway's META_DEFAULT sender sits on the WABA that owns the CTA template.
+- **The merchant's own `message_phone_numbers` row is NEVER read on this path** (CORRECTED
+  2026-09-18; the older `skipDefaultConfig` / `META_DEFAULT` note described a lookup the adapter
+  no longer makes). The merchant is only a recipient. The sender is either msg-api's line
+  resolution or Yobo's own `org_id IS NULL` `DAILY_DIGEST` row — see "Which number the CTA
+  leaves from".
+- **"Got the brief twice" — check DEV before prod.** Prod cannot double-send one task to one
+  org: `agent_task_runs` is UNIQUE on `(task, org, run_local_date, run_local_slot)`. A real
+  duplicate needs two active definitions, two orgs whose owner shares a phone (ladder rung 3),
+  or reminders. Measured 2026-09-18: prod sent ≤1 CTA per person per day, while the **dev**
+  gateway sent 110 real (`is_mock=0`) CTAs from the dev WABA to 9 whitelisted prod recipients —
+  7 active dev test definitions plus dev reminders. Map runs to people by decoding the wamid
+  (recipient MSISDN is in it), not by joining phone columns.
+- **Reminders on a DAILY task stack with the next day's CTA.** Defaults are
+  `reminderMaxCount 3`, `reminderIntervalHours 24` — so day N's reminder lands in the same hour
+  as day N+1's CTA (dev org 6912: 3 CTAs in one hour). Nothing supersedes an older run's
+  reminders. Set `reminderMaxCount: 0` on daily tasks; prod `morning_brief` has 0.
 - **Mock delivery still costs an LLM run.** The runner dispatches to Cadra *before* delivery;
   `mock` only suppresses the send. Watch `limits.monthlyCostCapUsd` or expect `budget-cap`.
 - **The preview gate is deliberate.** Activate is unavailable until the audience currently in
@@ -301,7 +344,7 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 
 ## Prod procedure
 
-**The runbook EXISTS: `_context/_runbooks/yobo-fleet-agent-tasks-prod.md`** (written 2026-09-01; earlier skill versions wrongly said it did not). Read it before touching prod — it corrects three things this skill used to get wrong: an org does NOT need its own `message_phone_numbers` row (sends fall through to the gateway's META_DEFAULT sender), the prod worker is a raw `docker run` on the prod merchant box (`hosts.qraved-merchant` in `server-inventory.yaml`), not Coolify, and `AGENT_TASKS_ENABLED` needs a container RECREATE.
+**The runbook EXISTS: `_context/_runbooks/yobo-fleet-agent-tasks-prod.md`** (written 2026-09-01; earlier skill versions wrongly said it did not). Read it before touching prod — it corrects three things this skill used to get wrong: an org does NOT need its own `message_phone_numbers` row (the merchant's row is never read — see "Which number the CTA leaves from"), the prod worker is a raw `docker run` on the prod merchant box (`hosts.qraved-merchant` in `server-inventory.yaml`), not Coolify, and `AGENT_TASKS_ENABLED` needs a container RECREATE.
 
 **The REST management API is on prod since `9da1d3406` (2026-09-02)** — `X-Internal-API-Key` with the prod `INTERNAL_API_KEY`, same routes as dev. Before that cut the only prod write paths were the backoffice UI as Super User or SQL as `neondb_owner` with preview + preflight done by hand. `GET /definitions` returns `data.items` (not `definitions`).
 
@@ -319,7 +362,19 @@ Rollback needs no code, because every gate is data:
 | One merchant | `bo_disabled = true` on their subscription (gate 3) |
 | A cohort | narrow the `audience` filter (gate 4) |
 
-Before any prod flip, check the two halves that ship separately and fail silently: a CTA template
-`APPROVED` on the **prod** WABA (a dev approval does not carry over), and each participating org's
-own `message_phone_numbers` row — `sendTemplateMessage` passes `skipDefaultConfig: true`, so the
-global `org_id IS NULL` row is not a fallback.
+Before any prod flip, check the halves that ship separately and fail silently (CORRECTED
+2026-09-18 — this used to demand each org's own `message_phone_numbers` row, which is never read):
+
+- the CTA template `APPROVED` on the **prod** WABA of **every** platform line (a dev approval does
+  not carry over) and registered in the gateway for the sending client;
+- `AGENT_TASK_PLATFORM_SENDER=true` on the prod worker **and** Vercel prod;
+- `reminderMaxCount: 0` on any daily or interval task.
+
+**Changing ONE worker env var: recreate from the RUNNING container's env, not the file.**
+`deploy-worker-v2.sh` recreates from `.env.production`, and that file collects other people's
+staged, never-activated edits (2026-09-18: a teammate's feature flag sat in it, absent from the
+container). A file-based recreate activates all of them as a side effect. Dump
+`docker inspect worker-service --format '{{range .Config.Env}}{{println .}}{{end}}'`, change the
+one line, `docker run` with the same image, binds, network and restart policy, then swap names —
+keep the old container stopped for rollback. Update the file too, so the next deploy keeps it.
+A var that looks container-only may just have a leading space in the file (Docker trims it).

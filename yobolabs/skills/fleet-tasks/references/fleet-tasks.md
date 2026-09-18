@@ -109,10 +109,18 @@ never-delivering is invisible.
 `concurrency` 10 · `monthlyCostCapUsd` 500 · `perRunCostCapUsd` 0.50 · `runTimeoutMinutes` 30
 · `reminderMaxCount` 3 · `reminderIntervalHours` 24.
 
-Both reminder fields are `min(1)`, not `nonnegative()`. `reminderMaxCount: 0` would express
-"notify but never remind", which is already how a task with nothing reminding it behaves —
-two configurations meaning one thing, one of which reads as "disabled". `reminderIntervalHours:
-0` would let the 30-minute reconcile tick burn a merchant's whole allowance inside 90 minutes.
+`reminderIntervalHours` is `min(1)`: `0` would let the 30-minute reconcile tick burn a
+merchant's whole allowance inside 90 minutes.
+
+`reminderMaxCount` is **`min(0)`** (CORRECTED 2026-09-18 — this section said `min(1)`; the code
+changed in `d337ff71c`, see the comment at `src/db/schema/agent-tasks.ts:291`). `0` means
+"notify once, never re-send, expire when the interval elapses". It became necessary because an
+interval task MUST carry `0` (slot N's reminder would land on slot N+1's brief) and preflight
+FAILs it otherwise.
+
+⚠️ **The default `3` is wrong for a DAILY task, for the same reason.** With a 24h interval, day
+N's reminder lands in the same hour as day N+1's CTA, and day N-1's second reminder can land
+there too. See "Reminders". Set `0` on every daily task; prod `morning_brief` carries `0`.
 
 ---
 
@@ -281,17 +289,61 @@ input's org to agree, and a mismatch would WhatsApp one merchant on another merc
 
 ### WABA resolution
 
-`sendTemplateMessage` calls `getOrgWabaConfig(orgId, {skipDefaultConfig: true})`, backed by
-`message_phone_numbers`.
+(REWRITTEN 2026-09-18. This section used to say the adapter calls
+`getOrgWabaConfig(orgId, {skipDefaultConfig: true})` on the MERCHANT's org. It no longer does —
+that looked up the recipient's own sending config to decide who a Yobo message came from, a
+category error that survived only because every merchant row carried `META_DEFAULT`.)
 
-⚠️ **The "no platform fallback" reading of that flag is WRONG for this path, measured
-2026-09-01.** Two dev orgs with **zero** `message_phone_numbers` rows of their own both sent
-successfully, using the active `org_id IS NULL` `META_DEFAULT` row. Do not use "has no
-`message_phone_numbers` row" as a can-this-org-receive test — it produces false negatives, and
-a back-office column was shipped encoding exactly that wrong rule.
+A fleet task is Yobo messaging a merchant, so the merchant is **only a recipient** and their
+`message_phone_numbers` row is never read. The sender is picked by `whatsapp.adapter.ts:994`:
 
-`message_phone_numbers` is the **SENDER** — the WABA number a message goes FROM. It carries
-`waba_id`, `provider`, `category`. It is never a recipient. Recipients come only from the
+```ts
+const send = this.deps.sendTemplate ?? (isPlatformSenderEnabled() ? platformSender : defaultSender);
+```
+
+| Path | When | Picks the line from |
+|---|---|---|
+| `platformSender` (`src/lib/msg-api/platform-notify.ts`) | `AGENT_TASK_PLATFORM_SENDER=true` — **prod since 2026-09-18**, dev since 2026-09-03 | msg-api `POST /api/v1/platform-notify` (`X-Service-Secret` + `X-Org-Id` = the msg-api org owning the platform connections, env `MSG_API_URL` / `MSG_API_SERVICE_SECRET` / `MSG_API_PLATFORM_ORG_ID`). Fails LOUD if any is unset — never falls back |
+| `defaultSender` → `resolveYoboSender()` (`:787`) | flag unset / anything but `true` | the lowest-id active `message_phone_numbers` row with `org_id IS NULL` and category `LIKE '%DAILY_DIGEST%'`, read privileged (the app role cannot see `org_id IS NULL` rows). One line for every merchant |
+
+**msg-api's resolver** — `ConversationRepository.findPlatformConnectionForTenantOrg`
+(msg-api `src/repositories/conversation.repository.ts:1468`). Four predicates, each forced by a
+measurement:
+
+1. `channel_connections.identity_gate IS NOT NULL` — platform lines only. NULL is a merchant's
+   OWN (B2B2C) number, which must never carry a Yobo→merchant brief.
+2. the recipient phone matched against `contact_identities` (bare digits both sides) — several
+   orgs have more than one platform conversation, one per staff member.
+3. `last_inbound_at IS NOT NULL` — "the line they last SPOKE on"; an outbound nobody answered
+   proves nothing.
+4. rank by **inbound message volume**, then recency, then connection id. Recency alone latches
+   onto a mistake: one tap on a wrongly-sent CTA becomes the newest inbound on the wrong line.
+
+No match → `no_platform_conversation` → the adapter throws → run `failed`. Deliberate: a
+fallback that always has an answer is the defect this path removed. Idempotency key
+`agent-task:<runId>:a<attempt>` (the attempt is in it so reminders are not treated as replays).
+The template parameter clamp stays in yobo — msg-api cannot read the gateway's template registry.
+
+**Proving which line a send used — the gateway, never yobo.** yobo stores only the wamid
+(`payload_snapshot.notifications[].providerRef`). The gateway's `whatsapp_messages` row for that
+`provider_message_id` has `client_id` (`msg-api` on the platform path, `yobo-cms-merchant` on the
+legacy path) and `waba_id`. The worker also logs `agent_task.delivery.whatsapp.platform_sent`
+with `connectionUuid`, `conversationUuid`, `wabaId`.
+
+**Simulate the resolver before a flip** by running its CTE read-only on the msg-api DB over the
+cohort's `(org, recipient phone)` pairs (recipient decoded from each run's wamid — see
+"Diagnosing"). Measured 2026-09-18 over 71 prod recipients: 62 → one line, 8 → another, 1 → none.
+
+⚠️ **Every platform line needs the CTA template.** Registration in the gateway's
+`whatsapp_templates` is per (`client_id`, `waba_id`) with a per-WABA `language`. A line added
+after the template was registered has no row, and merchants resolved there fail
+`failed to get template: record not found` while preflight passes (preflight cannot see the
+gateway). Check: `SELECT client_id, waba_id, language, status FROM whatsapp_templates WHERE name = '<cta>'`
+against the list of identity-gated WhatsApp connections.
+
+⚠️ **Do not use "has no `message_phone_numbers` row" as a can-this-org-receive test** (measured
+2026-09-01) — it produces false negatives, and a back-office column was once shipped encoding
+exactly that rule. `message_phone_numbers` is a SENDER table. Recipients come only from the
 destination ladder above.
 
 ### Reminders
@@ -302,6 +354,20 @@ on a successful send** (`recordReminderSent`, which never calls `machine.execute
 reminder is not a transition), so a failing transport cannot burn a merchant's allowance.
 `notified → expired` fires on `reminder-threshold-exhausted`, or on `ops-gate-closed` with no
 send at all.
+
+**What they are for:** re-knocking a merchant who has not tapped, while the brief is still
+worth reading. That only holds when nothing newer replaces the brief within the interval — a
+weekly task, say. Each reminder is a paid template send (it goes outside the 24h window by
+definition).
+
+⚠️ **Reminders are per run and nothing supersedes them.** When day N+1's run notifies, day N's
+and N-1's runs are still `notified` and keep their own schedules. With the defaults (`3`, 24h)
+on a daily task they fire on the same reconcile tick as the new CTA. Measured on dev org 6912,
+2026-09-18: today's CTA 23:03Z, yesterday's reminder #1 23:30Z, the day before's reminder #2
+00:00Z — three identical CTAs in one hour, reported by users as "the brief came three times".
+Fix used: `reminderMaxCount: 0` on daily tasks. A code fix (a newer run expires older `notified`
+runs of the same task + org) is not built. YMS-230 separately limits reminders to Meta's 72h
+Free Entry Point window.
 
 ---
 
@@ -448,6 +514,21 @@ Use `ADMIN_DATABASE_URL` or `DATABASE_MIGRATE_URL`. The env→host mapping, and 
 | definition exists, **0 run rows** | gate 1–7 blocked it before the claim | nowhere on disk; scanner's in-memory `result.skips` only |
 | run rows, all `cancelled`/`budget-cap` | `limits.monthlyCostCapUsd` reached this calendar month | `sum(cost_usd)` for the month |
 | run rows `notified`, never `viewed` | merchant never tapped, or the template never arrived | `whatsapp_template.status` / `.category` |
+| merchant got it from a **number they don't chat on** | legacy sender in use — `AGENT_TASK_PLATFORM_SENDER` not `true` on the worker | gateway `whatsapp_messages.waba_id` / `client_id` by wamid; `printenv` inside the worker |
+| merchant got it **more than once a day** | reminders stacking, two active definitions, two orgs sharing an owner phone — or **dev** | see below |
+
+**"Got it twice" recipe** (measured 2026-09-18 — the answer was dev, not prod):
+
+1. Map runs to people without touching PII columns: the recipient MSISDN is inside the wamid.
+   `base64decode(wamid[6:])` → byte `[2]` is the length, bytes `[3:3+len]` are the digits.
+2. Per (phone, local day), count CTAs across ALL definitions from the runs' `notifications[]`
+   (both `cta` and `reminder` kinds).
+3. Query the **dev** gateway for `is_mock = 0` sends to the same phones. The dev gateway mocks
+   only recipients absent from its `phone_whitelist`, so a whitelisted merchant gets real dev
+   briefs from the dev WABA on top of prod's.
+4. Gateway recipient formats differ by client: template sends via `yobo-cms-merchant` store
+   `+E164`, msg-api session sends store bare digits. Normalise with
+   `replace(recipient_phone_number, '+', '')` or one person looks like two.
 
 **A gate skip still leaves no run row** — gates run before `claimRuns`, so
 `task-inactive`, `bo-disabled`, `not-in-audience`, `snoozed`, `merchant-disabled` and `not-due`
