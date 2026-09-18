@@ -272,9 +272,24 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
   recategorised later with no notification; sends keep "succeeding" and merchants stop
   receiving. msg-api's watcher is unreachable for a yobo-submitted template, so the adapter
   checks `whatsapp_template.category` itself on every send.
-- **Destination ladder never reads `users.phone`** — subscription `destination.phone` (E.164),
-  then `daily_digest_configs.phone_number`. Email falls back to the org's active owner.
+- **Destination ladder has THREE rungs, and rung 3 IS `users.phone`** (CORRECTED 2026-09-18; this
+  entry used to say the ladder never reads it, which sent a live investigation down the wrong path).
+  `whatsapp.adapter.ts:672-726`: (1) subscription `destination.phone` (E.164), (2)
+  `daily_digest_configs.phone_number`, (3) the org's **ACTIVE OWNER's `users.phone`** via
+  `resolveOwnerPhone` (`:650`, predicate `role='owner' AND status='active'`). Rung 3 is a deliberate
+  deviation from implementation.md §5, decided by Sean 2026-09-01 with the WABA quality-rating
+  tradeoff in front of him and narrowed to `owner` — the reasoning is in a comment at `:625-648`,
+  so read it before "restoring" the two-rung version. Email falls back to the org's active owner.
   `cadra_channel` has **no** fallback and fails `no-destination`.
+- **`skipped_no_destination` is usually the TEST-ACCOUNT RESET, not a bug.** A recurring prod
+  `WHATSAPP_TEST_ACCOUNT_RESET` deliberately strips test accounts' phones so WhatsApp onboarding can
+  be retested clean (Sean, 2026-09-18). It nulls `users.phone`, sets `org_members.status='removed'`,
+  and on newer runs also sets `agent_task_subscriptions.enabled=false` + `bo_disabled=true` — so it
+  empties rung 3's BOTH halves at once and the org goes dark silently. Check `audit_logs` for
+  `WHATSAPP_TEST_ACCOUNT_RESET` near the date before investigating (2026-09-16 id 249/250 = 17 orgs,
+  20 users). **It costs nothing**: destination resolves BEFORE dispatch, so these runs carry 0 Cadra
+  executions and $0.00 (measured 2026-09-18 prod: 161 such runs, 0 executions, $0). The reset tool's
+  source is NOT in the polyrepo, so its behaviour can only be read off `audit_logs`.
 - **`skipDefaultConfig: true` does NOT make a missing `message_phone_numbers` row fatal** (CORRECTED 2026-09-01, runbook §1.5): `getOrgWabaConfig` falls back to `sender_label=META_DEFAULT` and the gateway picks its default sender. The real check is that the prod gateway's META_DEFAULT sender sits on the WABA that owns the CTA template.
 - **Mock delivery still costs an LLM run.** The runner dispatches to Cadra *before* delivery;
   `mock` only suppresses the send. Watch `limits.monthlyCostCapUsd` or expect `budget-cap`.
@@ -292,7 +307,7 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 
 **A template approved at Meta must ALSO be registered in the gateway** (`whatsapp_templates`, the sending `client_id`) or every send 500s `failed to get template: record not found` while preflight passes — see `yobo:whatsapp`. The wamid of a sent run is at `payload_snapshot.notifications[0].providerRef`.
 
-**"Every org whose owner has a phone" cannot be an `audience` filter** (keys are org columns only) and the destination ladder never reads `users.phone`. Encode it as audience `all`, `auto_enrol=false`, one enabled subscription per org with `destination.phone` = the owner's E.164 phone. Check `orgs.timezone` on the cohort first — a UTC default makes "07:00 local" fire at 14:00 WIB.
+**"Every org whose owner has a phone" cannot be an `audience` filter** (keys are org columns only). The ladder DOES reach the active owner's `users.phone` at rung 3 (see Traps), but relying on it is fragile — the test-account reset empties it, and a membership that leaves `active` silently kills delivery. For a cohort you want to stay reachable, pin rung 1: audience `all`, `auto_enrol=false`, one enabled subscription per org with `destination.phone` = the owner's E.164 phone. Check `orgs.timezone` on the cohort first — a UTC default makes "07:00 local" fire at 14:00 WIB.
 
 Provisioned 2026-09-01 (inert, `is_active=false`, kill-switch flag false): see `_ai/sessions/2026-09-01-[yobo]-morning-brief-prod-recon.md`.
 
