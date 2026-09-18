@@ -211,7 +211,30 @@ Permissions: `knowledgeBase:*`.
 | `vectorDB` | ✅ | string (e.g. `pgvector`) |
 | `description` | | string ≤1000 |
 
-Extra ops: `GET /{id}/documents`, `POST /{id}/query`.
+Extra ops: `GET /{id}/documents`, `POST /{id}/query`, `POST /{id}/documents` (upload).
+
+**Upload — `POST /{id}/documents`, `multipart/form-data`, one file per request.**
+`cadra kb upload` drives it; see SKILL.md → *Knowledge bases*.
+
+| Field | Req | Value |
+|---|---|---|
+| `file` | ✅ | the document; its filename is the document name. Text formats only (`md txt csv json jsonl yaml yml log`), ≤ 4 MiB; body ≤ 4 MiB + 64 KiB |
+| `source_path` | | relative display path, e.g. `docs/guide.md`; defaults to the filename |
+| `archived` | | `"true"` \| `"false"`; omitted = format default (AI session transcripts archive), or the current value on a replace |
+| `documentUuid` | | replace that document instead of adding one |
+
+- Permission: `knowledgeBase:update` on the key, **and** the key's creator must be an
+  active member of the org with `knowledgeBase:update` (rechecked per request). A key with
+  no creator → `403 {"error":"api_key_has_no_owner"}`.
+- `202 {"success":true,"data":{"documentUuid","generation","status":"queued"}}`.
+- Upload errors are **flat** — `{"error":"<code>"}`: `invalid_input` 400,
+  `permission_denied` 403, `scoped_not_found` 404, `embedding_stamp_mismatch` 409,
+  `size_limit` 413, `unsupported_content` / `credential_detected` / `source_untrusted` 422,
+  `service_updating` / `provider_unavailable` / `dependency_unavailable` 503. The key gates
+  before it (401 bad key, 403 missing `knowledgeBase:update`, 422 malformed kb uuid, 429)
+  use the usual `{"success":false,"error":{"code",…}}` shape.
+- A JSON body still reaches the pre-p76 contract (pre-uploaded S3 paths), which the
+  server refuses with `use_finalize` once the p76 schema exists — do not use it.
 
 ---
 

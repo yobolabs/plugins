@@ -1,6 +1,6 @@
 ---
 name: configure-cadra
-description: Use when creating, updating, or managing CadraOS building blocks through the REST API — agents, roles, skills, tools, teams, agentic boards, knowledge bases, prompts, guardrails, models, providers, rules, projects, workflows or channels. Also use when the user mentions "cadra agent", "create an agent", "update an agent", "agent role", "role template", "cadra skill", "cadra tool", "register a tool", "MCP tool", "agent team", "deploy agent", "cadra board", "agentic board", "publish board", "knowledge base", "guardrail profile", "fleet task", "fleet agent task", "daily brief", "scheduled brief", "get_daily_brief", "agent is not deployed", "set-tools", or a `/api/v1/...` CadraOS path.
+description: Use when creating, updating, or managing CadraOS building blocks through the REST API — agents, roles, skills, tools, teams, agentic boards, knowledge bases, prompts, guardrails, models, providers, rules, projects, workflows or channels. Also use when the user mentions "cadra agent", "create an agent", "update an agent", "agent role", "role template", "cadra skill", "cadra tool", "register a tool", "MCP tool", "agent team", "deploy agent", "cadra board", "agentic board", "publish board", "knowledge base", "kb upload", "upload documents to a knowledge base", "guardrail profile", "fleet task", "fleet agent task", "daily brief", "scheduled brief", "get_daily_brief", "agent is not deployed", "set-tools", or a `/api/v1/...` CadraOS path.
 ---
 
 # Configure CadraOS (agents, roles, skills, tools, teams, boards, KBs)
@@ -99,8 +99,9 @@ cadra agent set-tools  <id> '{"tools":[{"toolId":6387}]}'    # REPLACES
 cadra agent set-skills <id> '{"skills":[{"skillId":12}]}'    # REPLACES
 cadra board draft <id> <json|@file> | publish <id>
 cadra kb    docs <id> | query <id> <json|@file>
+cadra kb    upload <kbUuid|name> <file|dir>... [--archived] [--replace <documentUuid>]
 
---dry-run    print the request, send nothing
+--dry-run    print the request (or the upload plan), send nothing
 --quiet      suppress the per-record apply log
 ```
 
@@ -197,6 +198,49 @@ cadra tool create '{
 `implementation` is `API | MCP | WEBHOOK`. Multi-endpoint tools, MCP servers,
 credential binding, and the `viewPath` link-enrichment contract are all in
 `references/tool-authoring.md`.
+
+## Knowledge bases
+
+`cadra kb upload` is how documents get into a KB from outside the app. The KB MCP
+endpoint is **read-only by design** — it searches and reads, it never uploads.
+
+```bash
+cadra kb upload "Team Docs" docs/                          # a folder → docs/a.md, docs/sub/b.md …
+cadra kb upload <kbUuid> notes.md                          # one file → source_path notes.md
+cadra kb upload <kbUuid> notes.md --replace <documentUuid> # new version of one document
+cadra kb upload <kbUuid> docs/ --archived                  # keep out of default search
+cadra kb upload <kbUuid> docs/ --dry-run                   # print the plan, send nothing
+cadra kb docs <kbUuid>                                     # status: queued → ready
+```
+
+- **Text only:** `md txt csv json jsonl yaml yml log`, ≤ 4 MiB each. Anything else,
+  hidden entries and `node_modules` are skipped with a one-line note.
+- **Paths:** a folder is walked name-sorted and each file's `source_path` is relative
+  to the folder's **parent** — the same path the app's folder drop records. A lone
+  file uses its base name.
+- **Output:** 4 uploads at a time, one line per file — `✓ path → documentUuid` or
+  `✗ path → error_code (status)` — and exit 1 if any file failed.
+- **Archive:** without `--archived` the server decides (AI session transcripts are
+  archived, everything else is searchable); `--replace` keeps the document's setting.
+- The KB argument is a uuid or a name (resolved like `cadra kb find`; an exact name
+  wins, an ambiguous one refuses).
+
+**Who can upload.** The key needs `knowledgeBase:update` **and** the key's creator must
+still be an active member of the org holding `knowledgeBase:update` — rechecked on every
+file, so a key never does more than the person who minted it. A system-provisioned key
+(no creator) gets `403 api_key_has_no_owner`; a creator without the grant gets
+`403 permission_denied`.
+
+Upload queues ingestion; the document is searchable once `cadra kb docs` shows it
+`ready`. Other codes: `scoped_not_found` (KB or `--replace` document not in the key's
+org), `size_limit` (413), `credential_detected` (422, the file looks like it holds a
+secret), `embedding_stamp_mismatch` (409), `service_updating` / `dependency_unavailable`
+(503, retry).
+
+**Server requirement.** The multipart upload on `POST /api/v1/knowledge-bases/{id}/documents`
+is newer than the rest of the API. An origin without it answers the CLI with
+`INSUFFICIENT_PERMISSIONS` (asking for `knowledgeBase:document_upload`) or
+`INTERNAL_ERROR`; the CLI says so.
 
 ## Fleet tasks (yobo p37) — the Cadra half
 
