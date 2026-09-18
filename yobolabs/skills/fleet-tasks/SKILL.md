@@ -228,7 +228,7 @@ Resolver predicates and the proof recipe: `references/fleet-tasks.md` → "WABA 
 | Store | Org-scoped | Holds the text |
 |---|---|---|
 | `agent_task_runs.payload_snapshot` | yes | **no** — delivery facts + `bodyHash`/`bodyLength` + masked destination |
-| `agent_task_notifications` (`in_app` only) | yes, RLS | yes, sanitized markdown |
+| `agent_task_notifications` (`in_app` only) | yes, RLS | yes, sanitized markdown — but **nothing merchant-facing READS it** (only the internal test-account-cleanup daily report). `in_app` was removed from the merchant settings dropdown 2026-09-18; measured 0 subs, 0 runs, 0 rows on prod. Choosing it silently delivers nothing |
 | Cadra `agent_executions.output` | by `tenantOrgId` | yes — the only copy for WhatsApp/email/cadra_channel |
 
 The snapshot deliberately excludes the body: "the delivered body" and "MUST NOT contain
@@ -341,6 +341,37 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
   previewing twelve merchants, widening, and activating against four thousand paid runs.
 - **A template approved on the dev WABA does not exist on prod.** Different WABA, separate Meta
   submission and approval.
+- **The fabrication gate kills a brief when a p78 READER call fails, even one the model retried.**
+  `fabrication-gate.ts` suppresses on any `success === false`, and p78's `read_result` /
+  `search_result` introduced a recoverable failure class: the model writes one malformed call
+  (`bad_args`, empty `resultId`), the tool refuses, and it retries correctly a second later. Fixed
+  2026-09-18 — the exemption is narrow on three axes (reader tool **AND** one of four recoverable
+  error codes `bad_args`/`bad_query`/`bad_pattern`/`too_large` **AND** a successful reader result at
+  a LATER index). An unknown code fails closed. Do not widen it to "any reader failure": `evicted`,
+  `expired`, `unknown` and `query_timeout` are per-handle, so exempting them ships a brief with half
+  its data invented.
+- **`retry` used to be INERT — fixed 2026-09-18.** It moved the run `failed → pending` and enqueued
+  nothing; the scanner only claims runs whose slot is DUE, and a retried run's slot is in the past,
+  so the reconcile worker failed it again ~2 h later while the operator saw "retry succeeded". It
+  now enqueues on the scanner's own queue with `jobId = runId` (dedup; a uuid has no colon, and a
+  colon makes BullMQ drop the job silently) behind a **5 s deadline** — the shared ioredis client
+  uses `maxRetriesPerRequest: null`, so `queue.add` **hangs rather than throws** during a Redis
+  outage and a bare `await` never reaches its catch. On failure the run is rolled back to `failed`
+  with reason `retry-enqueue-failed` and logs `agent_task.retry.enqueue_failed`.
+- **A deliverable number is not an OPENABLE one.** The send side resolves a phone through the
+  destination ladder; the TAP resolves the acting org from that phone's chat identity. They can
+  disagree — a CTA lands on a handset that answers as a different org and `get_daily_brief` returns
+  `BRIEF_NOT_FOUND`, with the run stuck at `notified`, preflight passed and the gateway reporting
+  READ. Guarded since 2026-09-18 at the destination gate (before dispatch, so a mismatch costs no
+  brief). The check compares the run's org against the number's **ACTIVE MEMBERSHIPS** — never
+  `resolveChatIdentity`'s `orgId`, which may be `users.currentOrgId`, mutable web-session state that
+  changes when an owner switches org in the browser.
+- **The internal REST API answered 400 for server faults, and could 400 AFTER writing the row.**
+  Until 2026-09-18 every route funnelled its catch into `code:'invalid'` → 400, so `POST
+  /definitions` could create the definition and still report failure; the operator retries, the
+  `key` now collides, and the first failure is unreproducible. Unexpected throws are now **500
+  `internal`**, dependency failures **503 `unavailable`**. If you are reading older transcripts, a
+  400 from these routes does NOT prove the request was malformed.
 
 ## Prod procedure
 
