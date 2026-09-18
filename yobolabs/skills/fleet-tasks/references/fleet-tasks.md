@@ -160,6 +160,64 @@ pulled. Merging them would put paid-for runs in the bucket cost rollups treat as
 
 Terminal: `delivered` `viewed` `expired` `cancelled` `skipped_no_data` `skipped_unreliable`.
 
+### Never lose a brief (YMS-191, prod 2026-09-18)
+
+`failed` is NOT terminal. Three guarded edges revive a run whose brief already exists — no new LLM
+run, the body is read back from the run's own Cadra execution:
+
+| Edge | Reason | Guard |
+|---|---|---|
+| `failed → running` | `finish-late` (was `timeout-swept`), `resend` (was `send-error` / `send-unconfirmed` / `resend-stale`) | the run's OWN execution is `completed` |
+| `failed → viewed` | `brief-pulled` (a merchant tap) | failure is tap-recoverable (below) AND own execution completed |
+| `running → cancelled` | `disabled-between-enqueue-and-run` | only an ops kill |
+
+Guards read the failure off the **locked row** in `transitionRun` (`fromStatusReason`,
+`fromErrorMessage`, `fromSendFailureDefinitive`), never from the caller.
+
+**Reconciler** (every 30 min): pass 2 finishes stranded/late runs; pass 2b re-sends
+`failed/send-error` rows **automatically only when** the attempt was a definitive rejection OR
+both the recorded and the current transport replay the run's key — up to
+`MAX_DELIVERY_ATTEMPTS = 3` in total, within `RESEND_WINDOW_HOURS = 24`, never behind a closed
+ops gate / `agent_tasks` flag / audience (gates 1, 3, 4, 5, 6 pre-checked — counted
+`resendGateClosed`), never after the run's merchant-local day (`resend-stale`). Ambiguous
+failures on a keyless transport (email, `cadra_channel`, WhatsApp without the platform sender)
+stay failed and are counted `resendAmbiguous`.
+
+**Facts each attempt records** on `payload_snapshot`: `sendFailure {definitive, replaySafe}` (a
+THROW is never definitive), `automaticResend` (so a pass-2 re-claim still meets the stale check),
+and a `sendInFlight` marker written by a compare-and-set on the lease immediately before the
+transport call — a stalled worker that loses it stands down instead of sending.
+
+**One idempotency key per run + reminder**: `agent-task:<run>:a<n>`, reused by every attempt. A
+per-attempt key turned an ambiguous failure (msg-api sent, yobo saw a network error) into a double
+CTA and was reverted. The key is safe because msg-api (`platform-notify`) answers a reused key by
+state:
+
+| msg-api claim state | Answer | yobo records |
+|---|---|---|
+| completed (has provider id) | `replayed` + original wamid | `notified` — no second CTA |
+| released (gateway gave an HTTP error, msg-api ≥ `240f51df`) | sends again | normal |
+| held (timeout / 2xx without id / throw) | `send_in_flight` | `failed/send-unconfirmed` — "the CTA may have been delivered" |
+
+⚠️ msg-api's **first** answer on a held claim is `gateway_rejected`, not `send_in_flight`, so an
+ambiguous attempt first lands as `send-error` with `sendFailure.definitive = false`.
+
+**Tap-recoverable failures** (`isTapRecoverableFailure`): `send-unconfirmed`, a `send-error`
+naming `send_in_flight`, or a `send-error` with `definitive === false`. The tap proves the CTA
+arrived; it is honoured inside the window a `notified` run would have had. Every other failure
+refuses the tap with the usual 404.
+
+**Ops retry** (`POST /runs/{id}/retry`, tRPC `bo.retryRun`): a `failed` run WITH a completed
+execution is re-sent / finished (`mode` in the response), not regenerated. Refused with 409 /
+`PRECONDITION_FAILED` when a gate is closed or msg-api holds the send claim
+(`send_claim_held`). Only a run with no usable brief regenerates (`failed → pending`), and that now
+enqueues the runner job under `retry-<runId>-<pendingAt ms>`. A bare run id was silently swallowed
+by BullMQ while an earlier job with that id was still retained (the runner queue keeps 100
+completed / 500 failed), and the retry still reported `enqueued: true`.
+
+**`notReceivedTodayTaskId`** counts a likely-delivered failed run (`send-unconfirmed`, or a
+`send-error` held / not definitive) as RECEIVED, so a fallback task does not send a second CTA.
+
 ---
 
 ## Delivery
@@ -401,6 +459,9 @@ its own case:
 send, which is what satisfies msg-api's money guard. The body is fetched from the **Cadra
 execution**, never the run row.
 
+**A tap can recover a `failed` run** whose CTA probably arrived — see "Never lose a brief". The
+run moves `failed → viewed`; `notified_at` is set to the CTA attempt time.
+
 **Cadra side.** The definition is a `tools` row plus an `agent_tools` link. Tool rows are
 per-org. ⚠️ Any agent tools save deletes and recreates all links — re-verify after any agent
 edit.
@@ -594,9 +655,17 @@ a merchant's brief fail four days running and disable from there rather than nav
 
 ### Deploy topology
 
-Workers ride `start-workers.ts` in the **`worker-service` container on Coolify**, alongside the
-Klaviyo outbound sync family. This is *not* the `connector-worker` container (POS/Shopify
-inbound, `src/workers/connector-worker.ts`). A Vercel deploy rebuilds neither.
+Workers ride `start-workers.ts` in the **`worker-service` container**, alongside the Klaviyo
+outbound sync family. This is *not* the `connector-worker` container (POS/Shopify inbound,
+`src/workers/connector-worker.ts`). A Vercel deploy rebuilds neither.
+
+⚠️ CORRECTED — **not Coolify.** Dev is rebuilt by `deploy-worker-dev.yml` on every push to
+`develop`. **Prod has NO workflow**: it is a hand-deployed container on the prod merchant box
+(`hosts.qraved-merchant` in `server-inventory.yaml`) — `git pull --ff-only` on `main` as the repo
+owner, then `sudo ./deploy-worker-v2.sh`, which builds a versioned image `saas-workers:v<stamp>`
+and keeps the previous ones (`./rollback-worker.sh`). Verify by grepping the changed line inside
+the container and requiring the three `agent-task-{scanner,runner,reconcile}] worker started`
+lines. Runbook: `_context/_runbooks/yobo-fleet-agent-tasks-prod.md` §3.2.
 
 ### Rollback — every gate is data
 
