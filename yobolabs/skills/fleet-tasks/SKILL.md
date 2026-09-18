@@ -313,16 +313,13 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 
 ## Traps
 
-- **A finished brief can be LOST (as of develop 2026-09-18; fix in progress on
-  `feature/YMS-191-never-lose-brief`).** Two paths, both verified in code: (1) the agent finishes
-  after `limits.runTimeoutMinutes` — the runner leaves the row `running`, and when the reconciler
-  later finds the Cadra execution completed it marks the run `failed` / `timeout-swept` and **never
-  sends the CTA** (`agent-task-reconcile.worker.ts` PASS 2); (2) a valid brief whose step-7 send fails
-  ends `failed`, and Retry is `failed → pending` — the only revival in `state-machine.ts` — which
-  re-generates (new LLM cost, different brief). Sean: "We should never 'lose a brief'." The fix finishes
-  a late run from step 5 on the stored execution, re-sends failed deliveries from the stored
-  execution, and adds a GUARDED `@jetdevs/state` edge. Check whether it landed before relying on
-  either behaviour.
+- **A finished brief is no longer lost (YMS-191, on prod 2026-09-18).** Before this, a brief that
+  finished after `limits.runTimeoutMinutes` was swept `failed/timeout-swept` and never sent, and a
+  failed CTA send could only be retried by REGENERATING (new LLM cost, different brief). Now the
+  reconciler FINISHES a late run from the stored execution and RE-SENDS a failed CTA; ops retry
+  re-sends a stored brief; a merchant's tap recovers a run whose CTA probably arrived. Rules, edges
+  and the msg-api half: `references/fleet-tasks.md` → "Never lose a brief". **Do not "fix" a
+  `failed` run by hand with psql** — every recovery goes through guarded `@jetdevs/state` edges.
 - **A timezone "set" that reads `timezone_source='browser'` did not save.** `orgs.timezone_source`
   records provenance: `NULL`/`phone` = a guess, replaced once by the OWNER's browser zone; `browser`
   = observed, kept; `admin` = set in back office, never overwritten

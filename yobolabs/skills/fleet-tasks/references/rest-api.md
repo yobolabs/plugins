@@ -49,7 +49,7 @@ cookie: this lane does not read sessions, which is the whole reason it exists.
 | `GET` | `/merchants?search=` | merchant lookup for building a cohort (max 50) |
 | `GET` | `/runs?taskId=&orgId=&status=&fromLocalDate=&toLocalDate=&limit=` | the run table |
 | `GET` | `/runs/rollup?runLocalDate=YYYY-MM-DD&taskId=` | daily rollup + the alerts that day fires |
-| `POST` | `/runs/{runId}/retry` | `failed → pending`, through `transitionRun` |
+| `POST` | `/runs/{runId}/retry` | a failed run with a completed execution is RE-SENT / finished (`failed → running`, no new LLM run); only a run with no usable brief regenerates (`failed → pending` + runner job `retry-<runId>-<ms>`). 409 when a gate is closed or msg-api holds the send claim |
 
 Codes: `401` bad key · `400` schema (`issues[]` names the field) · `404` no such task/run/org ·
 `409` preflight failed, or an illegal state-machine edge · `412` **the preview gate**, with
