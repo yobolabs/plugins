@@ -1,6 +1,6 @@
 ---
 name: fleet-tasks
-description: Use when working on p37 Fleet Agent Tasks — yobo's per-merchant scheduled agent fan-out, where ops says "run this agent for every merchant" and each merchant gets their own run, brief and delivery. Also use when the user mentions "fleet task", "fleet agent task", "agent task", "agent_task_definitions", "agent_task_runs", "agent_task_subscriptions", "daily brief", "morning brief", "scheduled brief", "brief CTA", "AGENT_TASK_CTA", "get_daily_brief", "dev_smoke_brief", "the JSON field" or "Task input (JSON)" on a task, "input_template", "dataGate", "audience preview", "auto_enrol", "agent_tasks" feature flag, "AGENT_TASKS_ENABLED", "task-inactive / feature-disabled / bo-disabled / not-in-audience / snoozed / merchant-disabled / not-due", "skipped_no_data", "skipped_unreliable", "notified / viewed / expired" run states, "template-unresolved", "template-not-approved", "template-category-drift", "132000", "localizable_params", "backoffice/agent-tasks", "settings/scheduled-briefs", "budget-cap", "monthlyCostCapUsd", or Jira YMS-191, "schedule minute", "send_time_hour", "catch-up window", "preflight", "Merchants tab", "enrolment", "can receive", "send mode", "mock gateway", "wamid", "notified but not delivered", or "cost_usd". ALSO use when a fleet task shows no runs at all, or a query on `agent_task_*` returns 0 rows — "no definitions", "no runs", "table is empty", "nothing fired", "feature was never used", "false clean", "RLS", "app_user", "rolbypassrls" — those tables are RLS-gated and the app role reads empty. ALSO use for MANAGING fleet tasks over REST rather than through the ops UI — "manage fleet tasks from the plugin", "fleet task API", "agent-tasks API", "/api/v1/internal/agent-tasks", "internal API key", "X-Internal-API-Key", "INTERNAL_API_KEY", "create a fleet task with curl", "activate a task over REST", "previewToken", "preview token", "audience fingerprint", "AGENT_TASK_PREVIEW_SECRET", "preview_required", "audience-changed", "412", "activation endpoint", "explain skips endpoint", "retry a run", or "why did nobody get it". ALSO use when a merchant got the brief from the WRONG WhatsApp number or MORE THAN ONCE — "wrong number", "different WABA", "second thread", "platform sender", "platform-notify", "AGENT_TASK_PLATFORM_SENDER", "no_platform_conversation", "duplicate brief", "brief twice", "reminders", "reminderMaxCount".
+description: Use when working on p37 Fleet Agent Tasks — yobo's per-merchant scheduled agent fan-out, where ops says "run this agent for every merchant" and each merchant gets their own run, brief and delivery. Also use when the user mentions "fleet task", "fleet agent task", "agent task", "agent_task_definitions", "agent_task_runs", "agent_task_subscriptions", "daily brief", "morning brief", "scheduled brief", "brief CTA", "AGENT_TASK_CTA", "get_daily_brief", "dev_smoke_brief", "the JSON field" or "Task input (JSON)" on a task, "input_template", "dataGate", "audience preview", "auto_enrol", "agent_tasks" feature flag, "AGENT_TASKS_ENABLED", "task-inactive / feature-disabled / bo-disabled / not-in-audience / snoozed / merchant-disabled / not-due", "skipped_no_data", "skipped_unreliable", "notified / viewed / expired" run states, "template-unresolved", "template-not-approved", "template-category-drift", "132000", "localizable_params", "backoffice/agent-tasks", "settings/scheduled-briefs", "budget-cap", "monthlyCostCapUsd", or Jira YMS-191, "schedule minute", "send_time_hour", "catch-up window", "preflight", "Merchants tab", "enrolment", "can receive", "send mode", "mock gateway", "wamid", "notified but not delivered", or "cost_usd". ALSO use when a fleet task shows no runs at all, or a query on `agent_task_*` returns 0 rows — "no definitions", "no runs", "table is empty", "nothing fired", "feature was never used", "false clean", "RLS", "app_user", "rolbypassrls" — those tables are RLS-gated and the app role reads empty. ALSO use for MANAGING fleet tasks over REST rather than through the ops UI — "manage fleet tasks from the plugin", "fleet task API", "agent-tasks API", "/api/v1/internal/agent-tasks", "internal API key", "X-Internal-API-Key", "INTERNAL_API_KEY", "create a fleet task with curl", "activate a task over REST", "previewToken", "preview token", "audience fingerprint", "AGENT_TASK_PREVIEW_SECRET", "preview_required", "audience-changed", "412", "activation endpoint", "explain skips endpoint", "retry a run", or "why did nobody get it". ALSO use when a merchant got the brief from the WRONG WhatsApp number or MORE THAN ONCE — "wrong number", "different WABA", "second thread", "platform sender", "platform-notify", "AGENT_TASK_PLATFORM_SENDER", "no_platform_conversation", "duplicate brief", "brief twice", "reminders", "reminderMaxCount". ALSO use for the audience rules and the task drawer — "rules mode", "name matches", "starts with", "nameMatches", "requireReachable", "matching merchants", "View matching merchants", "listAudienceMembers", "task drawer", "?task=", "Add a merchant" — and when a brief was LOST or needs re-sending: "lost brief", "timeout-swept", "delivery-failed", "late brief", "resend", "finish-late".
 ---
 
 # fleet-tasks (p37 Fleet Agent Tasks)
@@ -15,10 +15,26 @@ A Cadra `agent_schedules` row pins exactly one tenant, so "run this agent for ev
 has no home in Cadra. p37 puts the fan-out where the merchant list lives — **yobo** — and
 dispatches once per merchant with `tenantOrgId` already threaded.
 
-**Fleet tasks address MERCHANTS, never customers.** `taskAudienceSchema` has two modes,
-`all` and `filter`, and every filter key is an org column. There is no customer predicate,
-so the feature cannot address a customer even by misconfiguration. A fleet task is Yobo
-talking to its merchants; a campaign is a merchant talking to their customers.
+**Fleet tasks address MERCHANTS, never customers.** `taskAudienceSchema` has three modes:
+`all`, `filter` (legacy), and **`rules`** — the only mode the ops UI writes (since 2026-09-18). Every
+key is a condition on the merchant org. There is no customer predicate, so the feature cannot address
+a customer even by misconfiguration. A fleet task is Yobo talking to its merchants; a campaign is a
+merchant talking to their customers.
+
+**`rules` keys:** `nameMatches` / `nameExcludes` (`[{op:'startsWith'|'contains', value}]`,
+case-insensitive, `%`/`_` literal; matches OR together, excludes remove), `countries` (ISO-2 derived
+from `orgs.timezone`, `unknown` for `UTC`/`Etc/*` — `is_indonesian` is NOT a country signal, it
+defaults true), `onboardingStatus` (`null` = none), `hasConnector`, `businessCategory`,
+`signedUpFrom/To` (UTC date of `created_at`), `requireBusinessProfile`, `requireReachable` (the
+task channel's delivery ladder in SQL), `notReceivedTodayTaskId`. All AND together; no rules = every
+active merchant. **There are no hand-picked merchant lists** — `includeOrgIds`/`excludeOrgIds`
+existed briefly on 2026-09-18 and were removed at Sean's request ("I never wanted to add an explicit
+merchant"); a stored one surfaces as a legacy part that blocks saving.
+
+**`rules` is a NEW mode, `.strict()`, on purpose — fail closed.** `readAudience` parses with a plain
+`z.object`, which STRIPS unknown keys: a worker built before a new narrowing key would read it as an
+empty filter = the whole fleet. An unknown MODE is rejected instead → `InvalidAudienceError` → the
+scanner skips that one task. Any future narrowing key must keep this property.
 
 ## Shape
 
@@ -36,7 +52,9 @@ Workers (`src/server/workers/agent-task-{scanner,runner,reconcile}.worker.ts`): 
 `docker run`, NOT Coolify — corrected 2026-09-18), not Vercel — a Vercel deploy does not rebuild them.
 
 Surfaces: `/backoffice/agent-tasks` (ops, gated on `admin:agent_tasks_read` / `_manage`,
-granted to **Super User only** by migration 0269) and `/settings/scheduled-briefs` (merchant).
+granted to **Super User only** by migration 0269) and `/settings/scheduled-briefs` (merchant). A
+task opens in a **right-side drawer** over the list, addressed as
+`/backoffice/agent-tasks?task=<id|new>&tab=<tab>`; `/backoffice/agent-tasks/<id>` redirects there.
 
 ## Interval schedules (since `9da1d3406`, 2026-09-02)
 
@@ -238,10 +256,13 @@ Cadra execution retention.
 
 ## The ops surface — everything is configurable from `/backoffice/agent-tasks`
 
-Definitions, schedule (hour **and** minute), audience, channel, `auto_enrol`, all six limits,
-`alternative_on_exhaustion`, per-merchant enrolment, per-merchant overrides, the delivery kill
-switch, and a preflight gate on Activate. Detail, including which control writes which column and
-what preflight actually proves: `references/ops-surface.md`.
+Definitions, schedule (hour **and** minute), audience rules, channel, `auto_enrol`, all six limits,
+`alternative_on_exhaustion`, per-merchant ops-disable / overrides (row actions in the
+matching-merchants modal), the delivery kill switch, and a preflight gate on Activate. The Audience
+tab shows only the rules; **View matching merchants** opens a modal backed by
+`bo.listAudienceMembers` (the scanner's own predicate, with Reachable and Will-run per merchant).
+Detail, including which control writes which column and what preflight actually proves:
+`references/ops-surface.md`.
 
 **Preflight before Activate.** `bo.preflight` proves a saved definition against one enrolled
 merchant across agent, prompt, audience, channel, destination, template, budget and send-mode. A
@@ -292,6 +313,28 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 
 ## Traps
 
+- **A finished brief can be LOST (as of develop 2026-09-18; fix in progress on
+  `feature/YMS-191-never-lose-brief`).** Two paths, both verified in code: (1) the agent finishes
+  after `limits.runTimeoutMinutes` — the runner leaves the row `running`, and when the reconciler
+  later finds the Cadra execution completed it marks the run `failed` / `timeout-swept` and **never
+  sends the CTA** (`agent-task-reconcile.worker.ts` PASS 2); (2) a valid brief whose step-7 send fails
+  ends `failed`, and Retry is `failed → pending` — the only revival in `state-machine.ts` — which
+  re-generates (new LLM cost, different brief). Sean: "We should never 'lose a brief'." The fix finishes
+  a late run from step 5 on the stored execution, re-sends failed deliveries from the stored
+  execution, and adds a GUARDED `@jetdevs/state` edge. Check whether it landed before relying on
+  either behaviour.
+- **A timezone "set" that reads `timezone_source='browser'` did not save.** `orgs.timezone_source`
+  records provenance: `NULL`/`phone` = a guess, replaced once by the OWNER's browser zone; `browser`
+  = observed, kept; `admin` = set in back office, never overwritten
+  (`src/server/services/domain/org-timezone.service.ts`, `sdk-org.ts` writes `admin`). A back-office
+  change always leaves `admin`; if you still see `browser` with the old zone, the edit never
+  persisted in THAT environment. The zone drives both the fire time and the brief's country/language.
+- **`tenantOrgId` is a label, not a Cadra org.** Yobo runs every brief on its own org-scoped
+  `CADRA_API_KEY`; the merchant org id rides along as `context.tenantOrgId` (`src/lib/cadra/client.shared.ts`)
+  so Cadra can echo it to yobo's tools. The SDK also sends it as `X-Org-Id`, which cadra-web honours
+  ONLY for its internal key (as a Cadra org id, default 1) and ignores for org-scoped keys
+  (`cadra-web/src/lib/api/auth.ts`). Harmless today; never switch yobo to the internal key without
+  changing what goes into that header.
 - **Meta `132000` / `localizable_params`** — the runner passes a fixed pair to whatever template
   resolves. A template declaring a different parameter count rejects the **whole** message: the
   merchant gets nothing and the run row still reads `notified`. The adapter clamps to the count
@@ -350,7 +393,7 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 
 **A template approved at Meta must ALSO be registered in the gateway** (`whatsapp_templates`, the sending `client_id`) or every send 500s `failed to get template: record not found` while preflight passes — see `yobo:whatsapp`. The wamid of a sent run is at `payload_snapshot.notifications[0].providerRef`.
 
-**"Every org whose owner has a phone" cannot be an `audience` filter** (keys are org columns only). The ladder DOES reach the active owner's `users.phone` at rung 3 (see Traps), but relying on it is fragile — the test-account reset empties it, and a membership that leaves `active` silently kills delivery. For a cohort you want to stay reachable, pin rung 1: audience `all`, `auto_enrol=false`, one enabled subscription per org with `destination.phone` = the owner's E.164 phone. Check `orgs.timezone` on the cohort first — a UTC default makes "07:00 local" fire at 14:00 WIB.
+**"Every org whose owner has a phone" IS now an audience rule** (corrected 2026-09-18): `rules.requireReachable` evaluates the task channel's delivery ladder in SQL, including rung 3 (active owner's `users.phone`), parity-tested against the adapters. It is evaluated at scan time, so the test-account reset or an owner leaving `active` drops the merchant out cleanly instead of producing a failed run. For a single test merchant use a name rule (`nameMatches startsWith '<name>'`), not a hand-picked list. Check `orgs.timezone` on the cohort first — a UTC default makes "07:00 local" fire at 14:00 WIB, and the brief prompt uses the timezone for the merchant's country and language.
 
 Provisioned 2026-09-01 (inert, `is_active=false`, kill-switch flag false): see `_ai/sessions/2026-09-01-[yobo]-morning-brief-prod-recon.md`.
 
