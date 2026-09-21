@@ -9,10 +9,12 @@
 #                                        then mine it. Match is case/space/hyphen-insensitive.
 #   mine.sh --latest [repo-path]         Mine the newest transcript for a repo (default $PWD)
 #   mine.sh --list   [repo-path]         List recent transcripts (mtime, id, title)
-#   mine.sh --subagent <agent.jsonl>     Tier-2 deep-read of ONE subagent transcript →
-#                                        /tmp/mine_sub.txt (mission, files changed, verification,
-#                                        internal narrative, final return). Path from the main
-#                                        mine's "## SUBAGENT TRANSCRIPTS" section.
+#   mine.sh --subagent <agent.jsonl> [outfile]
+#                                        Tier-2 deep-read of ONE subagent transcript (mission,
+#                                        files changed, verification, internal narrative, final
+#                                        return) to STDOUT, or to [outfile] if given. Path from
+#                                        the main mine's "## SUBAGENT TRANSCRIPTS" section.
+#                                        Parallel-safe: give every run its own outfile.
 #
 # A title is NOT a filename — it is stored INSIDE the transcript (custom-title.customTitle,
 # set by the user, wins; else ai-title.aiTitle, auto). --title / --list search those.
@@ -24,7 +26,27 @@
 #   mine.sh <file> > /tmp/mine.txt
 #
 # Projects dir resolves: $CLAUDE_PROJECTS | $CLAUDE_CONFIG_DIR/projects | $HOME/.claude/projects
+# Scratch files go to $MINE_TMPDIR (default /tmp), named per transcript so parallel runs never collide.
 set -eu
+
+MINE_TMPDIR="${MINE_TMPDIR:-/tmp}"
+
+# Paths of Edit/Write/NotebookEdit calls whose tool_result is NOT an error. A write a hook or a
+# permission check refused is stored as is_error:true and never landed, so it is not a change.
+# $2 = "ok" (default) lists landed writes; "refused" lists the refused ones.
+edit_paths() {
+  jq -rs --arg want "${2:-ok}" '
+    (reduce (.[] | select(.type=="user") | .message.content
+             | if type=="array" then .[] else empty end
+             | select(.type=="tool_result" and .is_error==true) | .tool_use_id) as $i
+      ({}; .[$i] = true)) as $err
+    | .[] | select(.type=="assistant") | .message.content
+    | if type=="array" then .[] else empty end
+    | select(.type=="tool_use" and (.name|test("^(Edit|MultiEdit|Write|NotebookEdit)$")))
+    | select(if $want=="refused" then ($err[.id] // false) else (($err[.id] // false) | not) end)
+    | .input.file_path // .input.notebook_path // empty
+  ' "$1" 2>/dev/null
+}
 
 resolve_projects() {
   for d in "${CLAUDE_PROJECTS:-}" "${CLAUDE_CONFIG_DIR:-}/projects" \
@@ -114,17 +136,22 @@ mine() {
     | "• " + (if length>600 then .[:600]+" …" else . end)
   ' "$f" 2>/dev/null
 
-  echo ""; echo "## ASSISTANT NARRATIVE → /tmp/mine_assist.txt (Read it; not inlined)"
+  local assist="$MINE_TMPDIR/mine_assist_$(basename "$f" .jsonl).txt"
+  echo ""; echo "## ASSISTANT NARRATIVE → $assist (Read it; not inlined)"
   jq -r 'select(.type=="assistant")|.message.content|if type=="array" then (.[]|select(.type=="text")|.text) else empty end' \
-    "$f" 2>/dev/null | grep -v '^[[:space:]]*$' > /tmp/mine_assist.txt || true
-  echo "  lines: $(wc -l </tmp/mine_assist.txt 2>/dev/null | tr -d ' ')"
+    "$f" 2>/dev/null | grep -v '^[[:space:]]*$' > "$assist" || true
+  echo "  lines: $(wc -l <"$assist" 2>/dev/null | tr -d ' ')"
 
   echo ""; echo "## COMMIT LEDGER (short hashes mentioned in narrative)"
-  grep -oE '`[0-9a-f]{7,8}`' /tmp/mine_assist.txt 2>/dev/null | tr -d '`' | sort -u | tr '\n' ' '; echo
+  grep -oE '`[0-9a-f]{7,8}`' "$assist" 2>/dev/null | tr -d '`' | sort -u | tr '\n' ' '; echo
 
-  echo ""; echo "## FILES TOUCHED (Edit/Write/NotebookEdit tool inputs)"
-  jq -r 'select(.type=="assistant")|.message.content[]?|select(.type=="tool_use" and (.name|test("Edit|Write|NotebookEdit")))|.input.file_path // empty' \
-    "$f" 2>/dev/null | sort -u
+  echo ""; echo "## FILES TOUCHED (Edit/Write/NotebookEdit that landed; refused writes excluded)"
+  edit_paths "$f" ok | sort -u
+  local refused; refused="$(edit_paths "$f" refused | sort -u)"
+  if [ -n "$refused" ]; then
+    echo ""; echo "## WRITES REFUSED (hook/permission error — never landed; often a discarded approach)"
+    printf '%s\n' "$refused"
+  fi
 
   echo ""; echo "## SPECS REFERENCED"
   grep -oE '_context/[A-Za-z0-9_./-]+/_specs/[A-Za-z0-9_./-]+' "$f" 2>/dev/null | sort -u
@@ -145,7 +172,7 @@ mine() {
       [ -e "$x" ] || continue
       local ln edits bashes tools mission tier
       ln=$(wc -l <"$x" | tr -d ' ')
-      edits=$(jq -r 'select(.type=="assistant")|.message.content[]?|select(.type=="tool_use" and (.name|test("Edit|Write|NotebookEdit")))|.name' "$x" 2>/dev/null | grep -c . || true)
+      edits=$(edit_paths "$x" ok | grep -c . || true)
       bashes=$(jq -r 'select(.type=="assistant")|.message.content[]?|select(.type=="tool_use" and .name=="Bash")|.name' "$x" 2>/dev/null | grep -c . || true)
       tools=$(jq -r 'select(.type=="assistant")|.message.content[]?|select(.type=="tool_use")|.name' "$x" 2>/dev/null | sort | uniq -c | sort -rn | awk '{printf "%s×%s ",$2,$1}')
       mission=$(jq -r 'select(.type=="user")|.message.content|if type=="string" then . elif type=="array" then (.[]|select(.type=="text")|.text) else empty end' "$x" 2>/dev/null | grep -v '^[[:space:]]*$' | head -1 | tr '\n' ' ' | cut -c1-90)
@@ -157,19 +184,27 @@ mine() {
       fi
       printf '  [%s] %-30s %5s ln | %s\n         ↳ %s\n' "$tier" "$(basename "$x")" "$ln" "${tools% }" "$mission"
     done
-    echo "  deep-read a HIGH one:  $0 --subagent $sdir/<agent-id>.jsonl > /tmp/mine_sub.txt"
+    echo "  deep-read a HIGH one:  $0 --subagent $sdir/<agent-id>.jsonl > $MINE_TMPDIR/mine_sub_<agent-id>.txt"
+    echo "  (one outfile per agent — safe to run several in parallel)"
   else
     echo "  none (session predates per-subagent persistence, or spawned no Agent-tool subagents)"
   fi
 }
 
 # Tier-2: deep-read ONE subagent transcript — the process the main transcript's return summary drops.
-# Writes /tmp/mine_sub.txt: mission, files changed (count/path), verification/key bash, full internal
-# narrative, and the final return block. Read that file (small), don't inline the raw subagent .jsonl.
+# Prints mission, files changed (count/path), refused writes, verification/key bash, full internal
+# narrative, and the final return block. STDOUT by default; with an outfile it writes there and says
+# so on STDERR (never on stdout, so a redirect can't mix the notice into the report).
 subagent_report() {
-  local sf="$1" out="${2:-/tmp/mine_sub.txt}"
+  local sf="$1" out="${2:-}"
   [ -f "$sf" ] || { echo "ERROR: subagent transcript not found: $sf" >&2; return 1; }
-  {
+  if [ -z "$out" ]; then subagent_body "$sf"; return; fi
+  subagent_body "$sf" > "$out"
+  echo "Wrote $out ($(wc -l <"$out" | tr -d ' ') lines) — Read it. Fold FILES CHANGED → Build state, discarded hypotheses → Lessons, VERIFICATION → confidence." >&2
+}
+
+subagent_body() {
+  local sf="$1" refused
     echo "=================================================================="
     echo "SUBAGENT: $sf"
     echo "  lines: $(wc -l <"$sf" | tr -d ' ')   size: $(du -h "$sf" | cut -f1)"
@@ -177,9 +212,13 @@ subagent_report() {
     echo ""; echo "## MISSION (task prompt handed to the subagent — first user text)"
     jq -r 'select(.type=="user")|.message.content|if type=="string" then . elif type=="array" then (.[]|select(.type=="text")|.text) else empty end' \
       "$sf" 2>/dev/null | grep -v '^[[:space:]]*$' | head -1
-    echo ""; echo "## FILES CHANGED (Edit/Write/NotebookEdit — count per path; the precise diff locus)"
-    jq -r 'select(.type=="assistant")|.message.content[]?|select(.type=="tool_use" and (.name|test("Edit|Write|NotebookEdit")))|.input.file_path // empty' \
-      "$sf" 2>/dev/null | sort | uniq -c | sort -rn
+    echo ""; echo "## FILES CHANGED (Edit/Write/NotebookEdit that landed — count per path; the precise diff locus)"
+    edit_paths "$sf" ok | sort | uniq -c | sort -rn
+    refused="$(edit_paths "$sf" refused | sort | uniq -c | sort -rn)"
+    if [ -n "$refused" ]; then
+      echo ""; echo "## WRITES REFUSED (hook/permission error — never landed; often a discarded approach)"
+      printf '%s\n' "$refused"
+    fi
     echo ""; echo "## VERIFICATION / KEY BASH (test/tsc/pnpm/vitest/git/deploy — evidence, not claims)"
     jq -r 'select(.type=="assistant")|.message.content[]?|select(.type=="tool_use" and .name=="Bash")|.input.command // empty' \
       "$sf" 2>/dev/null | grep -iE 'test|tsc|pnpm|vitest|jest|git (merge|push|revert|reset|log|status|cherry)|deploy|docker|curl|redis|narration' | head -50
@@ -189,8 +228,6 @@ subagent_report() {
     echo ""; echo "## FINAL RETURN (last assistant text = what it reported back to the parent)"
     jq -r 'select(.type=="assistant")|.message.content|if type=="array" then (.[]|select(.type=="text")|.text) else empty end' \
       "$sf" 2>/dev/null | grep -v '^[[:space:]]*$' | tail -40
-  } > "$out"
-  echo "Wrote $out ($(wc -l <"$out" | tr -d ' ') lines) — Read it. Fold FILES CHANGED → Build state, discarded hypotheses → Lessons, VERIFICATION → confidence."
 }
 
 # Resolve a non-path, non-uuid argument (a title/name) to a file, then mine.
@@ -222,7 +259,7 @@ case "${1:-}" in
   --latest) f="$(ls -t "$(proj_dir "${2:-$PWD}")"/*.jsonl 2>/dev/null | head -1)"
             [ -n "$f" ] || { echo "ERROR: no transcripts found" >&2; exit 1; }; mine "$f" ;;
   --subagent) [ -n "${2:-}" ] || { echo "Usage: mine.sh --subagent <.../subagents/agent-<id>.jsonl> [outfile]" >&2; exit 2; }
-            subagent_report "$2" "${3:-/tmp/mine_sub.txt}" ;;
+            subagent_report "$2" "${3:-}" ;;
   "" )      echo "Usage: mine.sh <session.jsonl|uuid> | --title \"<q>\" | --latest [repo] | --list [repo] | --subagent <agent.jsonl>" >&2; exit 2 ;;
   * )       if [ -f "$1" ]; then mine "$1"
             elif is_uuid "$1"; then mine "$(proj_dir "${2:-$PWD}")/$1.jsonl"

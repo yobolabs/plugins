@@ -35,7 +35,7 @@ live-logged one.
 ## Fastest path: the bundled extractor
 
 `scripts/mine.sh` does the mining in one pass — header, titles, record counts, timespan,
-compaction status, branch/cwd, typed prompts, assistant narrative (→ `/tmp/mine_assist.txt`),
+compaction status, branch/cwd, typed prompts, assistant narrative (→ `/tmp/mine_assist_<session-id>.txt`, path printed in the output),
 commit ledger, files touched, specs, tool histogram, and a **subagent-transcript
 inventory** (the sibling per-agent `.jsonl`s the main file does NOT contain, tiered
 HIGH/low). Resolve its path first (`$CLAUDE_PLUGIN_ROOT` is set for this plugin's bash,
@@ -51,11 +51,11 @@ bash "$MINE" --title "MI-GTM 6-good" > /tmp/mine.txt  # resolve by TITLE (case/s
 bash "$MINE" 9d35a155-...-a8fa38b790df > /tmp/mine.txt # by session-uuid
 bash "$MINE" /abs/path/to/<uuid>.jsonl > /tmp/mine.txt # by path
 bash "$MINE" --latest > /tmp/mine.txt                # newest session
-bash "$MINE" --subagent <.../subagents/agent-<id>.jsonl> > /tmp/mine_sub.txt  # Tier-2 deep-read of ONE subagent
+bash "$MINE" --subagent <.../subagents/agent-<id>.jsonl> > /tmp/mine_sub_<id>.txt  # Tier-2 deep-read of ONE subagent (stdout)
 ```
 
 A bare argument that is neither a path nor a uuid is treated as a **title query**
-automatically. Then `Read /tmp/mine.txt` and `/tmp/mine_assist.txt`. If `mine.sh` can't be
+automatically. Then `Read /tmp/mine.txt` and the narrative file its `## ASSISTANT NARRATIVE` line names. If `mine.sh` can't be
 located, use the inline recipes in each step below — they produce the same material.
 
 ## Why this comes up: the 1M-context billing gate
@@ -199,8 +199,8 @@ one (Tier-2):
 
 ```bash
 # Tier-1 — already in the main mine output, "## SUBAGENT TRANSCRIPTS".
-# Tier-2 — deep-read ONE (path from Tier-1). Writes /tmp/mine_sub.txt, then Read it:
-bash "$MINE" --subagent "$PROJ/<sessionId>/subagents/agent-<id>.jsonl" > /tmp/mine_sub.txt
+# Tier-2 — deep-read ONE (path from Tier-1). Prints to stdout; give each agent its OWN file, then Read it:
+bash "$MINE" --subagent "$PROJ/<sessionId>/subagents/agent-<id>.jsonl" > /tmp/mine_sub_<id>.txt
 ```
 Inline (no mine.sh): `sdir="${f%.jsonl}/subagents"; ls "$sdir"/agent-*.jsonl` → per file, the
 same jq recipes from Steps 4–5 apply (it's just another transcript).
@@ -353,6 +353,7 @@ reinvent them.
   implementation/debug/incident session, deep-read the `[HIGH]` subagents (Step 6) — else
   you lose the exact diff locus, discarded hypotheses, and real verification output. State
   the coverage (`folded M of K`) in the provenance line.
+- **Fanning subagent mining out in parallel is safe only with one outfile per agent** (`> /tmp/mine_sub_<id>.txt`). Before using a report, check its `SUBAGENT:` line names the agent you asked for. `## WRITES REFUSED` lists writes a hook or permission check refused: they never landed, so they are not changes, but they often mark a discarded approach worth a Lessons line.
 - **Ground every claim in an extract** — cite the commit hash; don't infer outcomes the
   transcript doesn't state. Mode B is reconstruction, not fiction.
 - **Mode B writes to the configured `sessionsDir`** (B0) with literal `[tag]` brackets in
