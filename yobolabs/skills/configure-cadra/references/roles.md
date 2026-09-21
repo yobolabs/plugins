@@ -42,7 +42,8 @@ cadra role create '{
 
 `create` accepts: `name` (required, ≤200), `description` ≤2000, `icon` ≤100,
 `agentType`, `systemInstruction` ≤50000, `modelProvider`, `modelId`,
-`temperature` 0–2, `maxTokens` 1000–500000, `taskTypes` ≤50, `toolIds` (numeric).
+`temperature` 0–2, `maxTokens` 1000–500000, `taskTypes` ≤50, `toolIds` (numeric),
+`outputSchema` (object | `null`, p81 — see *Structured output*).
 
 `update` accepts everything above **plus** the portable capability presets, which
 are the ones you should actually use:
@@ -93,74 +94,93 @@ Two consequences to know:
 - Pass `changeNotes` on updates that change the method — it is the only
   human-readable label the version history gets.
 
-## Structured output (`outputSchema`) — NOT settable over REST
+## Structured output (`outputSchema`)
 
-A product role can pin its final result to a JSON Schema: the column
-`agent_roles.output_schema` exists, promote freezes it into the golden lock, and a
-spawn of that role returns a schema-validated object instead of free text.
+A product role can pin its final result to a JSON Schema: promote freezes the
+role's `outputSchema` into the golden lock, and a spawn of that role returns a
+schema-validated object instead of free text.
 
-**The public API cannot write it.** `POST /api/v1/roles` and `PATCH /api/v1/roles/{id}`
-accept an `outputSchema` key and **drop it without an error** — you get a 200/201 and
-the stored schema is unchanged. Verified on cadra-web `develop` and `main` (2026-09-21):
+**Availability: once cadra-web `develop` carries p81** (branch
+`feature/p81-role-config-panel`, not yet merged); **not on prod**. An origin
+without p81 still takes the key and **drops it silently** — 200/201, nothing
+stored. After any write, `cadra role get` and check the field before trusting it.
 
-| Layer | Evidence |
+### Set, change, clear
+
+`outputSchema` is a field on `POST /api/v1/roles` and `PATCH|PUT /api/v1/roles/{uuid}`:
+
+| Send | Effect |
 |---|---|
-| Zod input strips unknown keys | `src/extensions/agents/roles-schemas.ts:20` (create), `:37` (update) — no `outputSchema` |
-| Repository never writes it | `src/extensions/agents/roles-repository.ts:247` (`create`), `:283` (`update`) |
-| OpenAPI does not list it | `src/app/api/v1/docs/route.ts:3756` (`RoleCreate`), `:3782` (`RoleUpdate`) |
-| Copilot `configure_role` | `src/app/api/v1/internal/copilot-tools/configure_role/route.ts:64` — no field |
-
-Do not send `outputSchema` to a role endpoint and treat the 200 as success.
-
-### The path that works today
-
-The only writer is **create-from-agent**, which copies the source agent's schema
-onto a new product role (`roles-repository.ts:452`). Agents *do* accept
-`outputSchema` over REST, so the path is REST for the schema, then the app:
-
-1. Put the schema on a source agent (`PUT /api/v1/agents/{id}`):
+| an object | checked (below), then stored |
+| `null` | clears it — free-text output |
+| key omitted | unchanged |
+| the stored value again | no-op — key order ignored, not re-checked, not rewritten, so a `get` body PUT back as-is succeeds |
 
 ```bash
-cadra agent update <agentUuid> '{"outputSchema": {
+cadra role update <roleUuid> '{"outputSchema": {
   "type": "object",
   "properties": {
-    "verdict":    { "type": "string", "enum": ["approve", "revise", "reject"] },
-    "summary":    { "type": "string" },
-    "issues":     { "type": "array", "items": { "type": "string" } }
+    "verdict": { "type": "string", "enum": ["approve", "revise", "reject"] },
+    "summary": { "type": "string" },
+    "issues":  { "type": "array", "items": { "type": "string" } }
   },
   "required": ["verdict", "summary"]
 }}'
-```
 
-2. In the app: open that agent → **Save as Role**. That calls
-   `agentRoles.createFromAgent` (tRPC only, no REST route), which creates an
-   `agentType: "ROLE"` role carrying the schema.
-3. **Promote the role to golden in the app.** Spawn always runs the current golden
-   lock; promote reads the role row's schema into the lock
-   (cadra-web `src/extensions/agents/promote-job.ts:390`). Until then the schema is not live.
-4. Read it back:
-
-```bash
 cadra role get <roleUuid>    # → "outputSchema": {…}   (null when unset)
 ```
 
-`cadra role list` does **not** return `outputSchema` — use `get`.
+`cadra role list` **omits** `outputSchema` — read it with `get`.
 
-To **change** a role's schema there is no edit path: change the agent's schema,
-**Save as Role** again (a new role), promote it, and point the team at it.
+**Saving does not change what a team spawns.** Spawn runs the golden lock, so the
+new schema goes live only when the role is **promoted to golden in the app**
+(promote stays app-only, see above).
 
-### Runtime limits (cadra-api `src/services/agent-runtime/output-schema-bounds.ts`)
+### Rules, limits and codes
 
-Checked when a spawn reads the lock, **not** at save or promote. An oversized
-schema promotes cleanly, then every spawn of that role fails with the code below.
+On create/update the root must be an object schema — `"type": "object"` with at
+least one entry in `properties`. Checks run in this order; the first failure wins:
 
-| Bound | Limit | Error code |
-|---|---|---|
-| serialized schema | ≤ 16 KB | `ROLE_OUTPUT_SCHEMA_TOO_LARGE` |
-| nesting depth | ≤ 8 | `ROLE_OUTPUT_SCHEMA_TOO_DEEP` |
-| declared properties | ≤ 256 | `ROLE_OUTPUT_SCHEMA_TOO_MANY_PROPS` |
-| validated result | ≤ 256 KB | `ROLE_OUTPUT_RESULT_TOO_LARGE` |
-| result not JSON / fails schema | — | `ROLE_OUTPUT_VALIDATION_FAILED` |
+| Check | Limit | `error.message` | Also at |
+|---|---|---|---|
+| root is `type: "object"` | — | `ROLE_OUTPUT_SCHEMA_NOT_OBJECT: root must be an object schema` | |
+| root has properties | ≥ 1 | `ROLE_OUTPUT_SCHEMA_EMPTY: add at least one field` | |
+| compact JSON, UTF-8 | ≤ 16 KB (16384 B) | `ROLE_OUTPUT_SCHEMA_TOO_LARGE: <n> bytes exceeds 16384` | promote, spawn |
+| JSON nesting anywhere (incl. inside `enum`, `default`) | ≤ 64 | `ROLE_OUTPUT_SCHEMA_TOO_DEEP: json nesting <n> exceeds 64` | promote |
+| depth along `properties` / `items` | ≤ 8 | `ROLE_OUTPUT_SCHEMA_TOO_DEEP: depth <n> exceeds 8` | promote, spawn |
+| declared properties, whole schema | ≤ 256 | `ROLE_OUTPUT_SCHEMA_TOO_MANY_PROPS: <n> fields exceeds 256` | promote, spawn |
+
+A breach is **HTTP 400** and nothing is stored:
+
+```json
+{"success": false, "error": {"code": "INTERNAL_ERROR",
+  "message": "ROLE_OUTPUT_SCHEMA_TOO_DEEP: depth 9 exceeds 8",
+  "details": {"trpcCode": "BAD_REQUEST"}}}
+```
+
+**Read `error.message`, never `error.code`** — `code` is `INTERNAL_ERROR` for every
+one of these (a quirk of the REST bridge). Split on the first `": "` for the code.
+
+**Core roles are agent-owned.** On a Core role (`isCore: true`, an agent's own
+role) a *changed* `outputSchema` — object or `null` — is **403**
+`ROLE_CORE_OUTPUT_SCHEMA_FORBIDDEN: a Core role's output schema is owned by its agent`,
+before any bounds check. Change the agent's `outputSchema` instead. Sending the
+stored value unchanged still passes (the no-op rule).
+
+**Promote re-checks.** Promote runs the runtime bounds against the saved role, with
+a looser root rule: any plain JSON object passes (legacy `{}` schemas copied from
+agents still promote); an array or scalar root fails with
+`ROLE_OUTPUT_SCHEMA_NOT_OBJECT: root must be a JSON object`. A breach is not an HTTP
+error — the promotion job fails with that code, no lock is written, and golden does
+not move.
+
+**At spawn** cadra-api checks the lock again
+(`src/services/agent-runtime/output-schema-bounds.ts`), then the result:
+
+| Result check | Error code |
+|---|---|
+| validated result ≤ 256 KB | `ROLE_OUTPUT_RESULT_TOO_LARGE` |
+| result not JSON / fails schema | `ROLE_OUTPUT_VALIDATION_FAILED` |
 
 The result check enforces `type`, `enum`, `required`, `properties` and array
 `items`. Other keywords (`additionalProperties`, `pattern`, `minLength` …) reach the
@@ -174,13 +194,17 @@ gate flag is on. No production code sets the flag
 when the role's lock carries a schema. The locked role schema is the only
 structured-result path for a spawn.
 
-### Other paths that do not carry it
+### Other paths
 
-- **`cadra role export` → `apply`.** `export <id>` includes `outputSchema`; `apply`
-  sends it; create/update drop it. The copy in the target environment has none.
-- **Role documents (.md import/export).** The frontmatter parser takes scalars,
-  inline arrays and block maps of scalars only (cadra-web `src/extensions/agents/lib/role-doc.ts`).
-  A JSON Schema cannot ride in it.
+- **`cadra role export` → `apply`** carries it when the target origin has p81
+  (dropped silently where it does not). A legacy `{}` schema fails `create` with
+  `ROLE_OUTPUT_SCHEMA_NOT_OBJECT` — the no-op rule covers update only — so set it to
+  `null` or a real schema in the file first.
+- **Save as Role** on an agent (in the app) still copies the agent's schema onto
+  the new role; it is no longer the only writer.
+- **Role documents (.md import/export) do not carry it.** Export omits
+  `outputSchema` and import never changes it — the frontmatter cannot hold a JSON
+  Schema (cadra-web `src/extensions/agents/lib/role-doc.ts`).
 
 ## Core roles (private, per-agent)
 

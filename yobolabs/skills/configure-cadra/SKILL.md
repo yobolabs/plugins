@@ -166,10 +166,11 @@ cadra role apply @roles/researcher.json
 cadra agent create '{"name":"Researcher #2","roleUuid":"<role-uuid>"}'
 ```
 
-**Structured output on a role is not settable over REST.** `POST`/`PATCH
-/api/v1/roles` silently drop `outputSchema` (200, nothing stored). Put the schema on
-an agent, **Save as Role** in the app, then promote — `references/roles.md` →
-*Structured output* has the steps, limits and error codes.
+**Structured output on a role** is `outputSchema` on role create/update (object;
+`null` clears), bounds-checked on save, live only after promote in the app. It needs
+p81 on the origin — cadra-web `develop` once `feature/p81-role-config-panel` merges,
+not prod; elsewhere it is dropped silently (200, nothing stored). `references/roles.md`
+→ *Structured output* has the limits, error codes and the Core-role rule.
 
 ### Skill
 
