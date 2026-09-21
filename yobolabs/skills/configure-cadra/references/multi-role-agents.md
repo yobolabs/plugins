@@ -96,7 +96,9 @@ Two further defenses exist above this: a **sanctioned-role enum** (a role not in
 the team's sanctioned list cannot be routed to at all, fail-closed) and an
 **`outputSchema` backstop** — a schema a mis-routed role cannot satisfy is the last
 catch. Give each role a distinct `outputSchema` when its output shape genuinely
-differs; it converts a silent mis-route into a loud failure.
+differs; it converts a silent mis-route into a loud failure. A role's schema cannot
+be set over REST today — it comes from **Save as Role** on an agent and goes live on
+promote (`roles.md` → *Structured output*).
 
 ## Multiple goals per role
 
