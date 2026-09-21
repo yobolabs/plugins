@@ -167,10 +167,11 @@ cadra agent create '{"name":"Researcher #2","roleUuid":"<role-uuid>"}'
 ```
 
 **Structured output on a role** is `outputSchema` on role create/update (object;
-`null` clears), bounds-checked on save, live only after promote in the app. It needs
-p81 on the origin — cadra-web `develop` once `feature/p81-role-config-panel` merges,
-not prod; elsewhere it is dropped silently (200, nothing stored). `references/roles.md`
-→ *Structured output* has the limits, error codes and the Core-role rule.
+`null` clears), bounds-checked on save, live for spawns only after promote. Live on dev
+and prod since 2026-09-21 (cadra-web p81); an origin without p81 drops it silently (200,
+nothing stored), so `cadra role get` after a write. In the app: Agents → Roles → open a
+role → **Output** tab. `references/roles.md` → *Structured output* has the limits, error
+codes, the Core-role rule and the app steps.
 
 ### Skill
 
