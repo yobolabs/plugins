@@ -116,6 +116,10 @@ List query: `limit`, `offset`, `search`, `source=all|platform|org`,
 Roles carry a lot more state than they accept on create (uuid capability presets,
 golden locks, the versioned method prompt) — see `roles.md`.
 
+`outputSchema` is **not** a role field over REST: create and update drop it silently.
+`get` returns it; the only writer is the app's **Save as Role**. See `roles.md` →
+*Structured output*.
+
 ---
 
 ## skill → `/api/v1/skills`
@@ -345,3 +349,9 @@ p49 config-io import are the only paths. Worse, the v1 route docblock
 as if it were accepted; it is **silently stripped**, and real orchestrators run
 values above that documented maximum. An orchestrator created over REST therefore
 inherits the default and stalls part-way through a delegation round-trip.
+
+**Role `outputSchema`** is the same shape of gap. The column exists and drives spawn,
+but `createAgentRoleSchema` / `updateAgentRoleSchema`
+(`src/extensions/agents/roles-schemas.ts:20`, `:37`) omit it, so `POST`/`PATCH
+/api/v1/roles` return 200/201 and store nothing. Agent `outputSchema` works over REST;
+copy it onto a role with the app's **Save as Role**, then promote. Details in `roles.md`.
