@@ -100,10 +100,16 @@ A product role can pin its final result to a JSON Schema: promote freezes the
 role's `outputSchema` into the golden lock, and a spawn of that role returns a
 schema-validated object instead of free text.
 
-**Availability: once cadra-web `develop` carries p81** (branch
-`feature/p81-role-config-panel`, not yet merged); **not on prod**. An origin
-without p81 still takes the key and **drops it silently** — 200/201, nothing
-stored. After any write, `cadra role get` and check the field before trusting it.
+**Availability: live on dev and prod since 2026-09-21** (cadra-web p81 — develop
+`e464cf64`, main `17695388`). An origin without p81 (an old self-hosted build)
+still takes the key and **drops it silently** — 200/201, nothing stored. After any
+write, `cadra role get` and check the field before trusting it.
+
+**In the app:** Agents → Roles tab → open a role → **Configure role** panel → **Output**
+tab (Free text | Structured; Fields / JSON / Example views of the same schema, live
+limits meter). The same panel opens from an agent's Configure → Capability →
+**Edit role**. Save draft writes `outputSchema`; **Promote to golden** makes it live
+for spawns (a changed schema needs the contract-break attestation).
 
 ### Set, change, clear
 
