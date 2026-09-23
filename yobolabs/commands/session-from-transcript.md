@@ -1,6 +1,6 @@
 ---
 name: session-from-transcript
-description: Reconstruct a session file (in /session-update format) — or a quick recap — by mining a past Claude Code session's raw .jsonl transcript with jq. Use when a session was never logged, when /resume or /recall is blocked by the 1M-context billing gate, or when the user names a past session by title/uuid/path to write up. Also use when the user mentions "session from transcript", "reconstruct session", "mine transcript", "recover that session", or "recap that session".
+description: Hand off a stale Claude Code session to a fresh one by mining its raw .jsonl transcript with jq into a session file (in /session-update format, with a Resume Here block) — or a quick recap. Usually run because the user could not get back to the session within the 1-hour prompt-cache window, so resuming it would re-read the whole context uncached; this replaces /resume and /compact for a cold session. Also use when /resume or /recall is blocked by the 1M-context billing gate, when a session was never logged, or when the user names a past session by title/uuid/path to write up. Also use when the user mentions "session from transcript", "hand off that session", "pick up session X", "the cache expired", "reconstruct session", "mine transcript", "recover that session", or "recap that session".
 model: sonnet
 ---
 
@@ -58,17 +58,47 @@ A bare argument that is neither a path nor a uuid is treated as a **title query*
 automatically. Then `Read /tmp/mine.txt` and the narrative file its `## ASSISTANT NARRATIVE` line names. If `mine.sh` can't be
 located, use the inline recipes in each step below — they produce the same material.
 
-## Why this comes up: the 1M-context billing gate
+## Why this is run: a cold handoff, not an archive job
+
+**Read this first — it sets how every step below is judged.**
+
+The usual case: the user left a session and could not get back to it **within one hour**.
+The prompt cache has a 1-hour TTL, so the old session's context is no longer cached.
+Resuming it (`/resume`, or typing into it) re-reads the entire context at full, uncached
+input price — often hundreds of thousands of tokens. `/compact` does not help: it also
+reads the whole stale context to write its summary, and that summary is lossy and lives
+only inside the one session.
+
+So this command is **the handoff path and the replacement for `/compact`**:
+
+| | `/resume` on a cold session | `/compact` | this command |
+|---|---|---|---|
+| Cost to continue | full uncached re-read | full re-read to summarise, then a big session | `jq` extracts only; new session reads one small file |
+| Output | none durable | in-session summary, lossy | session file on disk, grounded, RAG-ingestable |
+| Where work continues | old session | old session | **a fresh session** |
+
+What that means for how you run it:
+
+1. **The deliverable is a file a fresh session can resume from cold.** Treat it as
+   `/handoff` output, not a history write-up. `## Resume Here` (B3) is mandatory whenever
+   the work was unfinished.
+2. **Never tell the user to `/resume` or `/compact` the target session.** That is the cost
+   this command exists to avoid.
+3. **The transcript's last message is not the current state.** Time has passed. Check live
+   repo state (B3a) before writing *Next Steps* or *Resume Here*.
+4. **The target is a different session from the one running this command.** The current
+   session's transcript is the newest file on disk — `--latest` skips it.
+5. **If the old session already had a session file, update it** instead of writing a
+   duplicate (B1).
+6. **End with one line**: the file path, and that a fresh session continues from it.
+
+### Secondary case: the 1M-context billing gate
 
 The error **"Usage credits required for 1M context · run /usage-credits to turn them on,
 or /model to switch to standard context"** is a **billing-tier gate, not a token-count
-problem**. It fires even on a small (<200k) conversation because the *1M-context tier
-itself* is enabled — the message is about the tier, not how full the window is.
-
-- **Fastest unblock:** `/model` → switch to standard 200k context. Clears it without credits.
-- **Or:** `/usage-credits` to enable credits for the 1M tier.
-
-When the gate blocks a `/resume`, fall back to reading the transcript off disk with this command.
+problem**; it fires even on a small conversation. `/model` → standard context clears it;
+`/usage-credits` enables the 1M tier. When it blocks a `/resume`, use this command — same
+handoff output.
 
 ## Step 1: Resolve the transcript target (title vs uuid vs path)
 
@@ -98,7 +128,9 @@ for f in "$PROJ"/*.jsonl; do
 done
 ```
 
-If 0 match → `--list` the titles and ask. If >1 → show ids+titles and ask which. The
+**No target given** → the user means the session they just walked away from: the newest
+transcript that is *not* this one (`mine.sh --latest` skips `$CLAUDE_CODE_SESSION_ID`).
+Confirm its title in your first line, then proceed. If 0 match → `--list` the titles and ask. If >1 → show ids+titles and ask which. The
 user's typed title may differ in spacing/hyphens from the stored `customTitle` (e.g. they
 type `MI-GTM-6-good`, it's stored `MI-GTM 6-good`) — the normalized match handles that.
 **The literal title string may also appear in conversation content** (the user typed it)
@@ -264,6 +296,12 @@ node "$CMPRO/scripts/artifact-paths.cjs" get
 
 ### B1. Filename
 
+**Existing session file first.** A handed-off session often already ran `/session-start` or
+`/session-update`. Check the mine's files-touched list (and `grep -l '<short-id>'
+<sessionsDir>/*.md`) for a session file it wrote. If one exists, **update that file** —
+bump `last_updated`/`status`, append what the transcript adds, add `## Resume Here` — and
+skip the rest of B1. Do not create a second file for the same work.
+
 `YYYY-MM-DD-[tag]-kebab-description.md` inside the sessions dir. The **square brackets are
 literal characters**. `[tag]` holds only the project/repo short-name (from `projectTags`
 in the B0 config if present) — **never** a feature, topic, or descriptor (those go in the
@@ -317,7 +355,32 @@ Reconstructed from transcript `<short-id>` (<first→last UTC>, compacted N×; f
 
 ## Next Steps
 (what to pick up next; note uncommitted/unpushed state)
+
+## Resume Here
+(mandatory unless status: completed — see B3a)
 ```
+
+#### B3a. Resume Here — verify live state, then write it
+
+The transcript ends when the user walked away; the repos may have moved since (another
+session, a merge, a cleanup). Before writing *Next Steps* and *Resume Here*, read the live
+state of each repo in `apps_touched` — read-only:
+
+```bash
+cd <repo> && command git branch --show-current && command git status -s | head -20 \
+  && command git log --oneline -5 && command git log --oneline @{u}..HEAD 2>/dev/null | head
+```
+
+Then write `## Resume Here` (same block as `/handoff`):
+
+- **State now** — branch, uncommitted files, unpushed commits, per repo. Flag anything that
+  differs from the transcript's end.
+- **Open decision / next action** — the exact next step, and any question the user still
+  owes an answer to, quoted.
+- **Run commands** — commands to get back to a working state (dev server, tests).
+- **Constraints** — steering from Step 3 the next session must not re-violate.
+- **In-flight at hand-off** — agents, deploys or loops running when the session stopped.
+  Say they are no longer running unless you verified otherwise.
 
 Populate from: *What this session accomplished* ← Step 4 narrative; *User Steering* ←
 Step 3 typed prompts; *commits* ← Step 5 ledger; and for an implementation/debug/incident
@@ -329,10 +392,15 @@ reinvent them.
 
 1. **Append** the new filename as a line to `currentSessionFile` (append — never
    overwrite; multiple sessions may be active). Create it if absent.
-2. Tell the user the path written and that it's `/session-update`-format and RAG-ingestable.
+2. Tell the user in one or two lines: the path written (or updated), and that a **fresh
+   session** continues from it (start a new session, `/session-start` on that file). Do not
+   suggest resuming the old session.
 
 ## Critical rules
 
+- **This is a cold handoff.** Usually run because the old session passed the 1-hour cache
+  window; it replaces `/resume` and `/compact`. The output must let a fresh session continue:
+  `## Resume Here` with live repo state. Never recommend resuming or compacting the target.
 - **Default output is a written session file (Mode B).** A bare `/session-from-transcript
   <title>` means *create the session `.md` file* — do NOT stop at a printed recap. Only do
   Mode A when the user explicitly asks to summarize/recap.
