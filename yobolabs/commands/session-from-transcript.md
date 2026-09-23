@@ -21,7 +21,7 @@ two outputs:
 > <title>` means *create the session file*, not print a summary. Offer the recap only as
 > the alternative.
 
-Both modes share the transcript-mining steps (1–6). Mode B additionally resolves the
+Both modes share the transcript-mining steps (1–7). Mode B additionally resolves the
 output location and writes the file (B0–B4).
 
 ## Sibling commands
@@ -58,7 +58,7 @@ A bare argument that is neither a path nor a uuid is treated as a **title query*
 automatically. Then `Read /tmp/mine.txt` and the narrative file its `## ASSISTANT NARRATIVE` line names. If `mine.sh` can't be
 located, use the inline recipes in each step below — they produce the same material.
 
-## Why this is run: a cold handoff, not an archive job
+## Why this is run: usually a cold handoff, sometimes just a capture
 
 **Read this first — it sets how every step below is judged.**
 
@@ -69,7 +69,9 @@ input price — often hundreds of thousands of tokens. `/compact` does not help:
 reads the whole stale context to write its summary, and that summary is lossy and lives
 only inside the one session.
 
-So this command is **the handoff path and the replacement for `/compact`**:
+So this command is usually **the handoff path and the replacement for `/compact`**.
+Sometimes the work finished and the user only wants the session **captured** — no handoff.
+Which one it is decides the output, so **decide it from the tail (Step 7) first**:
 
 | | `/resume` on a cold session | `/compact` | this command |
 |---|---|---|---|
@@ -79,9 +81,9 @@ So this command is **the handoff path and the replacement for `/compact`**:
 
 What that means for how you run it:
 
-1. **The deliverable is a file a fresh session can resume from cold.** Treat it as
-   `/handoff` output, not a history write-up. `## Resume Here` (B3) is mandatory whenever
-   the work was unfinished.
+1. **In a handoff, the deliverable is a file a fresh session can resume from cold.** Treat
+   it as `/handoff` output. `## Resume Here` (B3) is mandatory. In a capture, the file is
+   the record and there is no Resume Here.
 2. **Never tell the user to `/resume` or `/compact` the target session.** That is the cost
    this command exists to avoid.
 3. **The transcript's last message is not the current state.** Time has passed. Check live
@@ -90,7 +92,8 @@ What that means for how you run it:
    session's transcript is the newest file on disk — `--latest` skips it.
 5. **If the old session already had a session file, update it** instead of writing a
    duplicate (B1).
-6. **End with one line**: the file path, and that a fresh session continues from it.
+6. **End with one line**: the verdict (handoff or capture), the file path, and — for a
+   handoff — what the fresh session picks up first.
 
 ### Secondary case: the 1M-context billing gate
 
@@ -273,6 +276,36 @@ prompts). Report as a recap, not a file dump. Offer to resume.
 A session that ends on `API Error`, repeated "Continue from where you left off", or `No
 response requested.` **died mid-flight** — say so and name what was unfinished.
 
+## Step 7: Read the tail — handoff or capture?
+
+The end of the transcript is the most important part for a handoff. Read the mine's three tail sections **first**, before the narrative:
+
+- `## TAIL` — the last 20 events: typed prompts, Claude's text, tool calls, results.
+- `## WAITING ON AT HAND-OFF` — background launches (`run_in_background`, `Agent`, `Monitor`, `ScheduleWakeup`, `Workflow`…) against their `<task-notification>` completion notices. **A launch with no later NOTIFY was still open.**
+- `## TOOL CALLS WITH NO RESULT` — the session died or was stopped mid-call.
+
+From those, answer two questions and write both into the file:
+
+1. **What was Claude waiting for?** A background build/deploy/test, a subagent, a monitor, a scheduled wakeup — or **the user's answer** to a question or a proposed next step in Claude's last message.
+2. **What was mid-flight?** A multi-step task half done: the last `TOOL` with no result, an edit series that stopped before the commit, a plan with steps left.
+
+Then classify:
+
+| Signal in the tail | Verdict |
+|---|---|
+| Claude's last message asks the user something, or proposes a step and waits for "yes" | **handoff** |
+| An open launch in WAITING, or a tool call with no result | **handoff** |
+| Last message says "next", "now doing", "in progress"; uncommitted or unpushed work (B3a) | **handoff** |
+| Ends on `API Error`, "Continue from where you left off", or `No response requested.` | **handoff** (died mid-flight) |
+| Last message reports done, every launch has a NOTIFY, repos clean and pushed | **capture** |
+| The user says "just capture / log / write up this session" | **capture** — their words win over the signals |
+
+Mixed signals → **handoff**. A needless Resume Here costs a few lines; a missing one costs the user an hour reconstructing state. Say the verdict and the deciding signal in your first line to the user.
+
+**Background work does not survive the session.** A build, agent or monitor that was open at hand-off is no longer being watched. In the Resume Here block, list it with how to check its result now (the build URL, the deploy status command, the subagent's `subagents/agent-<id>.jsonl`).
+
+**Capture** → `status: completed`, no `## Resume Here`, no "start a fresh session" line. Still run B3a if the transcript shows uncommitted work — then it is not a capture.
+
 ## Mode B — Full session file (THE DEFAULT) — reconstruct a `/session-update` file
 
 Produce a session `.md` in the project's format and **write it to disk**. This is the
@@ -357,7 +390,7 @@ Reconstructed from transcript `<short-id>` (<first→last UTC>, compacted N×; f
 (what to pick up next; note uncommitted/unpushed state)
 
 ## Resume Here
-(mandatory unless status: completed — see B3a)
+(handoff only — mandatory then; omit for a capture. See Step 7 and B3a)
 ```
 
 #### B3a. Resume Here — verify live state, then write it
@@ -379,8 +412,10 @@ Then write `## Resume Here` (same block as `/handoff`):
   owes an answer to, quoted.
 - **Run commands** — commands to get back to a working state (dev server, tests).
 - **Constraints** — steering from Step 3 the next session must not re-violate.
-- **In-flight at hand-off** — agents, deploys or loops running when the session stopped.
-  Say they are no longer running unless you verified otherwise.
+- **Waiting on / in-flight at hand-off** — from Step 7: what Claude was waiting for
+  (including an unanswered question to the user, quoted) and what was mid-step. Background
+  agents, builds, monitors and loops are no longer running or watched — give the command
+  or URL to check each result now.
 
 Populate from: *What this session accomplished* ← Step 4 narrative; *User Steering* ←
 Step 3 typed prompts; *commits* ← Step 5 ledger; and for an implementation/debug/incident
@@ -392,15 +427,18 @@ reinvent them.
 
 1. **Append** the new filename as a line to `currentSessionFile` (append — never
    overwrite; multiple sessions may be active). Create it if absent.
-2. Tell the user in one or two lines: the path written (or updated), and that a **fresh
-   session** continues from it (start a new session, `/session-start` on that file). Do not
-   suggest resuming the old session.
+2. Tell the user in one or two lines: the verdict (handoff or capture) and its deciding
+   signal, and the path written (or updated). For a handoff, add what the fresh session
+   picks up first (start a new session, `/session-start` on that file). Never suggest
+   resuming the old session.
 
 ## Critical rules
 
-- **This is a cold handoff.** Usually run because the old session passed the 1-hour cache
-  window; it replaces `/resume` and `/compact`. The output must let a fresh session continue:
-  `## Resume Here` with live repo state. Never recommend resuming or compacting the target.
+- **Handoff or capture — decide from the tail first (Step 7).** Usually a cold handoff:
+  the old session passed the 1-hour cache window; this replaces `/resume` and `/compact`.
+  Then `## Resume Here` carries what Claude was waiting for, what was mid-flight, and live
+  repo state. Sometimes the user only wants a capture: no Resume Here. Never recommend
+  resuming or compacting the target.
 - **Default output is a written session file (Mode B).** A bare `/session-from-transcript
   <title>` means *create the session `.md` file* — do NOT stop at a printed recap. Only do
   Mode A when the user explicitly asks to summarize/recap.

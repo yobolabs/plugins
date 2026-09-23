@@ -159,6 +159,50 @@ mine() {
   echo ""; echo "## TOOL HISTOGRAM"
   jq -r 'select(.type=="assistant")|.message.content[]?|select(.type=="tool_use")|.name' "$f" 2>/dev/null | sort | uniq -c | sort -rn
 
+  # ── The tail: where the session STOPPED. For a handoff this matters more than anything above —
+  # it shows what Claude was waiting for, or what was mid-flight, when the user walked away.
+  echo ""; echo "## TAIL — last 20 events (where the session stopped; read this FIRST for a handoff)"
+  jq -r '
+    def cut($n): gsub("\\s+";" ") | if length>$n then .[0:$n]+"…" else . end;
+    def ts: (.timestamp // "" | .[11:19]);
+    select(.type=="user" or .type=="assistant")
+    | ts as $t | .type as $ty | (.message.content) as $c
+    | if ($c|type)=="string" then
+        (if ($c|test("<task-notification>")) then "\($t) NOTIFY  " + ($c|cut(260))
+         elif ($c|test("^<(command|local-command)|system-reminder")) then empty
+         else "\($t) USER    " + ($c|cut(400)) end)
+      else $c[] |
+        if .type=="text" and $ty=="assistant" then "\($t) CLAUDE  " + (.text|cut(400))
+        elif .type=="text" and $ty=="user" then
+          (if (.text|test("<task-notification>")) then "\($t) NOTIFY  " + (.text|cut(260))
+           elif (.text|test("^<(command|local-command)|system-reminder")) then empty
+           else "\($t) USER    " + (.text|cut(400)) end)
+        elif .type=="tool_use" then "\($t) TOOL    \(.name)" + (if .input.run_in_background==true then " [background]" else "" end) + ": " + ((.input.description // .input.command // .input.prompt // .input.file_path // (.input|tostring))|tostring|cut(160))
+        elif .type=="tool_result" then "\($t) RESULT  " + (if .is_error==true then "[ERROR] " else "" end) + ((.content|if type=="array" then (map(.text? // "")|join(" ")) else tostring end)|cut(200))
+        else empty end
+      end' "$f" 2>/dev/null | tail -20
+
+  echo ""; echo "## WAITING ON AT HAND-OFF — background launches vs completion notices (a launch with no later NOTIFY was still open)"
+  jq -r '
+    def cut($n): gsub("\\s+";" ") | if length>$n then .[0:$n]+"…" else . end;
+    (.timestamp // "" | .[0:19]) as $t
+    | if .type=="assistant" then
+        .message.content[]? | select(.type=="tool_use")
+        | select(.input.run_in_background==true or (.name|IN("Agent","Task","Monitor","ScheduleWakeup","CronCreate","Workflow","RemoteTrigger")))
+        | "\($t) LAUNCH  \(.name): " + ((.input.description // .input.prompt // .input.command // "")|tostring|cut(140))
+      elif .type=="user" then
+        (.message.content | if type=="string" then . else (map(.text? // "")|join(" ")) end)
+        | select(test("<task-notification>"))
+        | "\($t) NOTIFY  " + ([ ([capture("<task-id>(?<v>[^<]*)</task-id>")][0].v), ([capture("<status>(?<v>[^<]*)</status>")][0].v), ([capture("<summary>(?<v>[^<]*)</summary>")][0].v), ([capture("<event>(?<v>[^<]*)</event>")][0].v) ] | map(select(.!=null)) | join(" | ") | cut(220))
+      else empty end' "$f" 2>/dev/null | tail -25
+
+  echo ""; echo "## TOOL CALLS WITH NO RESULT (session died or was interrupted mid-call)"
+  jq -rs '
+    [ .[] | select(.type=="user") | .message.content | arrays | .[] | select(.type=="tool_result") | .tool_use_id ] as $done
+    | .[] | select(.type=="assistant") | (.timestamp // "" | .[0:19]) as $t
+    | .message.content[]? | select(.type=="tool_use") | select(.id as $i | $done | index($i) | not)
+    | "\($t) \(.name): " + ((.input.description // .input.command // .input.prompt // "")|tostring|.[0:160])' "$f" 2>/dev/null | tail -10
+
   echo ""; echo "## SUBAGENT TRANSCRIPTS (per-agent .jsonl, sibling dir — NOT in the main file)"
   # Sub-agent (Task/Agent-tool) turns are persisted separately at <transcript>/subagents/agent-*.jsonl.
   # The MAIN transcript keeps only each agent's RETURNED summary (as a tool_result); the agent's
@@ -257,7 +301,7 @@ case "${1:-}" in
   --title)  [ -n "${2:-}" ] || { echo "Usage: mine.sh --title \"<query>\" [repo]" >&2; exit 2; }
             mine_by_title "$2" "${3:-$PWD}" ;;
   --latest) # newest transcript that is NOT the session running this script (that one is always newest)
-            f="$(ls -t "$(proj_dir "${2:-$PWD}")"/*.jsonl 2>/dev/null | grep -v "/${CLAUDE_CODE_SESSION_ID:-__none__}\\.jsonl$" | head -1)"
+            f="$(ls -t "$(proj_dir "${2:-$PWD}")"/*.jsonl 2>/dev/null | grep -v "/${CLAUDE_CODE_SESSION_ID:-__none__}\.jsonl$" | head -1)"
             [ -n "$f" ] || { echo "ERROR: no transcripts found" >&2; exit 1; }; mine "$f" ;;
   --subagent) [ -n "${2:-}" ] || { echo "Usage: mine.sh --subagent <.../subagents/agent-<id>.jsonl> [outfile]" >&2; exit 2; }
             subagent_report "$2" "${3:-}" ;;
