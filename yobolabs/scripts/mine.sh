@@ -256,7 +256,8 @@ case "${1:-}" in
   --list)   list_sessions "${2:-$PWD}" ;;
   --title)  [ -n "${2:-}" ] || { echo "Usage: mine.sh --title \"<query>\" [repo]" >&2; exit 2; }
             mine_by_title "$2" "${3:-$PWD}" ;;
-  --latest) f="$(ls -t "$(proj_dir "${2:-$PWD}")"/*.jsonl 2>/dev/null | head -1)"
+  --latest) # newest transcript that is NOT the session running this script (that one is always newest)
+            f="$(ls -t "$(proj_dir "${2:-$PWD}")"/*.jsonl 2>/dev/null | grep -v "/${CLAUDE_CODE_SESSION_ID:-__none__}\\.jsonl$" | head -1)"
             [ -n "$f" ] || { echo "ERROR: no transcripts found" >&2; exit 1; }; mine "$f" ;;
   --subagent) [ -n "${2:-}" ] || { echo "Usage: mine.sh --subagent <.../subagents/agent-<id>.jsonl> [outfile]" >&2; exit 2; }
             subagent_report "$2" "${3:-}" ;;
