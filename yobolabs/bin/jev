@@ -1,0 +1,364 @@
+#!/usr/bin/env python3
+"""
+jev — ask Jev (TypeSafe AI's decision-only "System One" model) typed questions
+about a piece of state, from any shell or Claude session.
+
+    jev --state "customer: where is my refund??" --bool angry "The customer is angry"
+    echo "$TEXT" | jev --enum kind "What is this?" "bug: something broken|feature: new ask"
+    jev --state-file card.txt --questions questions.json
+
+Contract mirrors msg-api's src/services/typesafe.client.ts exactly:
+  POST https://api.typesafe.ai/v1/systemone
+  Authorization: Bearer <key>
+  {"model": "jev-latest", "state": ..., "questions": {id: {type, instructions, criteria?}}}
+
+Differences from msg-api, on purpose:
+  * msg-api FAILS OPEN (null = no opinion) because it sits on a customer hot path.
+    This CLI FAILS LOUD: any failure is a non-zero exit and a message on stderr.
+    An agent that gets no answer must know it got no answer.
+  * Timeout is 10s, not 1500ms — nothing waits on a customer here.
+
+Stdlib only (runs on the macOS system python3.9).
+"""
+import argparse
+import json
+import os
+import re
+import sys
+import time
+import urllib.error
+import urllib.request
+
+BASE_URL = os.environ.get("JEV_BASE_URL", "https://api.typesafe.ai/v1/systemone")
+# Only two requestable names exist. A concrete version (jev-1.13.0) is a RESPONSE
+# field; requesting one is `400 Unknown model` on every call.
+MODELS = {"latest": "jev-latest", "preview": "jev-preview"}
+KEY_FILE = os.path.expanduser("~/.config/jev/api_key")
+
+# Friendly type names → Jev wire names.
+TYPE_ALIASES = {
+    "bool": "noul", "boolean": "noul", "yesno": "noul", "noul": "noul",
+    "enum": "choice", "choice": "choice", "pick": "choice",
+    "score": "score", "scale": "score",
+}
+WIRE_TO_FRIENDLY = {"noul": "bool", "choice": "enum", "score": "score"}
+
+TRAPS = """\
+Jev traps (from the msg-api p80 rollout, 2026-09-20):
+  1. Only `jev-latest` / `jev-preview` are requestable. The concrete version is in the
+     response `model` field. Thresholds hold only for the version they were measured on.
+  2. A bool's `p` and a score's `confidence` are RANKS, not probabilities. Never show them
+     as percentages, multiply them by a cost, or average them. Compare to a threshold.
+  3. Strip injected scaffolding ([Current date: …], <system-reminder>…) from the state —
+     Jev will judge it as if the author wrote it. This CLI strips by default (--no-strip).
+  4. Batch every question into ONE call. Extra questions are nearly free.
+  5. The state is not injection-sandboxed. Phrase questions so a YES can only ADD a
+     protective action (escalate, flag, ask a human) — never remove one.
+  6. Never ask Jev what code can compute: counts, dates, ranges, string matches.
+  7. Always a valid option ≠ the right option. It can return the wrong valid label.
+"""
+
+# Mirrors msg-api classifier.ts stripInjectedAgentContext, plus Claude Code's own
+# scaffolding, which is what leaks into state when an agent pipes its context here.
+_STRIP_PATTERNS = [
+    re.compile(r"<system-reminder>[\s\S]*?</system-reminder>\n?"),
+    re.compile(r"^\[Current date:[^\]]*\]\n?", re.M),
+    re.compile(r"^\[Selected channel:[^\]]*\]\n?", re.M),
+    re.compile(r"^\[Available channels:[^\]]*\]\n?", re.M),
+    re.compile(r"^\[No delivery channel[^\]]*\]\n?", re.M),
+    re.compile(r"^\[Agent mode:[^\]]*\]\n?", re.M),
+    re.compile(r"^\[Pane[^\]]*\][\s\S]*?\[/Pane\]\n?", re.M),
+    re.compile(r"^\[Mentioning:[^\]]*\]\n?", re.M),
+    re.compile(r"^\[Publishing:[^\]]*\]\n?", re.M),
+    re.compile(r"^\[Publishable campaigns roster[\s\S]*?\[/Publishable campaigns roster\]\n?", re.M),
+    re.compile(r"^\[Disambiguation UI:[^\]]*\]\n?", re.M),
+]
+
+
+class JevError(Exception):
+    def __init__(self, msg, code=1):
+        super().__init__(msg)
+        self.code = code
+
+
+def strip_scaffolding(text):
+    for pat in _STRIP_PATTERNS:
+        text = pat.sub("", text)
+    return text.strip()
+
+
+def parse_options(spec):
+    """'a|b: desc|c' → ordered list of (key, description)."""
+    out = []
+    for part in spec.split("|"):
+        part = part.strip()
+        if not part:
+            continue
+        if ":" in part:
+            k, d = part.split(":", 1)
+            out.append((k.strip(), d.strip() or k.strip()))
+        else:
+            out.append((part, part))
+    return out
+
+
+def normalize_question(qid, q):
+    """Accept the friendly shape or Jev's wire shape; return the wire shape."""
+    if not isinstance(q, dict):
+        raise JevError(f"question '{qid}': must be an object, got {type(q).__name__}", 2)
+    raw_type = str(q.get("type", "")).lower()
+    wire = TYPE_ALIASES.get(raw_type)
+    if not wire:
+        raise JevError(f"question '{qid}': unknown type '{raw_type}' (use bool|enum|score)", 2)
+    instructions = q.get("instructions") or q.get("question") or q.get("statement")
+    if not instructions:
+        raise JevError(f"question '{qid}': needs 'question' (or 'instructions')", 2)
+    out = {"type": wire, "instructions": str(instructions)}
+    opts = q.get("criteria", q.get("options", q.get("levels")))
+    if wire == "choice":
+        if isinstance(opts, str):
+            opts = dict(parse_options(opts))
+        elif isinstance(opts, list):
+            opts = {str(o): str(o) for o in opts}
+        if not isinstance(opts, dict) or len(opts) < 2:
+            raise JevError(f"question '{qid}': enum needs >=2 options", 2)
+        if len(opts) > 255:
+            raise JevError(f"question '{qid}': enum allows at most 255 options", 2)
+        out["criteria"] = {str(k): str(v) for k, v in opts.items()}
+    elif wire == "score":
+        if isinstance(opts, str):
+            opts = [s.strip() for s in opts.split("|") if s.strip()]
+        if not isinstance(opts, list) or not 2 <= len(opts) <= 10:
+            raise JevError(f"question '{qid}': score needs 2-10 levels", 2)
+        out["criteria"] = [str(o) for o in opts]
+    return out
+
+
+def load_questions(args):
+    questions = {}
+    if args.questions:
+        src = args.questions
+        if src == "-":
+            raise JevError("--questions - conflicts with stdin state; pass a file or inline JSON", 2)
+        text = open(src).read() if os.path.exists(src) else src
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as e:
+            raise JevError(f"--questions is not valid JSON ({e}); YAML is not supported", 2)
+        if isinstance(data, list):
+            data = {q.get("id"): q for q in data}
+        if not isinstance(data, dict):
+            raise JevError("--questions must be an object {id: question} or a list of {id, ...}", 2)
+        for qid, q in data.items():
+            if not qid:
+                raise JevError("a question in --questions has no id", 2)
+            questions[qid] = normalize_question(qid, q)
+    for qid, text in args.bool or []:
+        questions[qid] = normalize_question(qid, {"type": "bool", "question": text})
+    for qid, text, opts in args.enum or []:
+        questions[qid] = normalize_question(qid, {"type": "enum", "question": text, "options": opts})
+    for qid, text, levels in args.score or []:
+        questions[qid] = normalize_question(qid, {"type": "score", "question": text, "levels": levels})
+    if not questions:
+        raise JevError("no questions: use --bool/--enum/--score or --questions", 2)
+    return questions
+
+
+def load_state(args):
+    if args.state is not None:
+        text = args.state
+    elif args.state_file:
+        text = sys.stdin.read() if args.state_file == "-" else open(args.state_file).read()
+    elif not sys.stdin.isatty():
+        text = sys.stdin.read()
+    else:
+        raise JevError("no state: use --state TEXT, --state-file PATH, or pipe it on stdin", 2)
+    if args.json_state:
+        try:
+            state = json.loads(text)
+        except json.JSONDecodeError as e:
+            raise JevError(f"--json-state: state is not valid JSON ({e})", 2)
+        return state, len(text)
+    before = len(text)
+    if not args.no_strip:
+        text = strip_scaffolding(text)
+        if len(text) < before:
+            print(f"jev: stripped {before - len(text)} chars of injected scaffolding from state", file=sys.stderr)
+    if not text.strip():
+        raise JevError("state is empty (after stripping scaffolding) — nothing to judge", 2)
+    return text, len(text)
+
+
+def resolve_key():
+    for var in ("JEV_API_KEY", "TYPESAFE_API_KEY"):
+        v = os.environ.get(var, "").strip()
+        if v:
+            return v
+    if os.path.exists(KEY_FILE):
+        v = open(KEY_FILE).read().strip()
+        if v:
+            return v
+    raise JevError(
+        "no Jev API key. Set JEV_API_KEY (shell profile) or write it to "
+        f"{KEY_FILE} (chmod 600). Use --mock to test without one.", 3)
+
+
+def mock_answers(questions):
+    """Deterministic fake answers so skills/scripts can be tested with no key."""
+    out = {}
+    for qid, q in questions.items():
+        if q["type"] == "noul":
+            out[qid] = {"noul": 0.5}
+        elif q["type"] == "choice":
+            out[qid] = {"choice": next(iter(q["criteria"])), "confidence": 0.5}
+        else:
+            out[qid] = {"score": 0.0, "confidence": 0.5}
+    return {"model": "mock", "answers": out, "usage": {"input_tokens": 0}}
+
+
+def call_jev(model, state, questions, timeout):
+    key = resolve_key()
+    body = json.dumps({"model": model, "state": state, "questions": questions}).encode()
+    req = urllib.request.Request(BASE_URL, data=body, method="POST", headers={
+        "authorization": f"Bearer {key}",
+        "content-type": "application/json",
+        "user-agent": "jev-cli/1.0",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as res:
+            return json.loads(res.read().decode())
+    except urllib.error.HTTPError as e:
+        # A 422 names the offending field — the difference between "our payload
+        # is wrong" and "they are down". Never echo request headers (the key).
+        detail = e.read().decode(errors="replace")[:300]
+        hint = ""
+        if e.code == 400 and "Unknown model" in detail:
+            hint = " (only jev-latest / jev-preview are requestable)"
+        elif e.code in (401, 403):
+            hint = " (key rejected — check JEV_API_KEY)"
+        elif e.code == 429:
+            hint = " (rate limited: 1,200 req/min, 250k input tok/s)"
+        raise JevError(f"HTTP {e.code}{hint}: {detail}")
+    except urllib.error.URLError as e:
+        raise JevError(f"transport error: {e.reason}")
+    except TimeoutError:
+        raise JevError(f"timed out after {timeout}s")
+    except json.JSONDecodeError:
+        raise JevError("response was not JSON")
+
+
+def shape_answers(questions, raw, threshold):
+    answers = raw.get("answers")
+    if not isinstance(answers, dict):
+        raise JevError(f"response has no 'answers' object: {json.dumps(raw)[:300]}")
+    missing = [q for q in questions if q not in answers]
+    if missing:
+        raise JevError(f"response is missing answers for: {', '.join(missing)}")
+    out = {}
+    for qid, q in questions.items():
+        a = answers[qid]
+        t = q["type"]
+        if t == "noul":
+            p = a.get("noul")
+            if not isinstance(p, (int, float)):
+                raise JevError(f"'{qid}': expected a noul number, got {a}")
+            out[qid] = {"type": "bool", "value": p >= threshold, "p": round(p, 4), "threshold": threshold}
+        elif t == "choice":
+            c = a.get("choice")
+            if c not in q["criteria"]:
+                raise JevError(f"'{qid}': choice {c!r} is not one of the options")
+            out[qid] = {"type": "enum", "value": c, "confidence": a.get("confidence")}
+        else:
+            s = a.get("score")
+            if not isinstance(s, (int, float)):
+                raise JevError(f"'{qid}': expected a score number, got {a}")
+            idx = max(0, min(len(q["criteria"]) - 1, int(round(s))))
+            out[qid] = {"type": "score", "value": round(s, 4), "level": idx,
+                        "level_label": q["criteria"][idx], "confidence": a.get("confidence")}
+    return out
+
+
+def build_parser():
+    p = argparse.ArgumentParser(
+        prog="jev",
+        description="Ask Jev typed questions (bool / enum / score) about a state. One call, all questions.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""\
+question shorthand (repeatable, mix freely; all go in ONE call):
+  --bool  ID "statement that is true or false"
+  --enum  ID "question" "key1: description|key2: description|key3"
+  --score ID "question" "Level 0: ...|Level 1: ...|Level 2: ..."
+
+--questions FILE_OR_JSON accepts {id: {type, question, options|levels}} or a list
+of {id, type, question, options}. Types: bool|enum|score (wire names noul|choice|score
+also accepted). Options: object {key: description}, list, or "a|b: desc" string.
+
+output (stdout, JSON):
+  {"model": "jev-1.13.0", "latency_ms": 312, "input_tokens": 88,
+   "answers": {"ID": {"type": "bool", "value": true, "p": 0.93, "threshold": 0.5}, ...}}
+
+exit codes: 0 ok · 1 API/response failure · 2 bad input · 3 no API key
+""")
+    src = p.add_argument_group("state (pick one; stdin if piped)")
+    src.add_argument("--state", "-s", help="state text inline")
+    src.add_argument("--state-file", "-f", help="read state from a file ('-' = stdin)")
+    src.add_argument("--json-state", action="store_true", help="state is JSON; send it as an object")
+    src.add_argument("--no-strip", action="store_true", help="keep [Current date: …] / <system-reminder> blocks")
+    q = p.add_argument_group("questions")
+    q.add_argument("--questions", "-q", help="JSON file path or inline JSON")
+    q.add_argument("--bool", "-b", nargs=2, action="append", metavar=("ID", "STATEMENT"))
+    q.add_argument("--enum", "-e", nargs=3, action="append", metavar=("ID", "QUESTION", "OPTIONS"))
+    q.add_argument("--score", nargs=3, action="append", metavar=("ID", "QUESTION", "LEVELS"))
+    o = p.add_argument_group("options")
+    o.add_argument("--preview", action="store_true", help="use jev-preview instead of jev-latest")
+    o.add_argument("--threshold", type=float, default=0.5, help="bool cut-off for value=true (default 0.5; p is a rank)")
+    o.add_argument("--timeout", type=float, default=10.0, help="seconds (default 10)")
+    o.add_argument("--raw", action="store_true", help="also include Jev's untouched response under 'raw'")
+    o.add_argument("--dry-run", action="store_true", help="print the request body (no key, no call)")
+    o.add_argument("--mock", action="store_true", help="fake answers, no network (for testing skills)")
+    o.add_argument("--explain-traps", action="store_true", help="print the Jev traps to stderr")
+    o.add_argument("--compact", action="store_true", help="one-line JSON output")
+    return p
+
+
+def main(argv=None):
+    args = build_parser().parse_args(argv)
+    if args.explain_traps:
+        print(TRAPS, file=sys.stderr)
+    try:
+        questions = load_questions(args)
+        state, _ = load_state(args)
+        model = MODELS["preview" if args.preview else "latest"]
+        if args.dry_run:
+            print(json.dumps({"url": BASE_URL, "body": {"model": model, "state": state, "questions": questions}}, indent=2))
+            return 0
+        started = time.monotonic()
+        if args.mock or os.environ.get("JEV_MOCK") == "1":
+            print("jev: MOCK MODE — answers are fake, not from Jev", file=sys.stderr)
+            raw = mock_answers(questions)
+        else:
+            raw = call_jev(model, state, questions, args.timeout)
+        latency = int((time.monotonic() - started) * 1000)
+        result = {
+            "model": raw.get("model"),
+            "requested": model,
+            "latency_ms": latency,
+            "input_tokens": (raw.get("usage") or {}).get("input_tokens"),
+            "answers": shape_answers(questions, raw, args.threshold),
+        }
+        if raw.get("model") == "mock":
+            result["mock"] = True
+        if args.raw:
+            result["raw"] = raw
+        print(json.dumps(result, separators=(",", ":")) if args.compact else json.dumps(result, indent=2))
+        return 0
+    except JevError as e:
+        print(f"jev: error: {e}", file=sys.stderr)
+        return e.code
+    except (OSError, IOError) as e:
+        print(f"jev: error: {e}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
