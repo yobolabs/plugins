@@ -38,6 +38,7 @@ Also ml-p1: Fable-direct, blind to a repo it didn't know existed, predicted ~2.5
 
 ## When to spend frontier-model budget
 
+- **Routing note (2026-09-25):** Fable is retired — Opus is now the strongest model. Wherever this file says to spend frontier budget or use Fable, dispatch `opus`. The Fable-direct numbers below stay as the historical calibration record.
 - **Default dispatch on pipeline/build terrain** — with the 2026-07-07 patch set applied, framework+Opus dispatch ≥ Fable-direct there (ml-p1 ≈110% measured; p34 ≈85% measured, ~90–92% estimated post-patch).
 - **Fable-direct still wins where the residue lives**: live-environment grounding, proof architecture, reversible-door judgment, discriminator taste, deliverable-saving reframes. Spend frontier budget on one-way doors with broad blast radius, missions whose success hinges on runtime/environment truth rather than code truth, and judge duty on high-stakes calibrations.
 - **"Brief might be wrong" is no longer automatically frontier terrain**: in ml-p1 the framework's premise-verifying recon killed the brief's false "NEW repo" claim while Fable-direct swallowed it. Premise risk is now a recon-procedure problem; *frame-quality* risk (the derived-labels-class reframe) is still frontier.
