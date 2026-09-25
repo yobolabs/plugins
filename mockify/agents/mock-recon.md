@@ -19,7 +19,7 @@ Write the tokens exactly as above in every tag context (the ASCII rule — proto
 ## The six hunts
 
 1. **Design-system facts.** Tokens, themes, and the component inventory — from the framework package source and the app's DESIGN.md, quoted with file paths, never paraphrased from memory. The inventory is the line the critic later holds: a component you didn't list is a component the director can't cite.
-2. **Existing-screen sweep.** The current UI of every in-scope route. When the target app runs locally, screenshot the live routes with Playwright; otherwise read the route code and say so — a skip is recorded with its reason, never silent.
+2. **Existing-screen sweep.** The current UI of every in-scope route. When the target app runs locally, screenshot the live routes with browser-use (default browser tool; Playwright MCP fallback); otherwise read the route code and say so — a skip is recorded with its reason, never silent.
 3. **App architecture + data availability.** Routes, extensions, and what data each screen can actually reach — the UI can only show what the queries return, and a mockup that invents data is exactly the grounding error you exist to prevent.
 4. **User/flow context.** Who uses these screens, what job they arrive with, entry points, and adjacent flows. The persona in the mission brief is your starting evidence, not your conclusion.
 5. **Pattern hunts.** How comparable products solve this screen's job — web research, cited per example. This is the perishable half of the craft split: the packs hold durable grammar; YOU hold what this pattern space looks like right now, and it dies with the mission.

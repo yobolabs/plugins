@@ -67,7 +67,7 @@ An empty `capability-gap.md` after a real calibration is suspicious, not clean.
 `mockify feedback <slug>` (mirrored from `../mockify/SKILL.md`) lands in exactly one of five states — `slug-not-found` / `not_implemented` / `in_progress` / `insufficient_data` / `complete` — and only `complete` writes generalized plugin entries. Minimum fields for `complete`:
 - [ ] implementation-shipped confirmation
 - [ ] human verdict per spec section (followed / diverged-better / diverged-worse / dropped, with the correction that caused it)
-- [ ] screenshot diff where the app runs locally (Playwright captures of built routes vs winning mockups; skipped-with-reason otherwise — a skip is recorded, not silent)
+- [ ] screenshot diff where the app runs locally (browser-use captures — default browser tool, Playwright fallback — of built routes vs winning mockups; skipped-with-reason otherwise — a skip is recorded, not silent)
 - [ ] verdict per spec-file feedback-hook prediction (hit / miss / inconclusive)
 
 An `insufficient_data` state records the gap list in the ledger, writes NO plugin entries. Never accept incomplete data silently to force a grade.
@@ -77,9 +77,9 @@ An `insufficient_data` state records the gap list in the ledger, writes NO plugi
 Objective grading needs reality's own evidence. Per design D6, mockify's ground-truth channel is **both**: the cheap-and-local screenshot diff, and the always-required human verdict — there is no external analytics system to arm (unlike designify's Looker gate).
 
 To arm it:
-- [ ] **The target app runs locally** — Playwright captures of built routes only work against a running dev server; if it isn't running, the diff step is `skipped-with-reason`, recorded, not silent.
+- [ ] **The target app runs locally** — Browser captures of built routes (browser-use default; Playwright fallback) only work against a running dev server; if it isn't running, the diff step is `skipped-with-reason`, recorded, not silent.
 - [ ] **Routes mapped to their winning mockup files** — from the mock-ledger §3 screens table, so the diff is repeatable per screen.
-- [ ] **Playwright MCP tools available** (`browser-testing` skill) — the capture mechanism; recon and feedback both degrade to code-read/skip-with-reason without it.
+- [ ] **browser-use available** (default browser tool; Playwright MCP / `browser-testing` skill as fallback) — the capture mechanism; recon and feedback both degrade to code-read/skip-with-reason without it.
 - [ ] **Human verdict always collected**, regardless of screenshot-diff availability — it is the richer signal (corrections made during implementation), not a fallback.
 
 The captured screenshots and per-screen diffs are mission evidence: they live in the mission dir (`_context/{project}/mockify/{slug}/`), NEVER in this plugin. Only generalized entries (anti-pattern + markers + context class) cross back into packs/traps.

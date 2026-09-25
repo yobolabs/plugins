@@ -1,7 +1,7 @@
 {
   "name": "mockify",
   "description": "App-design (UI/UX) capability-capture — produces buildable design specs + HTML mockups for jetdevs ecosystem apps under usability-first, anti-sycophancy judging. Seventh member of the wargame family.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Sean Liao"
   },
