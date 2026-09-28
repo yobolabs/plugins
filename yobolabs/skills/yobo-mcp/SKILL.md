@@ -224,6 +224,19 @@ Tool errors come back as `isError: true` with `{error, message}`. Relay the mess
 Remove the connector in Claude (Settings → Connectors), or revoke it at **Yobo Connect → Account →
 Connected apps**. Claude Code: `claude mcp remove yobo`.
 
+## Troubleshooting (connection, not tool errors)
+
+These happen during Connect, before any tool call — different from the `isError` codes above.
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| **"No active authorization"** right after signing in at Yobo Connect | Consent page was outside the oidc-provider interaction cookie's path | Fixed yobo-auth `c70938b` — if it recurs, confirm the consent route is under `/oauth/interaction/<uid>/consent`, not a bare `/consent` |
+| **"Allow access" spins forever** and never returns to Claude | Allow/Deny went through a Next.js server-action redirect, which drops the path-scoped resume cookie server-side | Fixed yobo-auth `a0c68ce` — Allow/Deny must be a route handler returning a real 303 |
+| **Connects fine, then "no tools available"** | `freshness_refused {reason:'unreadable'}` — the signed-in user has no `rp_identity_map` row for `source_system='yobo'`, so Connect's freshness check can't confirm the account and looks identical to a bad key | Link the account: `POST /api/internal/connect/identity/register` (existing Connect users only; `404 subject_unknown` if they have none yet — sign in with "Sign in with Yobo" first). Bulk: `pnpm connect:reconcile --env <env> --rp yobo=<origin>` |
+
+Full root-cause detail and the cadra-auth precedent: `yobo:auth` skill,
+`references/mcp-connector-oauth.md`.
+
 ## Reference documentation
 
 - Spec: `_context/yobo-merchant/_specs/p99-yobo-mcp/specs.md` (§5 tools, §9 excluded ops, §11, §13)
