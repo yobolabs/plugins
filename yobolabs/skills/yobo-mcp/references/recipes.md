@@ -90,7 +90,7 @@ Only for an ad campaign created in the Yobo ads builder, status draft or error.
    → the brief's hooks changed since generation: generate again.
 
 `spend_limit_reached` → over the per-run cap or the org's daily cap: try tomorrow or trim the brief.
-`internal_error` "outcome unconfirmed" → open the builder link first; the creatives may already be there.
+`generation_outcome_unconfirmed` (generate or regenerate) → open the builder link first; the creatives may already be there.
 
 ## Submit an ad campaign (paused on Meta)
 

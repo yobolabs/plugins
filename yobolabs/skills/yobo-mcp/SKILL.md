@@ -214,8 +214,10 @@ Tool errors come back as `isError: true` with `{error, message}`. Relay the mess
 | `stale_ad_campaign` | ad campaign changed since reviewed/previewed → review again |
 | `ad_campaign_not_editable` | ad campaign publishing or live → change creatives in the app |
 | `unauthorized` | token expired/revoked → reconnect |
+| `insufficient_scope` | token lacks `yobo:write` → reconnect and grant write |
 | `deadline_exceeded` | took too long → retry once |
-| `internal_error` | unexpected; for generation "outcome unconfirmed", check the builder link before retrying |
+| `generation_outcome_unconfirmed` | generate/regenerate may have enqueued despite the error → check the builder link before retrying |
+| `internal_error` | unexpected |
 
 ## Revoke
 
