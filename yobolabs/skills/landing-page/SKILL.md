@@ -176,6 +176,19 @@ Responses use the envelope `{ "success": true, "data": … }` (errors:
 - **`limit` caps at 50**; paginate with `offset` using the returned `total`/`hasMore`.
 - Pages serve at **`/site/<slug>`** only after `publish`.
 
+## Gotchas (verified 2026-09-29 on prod Slides)
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `create` → 400 validation | body schema requires a UUID `siteId` | send any UUID: `{"name":"…","siteId":"<any-uuid>"}` |
+| New page is in the wrong site | REST create **ignores** `siteId` and uses the org's default site; PATCH has no `siteId` | pick the site in the Landing Pages UI Site dropdown → Create Landing Page → `set-content` the new id |
+| `Image` block shows alt text / broken | remote URLs go through `/_next/image`, which 400s (no `images` config in Slides) | use `CustomCode` with a plain `<img src="…">` |
+| Page renders blank after nesting | children written to `zones["<id>:children"]` | current Puck uses slots: put children in the parent's `props.children` array |
+| Draft preview says "Session expired" | preview needs the org's logged-in session | open `/microsites/<id>/preview` in the browser profile that is signed in to Slides/CRM |
+
+Images: upload with `POST {SLIDES_API_URL}/api/upload` (multipart `file`, Bearer key) → `{url}`.
+For step-by-step tutorial pages with screenshots, use `yobolabs:tutorial-page`.
+
 ## Reference documentation
 
 - `references/puck-components.md` — content model, 22-component catalog with props,
