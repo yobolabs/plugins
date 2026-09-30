@@ -1,6 +1,6 @@
 ---
 name: yobo-mcp
-description: Use the Yobo MCP to read and change a merchant's Yobo data from Claude — products, customers, segments, orders, campaigns, offers, ads, Business DNA and the team — and to connect Claude (the Claude app, Claude Code or Codex) to Yobo at /api/mcp/yobo. Use when the user asks Claude to do something in Yobo ("list my products", "draft a campaign in yobo", "create a segment in yobo", "invite to yobo", "launch campaign in yobo", "pause campaign in yobo", "submit ad in yobo") or to set up the connection. Also use when the user mentions "yobo mcp", "connect claude to yobo", "add yobo to claude", "yobo custom connector", "claude desktop yobo", "yobo from claude code", "yobo segments", "yobo orders", "yobo offers", "yobo dashboard", "yobo agent tasks", "yobo ads", "yobo business dna", "/api/mcp/yobo", "yobo-claude-app", "yobo-claude-code", "yobo-codex", "account_not_linked", "org_required", "confirm_required", or "role_not_grantable".
+description: Use the Yobo MCP to read and change a merchant's Yobo data from Claude — products, customers, segments, orders, campaigns, offers, ads, Business DNA and the team — and to connect Claude (the Claude app, Claude Code or Codex) to Yobo at /api/mcp/yobo. Use when the user asks Claude to do something in Yobo ("list my products", "draft a campaign in yobo", "create a segment in yobo", "invite to yobo", "launch campaign in yobo", "pause campaign in yobo", "submit ad in yobo") or to set up the connection. Also use when the user mentions "yobo mcp", "connect claude to yobo", "add yobo to claude", "yobo custom connector", "claude desktop yobo", "yobo from claude code", "yobo segments", "yobo orders", "yobo offers", "yobo dashboard", "yobo agent tasks", "yobo ads", "yobo business dna", "/api/mcp/yobo", "yobo-claude-app", "yobo-claude-code", "yobo-codex", "account_not_linked", "org_required", "confirm_required", or "role_not_grantable", "slides mcp", "crm mcp", "/api/mcp/crm", or "/api/mcp/slides".
 ---
 
 # yobo-mcp (p99 Yobo MCP)
@@ -237,9 +237,22 @@ These happen during Connect, before any tool call — different from the `isErro
 Full root-cause detail and the cadra-auth precedent: `yobo:auth` skill,
 `references/mcp-connector-oauth.md`.
 
+## Slides + CRM MCP (p12)
+
+Two sibling servers, same Yobo Connect sign-in, same clients. Dev only for now (prod is blocked on p9).
+Full procedure, error fixes and rollout: `_context/_runbooks/slides-crm-mcp-connect.md`.
+
+```bash
+claude mcp add --transport http crm    https://crm-dev.yobolabs.ai/api/mcp/crm
+claude mcp add --transport http slides https://slides-dev.yobolabs.ai/api/mcp/slides
+# fallback: add --client-id yobo-claude-code --callback-port 43117 (crm) / 43119 (slides)
+```
+
+Then `/mcp` → **Authenticate** for each. Issuer `https://auth-dev.yobolabs.ai`; scopes `crm:*` / `slides:*`.
+
 ## Reference documentation
 
 - Spec: `_context/yobo-merchant/_specs/p99-yobo-mcp/specs.md` (§5 tools, §9 excluded ops, §11, §13)
-- Operator runbook: `_context/_runbooks/yobo-mcp-connect.md`
+- Operator runbook: `_context/_runbooks/yobo-mcp-connect.md` (Slides + CRM MCP: `_context/_runbooks/slides-crm-mcp-connect.md`)
 - Code (yobo repo): `src/server/mcp/yobo-tools.ts` (`ENTITY_OPS`, action tools), `src/server/mcp/yobo-server.ts`
 - Content (tool descriptions, messages, limits): `system_config` category `mcp`, editable in Back Office
