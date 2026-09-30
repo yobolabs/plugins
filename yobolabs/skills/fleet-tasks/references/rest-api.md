@@ -231,3 +231,35 @@ is where the false clean lives: all four `agent_task_*` tables are RLS-gated and
 `agent_task_definitions` has **no `org_id`**, so the app role sees zero rows — no error, no
 permission message. Measured on the same dev database: app role **0 definitions, 0 runs**; owner
 **3 / 659**. Use `ADMIN_DATABASE_URL` — and prefer this API.
+
+---
+
+<!-- Moved verbatim from SKILL.md (2026-09-30) -->
+
+## Managing tasks over REST — no session, no psql
+
+`/backoffice/agent-tasks` needs a Super User NextAuth session, which a script, an agent or a
+teammate does not have. The supported alternative is the internal REST API — **not psql**, which
+bypasses every gate in this feature.
+
+| | |
+|---|---|
+| Base | `/api/v1/internal/agent-tasks` on `https://<yobo-merchant-host>` — dev and prod origins are in `_ai/server/server-inventory.yaml` |
+| Auth | `X-Internal-API-Key: $INTERNAL_API_KEY`. Platform-scoped, no `orgId` |
+| Covers | definitions, audience preview, preflight, per-merchant skips, enrolment + overrides, runs, rollup, retry |
+| Reads | `withPrivilegedDb` throughout — the app role would report a **false clean** |
+| Omits | `setSendMode`. Read-only `fleet.sendMode` comes back with the definition list |
+
+**The preview gate survives the port, and is stricter here.** tRPC accepts a bare
+`previewFingerprint` — fine for a browser that can only get it by previewing, useless against a
+script that can echo any string. So `POST /audience/preview` mints a signed, expiring,
+audience-bound `previewToken` and activation demands one. Widen the filter after previewing and
+you get `412 preview_required` with `reason: "audience-changed"`.
+
+`POST /definitions` **cannot set `is_active` at all** — `POST /definitions/{id}/activation` is
+the only writer, so both gates (preview token, and preflight with no `fail`) sit on one path.
+Re-pointing a LIVE task's audience needs a token too: that is the server form of the editor's
+"editing an audience control withdraws activation". Deactivation never needs anything.
+
+Endpoints, curl sequences, the token's secret ladder and the operator traps:
+`references/rest-api.md`.

@@ -111,3 +111,22 @@ Measured cost is `ai_usage_records.cost_usd` joined on `execution_uuid`. Three r
 | `src/server/services/agent-tasks/audience.ts` | `buildAudiencePredicate` — every rule's SQL, shared by scanner, runner, preview and the list |
 | `src/server/api/routers/agent-tasks.ts` | `bo.*` procedures |
 | `src/server/services/agent-tasks/preflight.ts` | the preflight verdicts |
+
+---
+
+<!-- Moved verbatim from SKILL.md (2026-09-30) -->
+
+## The ops surface — everything is configurable from `/backoffice/agent-tasks`
+
+Definitions, schedule (hour **and** minute), audience rules, channel, `auto_enrol`, all six limits,
+`alternative_on_exhaustion`, per-merchant ops-disable / overrides (row actions in the
+matching-merchants modal), the delivery kill switch, and a preflight gate on Activate. The Audience
+tab shows only the rules; **View matching merchants** opens a modal backed by
+`bo.listAudienceMembers` (the scanner's own predicate, with Reachable and Will-run per merchant).
+Detail, including which control writes which column and what preflight actually proves:
+`references/ops-surface.md`.
+
+**Preflight before Activate.** `bo.preflight` proves a saved definition against one enrolled
+merchant across agent, prompt, audience, channel, destination, template, budget and send-mode. A
+layer that cannot be evaluated is a WARNING, never a pass — an unreachable Cadra must not read as
+a healthy agent.
