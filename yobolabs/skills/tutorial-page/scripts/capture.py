@@ -130,7 +130,8 @@ def shot(name, crop=None, pad=28, scrub=True):
         rs = [r[:4] for r in (crop if isinstance(crop[0], (list, tuple)) else [crop])]
         x0, y0 = max(0, min(r[0] for r in rs) - pad), max(0, min(r[1] for r in rs) - pad)
         x1, y1 = min(WIDTH, max(r[0] + r[2] for r in rs) + pad), min(HEIGHT, max(r[1] + r[3] for r in rs) + pad)
-        kw["clip"] = {"x": x0, "y": y0, "width": x1 - x0, "height": y1 - y0, "scale": 1}
+        sx, sy = J("[scrollX, scrollY]")   # rects are viewport px; clip wants page px
+        kw["clip"] = {"x": x0 + sx, "y": y0 + sy, "width": x1 - x0, "height": y1 - y0, "scale": 1}
         print(f"{name}: crop {round(x1 - x0)}x{round(y1 - y0)} CSS px")
     d = cdp("Page.captureScreenshot", session_id=SID, format="png", **kw)
     p = os.path.join(OUT, f"{name}.png"); open(p, "wb").write(base64.b64decode(d["data"])); print(p)

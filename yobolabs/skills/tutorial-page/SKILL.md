@@ -1,6 +1,6 @@
 ---
 name: tutorial-page
-description: Use when building a "What's new" or how-to tutorial landing page that walks users through product changes with real screenshots from the live app — feature list from release notes, one ringed screenshot per step, optional GIFs, published as a DRAFT Slides microsite in CRM Landing Pages. Also use when the user mentions "tutorial page", "what's new page", "release tutorial", "how-to page with screenshots", "take screenshots of the new features", "walkthrough landing page", or "feature tour". Default action for a bare invocation — build a draft page end to end (features → outline → screenshots → page → preview), never publish.
+description: Use when building a "What's new" or how-to tutorial landing page that teaches users new functionality in any app we build (Cadra, Yobo, CRM, Slides…) with real screenshots from the live app — feature list from release notes, one ringed, readable screenshot per step, optional GIFs, built as a DRAFT Slides microsite in CRM Landing Pages plus an offline HTML copy. Also use when the user mentions "tutorial page", "what's new page", "release tutorial", "how-to page with screenshots", "explain how <feature> works to the team", "take screenshots of the new features", "walkthrough landing page", "feature tour", or "screenshots are hard to see". Default action for a bare invocation — read the last tutorial's session file, then build a draft page end to end (features → outline → screenshots → page → legibility check → preview), never publish.
 ---
 
 # Tutorial Landing Pages (What's new / how-to)
@@ -9,9 +9,29 @@ Builds a tutorial page that teaches users what changed and how to use it. Each s
 a plain intro, numbered steps, and **one screenshot per step** with an orange ring on the exact
 control. The page is a Slides microsite (draft), built through the `landing-page` skill's API.
 
+It teaches users of any app we build — Cadra, Yobo, CRM, Slides. The page itself is always a
+Yobo Slides microsite, which is why this skill lives next to `landing-page` in this plugin.
+
 The reader is a non-author (sales, ops, a merchant). Two rules decide whether they can follow it:
 **screenshots must be readable** (§3) and **walkthrough first, developer notes last** (§4).
 A page that breaks either one gets rejected — it happened (see Gotchas).
+
+## Before you start — read the last tutorial
+
+Good tutorials were worked out the hard way; do not start from a blank page.
+
+1. Read the newest tutorial session file: `ls -t <repo-root>/_ai/sessions/*tutorial*.md | head -3`
+   (first one: `2026-09-29-[cadra,crm]-whats-new-tutorial.md` — read its User Steering and
+   Lessons Learned). The owner's corrections there apply to every tutorial.
+2. Open the last approved page and copy its **look and structure**: badge, numbered section
+   title, plain intro, bold step text above each picture, boxed screenshots, GIFs for waits.
+   Quality bar: "What's new in Cadra" (`tech.pages.yobolabs.ai/whats-new-in-cadra`, source
+   `_context/cadra/_tutorial/2026-09-29/`). Copy its look, not its shot size: its full-window
+   shots predate the legibility rule in §3.
+3. **Use this pipeline, not a one-off renderer.** `tutorial.json` → `build_page.py` (Slides) and
+   `render_offline.py` (offline copy) — both print the same components, so every tutorial looks
+   the same. Missing a feature (a caption, a new block)? Add it to `build_page.py`. Never write
+   a custom HTML renderer for one page; the second Link in bio draft did and had to be redone.
 
 **Default:** build a DRAFT end to end and hand back the preview link. Publishing is a one-way
 door (public page) — only on the user's explicit word.
@@ -24,6 +44,7 @@ Load `yobolabs:landing-page` too — it owns the microsites API, `lp.mjs`, and t
 |---|---|---|
 | `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/capture.py` | inside browser-use `browser_exec` via `exec(open(...).read())` | pinned-tab helpers: `tabs`, `pin`, `goto`, `rect`, `clk`, `typ`, `key`, `mark`, `shot(name, crop=rect)`, `blur_text`, `frame`. Viewport 1100×720 at 2x |
 | `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/build_page.py` | shell | `tutorial.json` + `uploads.json` → Puck `content.json`. Shows each PNG at its own size (max 1.5× zoom), never stretched |
+| `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/render_offline.py` | shell | same spec → ONE self-contained HTML file (images inlined) via `build_page.build()`. No Slides key needed: use it for the legibility check and as the review copy in `_context/_explainers/` |
 | `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/check_legibility.js` | in the rendered page | smallest readable font per screenshot at the current width; pass = every one ≥ 12px |
 | `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/upload.py` | shell | uploads every PNG/GIF the spec uses to Slides, caches URLs |
 | `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/make_gif.sh` | shell | frames dir → looping GIF (ffmpeg) |
@@ -77,8 +98,10 @@ empty space. The owner rejected a whole page for this. Every shot follows all fi
    crop ≤ ~340 CSS px wide so it still reads on a phone. Wide control (a bar with a gap in the
    middle)? Pass two rects and split into two steps, or cut the empty middle out and say so in
    the caption. Phone previews: crop to the phone and show it at phone size.
-3. **One numbered ring per shot**, and the number is the step number (`mark([r + ["7"]])` for
-   step 7). Never four rings on one image — that is four steps.
+3. **One numbered ring per shot**, and the number is the step number inside its section
+   (`mark([r + ["3"]])` for step 3 — `build_page.py` numbers steps per section). Never four
+   rings on one image — that is four steps. Leave ~20px free above-left of the ringed control
+   so the badge covers no text.
 4. **Instruction above the image.** The step text ("Click Link in bio in the left menu") comes
    first, then its picture. One action per step, one picture per step.
 5. **Legibility test, mandatory.** Open the rendered page at 1440 wide and at 390 wide, run
@@ -88,8 +111,10 @@ empty space. The owner rejected a whole page for this. Every shot follows all fi
    than 12px). A shot that fails is cropped tighter or split in two. Report both numbers.
 
 No real shot for a step (login blocked, feature flag off)? Say so and use a clearly labelled
-drawing ("Drawing, not a screenshot") built from the component's own layout and wording. Never
-fill the gap with an unreadable capture, and list those steps in the hand-back.
+drawing built from the component's own layout and wording, captured with the same `mark()` /
+`shot(crop=)` helpers, and labelled through the step's `"note"` ("Drawing with demo data, not a
+screenshot."). Use `"note"` too when the empty middle of a wide bar was cut out. Never fill the
+gap with an unreadable capture, and list those steps in the hand-back.
 
 - Name shots `s<section>-<step>-<slug>` so the spec reads in order.
 - **Every step the text mentions must be visible in its shot.** If a step says "click your
@@ -111,12 +136,17 @@ fill the gap with an unreadable capture, and list those steps in the hand-back.
 **Walkthrough first, developer notes last.** Page order, top to bottom:
 
 1. Two or three plain sentences: what the feature is, and what the reader can do after reading.
-2. ONE walkthrough in the order the user does it. Numbered steps, one action each, instruction
-   above its picture. Number the steps straight through (1…12), not per section.
+2. ONE walkthrough in the order the user does it, split into short sections of 3-5 steps
+   ("1. Create the page", "2. Add buttons", "3. Publish and share"). One action per step,
+   instruction above its picture.
 3. What the other side sees (the visitor, the customer), then results / analytics.
 4. Limits and common questions.
-5. Last, under a heading that says **"For developers"**: how the parts connect, flow diagrams,
-   code paths, flags, ticket and spec names. Never above the walkthrough, never mixed into steps.
+5. Last, under a badge that says **"For developers"**: how the parts connect, the request
+   flow, code paths, flags, ticket and spec names. Never above the walkthrough, never mixed into
+   steps. Write it as text; a wide diagram image fails the 390 check.
+
+Hand the owner an **"Outline — confirm or cut"** list before any publish: the walkthrough steps
+plus the behaviour claims you are least sure of (§1.3).
 
 8th-grade plain English. Short sentences. The same word for the same thing every time (pick
 "button" or "link", not both). No jargon without a one-clause definition on first use.
@@ -136,6 +166,7 @@ lp(){ node "${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/lp.mjs" "$@"; }
 S="${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts"
 export SLIDES_API_URL=https://<slides-host>
 export LANDING_PAGES_API_KEY=$(security find-generic-password -s <keychain-service> -w | tr -d '\n')
+python3 "$S/render_offline.py" tutorial.json "<repo-root>/_context/_explainers/<Title>.html"   # no key needed; run check_legibility.js on it FIRST
 python3 "$S/upload.py" tutorial.json            # --force s3-2-x after a retake
 python3 "$S/build_page.py" tutorial.json
 lp set-content <microsite-id> content.json
@@ -168,6 +199,8 @@ Site dropdown, click Create Landing Page, then `lp set-content` the new id. The 
 - **Readable or it does not ship.** Small viewport, cropped to the action, one numbered ring,
   ≥ 12px at 1440 and 390 (`check_legibility.js`). See §3.
 - **Walkthrough first, "For developers" last.** See §4.
+- **Last tutorial first, pipeline only.** Read the previous tutorial's session file and open its
+  page before capturing; build with `build_page.py` / `render_offline.py`, no one-off renderer.
 - **Pin your tab.** Another session on the same browser-use daemon moves `current_tab` under
   you — even mid-call. After `pin()`, use only the pinned helpers; no `switch_tab`, `click_at_xy`, `new_tab`.
 - **Report prod writes.** Some controls save instantly (see Gotchas).
@@ -176,7 +209,8 @@ Site dropdown, click Create Landing Page, then `lp set-content` the new id. The 
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Owner: "screenshots are hard to see… tutorial is hard to follow" (Link in bio page, 2026-10-01) | 1440-wide full-window shots shrunk into the column (text ~6px, 70% empty), four rings on one image, "how it connects" before the how-to | §3 readable rule (crop, one ring, legibility test) + §4 structure |
+| Owner: "screenshots are hard to see… tutorial is hard to follow" (Link in bio page, 2026-10-01) | 1400-wide full-window shots of a dark, mostly empty UI shrunk into the column (text ~6px), four rings on one image, "how it connects" before the how-to, and the earlier tutorial's lessons not read | "Before you start" + §3 readable rule (crop, one ring, legibility test) + §4 structure |
+| `shot(crop=)` captured the wrong region after scrolling | CDP clip is in page px, `rect()` is viewport px | fixed in `capture.py` (adds scrollX/scrollY); keep the target inside the 1100×720 viewport |
 | `pin()` attached to a tab in someone else's Chrome profile | URL match runs across every profile | `pin()` now refuses when 2+ profiles match — `tabs()` then `pin(url, target_id=…)`. Map a profile to its `browserContextId` with a probe tab opened via `--profile-directory` |
 | Cropped shot looks blurry and huge on the page | old `.shot{width:100%}` stretched it | `build_page.py` caps each PNG at 1.5× its CSS width |
 | Image block shows alt text / broken icon | Slides Image routes remote URLs via `/_next/image` → 400 (no `images` config) | `build_page.py` uses a CustomCode `<img>` |

@@ -12,7 +12,8 @@ Spec shape (tutorial.json):
   "sections": [
     {"tag": "New", "title": "1. Pick a model",
      "intro": "What is different, in plain words. No 'Why' label.",
-     "steps": [{"text": "Click the Model box.", "shots": ["s1-1-model-box"]}],
+     "steps": [{"text": "Click the Model box.", "shots": ["s1-1-model-box"],
+                "note": "Drawing with demo data, not a screenshot."}],        # note: optional small caption under the shot
      "gif": {"key": "s1-flow", "caption": "The whole flow, start to finish"}}   # optional
   ]
 }
@@ -20,7 +21,7 @@ Image keys map to files <key>.png / <key>.gif next to the spec and to URLs in up
 Optional per step: "minfont": <smallest font, in CSS px, the reader must read in the shot> (default 12).
 
 Images are shown at their own size, never stretched to the column: a PNG captured at 2x is shown
-at most ZOOM x its CSS width, centred. A cropped shot therefore stays sharp and a wide shot is not
+at most ZOOM x its CSS width, left-aligned with the text. A cropped shot therefore stays sharp and a wide shot is not
 blown up. Each <img> carries data-srcw / data-minfont for scripts/check_legibility.js.
 Output: {root, zones, content:[Container{children:[...]}]} ready for `lp.mjs set-content`.
 """
@@ -56,15 +57,16 @@ def css_width(path):
     except OSError:
         return None
 
-def image(src, srcw=None, minfont=12):
+def image(src, key="", srcw=None, minfont=12, mb=28):
     # Plain <img> in CustomCode, NOT the Image block: Image routes remote URLs through /_next/image,
     # which 400s on Slides (no images config). alt="" because the step text sits right above it —
     # a repeated alt duplicates every step when the page is copied or read aloud.
     return {"type": "CustomCode", "props": {"id": cid("CustomCode"),
-            "html": (f'<img class="shot" src="{src}" alt="" loading="lazy" data-srcw="{round(srcw)}" data-minfont="{minfont}" '
-                     f'style="max-width:{round(srcw * ZOOM)}px">' if srcw else f'<img class="shot" src="{src}" alt="" loading="lazy">'),
+            "html": (f'<img class="shot" src="{src}" alt="" loading="lazy" data-shot="{key}" data-srcw="{round(srcw)}" data-minfont="{minfont}" '
+                     f'style="max-width:{round(srcw * ZOOM)}px;margin-bottom:{mb}px">' if srcw
+                     else f'<img class="shot" src="{src}" alt="" loading="lazy" data-shot="{key}" style="margin-bottom:{mb}px">'),
             "css": ".shot{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #e2e8f0;"
-                   "box-shadow:0 10px 15px rgba(0,0,0,.08);margin:0 auto 28px}",
+                   "box-shadow:0 10px 15px rgba(0,0,0,.08);margin:0 0 28px}",
             "js": "", "backgroundColor": "transparent", "minHeight": "auto", "maxWidth": "full",
             "borderRadius": "0", "overflow": "visible"}}
 
@@ -89,9 +91,11 @@ def build(spec, up, here="."):
         c += [badge(s["tag"]), heading(s["title"]), text(s["intro"], "18", MUTED, "24")]
         for i, st in enumerate(s["steps"], 1):
             c.append(text(f"{i}. {st['text']}", "18", INK, "12", "semibold"))
-            c += [image(up[k], css_width(os.path.join(here, k + ".png")), st.get("minfont", 12)) for k in st.get("shots", [])]
+            note = st.get("note")
+            c += [image(up[k], k, css_width(os.path.join(here, k + ".png")), st.get("minfont", 12), 8 if note else 28) for k in st.get("shots", [])]
+            if note: c.append(text(note, "14", FAINT, "28"))
         if s.get("gif"):
-            c += [text(s["gif"]["caption"], "15", MUTED, "8", "semibold"), image(up[s["gif"]["key"]])]
+            c += [text(s["gif"]["caption"], "15", MUTED, "8", "semibold"), image(up[s["gif"]["key"]], s["gif"]["key"])]
         c.append(spacer())
     # Children of a layout block go in props.children (Puck slot). The older zones model
     # ("<id>:children" in zones) renders a BLANK page on current Slides.
