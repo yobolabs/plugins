@@ -8,16 +8,20 @@ Every call is pinned to one CDP session (SID), so another agent driving the same
 browser-use daemon cannot move you to its tab mid-capture. Never call switch_tab(),
 click_at_xy() or new_tab() after pin() — they act on the daemon's shared "current" tab.
 
-Helpers:  goto(url) emu() J(js) R(js_expr_returning_element) rect(text) clk(x,y) typ(text)
-          key('Escape'|'Enter') mark([[x,y,w,h,'1'], ...]) unmark() shot(name)
+Helpers:  tabs(url_substring) goto(url) emu() J(js) R(js_expr_returning_element) rect(text) clk(x,y)
+          typ(text) key('Escape'|'Enter') mark([[x,y,w,h,'1'], ...]) unmark() shot(name, crop=rect)
           blur_text(regex) frames_start(dir) frame(n, delay)
+
+Readable shots: the viewport is SMALL on purpose (1100x720 at 2x) so the UI renders large, and
+shot(name, crop=rect) clips the capture to the control the step is about. A full-window capture
+shrunk into a text column is unreadable — always pass crop.
 """
 import base64, json, os, time
 import browser_harness.helpers as _H
 
 SID = None
 OUT = globals().get("OUT", ".")
-WIDTH, HEIGHT, DPR = 1440, 900, 2   # one width for every shot; 2x for crisp text
+WIDTH, HEIGHT, DPR = 1100, 720, 2   # small viewport = large UI; 2x for crisp text. Do not widen it.
 
 # Blur emails, long digit runs (phones), sk_ keys, and quoted run text (customer content).
 SCRUB = r"""
@@ -46,16 +50,25 @@ window.__find = (txt) => { const els=[...document.querySelectorAll('button,a,[ro
   const e=hit[0]; if(!e) return null; const c=e.closest('button,a,[role=tab],[role=menuitem],[role=option]')||e; const r=c.getBoundingClientRect(); return [r.x,r.y,r.width,r.height]; };
 """
 
-def pin(url_substring):
+def tabs(url_substring=""):
+    """[(targetId, browserContextId, url)] of open page tabs. One browserContextId = one Chrome profile."""
+    return [(t["targetId"], t.get("browserContextId", ""), t["url"]) for t in cdp("Target.getTargets")["targetInfos"]
+            if t["type"] == "page" and url_substring in t["url"]]
+
+def pin(url_substring, target_id=None):
     """Attach to the page target whose URL contains url_substring. Open it first in the right
-    Chrome profile (open -na 'Google Chrome' --args --profile-directory='<profile>' '<url>')."""
+    Chrome profile (open -na 'Google Chrome' --args --profile-directory='<profile>' '<url>').
+    The match runs across EVERY Chrome profile: if the same URL is open in more than one profile,
+    this refuses to guess — find your profile's tab with tabs() and pass target_id."""
     global SID
-    ts = [t for t in cdp("Target.getTargets")["targetInfos"] if t["type"] == "page" and url_substring in t["url"]]
+    ts = [t for t in tabs(url_substring) if not target_id or t[0].startswith(target_id)]
     if not ts:
         raise RuntimeError(f"no tab with {url_substring!r} — open it in the right Chrome profile first")
-    SID = cdp("Target.attachToTarget", targetId=ts[-1]["targetId"], flatten=True)["sessionId"]
+    if len({t[1] for t in ts}) > 1:
+        raise RuntimeError(f"{url_substring!r} is open in {len({t[1] for t in ts})} Chrome profiles — pass target_id (see tabs())")
+    SID = cdp("Target.attachToTarget", targetId=ts[-1][0], flatten=True)["sessionId"]
     emu()
-    return ts[-1]["targetId"]
+    return ts[-1][0]
 
 def J(expr):
     try:
@@ -106,10 +119,20 @@ def blur_text(regex):
     """Blur every text node matching a JS regex source, e.g. r'Jane|Doe' for teammate names."""
     J(f"""(()=>{{const re=new RegExp({json.dumps(regex)},'i');const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){{if(re.test(n.textContent))n.parentElement.style.filter='blur(6px)'}}}})()""")
 
-def shot(name, scrub=True):
+def shot(name, crop=None, pad=28, scrub=True):
+    """crop: one rect [x,y,w,h] (from rect()/R()) or a list of rects. The capture is clipped to
+    their union plus `pad` px of context, so the control fills the image. Keep the crop at most
+    ~340 CSS px wide if the page must stay readable on a phone."""
     if scrub: J(SCRUB)
     time.sleep(0.5)
-    d = cdp("Page.captureScreenshot", session_id=SID, format="png")
+    kw = {}
+    if crop:
+        rs = [r[:4] for r in (crop if isinstance(crop[0], (list, tuple)) else [crop])]
+        x0, y0 = max(0, min(r[0] for r in rs) - pad), max(0, min(r[1] for r in rs) - pad)
+        x1, y1 = min(WIDTH, max(r[0] + r[2] for r in rs) + pad), min(HEIGHT, max(r[1] + r[3] for r in rs) + pad)
+        kw["clip"] = {"x": x0, "y": y0, "width": x1 - x0, "height": y1 - y0, "scale": 1}
+        print(f"{name}: crop {round(x1 - x0)}x{round(y1 - y0)} CSS px")
+    d = cdp("Page.captureScreenshot", session_id=SID, format="png", **kw)
     p = os.path.join(OUT, f"{name}.png"); open(p, "wb").write(base64.b64decode(d["data"])); print(p)
     return p
 

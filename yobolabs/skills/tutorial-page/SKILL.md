@@ -9,6 +9,10 @@ Builds a tutorial page that teaches users what changed and how to use it. Each s
 a plain intro, numbered steps, and **one screenshot per step** with an orange ring on the exact
 control. The page is a Slides microsite (draft), built through the `landing-page` skill's API.
 
+The reader is a non-author (sales, ops, a merchant). Two rules decide whether they can follow it:
+**screenshots must be readable** (§3) and **walkthrough first, developer notes last** (§4).
+A page that breaks either one gets rejected — it happened (see Gotchas).
+
 **Default:** build a DRAFT end to end and hand back the preview link. Publishing is a one-way
 door (public page) — only on the user's explicit word.
 
@@ -18,8 +22,9 @@ Load `yobolabs:landing-page` too — it owns the microsites API, `lp.mjs`, and t
 
 | Script | Runs where | Does |
 |---|---|---|
-| `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/capture.py` | inside browser-use `browser_exec` via `exec(open(...).read())` | pinned-tab helpers: `pin`, `goto`, `rect`, `clk`, `typ`, `key`, `mark`, `shot`, `blur_text`, `frame` |
-| `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/build_page.py` | shell | `tutorial.json` + `uploads.json` → Puck `content.json` |
+| `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/capture.py` | inside browser-use `browser_exec` via `exec(open(...).read())` | pinned-tab helpers: `tabs`, `pin`, `goto`, `rect`, `clk`, `typ`, `key`, `mark`, `shot(name, crop=rect)`, `blur_text`, `frame`. Viewport 1100×720 at 2x |
+| `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/build_page.py` | shell | `tutorial.json` + `uploads.json` → Puck `content.json`. Shows each PNG at its own size (max 1.5× zoom), never stretched |
+| `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/check_legibility.js` | in the rendered page | smallest readable font per screenshot at the current width; pass = every one ≥ 12px |
 | `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/upload.py` | shell | uploads every PNG/GIF the spec uses to Slides, caches URLs |
 | `${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/make_gif.sh` | shell | frames dir → looping GIF (ffmpeg) |
 
@@ -48,34 +53,73 @@ the PNGs, `tutorial.json`, `uploads.json`, `content.json`, `preview/` proof shot
   Connect is a prod write** — say so first and use a test agent or test record. Report every
   side effect afterwards (table: what, where, undo).
 
-### 3. Screenshots — one per step, ringed
+### 3. Screenshots — one per step, ringed, readable
 
 In `browser_exec`:
 
 ```python
 exec(open("${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts/capture.py").read())
 OUT = "<repo-root>/_context/<app>/_tutorial/<date>"
-pin("<app-host>/agents")                 # attach by URL substring
+pin("<app-host>/agents")                 # attach by URL substring (refuses if 2 profiles match → tabs(), target_id=)
 goto("https://<app-host>/agents")
 r = rect("New space")                     # exact visible text → [x,y,w,h]
-mark([r + ["2"]]); shot("s3-2-new-space-menu"); unmark()
+mark([r + ["2"]]); shot("s3-2-new-space-menu", crop=r); unmark()   # crop = the control + 28px of context
 ```
+
+#### Screenshots must be readable (hard rule)
+
+A full-window capture dropped into a text column shrinks 12px UI text to about 6px and is mostly
+empty space. The owner rejected a whole page for this. Every shot follows all five:
+
+1. **Small viewport.** Keep capture.py's 1100×720 at 2x. Never widen it "to fit more in".
+2. **Crop to the action.** `shot(name, crop=rect)` — the control the step is about plus enough
+   context to locate it (its label, its neighbours). No shot may be mostly empty space. Keep a
+   crop ≤ ~340 CSS px wide so it still reads on a phone. Wide control (a bar with a gap in the
+   middle)? Pass two rects and split into two steps, or cut the empty middle out and say so in
+   the caption. Phone previews: crop to the phone and show it at phone size.
+3. **One numbered ring per shot**, and the number is the step number (`mark([r + ["7"]])` for
+   step 7). Never four rings on one image — that is four steps.
+4. **Instruction above the image.** The step text ("Click Link in bio in the left menu") comes
+   first, then its picture. One action per step, one picture per step.
+5. **Legibility test, mandatory.** Open the rendered page at 1440 wide and at 390 wide, run
+   `check_legibility.js` (`J(open(".../check_legibility.js").read())`), and look at the proof
+   shots yourself. The smallest UI text a reader must read in any screenshot is ≥ 12 CSS px at
+   both widths (`min` in the output; set `"minfont"` on a step whose shot has smaller UI text
+   than 12px). A shot that fails is cropped tighter or split in two. Report both numbers.
+
+No real shot for a step (login blocked, feature flag off)? Say so and use a clearly labelled
+drawing ("Drawing, not a screenshot") built from the component's own layout and wording. Never
+fill the gap with an unreadable capture, and list those steps in the hand-back.
 
 - Name shots `s<section>-<step>-<slug>` so the spec reads in order.
 - **Every step the text mentions must be visible in its shot.** If a step says "click your
   initials", the menu is open in the shot. Re-audit every section before calling it done —
   missing visuals was the user's #1 complaint.
-- Ring = 3px orange border + numbered badge on the first ring. Group related controls into one
-  ring rather than 4 overlapping ones.
+- Ring = 3px orange border + numbered badge. One ring per shot (rule 3 above); if a step truly
+  needs two controls, group them in one ring.
 - Re-measure `rect()` **after** the UI settles (a dropdown opening shifts the layout).
 - Blur before every shot: `shot()` runs SCRUB (emails, phone numbers, `sk_` keys, quoted
   customer text). Add `blur_text(r'<first>|<last>')` for teammate names. Blur long internal
   prompt bodies (skill markdown) with a CSS filter on `textarea,pre,.cm-content`.
 - Flows with a wait (AI rewrite, image generation) get a GIF: `frames_start("gif-x")`, then
   `frame()` in the loop, then `make_gif.sh`. Delete frames taken after the dialog closed.
-- Check all shots at once: `magick montage s*.png -geometry 480x300+6+6 -tile 5x contact.png`, then Read it.
+- Check all shots at once: `magick montage s*.png -background '#888' -geometry +8+8 -tile 5x contact.png`
+  (no resize — you must see them at real size), then Read it.
 
-### 4. Copy
+### 4. Copy and structure
+
+**Walkthrough first, developer notes last.** Page order, top to bottom:
+
+1. Two or three plain sentences: what the feature is, and what the reader can do after reading.
+2. ONE walkthrough in the order the user does it. Numbered steps, one action each, instruction
+   above its picture. Number the steps straight through (1…12), not per section.
+3. What the other side sees (the visitor, the customer), then results / analytics.
+4. Limits and common questions.
+5. Last, under a heading that says **"For developers"**: how the parts connect, flow diagrams,
+   code paths, flags, ticket and spec names. Never above the walkthrough, never mixed into steps.
+
+8th-grade plain English. Short sentences. The same word for the same thing every time (pick
+"button" or "link", not both). No jargon without a one-clause definition on first use.
 
 - Section = badge (`New` / `Changed` / `Easier` / `Fixed` / `Start here`), numbered title,
   one plain intro paragraph, then steps. **No "Why it changed" label.** Explain naturally
@@ -110,9 +154,8 @@ Site dropdown, click Create Landing Page, then `lp set-content` the new id. The 
 - Draft preview: `https://<slides-host>/microsites/<id>/preview` — needs the org's logged-in
   session (open it top-level in the same Chrome profile; inside the CRM iframe images lazy-load
   late and look missing).
-- Check: every `img` has `naturalWidth > 0`, desktop 1440 and phone 390, and
-  `document.documentElement.scrollWidth == innerWidth` (no side scroll). Save proof shots to
-  `preview/`.
+- Check at desktop 1440 and phone 390 with `check_legibility.js`: `fail` is empty (every image
+  loaded and ≥ 12px), `sideScroll` is false. Save proof shots to `preview/` and Read them.
 - Hand back: preview link, section list, prod side effects, open asks. Publish only on the
   user's word.
 
@@ -122,6 +165,9 @@ Site dropdown, click Create Landing Page, then `lp set-content` the new id. The 
 - **Only live features.** Dev-only work stays off the page.
 - **Claims match the product.** If the owner says it is broken, drop the section. Don't soften it.
 - **One shot per step.** A step with no visual is not done.
+- **Readable or it does not ship.** Small viewport, cropped to the action, one numbered ring,
+  ≥ 12px at 1440 and 390 (`check_legibility.js`). See §3.
+- **Walkthrough first, "For developers" last.** See §4.
 - **Pin your tab.** Another session on the same browser-use daemon moves `current_tab` under
   you — even mid-call. After `pin()`, use only the pinned helpers; no `switch_tab`, `click_at_xy`, `new_tab`.
 - **Report prod writes.** Some controls save instantly (see Gotchas).
@@ -130,6 +176,9 @@ Site dropdown, click Create Landing Page, then `lp set-content` the new id. The 
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| Owner: "screenshots are hard to see… tutorial is hard to follow" (Link in bio page, 2026-10-01) | 1440-wide full-window shots shrunk into the column (text ~6px, 70% empty), four rings on one image, "how it connects" before the how-to | §3 readable rule (crop, one ring, legibility test) + §4 structure |
+| `pin()` attached to a tab in someone else's Chrome profile | URL match runs across every profile | `pin()` now refuses when 2+ profiles match — `tabs()` then `pin(url, target_id=…)`. Map a profile to its `browserContextId` with a probe tab opened via `--profile-directory` |
+| Cropped shot looks blurry and huge on the page | old `.shot{width:100%}` stretched it | `build_page.py` caps each PNG at 1.5× its CSS width |
 | Image block shows alt text / broken icon | Slides Image routes remote URLs via `/_next/image` → 400 (no `images` config) | `build_page.py` uses a CustomCode `<img>` |
 | Preview blank after wrapping in Container | children put in `zones["<id>:children"]` | Put children in `props.children` (slot) |
 | Each step's text appears twice on copy | `<img alt>` repeated the step text | `alt=""` (text sits above the shot) |
