@@ -103,3 +103,10 @@ Moved verbatim from `SKILL.md` (2026-09-30). Read before diagnosing a lost, late
   `key` now collides, and the first failure is unreproducible. Unexpected throws are now **500
   `internal`**, dependency failures **503 `unavailable`**. If you are reading older transcripts, a
   400 from these routes does NOT prove the request was malformed.
+- **The runner's `pollToTerminal` backs off; before 2026-10-05 it did not.** It polls the Cadra
+  execution with base 2 s + jitter, exponential to a 30 s ceiling, and honours `Retry-After` from
+  `@cadraos/sdk` `RateLimitError.retryAfter` (seconds, capped at 60 s) — since yobo `42450118c`
+  (YMS-370). Before that it polled a flat 1 s, which 429-stormed the shared Cadra key on
+  2026-10-05 (4618 `poll_error`) and starved the other workloads on that key. The runner logs only
+  errors, so call-rate proof is the Cadra per-key Redis counter (`ratelimit:{env}:{apiKeyId}:{windowStart}`),
+  never worker logs (a container recreate also wipes them).
