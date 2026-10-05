@@ -1,6 +1,6 @@
 ---
 name: fleet-tasks
-description: "Use when working on p37 Fleet Agent Tasks (Jira YMS-191) — yobo's per-merchant scheduled agent fan-out, where ops says run this agent for every merchant and each merchant gets their own run, brief and delivery. Also use when the user mentions 'fleet task', 'agent task', 'agent_task_definitions', 'agent_task_runs', 'agent_task_subscriptions', 'daily brief', 'morning brief', 'brief CTA', 'get_daily_brief', 'Task input (JSON)', 'input_template', 'dataGate', 'audience preview', 'rules mode', 'nameMatches', 'requireReachable', 'auto_enrol', 'agent_tasks' flag, 'AGENT_TASKS_ENABLED', 'not-due', 'not-in-audience', 'skipped_no_data', 'budget-cap', 'notified / viewed / expired', 'template-unresolved', '132000', 'backoffice/agent-tasks', 'settings/scheduled-briefs', 'preflight', 'send mode', 'mock gateway', 'wamid', 'interval schedule', or 'cost_usd'. ALSO use when a query on agent_task_* returns 0 rows (RLS false clean, app_user), for managing tasks over REST ('/api/v1/internal/agent-tasks', 'X-Internal-API-Key', 'previewToken', '412 preview_required', 'retry a run'), when a brief came from the WRONG WhatsApp number or TWICE ('platform sender', 'AGENT_TASK_PLATFORM_SENDER', 'reminderMaxCount'), or when a brief was lost or late ('timeout-swept', 'resend')."
+description: "Use when working on p37 Fleet Agent Tasks (Jira YMS-191) — yobo's per-merchant scheduled agent fan-out, where ops says run this agent for every merchant and each merchant gets their own run, brief and delivery. Also use when the user mentions 'fleet task', 'agent task', 'agent_task_definitions', 'agent_task_runs', 'agent_task_subscriptions', 'daily brief', 'morning brief', 'brief CTA', 'get_daily_brief', 'Task input (JSON)', 'input_template', 'dataGate', 'audience preview', 'rules mode', 'nameMatches', 'requireReachable', 'auto_enrol', 'agent_tasks' flag, 'AGENT_TASKS_ENABLED', 'not-due', 'not-in-audience', 'skipped_no_data', 'budget-cap', 'notified / viewed / expired', 'template-unresolved', '132000', 'backoffice/agent-tasks', 'settings/scheduled-briefs', 'preflight', 'send mode', 'mock gateway', 'wamid', 'interval schedule', 'cost_usd', 'multi-brand', 'which brand's brief', 'brief for brand on/off', 'set_daily_brief_subscription', or 'Your brands'. ALSO use when a query on agent_task_* returns 0 rows (RLS false clean, app_user), for managing tasks over REST ('/api/v1/internal/agent-tasks', 'X-Internal-API-Key', 'previewToken', '412 preview_required', 'retry a run'), when a brief came from the WRONG WhatsApp number or TWICE ('platform sender', 'AGENT_TASK_PLATFORM_SENDER', 'reminderMaxCount'), or when a brief was lost or late ('timeout-swept', 'resend')."
 ---
 
 # fleet-tasks (p37 Fleet Agent Tasks)
@@ -233,6 +233,17 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 
 Lost/late briefs, timezone provenance, destination ladder, test-account reset, duplicates, reminders,
 fabrication gate, retry, openable numbers, REST 400s. **Before diagnosing a delivery bug or retrying a run, read `references/traps.md`.**
+
+## Multi-brand owners
+
+One brief **per brand turned ON**, judged per destination owner. Default ON = main brand
+(`users.current_org_id` among brands routing to that phone, else newest owned); a brand with a
+notified/viewed/delivered/expired run for the same task in the last 7 days stays ON; an explicit
+`agent_task_subscriptions` row wins. Agent tools `set_daily_brief_subscription` /
+`get_daily_brief_subscriptions` are allowed during onboarding via a separate self-service list in
+`onboarding-clamp.ts` (else `403 onboarding_out_of_belt`). msg-api intercepts a message naming
+another brand with "Tap to switch" before the agent. **Before touching brand ON/OFF, brand-family
+code, the brief CTA payload or the brand tools, read `references/multi-brand.md`.**
 
 ## Prod procedure
 
