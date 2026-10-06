@@ -1,6 +1,6 @@
 ---
 name: configure-cadra
-description: Use when creating, updating or managing CadraOS building blocks through the REST API, meaning agents, roles, skills, tools, teams, agentic boards, knowledge bases, guardrails and channels. Triggers include "create a CadraOS agent", "update a Cadra agent", "register a Cadra tool", "deploy agent", "publish board", "kb upload", or a /api/v1 CadraOS path.
+description: Use when creating, updating or managing CadraOS building blocks through the REST API, meaning agents, roles, skills, tools, teams, agentic boards, knowledge bases, guardrails and channels. Triggers include "link a board", "Notion board", "Jira board", "board_link", "create a CadraOS agent", "update a Cadra agent", "register a Cadra tool", "deploy agent", "publish board", "kb upload", or a /api/v1 CadraOS path.
 ---
 
 # Configure CadraOS (agents, roles, skills, tools, teams, boards, KBs)
@@ -311,6 +311,26 @@ Tool rows are **per-org** and agent uuids differ per environment. A definition
 exported from dev carries a dev uuid; applying it to prod points the task at an
 agent that does not exist there. Re-resolve `agent_uuid` per environment, and
 run the three checks above against **that** origin.
+
+## Link a board to Notion or Jira (Cadra MCP)
+
+Tools live on Cadra **DEV first** (2026-10-06). Use the Cadra MCP, not REST. Order:
+
+1. `list_connectors` -> `list_host_boards` (pick the Notion/Jira board)
+2. `board_link_ready_check`; if it fails on shape, `fix_board_shape`, re-check
+3. `link_board` (link starts **paused**) -> `bind_lane_agent_and_start`
+4. Later: `update_board_link`, `board_link_sync` (`status` | `start` | `pause` | `resume`)
+5. Add a Live lane: `save_board_draft` + `publish_board`
+
+Rules:
+- Agent-works-in and hand-back lanes can NOT be Done. Live / other agent lanes may hand back to Done.
+- Lanes must map to existing source statuses (Notion/Jira), no invented ones.
+- Only a remote agent's owner can bind it.
+- Cards follow the latest **published** board.
+- Card comments + images reach the agent on every run.
+- Remote Claude Code agents load the runner user's enabled plugins in `approve_all`.
+
+Full guide: https://claude.ai/artifact/LWA8vL3QmKaKLcL3koFEfB (repo: `_context/cadra/_wiki/boards/linked-boards-howto.md`).
 
 ## Lifecycle rules that bite
 
