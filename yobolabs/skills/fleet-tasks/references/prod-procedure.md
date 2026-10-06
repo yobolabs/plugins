@@ -27,7 +27,9 @@ Before any prod flip, check the halves that ship separately and fail silently (C
 
 - the CTA template `APPROVED` on the **prod** WABA of **every** platform line (a dev approval does
   not carry over) and registered in the gateway for the sending client;
-- `AGENT_TASK_PLATFORM_SENDER=true` on the prod worker **and** Vercel prod;
+- `MSG_API_URL` / `MSG_API_SERVICE_SECRET` / `MSG_API_PLATFORM_ORG_ID` set on the prod worker (the
+  platform sender has no flag and no fallback - `AGENT_TASK_PLATFORM_SENDER` was deleted 2026-09-19,
+  so it is not a switch to set; unset msg-api env fails the send loud);
 - `reminderMaxCount: 0` on any daily or interval task.
 
 **Changing ONE worker env var: recreate from the RUNNING container's env, not the file.**

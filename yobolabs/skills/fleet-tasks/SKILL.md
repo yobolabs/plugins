@@ -171,16 +171,16 @@ Yobo runs **more than one platform WhatsApp line** (msg-api `channel_connections
 agent on ONE of them. The CTA must leave on that same line: the tap reply follows the CTA's
 line, so a CTA on another line opens a **second thread** with the agent.
 
-| `AGENT_TASK_PLATFORM_SENDER` | Sender | Result |
-|---|---|---|
-| `true` (**prod since 2026-09-18**) | `platformSender` (`src/lib/msg-api/platform-notify.ts`) → msg-api `POST /api/v1/platform-notify` → the line the merchant has spoken on most | right line. No platform conversation → refused `no_platform_conversation`, run `failed`, no brief — by design, never a fallback |
-| anything else | `defaultSender` → `resolveYoboSender()` → the ONE `message_phone_numbers` row with `org_id IS NULL` and category `DAILY_DIGEST` | every merchant on that one line |
+**There is no flag.** `AGENT_TASK_PLATFORM_SENDER` was deleted 2026-09-19 (CORRECTED 2026-10-06 - this
+section used to say it is set `true` on the prod worker and Vercel; it is not an env var any more,
+setting it does nothing). `platformSender` (`src/lib/msg-api/platform-notify.ts:133`) is the ONLY
+sender: msg-api `POST /api/v1/platform-notify` (headers `X-Service-Secret` + `X-Org-Id`) -> the line
+the merchant has spoken on most. No platform conversation -> refused `no_platform_conversation`, run
+`failed`, no brief - by design, **no fallback** (`platform-notify.ts:32`,
+`delivery/whatsapp.adapter.ts:62`). The old `defaultSender` / `resolveYoboSender()` path is gone.
 
-The flag is read in **two** places: the worker (it sends) and Vercel (preflight only,
-`preflight.ts:549`). Set both, or preflight grades a path the sender does not take.
-
-⚠️ **The fix sat behind this flag, off, for 15 days.** Built 2026-09-03, flipped on the prod
-worker 2026-09-18. Measured before the flip: all 191 CTAs in 8 days left from one WABA, and 62 of
+⚠️ **The fix sat behind a flag, off, for 15 days (history; the flag is now deleted).** Built
+2026-09-03, flipped on the prod worker 2026-09-18. Measured before the flip: all 191 CTAs in 8 days left from one WABA, and 62 of
 71 recipients belonged on another line. Nothing errors — Meta delivers, the run reads `notified`,
 the gateway says `READ`. The only symptom is a second thread on the merchant's phone. **Answer
 "which number did they get it from" in the gateway by wamid (`waba_id`), never in yobo.**

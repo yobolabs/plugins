@@ -180,7 +180,7 @@ both the recorded and the current transport replay the run's key — up to
 `MAX_DELIVERY_ATTEMPTS = 3` in total, within `RESEND_WINDOW_HOURS = 24`, never behind a closed
 ops gate / `agent_tasks` flag / audience (gates 1, 3, 4, 5, 6 pre-checked — counted
 `resendGateClosed`), never after the run's merchant-local day (`resend-stale`). Ambiguous
-failures on a keyless transport (email, `cadra_channel`, WhatsApp without the platform sender)
+failures on a keyless transport (email, `cadra_channel`, WhatsApp via the platform sender)
 stay failed and are counted `resendAmbiguous`.
 
 **Facts each attempt records** on `payload_snapshot`: `sendFailure {definitive, replaySafe}` (a
@@ -356,13 +356,13 @@ A fleet task is Yobo messaging a merchant, so the merchant is **only a recipient
 `message_phone_numbers` row is never read. The sender is picked by `whatsapp.adapter.ts:994`:
 
 ```ts
-const send = this.deps.sendTemplate ?? (isPlatformSenderEnabled() ? platformSender : defaultSender);
+const send = this.deps.sendTemplate ?? platformSender; // flag + defaultSender deleted 2026-09-19
 ```
 
 | Path | When | Picks the line from |
 |---|---|---|
-| `platformSender` (`src/lib/msg-api/platform-notify.ts`) | `AGENT_TASK_PLATFORM_SENDER=true` — **prod since 2026-09-18**, dev since 2026-09-03 | msg-api `POST /api/v1/platform-notify` (`X-Service-Secret` + `X-Org-Id` = the msg-api org owning the platform connections, env `MSG_API_URL` / `MSG_API_SERVICE_SECRET` / `MSG_API_PLATFORM_ORG_ID`). Fails LOUD if any is unset — never falls back |
-| `defaultSender` → `resolveYoboSender()` (`:787`) | flag unset / anything but `true` | the lowest-id active `message_phone_numbers` row with `org_id IS NULL` and category `LIKE '%DAILY_DIGEST%'`, read privileged (the app role cannot see `org_id IS NULL` rows). One line for every merchant |
+| `platformSender` (`src/lib/msg-api/platform-notify.ts`) | ALWAYS, the ONLY sender (CORRECTED 2026-10-06: `AGENT_TASK_PLATFORM_SENDER` was deleted 2026-09-19, it is not an env var; `platform-notify.ts:133`, `delivery/whatsapp.adapter.ts:62`) | msg-api `POST /api/v1/platform-notify` (`X-Service-Secret` + `X-Org-Id` = the msg-api org owning the platform connections, env `MSG_API_URL` / `MSG_API_SERVICE_SECRET` / `MSG_API_PLATFORM_ORG_ID`). Fails LOUD if any is unset — never falls back |
+| ~~`defaultSender` → `resolveYoboSender()`~~ | **removed 2026-09-19**, no fallback exists | (history) it read the lowest-id active `message_phone_numbers` row with `org_id IS NULL`, one line for every merchant |
 
 **msg-api's resolver** — `ConversationRepository.findPlatformConnectionForTenantOrg`
 (msg-api `src/repositories/conversation.repository.ts:1468`). Four predicates, each forced by a
@@ -575,7 +575,7 @@ Use `ADMIN_DATABASE_URL` or `DATABASE_MIGRATE_URL`. The env→host mapping, and 
 | definition exists, **0 run rows** | gate 1–7 blocked it before the claim | nowhere on disk; scanner's in-memory `result.skips` only |
 | run rows, all `cancelled`/`budget-cap` | `limits.monthlyCostCapUsd` reached this calendar month | `sum(cost_usd)` for the month |
 | run rows `notified`, never `viewed` | merchant never tapped, or the template never arrived | `whatsapp_template.status` / `.category` |
-| merchant got it from a **number they don't chat on** | legacy sender in use — `AGENT_TASK_PLATFORM_SENDER` not `true` on the worker | gateway `whatsapp_messages.waba_id` / `client_id` by wamid; `printenv` inside the worker |
+| merchant got it from a **number they don't chat on** | `platformSender` resolver picked another line (no flag exists: `AGENT_TASK_PLATFORM_SENDER` deleted 2026-09-19, the legacy sender is gone) | gateway `whatsapp_messages.waba_id` / `client_id` by wamid; msg-api resolver predicates ("WABA resolution") |
 | merchant got it **more than once a day** | reminders stacking, two active definitions, two orgs sharing an owner phone — or **dev** | see below |
 
 **"Got it twice" recipe** (measured 2026-09-18 — the answer was dev, not prod):
