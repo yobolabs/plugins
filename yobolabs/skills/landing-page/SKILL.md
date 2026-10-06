@@ -1,6 +1,6 @@
 ---
 name: landing-page
-description: Use when creating, editing, configuring, or publishing CadraOS/Slides landing pages (microsites) through the REST API — listing pages, rewriting Puck page content, or publishing/unpublishing. Also use when the user mentions "landing page", "landing pages", "microsite", "puck content", "publish a page", "edit landing page", "configure landing page", or "/api/v1/microsites".
+description: Use when creating, editing or publishing CadraOS/Slides landing pages (microsites) via the REST API, no code, meaning listing pages, rewriting Puck page content, publishing and unpublishing. Triggers include "landing page", "microsite", "publish a page", "edit landing page", "/api/v1/microsites".
 ---
 
 # Configure Landing Pages (CadraOS/Slides microsites)

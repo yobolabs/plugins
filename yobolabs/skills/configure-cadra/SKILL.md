@@ -1,6 +1,6 @@
 ---
 name: configure-cadra
-description: Use when creating, updating, or managing CadraOS building blocks through the REST API — agents, roles, skills, tools, teams, agentic boards, knowledge bases, prompts, guardrails, models, providers, rules, projects, workflows or channels. Also use when the user mentions "cadra agent", "create an agent", "update an agent", "agent role", "role template", "cadra skill", "cadra tool", "register a tool", "MCP tool", "agent team", "deploy agent", "cadra board", "agentic board", "publish board", "knowledge base", "kb upload", "upload documents to a knowledge base", "guardrail profile", "fleet task", "fleet agent task", "daily brief", "scheduled brief", "get_daily_brief", "agent is not deployed", "set-tools", "role output schema", "role structured output", "outputSchema on a role", or a `/api/v1/...` CadraOS path.
+description: Use when creating, updating or managing CadraOS building blocks through the REST API, meaning agents, roles, skills, tools, teams, agentic boards, knowledge bases, guardrails and channels. Triggers include "create a CadraOS agent", "update a Cadra agent", "register a Cadra tool", "deploy agent", "publish board", "kb upload", or a /api/v1 CadraOS path.
 ---
 
 # Configure CadraOS (agents, roles, skills, tools, teams, boards, KBs)

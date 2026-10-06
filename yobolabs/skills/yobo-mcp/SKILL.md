@@ -1,6 +1,6 @@
 ---
 name: yobo-mcp
-description: Use the Yobo MCP to read and change a merchant's Yobo data from Claude — products, customers, segments, orders, campaigns, offers, ads, Business DNA and the team — and to connect Claude (the Claude app, Claude Code or Codex) to Yobo at /api/mcp/yobo. Use when the user asks Claude to do something in Yobo ("list my products", "draft a campaign in yobo", "create a segment in yobo", "invite to yobo", "launch campaign in yobo", "pause campaign in yobo", "submit ad in yobo") or to set up the connection. Also use when the user mentions "yobo mcp", "connect claude to yobo", "add yobo to claude", "yobo custom connector", "claude desktop yobo", "yobo from claude code", "yobo segments", "yobo orders", "yobo offers", "yobo dashboard", "yobo agent tasks", "yobo ads", "yobo business dna", "/api/mcp/yobo", "yobo-claude-app", "yobo-claude-code", "yobo-codex", "account_not_linked", "org_required", "confirm_required", or "role_not_grantable", "slides mcp", "crm mcp", "/api/mcp/crm", or "/api/mcp/slides".
+description: Use when the user wants Claude to read or change a merchant's Yobo data through the Yobo MCP (products, customers, segments, orders, campaigns, offers, ads, team), or to connect Claude, Claude Code or Codex to Yobo. Triggers include "yobo mcp", "connect claude to yobo", "list my products in yobo", "draft a campaign in yobo", "/api/mcp/yobo".
 ---
 
 # yobo-mcp (p99 Yobo MCP)

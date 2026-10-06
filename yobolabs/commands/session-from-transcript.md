@@ -1,6 +1,6 @@
 ---
 name: session-from-transcript
-description: Hand off a stale Claude Code session to a fresh one by mining its raw .jsonl transcript with jq into a session file (in /session-update format, with a Resume Here block) — or a quick recap. Usually run because the user could not get back to the session within the 1-hour prompt-cache window, so resuming it would re-read the whole context uncached; this replaces /resume and /compact for a cold session. Also use when /resume or /recall is blocked by the 1M-context billing gate, when a session was never logged, or when the user names a past session by title/uuid/path to write up. Also use when the user mentions "session from transcript", "hand off that session", "pick up session X", "the cache expired", "reconstruct session", "mine transcript", "recover that session", or "recap that session".
+description: Use when the user wants a stale or never-logged Claude Code session turned into a session file or quick recap by mining its raw .jsonl transcript, for example when the 1-hour prompt cache has expired or /resume is blocked. Triggers include "session from transcript", "pick up session X", "the cache expired", "reconstruct session", "recap that session".
 model: sonnet
 ---
 

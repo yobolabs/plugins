@@ -1,6 +1,6 @@
 ---
 name: tutorial-page
-description: Use when building a "What's new" or how-to tutorial landing page that teaches users new functionality in any app we build (Cadra, Yobo, CRM, Slides…) with real screenshots from the live app — feature list from release notes, one ringed, readable screenshot per step, optional GIFs, built as a DRAFT Slides microsite in CRM Landing Pages plus an offline HTML copy. Also use when the user mentions "tutorial page", "what's new page", "release tutorial", "how-to page with screenshots", "explain how <feature> works to the team", "take screenshots of the new features", "walkthrough landing page", "feature tour", or "screenshots are hard to see". Default action for a bare invocation — read the last tutorial's session file, then build a draft page end to end (features → outline → screenshots → page → legibility check → preview), never publish.
+description: Use when building a "What's new" or how-to tutorial page with real screenshots of a live app (Cadra, Yobo, CRM, Slides), built as a DRAFT Slides microsite plus an offline HTML copy. Triggers include "tutorial page", "what's new page", "release tutorial", "feature tour", "screenshots are hard to see". A bare invocation builds a draft from the last tutorial's session file and never publishes.
 ---
 
 # Tutorial Landing Pages (What's new / how-to)
