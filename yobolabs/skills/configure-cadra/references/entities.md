@@ -156,6 +156,14 @@ Permissions: `skills:*`. A skill is a **prompt template**, not code.
 
 Forgetting `template` is the most common 400 on this entity.
 
+### Skill gotchas — visibility, loading and write traps
+
+- **What the model sees up front.** The skill `description` is the **only always-visible** skill text. The `template` and the reference files load **on demand** (the model calls `activate_skill` / `read_skill_file`). Put the trigger conditions in `description`; anything the model must know before it decides to load the skill belongs there too.
+- **Reference files have no REST route.** Add or replace them through tRPC `skills.files.put` from a signed-in browser tab (use the browser agent profile, and **restore the org afterwards** if you switched it). Uploading one reference file keeps the others.
+- **`POST /agents/{uuid}/skills` REPLACES the whole list.** Re-GET the agent, then send the current skills plus the new one.
+- **`PUT /skills/{uuid}` needs `baseVersion`** (optimistic concurrency); read the current version first.
+- **An agent save can be a whole-agent PUT.** When several lanes share one agent, send partial updates (for example only `harnessId`) so you do not overwrite another lane's fields.
+
 ---
 
 ## tool → `/api/v1/tools`
