@@ -1,5 +1,15 @@
 # Driving fleet tasks over REST — `/api/v1/internal/agent-tasks/*`
 
+## Contents
+
+- [Auth](#auth)
+- [Route table](#route-table)
+- [The activation gate — and why REST is stricter than tRPC](#the-activation-gate--and-why-rest-is-stricter-than-trpc)
+- [Traps this API will not save you from](#traps-this-api-will-not-save-you-from)
+- [The actor is caller-asserted](#the-actor-is-caller-asserted)
+- [Reading the tables directly — if you must, query as OWNER](#reading-the-tables-directly--if-you-must-query-as-owner)
+- [Managing tasks over REST — no session, no psql](#managing-tasks-over-rest--no-session-no-psql)
+
 The API-key management surface for p37. Use it instead of `/backoffice/agent-tasks` when a
 script, an agent, or a teammate without a Super User session needs to manage the fleet.
 

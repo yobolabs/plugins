@@ -1,5 +1,17 @@
 # Structuring a large multi-role agent
 
+## Contents
+
+- [The core decision: wear vs spawn](#the-core-decision-wear-vs-spawn)
+- [Why one mega-agent degrades — the number](#why-one-mega-agent-degrades--the-number)
+- [Role descriptions are the router's only input](#role-descriptions-are-the-routers-only-input)
+- [Multiple goals per role](#multiple-goals-per-role)
+- [Tools](#tools)
+- [Connectors](#connectors)
+- [The master agent's system instruction](#the-master-agents-system-instruction)
+- [Teams](#teams)
+- [Auditing](#auditing)
+
 The design question behind "one master chat agent that can do everything a growth
 marketer does — creative, Klaviyo, data, segmentation."
 

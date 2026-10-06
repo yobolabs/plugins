@@ -1,5 +1,19 @@
 # p37 Fleet Agent Tasks — deep reference
 
+## Contents
+
+- [Data model](#data-model)
+- [The JSON contract (`input_template`)](#the-json-contract-input_template)
+- [Audience](#audience)
+- [Run state machine](#run-state-machine)
+- [Delivery](#delivery)
+- [WhatsApp CTA](#whatsapp-cta)
+- [The tap: `get_daily_brief`](#the-tap-get_daily_brief)
+- [Storage and retention](#storage-and-retention)
+- [What a run row proves, and what it does not](#what-a-run-row-proves-and-what-it-does-not)
+- [Operations](#operations)
+- [Verification](#verification)
+
 Companion to `../SKILL.md`. Jira **YMS-191**. Paths are relative to the `yobo-merchant`
 repo root unless stated otherwise.
 

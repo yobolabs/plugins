@@ -1,5 +1,14 @@
 # Authoring a CadraOS tool
 
+## Contents
+
+- [Single-endpoint API tool](#single-endpoint-api-tool)
+- [Multi-endpoint API tool](#multi-endpoint-api-tool)
+- [MCP tool](#mcp-tool)
+- [Making results clickable — `viewPath`](#making-results-clickable--viewpath)
+- [Testing](#testing)
+- [Gotchas](#gotchas)
+
 A tool is what lets an agent do something outside the model. Three
 `implementation` kinds; pick by how the capability is reached.
 

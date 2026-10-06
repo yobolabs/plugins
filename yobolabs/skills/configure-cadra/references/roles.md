@@ -1,5 +1,15 @@
 # Roles
 
+## Contents
+
+- [Scope](#scope)
+- [Create / update](#create--update)
+- [Using a role](#using-a-role)
+- [Versioning and golden locks — app-only, by design](#versioning-and-golden-locks--app-only-by-design)
+- [Structured output (`outputSchema`)](#structured-output-outputschema)
+- [Core roles (private, per-agent)](#core-roles-private-per-agent)
+- [Gotchas](#gotchas)
+
 A **role** is a reusable configuration for an agent — identity, method
 (system instruction), model settings, and a capability preset. Two distinct
 things share the table, and confusing them is the main source of "why isn't my

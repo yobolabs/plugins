@@ -1,5 +1,14 @@
 # Puck Content Model & Component Catalog
 
+## Contents
+
+- [Content shape](#content-shape)
+- [⚠️ Critical gotchas](#️-critical-gotchas)
+- [Two ways to build a section](#two-ways-to-build-a-section)
+- [Component catalog](#component-catalog)
+- [Nesting with zones (advanced)](#nesting-with-zones-advanced)
+- [Full worked example (flat page)](#full-worked-example-flat-page)
+
 The landing-page body is **Puck** page JSON, stored in the microsite's `content`
 field. To change a page's layout/copy you rewrite `content` and PATCH it back.
 This file is the authoritative reference for that JSON.

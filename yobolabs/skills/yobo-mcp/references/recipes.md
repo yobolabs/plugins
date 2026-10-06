@@ -1,5 +1,18 @@
 # Yobo MCP recipes
 
+## Contents
+
+- [Read anything](#read-anything)
+- [Create a segment (new only)](#create-a-segment-new-only)
+- [Draft a campaign](#draft-a-campaign)
+- [Edit a campaign (DRAFT or PAUSED)](#edit-a-campaign-draft-or-paused)
+- [Edit Business DNA](#edit-business-dna)
+- [Invite a team member](#invite-a-team-member)
+- [Launch a campaign (messages real customers)](#launch-a-campaign-messages-real-customers)
+- [Ad creatives (costs money)](#ad-creatives-costs-money)
+- [Submit an ad campaign (paused on Meta)](#submit-an-ad-campaign-paused-on-meta)
+- [Not possible here (tell the user to use the Yobo app)](#not-possible-here-tell-the-user-to-use-the-yobo-app)
+
 Tool calls in order. `O` = the `org_id` from `list_orgs` (omit when the user has one org). Show every
 `view_url` as an "Open in Yobo" link.
 

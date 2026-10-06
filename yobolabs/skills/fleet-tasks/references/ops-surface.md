@@ -1,5 +1,16 @@
 # The ops surface — configuring a fleet task without SQL
 
+## Contents
+
+- [Layout (rebuilt 2026-09-18, YMS-191 SPEC-CHANGE-ops-ux-audience)](#layout-rebuilt-2026-09-18-yms-191-spec-change-ops-ux-audience)
+- [What each control writes](#what-each-control-writes)
+- [Preview and preflight answer different questions](#preview-and-preflight-answer-different-questions)
+- [Why a merchant will or will not receive](#why-a-merchant-will-or-will-not-receive)
+- ["Enrolled" and "can receive" are different questions](#enrolled-and-can-receive-are-different-questions)
+- [Reading the numbers on this screen](#reading-the-numbers-on-this-screen)
+- [Source](#source)
+- [The ops surface — everything is configurable from `/backoffice/agent-tasks`](#the-ops-surface--everything-is-configurable-from-backofficeagent-tasks)
+
 `src/app/backoffice/agent-tasks/`, gated on `admin:agent_tasks_read` / `_manage`.
 
 Every setting that decides whether a task runs is editable here. Until 2026-09-01 most of them

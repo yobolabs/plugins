@@ -1,5 +1,15 @@
 # Recipes
 
+## Contents
+
+- [Definitions in git (the intended team workflow)](#definitions-in-git-the-intended-team-workflow)
+- [Seeding a new environment from an existing one](#seeding-a-new-environment-from-an-existing-one)
+- [Renaming](#renaming)
+- [Auditing what exists](#auditing-what-exists)
+- [Using this from Codex or a plain terminal](#using-this-from-codex-or-a-plain-terminal)
+- [CI / scripted use](#ci--scripted-use)
+- [Safety](#safety)
+
 ## Definitions in git (the intended team workflow)
 
 Keep one JSON file per record. `apply` upserts by name, so the same tree applies

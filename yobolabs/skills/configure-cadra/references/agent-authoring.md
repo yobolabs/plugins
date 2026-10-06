@@ -1,5 +1,19 @@
 # Authoring a CadraOS agent
 
+## Contents
+
+- [1. Decide the type first](#1-decide-the-type-first)
+- [2. Write the system instruction](#2-write-the-system-instruction)
+- [3. Pick a model the org can actually serve](#3-pick-a-model-the-org-can-actually-serve)
+- [4. Wire capabilities](#4-wire-capabilities)
+- [5. Structured output](#5-structured-output)
+- [6. Deploy](#6-deploy)
+- [7. Verify it runs](#7-verify-it-runs)
+- [Update flow](#update-flow)
+- [Checklist before calling an agent done](#checklist-before-calling-an-agent-done)
+- [Cloning an existing agent](#cloning-an-existing-agent)
+- [New agents land in the creator's PERSONAL workspace](#new-agents-land-in-the-creators-personal-workspace)
+
 The API call is the easy part. This is what makes the agent actually work.
 
 ## 1. Decide the type first

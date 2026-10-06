@@ -1,5 +1,14 @@
 # App Format Reference (Slides Prototypes)
 
+## Contents
+
+- [The single-file model](#the-single-file-model)
+- [Language table](#language-table)
+- [html mode](#html-mode)
+- [jsx mode](#jsx-mode)
+- [Multi-file JSX projects](#multi-file-jsx-projects)
+- [Slug rules](#slug-rules)
+
 A Slides "app" (prototype) is a **single self-contained file** stored as raw text
 in the `html` field. There is no Puck content, no component tree — just one blob
 and a `language` tag.

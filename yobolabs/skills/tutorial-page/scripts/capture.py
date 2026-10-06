@@ -1,3 +1,4 @@
+# requires: browser_harness, provided by browser-use (install: uvx browser-use)
 """Screenshot helpers for tutorial pages — load INSIDE a browser-use `browser_exec` call:
 
     exec(open("<plugin-root>/skills/tutorial-page/scripts/capture.py").read())

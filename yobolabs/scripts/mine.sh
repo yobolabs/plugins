@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# requires: jq (install: brew install jq)
 # mine.sh — extract all raw material from a Claude Code .jsonl transcript in one pass,
 # so an agent can synthesize a full /session-update-style file (default) OR a quick recap.
 #

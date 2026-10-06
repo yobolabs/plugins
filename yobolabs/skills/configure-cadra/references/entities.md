@@ -1,5 +1,22 @@
 # CadraOS entity contracts
 
+## Contents
+
+- [The update verb is not uniform](#the-update-verb-is-not-uniform)
+- [agent → `/api/v1/agents`](#agent--apiv1agents)
+- [role → `/api/v1/roles`](#role--apiv1roles)
+- [skill → `/api/v1/skills`](#skill--apiv1skills)
+- [tool → `/api/v1/tools`](#tool--apiv1tools)
+- [team → `/api/v1/teams`](#team--apiv1teams)
+- [board → `/api/v1/board-configs`](#board--apiv1board-configs)
+- [kb → `/api/v1/knowledge-bases`](#kb--apiv1knowledge-bases)
+- [prompt → `/api/v1/prompts`](#prompt--apiv1prompts)
+- [guardrail → `/api/v1/guardrails`](#guardrail--apiv1guardrails)
+- [The rest](#the-rest)
+- [Verified coverage gaps](#verified-coverage-gaps)
+- [Item routes take the uuid, not the numeric id](#item-routes-take-the-uuid-not-the-numeric-id)
+- [Fields no REST verb can set](#fields-no-rest-verb-can-set)
+
 The **authoritative** create/update contract for each entity, taken from the
 server-side validators (`src/extensions/<entity>/schemas.ts` in cadra-web), not
 from the OpenAPI doc — the OpenAPI at `/api/v1/docs` is a hand-maintained subset

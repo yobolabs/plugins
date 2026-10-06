@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# requires: ffmpeg (install: brew install ffmpeg)
 # Build a looping GIF from captured frames (capture.py frame()).
 #   make_gif.sh <frames-dir> <out.gif> [fps=2] [width=1200]
 # Delete bad frames first (e.g. after a dialog closed) — every PNG in the dir is used, in name order.
