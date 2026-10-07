@@ -400,6 +400,7 @@ meaningless until descriptions pass (a role with no when-to-use never overlaps).
 
 ## Reference
 
+- **Read before editing any agent/role/skill/tool:** `cadra:agents` → `references/agent-structure-best-practices.md` (repo `cadraos/plugins`) — where behaviour lives (code / harness / Jev gate / tool / skill / role / root), prompt budget, N ≥ 3 proof, dev→prod content merge.
 - `references/entities.md` — every entity: exact create/update fields, permissions, id semantics. **Read before authoring.**
 - `references/multi-role-agents.md` — **structuring a big agent**: wear vs spawn, prompt budget, role/tool/connector boundaries, the master system instruction, the audit rubric.
 - `references/agent-authoring.md` — writing a single agent that actually works.
