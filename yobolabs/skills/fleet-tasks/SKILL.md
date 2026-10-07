@@ -245,6 +245,10 @@ notified/viewed/delivered/expired run for the same task in the last 7 days stays
 another brand with "Tap to switch" before the agent. **Before touching brand ON/OFF, brand-family
 code, the brief CTA payload or the brand tools, read `references/multi-brand.md`.**
 
+Digest v2 (p131, 2026-10-07): a person with several brands' briefs gets ONE CTA for the focus brand
+(msg-api `acting-org` -> chat target org -> recent -> main); others held `notified`. Tap adds a
+pointer line for other ready+unread brands. Detail in `references/multi-brand.md`.
+
 ## Prod procedure
 
 **Before any prod change, read `references/prod-procedure.md`** (runbook pointer, pre-flip checklist,

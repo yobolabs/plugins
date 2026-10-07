@@ -51,3 +51,17 @@ otherwise the call returns `403 onboarding_out_of_belt`.
 - msg-api **intercepts a message that names another brand** with a "Tap to switch" reply *before*
   the agent sees it — a brand-name test never reaches the agent.
 - Dev `send_mode` must be `live` or the brief is mocked (see SKILL.md "Sent is not delivered").
+
+## Digest v2 — ONE CTA = the focus brand (p131 v2, 2026-10-07)
+
+Replaces the merged digest. A person with several brands' briefs gets **one** CTA, for the
+**focus** brand; the other briefs are held `notified` under the digest.
+
+- **Focus pick** (`digest.ts` `chooseFocusRun`, ~line 85): msg-api
+  `POST /api/v1/platform-notify/acting-org` (read-only; candidates = the digest run orgs) ->
+  the chat's `conversations.target_org_id` -> most recent -> main-brand pick.
+- **Tap** -> that brand's own brief + a **pointer line** naming the other brands whose brief is
+  ready and unread (max 3). Copy: `agent_task.digest_copy.{en,id}.pointer` / `pointerMore`
+  (migration 0428).
+- **"brief X"** -> p129 brand switch -> X's own brief.
+- **Switch:** `system_config` `agent_task.digest` ON in prod since 2026-10-07 12:37 (row 445).

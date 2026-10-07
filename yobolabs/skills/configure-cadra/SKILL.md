@@ -305,6 +305,20 @@ recreated. Send the FULL list, never the one tool you are adding — dropping a
 sensing tool this way has blinded a live agent for days. Re-read the agent after
 any tools change and confirm the belt is what you meant.
 
+### Tool lookup and write traps (fleet-task tools, learned 2026-10-07)
+
+1. **Find a tool by the AGENT's tool links, never by name.** Same-named twins exist: dev has
+   `get_daily_brief` (org 4, unlinked, 403s) and `get_daily_brief_v2_paywall` (org 36, linked to
+   the responder agent 443); prod has the live one on org 2 / agent 362 with an unlinked twin.
+   `cadra agent get <id>` and trust the linked id.
+2. **Update `agentInstructions` together with the tool `description`** — they can contradict, and
+   the agent follows whichever it reads last.
+3. **Cadra prod `PUT /api/v1/tools/<numericId>` returns `422 "Invalid uuid"`** — PUT by uuid.
+   `endpoints` in a PUT **replaces the whole array**; send every endpoint.
+4. **Diff dev vs prod endpoints before relying on sender identity.** The prod daily-brief tool
+   lacked headers `X-Execution-Id` / `X-Chat-Customer-Ref` / `X-Root-Execution-Id`
+   (`{ctx.executionId}` / `{ctx.customerRef}` / `{ctx.rootExecutionId}`) until 2026-10-07.
+
 ### Per-environment, every time
 
 Tool rows are **per-org** and agent uuids differ per environment. A definition
