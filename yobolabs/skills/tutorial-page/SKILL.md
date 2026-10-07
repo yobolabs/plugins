@@ -223,6 +223,12 @@ Site dropdown, click Create Landing Page, then `lp set-content` the new id. The 
 | Cadra avatar Generate saved without pressing Save | generation writes the avatar at once | Use a test agent; report it; Remove picture to undo |
 | Cadra prompt writer | opens "What should change?" → dialog with Show changes / Discard / Accept | Discard leaves the text untouched |
 | Emulation reset after navigation | override is per navigation | `goto()` re-applies `emu()` |
+| `check_legibility.js` reports every image "not loaded" in Agent Chrome | Agent Chrome tabs are hidden, so `loading="lazy"` images never start | before the check: `J("document.querySelectorAll('img').forEach(i=>{i.loading='eager';const s=i.src;i.src='';i.src=s})")`, wait, re-run |
+| Mid-capture screenshot shows "Un-Suspend Tab" | a tab-suspender extension in Agent Chrome put the tab to sleep | `goto()` the page again, then continue |
+| Draft preview says "Access denied. This session is restricted." | Agent Chrome's Slides session is the embed/staff session, not an org login | review with `render_offline.py` (or a private artifact of that file); the owner opens the preview in their own login |
+| Legibility at 390 fails on most shots (min ~6–10px) | crops wider than ~370 CSS px shrink into the ~342px phone column | crop ≤ ~370 px, or recapture wide panels at phone width (390 viewport) so the text wraps; set `minfont` to the real smallest size |
+| `security find-generic-password -w` or an inline `$KEY` is blocked | the secret-guard hook | put the curl in a script file that reads the env var, run it with `secret-run LANDING_PAGES_API_KEY=keychain:<service> -- <script>` |
+| Need the page in a named site (e.g. Tech) | REST create needs a `siteId` UUID but still lands in the default site | CRM → Landing Pages → pick the Site → Create Landing Page → `lp set-content` + `lp publish`; rename (`zz-old …`) and archive a wrong-site draft so the slug is free |
 
 ## Reference documentation
 
