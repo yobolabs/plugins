@@ -11,6 +11,8 @@ Jira **YMS-191**. Ships in `yobo-merchant`; `cadra-web` contributes the outbound
 > task is activated — is `yobolabs:configure-cadra` §"Fleet tasks (yobo p37)". The WhatsApp
 > transport, template and gateway truth are `yobo:whatsapp` in the `yobo` plugin.
 
+> **Not a fleet task:** p133 merchant schedules (one merchant sets their own, via WhatsApp or Settings → Schedules; `merchant_schedules`, yobo `merchant-schedule.worker`) — see `_context/yobo-merchant/_wiki/agent-schedules/_index.md` and `yobo:yobo-agents` → `references/agents.md` "Merchant schedules".
+
 A Cadra `agent_schedules` row pins exactly one tenant, so "run this agent for every merchant"
 has no home in Cadra. p37 puts the fan-out where the merchant list lives — **yobo** — and
 dispatches once per merchant with `tenantOrgId` already threaded.
