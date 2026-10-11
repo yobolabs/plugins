@@ -361,6 +361,8 @@ ffprobe -v quiet -show_streams -select_streams v "video.MP4" | grep -E "width|he
 - **Chinese filenames** — use `ensure_ascii=False` when writing JSON
 - **Both JSON files** — `draft_meta_info.json` also needs path updates or links will break
 - **Canvas blur requires aspect ratio mismatch** — blur background is invisible when canvas and video are the same ratio
+- **Drafts CapCut saves are ENCRYPTED (8.5.0, seen 2026-10-11)** — `draft_info.json`, `.bak`, `template-2.tmp` and `draft_meta_info.json` start with base64 noise, not `{`. Only a draft built by this skill and never re-saved by CapCut stays plain JSON. So `inspect_draft.py` cannot read a real draft any more, and the UNVERIFIED features below (keyframes, transitions, animations, audio) cannot be verified from new drafts. Check with `head -c 20 draft_info.json` before planning an edit; never try to decrypt.
+- **A downloaded template may have no media slots** — some "intro" templates are baked footage: selecting the Templates clip shows only **Text** and **Audio** in the right panel, and double-click opens nothing. Check this before promising to "swap in our assets".
 
 ## Scripts
 
