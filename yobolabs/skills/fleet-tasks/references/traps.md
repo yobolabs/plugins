@@ -110,3 +110,37 @@ Moved verbatim from `SKILL.md` (2026-09-30). Read before diagnosing a lost, late
   2026-10-05 (4618 `poll_error`) and starved the other workloads on that key. The runner logs only
   errors, so call-rate proof is the Cadra per-key Redis counter (`ratelimit:{env}:{apiKeyId}:{windowStart}`),
   never worker logs (a container recreate also wipes them).
+
+## YMS-508 (2026-10-12): the tap, repeated content, team-member 409
+
+**Tap wire shape.** The gateway (`whatsapp/internal/service/webhook_handle_service.go`,
+`buildN8nChatbotRequestBody`) forwards a template quick-reply id as top-level `payload`. It never sends
+`button`. Every msg-api reader (`brief-tap.ts`, `system-tap.ts`, `business-created-carry.ts`) reads
+`providerMetadata.button.payload`, which was set only from `p.button`. On prod 0 of 30 taps stored it.
+The YMS-363 pin never fired, so a person tapping brand B's CTA while their chat was on brand A got
+BRIEF_NOT_FOUND ("The prepared brief isn't available right now") or A's brief. Fixed in msg-api
+`171d0fa7`, prod `fe8a5d58`. Find taps in msg-api `messages` with `direction='INBOUND'` (uppercase) and
+`metadata->>'type'='button'`. The gateway log line `received button quick reply - payload: brief:<org>:<run>`
+shows what was really tapped. A used WhatsApp button cannot be tapped again, so prod proof must be a
+natural tap.
+
+**Repeated content.** Skill 338 deduped through `memory_search`/`memory_write`. Cadra suppresses
+`memory_write` for org-scope agents (`cadra-api/src/services/tool-executor/memory-tools.ts:216`, agent 369
+`memory_scope='org'`), so the list of sent links was always empty. Baseline: 15 of 38 links repeated
+across 7 briefs. The fix has two halves:
+- yobo `already-sent-links.ts` reads this task's runs from the last 7 merchant-local days and pulls the
+  links from their Cadra execution outputs.
+- `withAlreadySentLinks` appends `Already sent links (last 7 days):` to the task text. The links also go
+  in `context.alreadySentLinks`, but the model never sees context keys.
+
+Skill 338 v7 (id 249; v5 id 224 kept) step 1a reads that block. Normalized form: host without scheme or
+`www.` + path without trailing slash + non-tracking params. Brief outputs write bare `www.` links, and
+`v=`/`id=` name the video or ad. Proof: prod exec 485f1618 had 0 repeats.
+
+**Team member, no thread.** A recipient whose phone never messaged a platform line gets msg-api 409
+"Org N has no conversation on any active platform WhatsApp line". The recipient row reads
+`failed / send-error` (prod: 2 a day since 10-10). It is the designed no-fallback
+(`platform-notify.ts:32`). The member messages the line once, or msg-api adds an org-line fallback (a
+product call). `generation-unavailable` "failures" are runs skipped before generation (no business profile,
+tool gate), not send failures.
+

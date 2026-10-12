@@ -236,6 +236,18 @@ Fixing layer 1 reveals layer 2 underneath. Full detail in `yobo:whatsapp` →
 Lost/late briefs, timezone provenance, destination ladder, test-account reset, duplicates, reminders,
 fabrication gate, retry, openable numbers, REST 400s. **Before diagnosing a delivery bug or retrying a run, read `references/traps.md`.**
 
+Four learned 2026-10-12 (YMS-508), all silent on prod:
+- **The brief tap arrives as top-level `payload`.** The WhatsApp gateway never sends a `button` object.
+  msg-api builds `providerMetadata.button` from it since `fe8a5d58`. Before that the brand pin never fired,
+  and 9 of 30 taps answered "prepared brief isn't available".
+- **Dedup lives in the task text, not memory.** The runner appends `Already sent links (last 7 days):`
+  (or `none`) to the morning-brief task. Skill 338 v7 reads that block and has no `memory_search`.
+  `memory_write` is suppressed for org-scope agents, and execution `context` keys are not shown to the model.
+- **Brief links have no scheme** (`www.youtube.com/watch?v=…`). Extraction matches bare `www.` and keeps
+  item params (`v=`, `id=`). An https-only matcher returns 0 links.
+- **A team member with no thread on a platform line always fails** with msg-api 409 "no conversation on any
+  active platform WhatsApp line". There is no fallback by design. Detail in `references/traps.md`.
+
 ## Multi-brand owners
 
 One brief **per brand turned ON**, judged per destination owner. Default ON = main brand
