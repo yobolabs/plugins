@@ -162,18 +162,19 @@ plus the behaviour claims you are least sure of (§1.3).
 ### 5. Build the draft
 
 ```bash
-lp(){ node "${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/lp.mjs" "$@"; }
+K=LANDING_PAGES_API_KEY=<vault-item>   # e.g. slides.landing_pages_api_key (keyproxy vault item)
+lp(){ secret-run $K -- node "${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/lp.mjs" "$@"; }
 S="${CLAUDE_PLUGIN_ROOT}/skills/tutorial-page/scripts"
 export SLIDES_API_URL=https://<slides-host>
-export LANDING_PAGES_API_KEY=$(security find-generic-password -s <keychain-service> -w | tr -d '\n')
 python3 "$S/render_offline.py" tutorial.json "<repo-root>/_context/_explainers/<Title>.html"   # no key needed; run check_legibility.js on it FIRST
-python3 "$S/upload.py" tutorial.json            # --force s3-2-x after a retake
+secret-run $K -- python3 "$S/upload.py" tutorial.json   # --force s3-2-x after a retake
 python3 "$S/build_page.py" tutorial.json
 lp set-content <microsite-id> content.json
 ```
 
-Getting the key: it is an org-scoped `sk_live_` Slides key (CRM avatar → API Keys). Collect it
-with `tools:collect-api-keys` (keychain pane) — never ask for it in chat.
+Getting the key: it is an org-scoped `sk_live_` Slides key (CRM avatar → API Keys). Store it as a
+keyproxy vault item with `tools:collect-api-keys` (`run-set.sh <item> --item` pane) — never ask for
+it in chat, never Keychain (retired 2026-10-13).
 
 **Site choice:** REST `POST /microsites` always lands in the org's **default** site (it ignores
 `siteId`). To put the page in a named site: in Slides/CRM Landing Pages pick the site in the
@@ -227,12 +228,12 @@ Site dropdown, click Create Landing Page, then `lp set-content` the new id. The 
 | Mid-capture screenshot shows "Un-Suspend Tab" | a tab-suspender extension in Agent Chrome put the tab to sleep | `goto()` the page again, then continue |
 | Draft preview says "Access denied. This session is restricted." | Agent Chrome's Slides session is the embed/staff session, not an org login | review with `render_offline.py` (or a private artifact of that file); the owner opens the preview in their own login |
 | Legibility at 390 fails on most shots (min ~6–10px) | crops wider than ~370 CSS px shrink into the ~342px phone column | crop ≤ ~370 px, or recapture wide panels at phone width (390 viewport) so the text wraps; set `minfont` to the real smallest size |
-| `security find-generic-password -w` or an inline `$KEY` is blocked | the secret-guard hook | put the curl in a script file that reads the env var, run it with `secret-run LANDING_PAGES_API_KEY=keychain:<service> -- <script>` |
+| An inline `$KEY` is blocked | the secret-guard hook | put the curl in a script file that reads the env var, run it with `secret-run LANDING_PAGES_API_KEY=<vault-item> -- <script>` |
 | Need the page in a named site (e.g. Tech) | REST create needs a `siteId` UUID but still lands in the default site | CRM → Landing Pages → pick the Site → Create Landing Page → `lp set-content` + `lp publish`; rename (`zz-old …`) and archive a wrong-site draft so the slug is free |
 
 ## Reference documentation
 
 - `yobolabs:landing-page` — microsites REST API, `lp.mjs`, `references/puck-components.md`.
-- `tools:collect-api-keys` — keychain pane for the `sk_live_` key.
+- `tools:collect-api-keys` — keyproxy vault pane (`--item`) for the `sk_live_` key.
 - Release notes: `_context/<app>/_releases/`.
 - Slides renderer source: `slides/src/extensions/microsites/puck/components/` (Image, CustomCode, Container, Text).
