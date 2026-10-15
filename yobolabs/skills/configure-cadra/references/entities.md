@@ -159,7 +159,7 @@ Forgetting `template` is the most common 400 on this entity.
 ### Skill gotchas — visibility, loading and write traps
 
 - **What the model sees up front.** The skill `description` is the **only always-visible** skill text. The `template` and the reference files load **on demand** (the model calls `activate_skill` / `read_skill_file`). Put the trigger conditions in `description`; anything the model must know before it decides to load the skill belongs there too.
-- **Reference files have no REST route.** Add or replace them through tRPC `skills.files.put` from a signed-in browser tab (use the browser agent profile, and **restore the org afterwards** if you switched it). Uploading one reference file keeps the others.
+- **Reference files have no REST route.** Add or replace them through tRPC `skills.files.put` from a signed-in browser tab (use the browser agent profile, and **restore the org afterwards** if you switched it). Uploading one reference file keeps the others. `skills.files.put` takes `{ skillUuid, expectedCurrentVersion, files: [{ path, text }] }` (read `currentVersion` from `skills.files.list` first) and creates a new skill version; read back with `skills.files.get` (field `content`).
 - **`POST /agents/{uuid}/skills` REPLACES the whole list.** Re-GET the agent, then send the current skills plus the new one.
 - **`PUT /skills/{uuid}` needs `baseVersion`** (optimistic concurrency); read the current version first.
 - **An agent save can be a whole-agent PUT.** When several lanes share one agent, send partial updates (for example only `harnessId`) so you do not overwrite another lane's fields.
@@ -381,3 +381,9 @@ inherits the default and stalls part-way through a delegation round-trip.
 deployed origin today): `POST`/`PATCH /api/v1/roles` return 200/201 and store
 nothing. p81 (cadra-web `feature/p81-role-config-panel`, not yet merged) makes it a
 real, bounds-checked field. Details in `roles.md` → *Structured output*.
+
+**`channelProfile`** (per-agent channel notices such as `messages.notices.wrongLine`): `PUT /api/v1/agents/{uuid}` returns 200 and **silently ignores** it, and there is only a `GET /agents/{id}/channel-profile` route. Write it with tRPC `agents.saveChannelProfile { agentUuid, profile }` (whole profile: GET with `agents.getChannelProfile`, edit, save) in the agent's org. An origin without p13 has neither procedure (404 "No procedure found").
+
+**Harness settings** (`numbers`, `policy`, `texts`) have no REST route: tRPC `harnesses.get`, `harnesses.usage` (which agents share it, check before changing a shared harness) and `harnesses.update` (system user only). `update` with `numbers` **replaces the whole object**, so merge into the current value; unknown keys are refused by the harness guard.
+
+**Em/en dashes never reach the user (since 2026-10-15).** cadra-api rewrites every em dash and en dash in what any agent sends the user (reply, stream, status lines, paused reply) into plain punctuation; code and URLs are left alone. There is no switch. Write prompts and copy without them anyway, so stored text and what the user reads match.
