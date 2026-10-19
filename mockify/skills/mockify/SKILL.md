@@ -77,3 +77,4 @@ Generalization rule for plugin entries: anti-pattern + markers + context class. 
 - Honest bands, no fake numeric precision, ever.
 - Packs are durable craft; anything perishable (current component API surface, what this pattern space looks like right now) comes from recon THIS mission, and goes stale with it (INV-5).
 - Mockups are self-contained HTML — inline CSS/JS, assets as data URIs; Artifact CSP blocks external fetches.
+- Publish mockups from the mission dir `_context/{project}/mockify/{slug}/mockups/` so the vault copy IS the published file (Sean 2026-10-07 rule; the `tools` hook `artifact-to-context` copies anything published from elsewhere into `_context/_artifacts/`).

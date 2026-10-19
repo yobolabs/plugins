@@ -171,6 +171,7 @@ secret-run $K -- python3 "$S/upload.py" tutorial.json   # --force s3-2-x after a
 python3 "$S/build_page.py" tutorial.json
 lp set-content <microsite-id> content.json
 ```
+Publish any private review artifact from that `_context/_explainers/<Title>.html` file and add its README row (Sean 2026-10-07 rule; the `tools` hook `artifact-to-context` backs this up).
 
 Getting the key: it is an org-scoped `sk_live_` Slides key (CRM avatar → API Keys). Store it as a
 keyproxy vault item with `tools:collect-api-keys` (`run-set.sh <item> --item` pane) — never ask for

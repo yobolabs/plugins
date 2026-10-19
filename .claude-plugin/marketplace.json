@@ -37,7 +37,7 @@
       "name": "yobolabs",
       "source": "./yobolabs",
       "description": "Configure YoboLabs apps from Claude Code, Codex, or CI via their REST APIs \u2014 CadraOS agents, roles, skills and tools (with a config auditor), plus Slides landing pages (microsites)",
-      "version": "1.13.5",
+      "version": "1.13.6",
       "keywords": [
         "yobolabs",
         "cadra",
@@ -138,7 +138,7 @@
       "name": "mockify",
       "source": "./mockify",
       "description": "App-design (UI/UX) capability-capture \u2014 an agency-model loop (ecosystem recon, concept directions with rendered HTML mockups, human pick, director deepen, adversarial crit, usability-first judge gate) that produces buildable design specs + mockups for jetdevs ecosystem apps, with post-implementation grading via screenshot diffs and human verdicts",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "keywords": [
         "mockify",
         "app-design",
