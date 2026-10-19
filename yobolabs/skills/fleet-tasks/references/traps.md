@@ -144,3 +144,39 @@ Skill 338 v7 (id 249; v5 id 224 kept) step 1a reads that block. Normalized form:
 product call). `generation-unavailable` "failures" are runs skipped before generation (no business profile,
 tool gate), not send failures.
 
+
+## p141 (2026-10-19): sending ONE test brief hit five silent rules
+
+A dev test brief for one recipient was stopped five different ways, each silently. Root cause: the
+brief's rules are scattered (~31 rules across ~19 files; p141 consolidates them, p142 moves the
+decisions out of msg-api). Until then, check all of these before concluding "the brief is broken":
+
+1. **The p75 payment gate checks the PLAN, not credits.** A brand with credits but no paid plan is
+   still gated. A test org needs the paywall switched off on the definition (`no_paywall`).
+2. **A CRM `Test` tag skips the contact.** A recipient whose contact carries the Test tag is skipped
+   from sends. Untag it for the run, restore the tag after (tester numbers keep it permanently).
+3. **Deactivating a task expired already-sent CTAs.** Turning a task OFF marked its `notified` runs
+   `expired`, so a merchant tapping an older CTA got nothing. Fixed by p141 S2 (reminders-stopped
+   path, prod worker `v20261019-142528`). On older builds never turn the task off before the CTA is
+   tapped.
+4. **The main-brand rule follows `users.current_org_id`.** The default-ON brand is the owner's CURRENT
+   org (multi-brand.md Rule A). Create or switch to a new brand and the previous brands silently
+   stop getting a brief unless they hold an explicit enabled `agent_task_subscriptions` row.
+5. **One prompt per day counted EXPIRED prompts.** A run that expired (see 3) still used the day's
+   slot, so the re-send was dropped as already prompted. Fixed by p141 S1 (`already-prompted-today`
+   no longer counts expired).
+
+Two reading traps from the same sitting:
+
+- **A recipient with `covered` / `duplicate_prompt` and NO `provider_ref` looks sent and is not.** It
+  means a rule absorbed the send. Proof of a send is a `provider_ref` on the recipient row, never the
+  run status or the recipient's reason text.
+- **Preview does not apply the main-brand rule.** The ops preview renders a brief for any brand; it
+  proves content, not that the real fan-out would pick that brand.
+
+**Recipe: send ONE dev test brief to a chosen phone.** (1) untag `Test` on the contact; (2) write an
+explicit **enabled** `agent_task_subscriptions` row for the brand (beats the main-brand default);
+(3) set `no_paywall` on the definition; (4) run, and keep the task ON until the CTA is tapped
+(deactivating it expires the CTA on pre-S2 builds); (5) confirm a `provider_ref`; (6) restore the
+`Test` tag and turn the task OFF after the tap. Dev `send_mode` must be `live` (SKILL.md "Sent is
+not delivered").
