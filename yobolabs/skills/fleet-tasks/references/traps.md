@@ -142,7 +142,8 @@ Skill 338 v7 (id 249; v5 id 224 kept) step 1a reads that block. Normalized form:
 `failed / send-error` (prod: 2 a day since 10-10). It is the designed no-fallback
 (`platform-notify.ts:32`). The member messages the line once, or msg-api adds an org-line fallback (a
 product call). `generation-unavailable` "failures" are runs skipped before generation (no business profile,
-tool gate), not send failures.
+tool gate) OR whose generation failed (`execution-error`; `discardUnfinishedRecipients` stamps them) — not send
+failures. (Corrected 2026-10-21: this used to say "skipped before generation" only.)
 
 
 ## p141 (2026-10-19): sending ONE test brief hit five silent rules
@@ -180,3 +181,28 @@ explicit **enabled** `agent_task_subscriptions` row for the brand (beats the mai
 (deactivating it expires the CTA on pre-S2 builds); (5) confirm a `provider_ref`; (6) restore the
 `Test` tag and turn the task OFF after the tap. Dev `send_mode` must be `live` (SKILL.md "Sent is
 not delivered").
+
+## YMS-595 (2026-10-21): a failed brief, its retry, and the misleading ceiling stamp
+
+- **`iteration_cap_exhausted` does not prove a step cap.** On 2026-10-21 (brief agent on DeepSeek via
+  OpenRouter) two runs carried that stamp at iteration 7 and 11 with a loop cap of 200. The last
+  `LLM Response` log had `toolCalls: []` and `finishReason: "unknown"`: the provider returned an EMPTY reply,
+  the runtime wrote a ceiling summary, and cadra-web stamped it as a ceiling hit. A third run died on
+  `TypeError: terminated` (undici abort) mid-call and did not fail over to the fallback model. Before blaming
+  a limit, read the execution logs: `Starting ReAct loop {"iterations": N}` and the last `LLM Response`
+  `finishReason`. Yobo is right either way: the stamp makes the run `failed / execution-error`, nothing sent.
+- **A regenerate retry re-failed every `execution-error` brief before yobo `819401e7d`.** Ops retry moved the
+  RUN `failed → pending` but left its recipient rows `failed / generation-unavailable`. While the new brief
+  generated, `reconcileRecipientDeliveries` summarised the `running` run as all-failed → `failed / send-error`
+  ("All recipient deliveries failed; inspect recipient outcomes"), before the new execution even finished.
+  Fix: `requeueRunForRegeneration` reopens those rows to `awaiting_generation` inside the same
+  `transitionRun` (`onTransition`). Workaround on an older build: wait for the NEW execution to complete, then
+  retry again; a `send-error` row with a completed execution takes the `resend` path, whose step 7b calls
+  `markRecipientsReady`.
+- **`cancelled / brief-policy` with recipient `suppressed / nurture_sent` is YMS-570 working.** Three unopened
+  briefs in a row (`expired / reminder-threshold-exhausted`) → the merchant gets the "keep receiving?" nudge
+  instead of a brief. Not a failure; do not retry it.
+- **The p37 integration tests SKIP on `mini-run`.** `agent-task-brief-recovery.int.test.ts` needs
+  `DATABASE_MIGRATE_URL` + `INTERNAL_API_DATABASE_URL` (local Postgres); without them all tests skip and the
+  command exits 0. Run them on the machine with the local DB and read `Tests N passed | M skipped`, not the exit
+  code.
