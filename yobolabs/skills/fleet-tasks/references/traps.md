@@ -206,3 +206,8 @@ not delivered").
   `DATABASE_MIGRATE_URL` + `INTERNAL_API_DATABASE_URL` (local Postgres); without them all tests skip and the
   command exits 0. Run them on the machine with the local DB and read `Tests N passed | M skipped`, not the exit
   code.
+- **The per-recipient send builds its OWN notify input (YMS-630, 2026-10-24).** Every brief since p141
+  (`recipientDeliveryVersion: 1`) sends through `dispatchRecipientDigest` (`recipient-dispatch.ts`), not
+  `deliverRun`. A field added to `TaskNotifyInput` for `deliverRun` must be set there too. `briefTip` was
+  missing, so the adapter never checked the 24 h chat window: tip-without-tap sent 0/190 on prod. Fixed in yobo
+  `23e97ff39`; that path now writes `todaysTipSentDirect` / `todaysTipInAlert` with `markRunTipDelivery`.
