@@ -43,6 +43,11 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
    the old subject" — and the place, props and action already re-themed in step 4.
 6. **References**: character sheet → product storyboard per shot (see `references-and-sheets.md`).
 7. **Prompt** in the SKILL.md layout. Draft, review (`review.md`), fix, repeat.
+8. **Save what this ad and this product needed.** After the remix, write the **ad notes** (keyed by the source
+   ad: format, exact cuts, what made it work, caption handling, scene ideas that worked, traps) and the **product
+   notes** (keyed by the product: shape sentence, reference photos, packs never to mix, colours). Load both at
+   step 1 next time that ad or product comes up, so it comes out right the first time. Ad- and product-specific
+   detail lives only in these notes, never in the generic rules.
 
 ## Traps
 
