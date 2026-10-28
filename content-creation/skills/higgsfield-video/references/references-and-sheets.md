@@ -34,8 +34,12 @@ The <product> looks exactly like Image 1 in every view: same shape, colours, mat
 detail, sharp focus. Image 1 gives only the <product>'s look. No logo, label, sticker, text or watermark.
 ```
 
-Aspect 16:9. Redo with notes: send the last try as the next image and "keep what is right in it and change only
-this: <notes>".
+Aspect 16:9.
+
+**Redo with notes = edit the last try**, never re-run the first edit: Image 1 = the last try, Image 2 = the
+product, "Keep everything in it exactly … and change only this: <notes>. The <product> must still look exactly
+like Image 2." This also fits models that take only 2 pictures (Nano Banana). Nano Banana Pro answers square,
+which squashes a storyboard sheet; use GPT Image Flare (`aspect_ratio` auto) for sheets.
 
 ## Product storyboard — 1 paid picture per shot
 
@@ -63,3 +67,4 @@ panel. No logo, label, sticker or watermark on the <product>.
 | "Hero still" (product in the ad's scene and light) | Became frame 1; its framing overrode the camera; its sticker leaked the logo |
 | Product photo with a sticker | Logo visible from the first frame despite "logo at the end" |
 | Tiny 10-panel storyboard | Panels too small to carry anything; the model invented angles |
+| Redo that re-ran the original edit with the notes added | A completely different product: the fix re-rolled everything (Nano Banana takes only 2 pictures, so the last try was never sent) |
