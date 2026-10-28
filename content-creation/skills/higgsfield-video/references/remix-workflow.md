@@ -28,11 +28,14 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
    3. **New idea** when it doesn't fit: a comparable shot in the new product's world that gives the SAME purpose,
       with the same framing, timing and energy (balm in a jeans pocket = "goes everywhere" → gelato cup in a small
       cooler bag; applying balm = "enjoyment in use" → a big spoonful lifted to the camera).
-   **Keep what made the source work** (Sean, 2026-10-28, all from one run that went wrong):
-   - **The product is the star.** It fills most of the frame, as much as the old product did; people, hands and
-     props only frame it. A new idea where a person becomes the subject is wrong.
-   - **Keep the look.** Bold source (big items, loud colour backgrounds, brash, graphic) stays bold. Never turn a
-     studio shot into a quiet real-life scene (bench, café, street); that run produced three bench-eating shots.
+   **Keep what made THIS source work** (Sean, 2026-10-28, from one run that went wrong). Read the source's own
+   style first; it differs per creator and per ad, so these are checks, not one house style:
+   - **Same product scale.** The product stays as big in each frame as the old one was. Example: the Baby Lips
+     reel's creator made the product the star, filling most of the frame; a new idea where a person became the
+     subject was wrong there.
+   - **Same look and kind of scene.** That reel was bold, big items, loud colour backgrounds, brash. Its new ideas
+     must stay that way; the first pass moved studio shots to benches and cafés (three bench-eating shots). A quiet
+     lifestyle source stays quiet.
    - **Smallest change.** Swap only the wrong prop or action; shape, angle, stack or pose differences are NOT a
      misfit (the first pass flagged 8 of 10 scenes on that; the fixed one flags 5).
    - **Each scene keeps its own product.** Name every scene's product in the pass; naming only the main product
