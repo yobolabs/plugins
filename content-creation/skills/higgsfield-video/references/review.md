@@ -31,7 +31,8 @@ Then: the cause (with evidence: the prompt line or the reference), the fix, and 
 
 - [ ] Number of cuts and their times match
 - [ ] Each shot's size, height, three-quarter / side-on, distance
-- [ ] The structure keeps its shape (a curved slab did not become a loop or a pillar)
+- [ ] The setting keeps its shape (in one run a curved slab became a loop)
+- [ ] People: same number, same actions, faces consistent across shots; lines spoken as written
 - [ ] The action order and timing (launch, flip, landing) — not early, not skipped
 - [ ] The product is the product: no parts of the old subject (wheels, lights, plates)
 - [ ] Logo only where asked

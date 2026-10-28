@@ -63,7 +63,7 @@ Rules that came from failed runs — each one cost a paid video:
 3. **Count the cuts out loud**: "Exactly 1 cut, at 1.7 s." Otherwise the model adds angles.
 4. **Say "static camera, no movement", never "tripod".** The model drew a real tripod under the product.
 5. **Three-quarter vs side-on matters.** Side-on reads flat; most real shots are three-quarter. Say which, plus
-   distance ("far back, the whole structure and the ground around it in frame").
+   distance ("far back, the whole setting in frame").
 6. **Every reference states its job and what it must NOT do** ("defines what it looks like — never framing").
    An unlabelled product picture becomes the opening frame.
 7. **Logos are timed**: "appears only in the final 2 s; before that, no logo anywhere." A sticker on the product

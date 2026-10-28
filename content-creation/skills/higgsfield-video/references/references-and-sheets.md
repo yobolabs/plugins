@@ -10,7 +10,7 @@ camera movement follow the shot instructions."
 
 | Type | Controls | Must say |
 |---|---|---|
-| STORYBOARD (real frames, product swapped in) | environment, structures, light, angle, distance, where the subject is, per panel | "Match each panel at its time" |
+| STORYBOARD (real frames, product swapped in) | environment, people, light, angle, distance, where the subject is, per panel | "Match each panel at its time" |
 | STORYBOARD (line drawing) | where things are, the subject's path | "the outline of the <old subject> only marks WHERE the <product> is and how big; never copy its shape — no wheels, lights, windows, plates or body panels" |
 | PRODUCT CHARACTER SHEET | what the product looks like from every side | "views of ONE <product>"; "never sets camera position, framing or how big it is in frame" |
 | PRODUCT VIEW (extra photo of the same product) | another side of the same product | "the same ONE <product>, never framing" — do not call it a prop |
@@ -51,13 +51,19 @@ The strongest layout reference: the source's real frames with the product swappe
 
 ```
 Image 1 is a storyboard sheet of real frames from one continuous shot of an ad, panel by panel in time order.
-Redraw the whole sheet exactly, panel for panel: the same layout, panel labels, environment, structures, light,
-smoke, colours, camera angle, distance and framing in every panel. In every panel replace the <old subject> with
+Redraw the whole sheet exactly, panel for panel: the same layout, panel labels, environment, people, light,
+effects, colours, camera angle, distance and framing in every panel. In every panel replace the <old subject> with
 the <product> from Image 2, at the same place, size, angle and pose. Change nothing else. One <product> per
 panel. No logo, label, sticker or watermark on the <product>.
+This is ONE continuous shot: in every panel the <product> is seen from the same side and angle the <old subject>
+is seen from, turned the same way, with the same kind of contact — resting on a surface, held in a hand, worn,
+or moving — and a real contact shadow, never floating. It sits in the natural position for that contact, never
+stood on end or tipped up to show a side the <old subject> does not show; if it moves, its front points the way
+it moves. Image 2 only shows what it looks like; never copy its separate views into the panels. People, hands
+and everything else stay exactly as they are. Fill the whole picture edge to edge: no borders, no black bars.
 ```
 
-3. Check every panel before approving: the old subject is gone, the structure kept its shape.
+3. Check every panel before approving: the old subject is gone, the setting and people kept their shape, the product sits naturally.
 
 ## Things that went wrong
 

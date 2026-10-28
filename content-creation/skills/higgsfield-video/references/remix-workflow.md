@@ -12,7 +12,7 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
    like a director. Note to send:
 
    > In every shot's camera field write: shot size, exact; camera height; where the camera stands relative to the
-   > subject and the main structure — head-on, side-on (flat, no depth) or three-quarter (at an angle, so you
+   > subject and the setting — head-on, side-on (flat, no depth) or three-quarter (at an angle, so you
    > feel depth); how far away it stands and what that shows; lens feel; how much of the frame the subject fills
    > and where; which way it moves across the frame; then the camera move with direction and speed, or
    > "static camera, no movement". Inside one continuous shot keep the same size, angle and lens on every beat
