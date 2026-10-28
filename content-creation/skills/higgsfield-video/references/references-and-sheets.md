@@ -65,6 +65,10 @@ worn the same way. Never add hands, people, light streaks or effects that are no
 Image 2 only shows what it looks like; never copy its separate views into the panels. Answer with ONLY the
 redrawn sheet of Image 1, edge to edge: never paste Image 2 into the picture, no borders, no black bars.
 
+Put the merchant's own instructions and the shot's beats into the swap prompt, first, with "they win over every
+default below" — a default ("upright") silently overrode "the can lies on its side" when they were left out.
+Defaults only fill what the merchant did not say.
+
 Use GPT Image Flare for storyboards (`aspect_ratio` = the sheet's own shape). Nano Banana squared the sheet,
 pasted the character sheet under it and added a hand.
 ```
