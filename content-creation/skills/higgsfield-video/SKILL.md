@@ -78,6 +78,13 @@ Rules that came from failed runs — each one cost a paid video:
 
 Camera vocabulary (sizes, angles, lenses, moves) and the wording that works: `references/camera-language.md`.
 
+### Text on screen is always an overlay (universal)
+
+Captions, titles, prices, CTAs and logo text are added as a separate overlay layer after the pictures and video are
+made, in the player and in the export. The picture and video models never draw them: every prompt says no text,
+and any caption in the source frames is removed and its area left clean. Only text printed on the product itself
+(its label) stays.
+
 ## 3 · References: what to send
 
 | Reference | Use for | Never use for |
