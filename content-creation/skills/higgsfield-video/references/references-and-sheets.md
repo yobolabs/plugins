@@ -57,12 +57,16 @@ Redraw the whole sheet exactly, panel for panel: the same layout, panel labels, 
 effects, colours, camera angle, distance and framing in every panel. In every panel replace the <old subject> with
 the <product> from Image 2, at the same place, size, angle and pose. Change nothing else. One <product> per
 panel. Its own printed labels, logo and text exactly as in Image 2; add no other text or watermark.
-This is ONE continuous shot: in every panel the <product> is seen from the same side and angle the <old subject>
-is seen from, turned the same way, with the same kind of contact — resting on a surface, held in a hand, worn,
-or moving — and a real contact shadow, never floating. It sits in the natural position for that contact, never
-stood on end or tipped up to show a side the <old subject> does not show; if it moves, its front points the way
-it moves. Image 2 only shows what it looks like; never copy its separate views into the panels. People, hands
-and everything else stay exactly as they are. Fill the whole picture edge to edge: no borders, no black bars.
+This is ONE continuous shot: keep the camera angle of each panel and the same <product> position in every panel.
+Turn the <product> so its front — the side with its main logo or label — faces the camera as much as that angle
+allows; never show its back, base or a blank side. It takes the <old subject>'s place and contact exactly: on
+the ground → stands on the ground, upright, contact shadow, never floating; held or worn by a person → held or
+worn the same way. Never add hands, people, light streaks or effects that are not already in that panel.
+Image 2 only shows what it looks like; never copy its separate views into the panels. Answer with ONLY the
+redrawn sheet of Image 1, edge to edge: never paste Image 2 into the picture, no borders, no black bars.
+
+Use GPT Image Flare for storyboards (`aspect_ratio` = the sheet's own shape). Nano Banana squared the sheet,
+pasted the character sheet under it and added a hand.
 ```
 
 3. Check every panel before approving: the old subject is gone, the setting and people kept their shape, the product sits naturally.
@@ -74,6 +78,8 @@ and everything else stay exactly as they are. Fill the whole picture edge to edg
 | Line-drawing storyboard traced from the source | The new product grew the old subject's taillights and bumper |
 | "Hero still" (product in the ad's scene and light) | Became frame 1; its framing overrode the camera; its sticker leaked the logo |
 | Product photo with a sticker | Logo visible from the first frame despite "logo at the end" — the fix is timing the separate logo picture, not stripping the product |
+| "Same side as the old subject" when the source shows it from behind | A can turned its back (nutrition panel) to camera; say "front label faces the camera" |
+| Listing contact types ("held in a hand") | A hand appeared in a panel with no person |
 | Sheet prompt said "no logo, label, text" | A branded can came out blank: the label is the product |
 | Tiny 10-panel storyboard | Panels too small to carry anything; the model invented angles |
 | Product storyboard with a character sheet as Image 2 | Each panel copied a different sheet view (side, top, three-quarter), product floating, sheet letterboxed in black — say "ONE continuous shot: same side and angle in every panel, rests on the ground; never copy the sheet's views", and ask for the sheet's own aspect ratio |
