@@ -37,7 +37,7 @@ For prompt limits (Kling, 2,500 characters) send each rule's first sentence only
 - Same form as the subject it replaces: when the ad shows the food, drink or contents itself, show what is inside the {P} that way, never its package; when the ad shows a package, show the {P}'s package. The {P} keeps its own real shape and make-up, never the old subject's shape, layers or filling. The same count as the old subject; never extra copies, packs or logos. *(Run: a food-burst photo swapped to a packaged food came back as the new food moulded into the old food's shape, the old food's sauces kept, and small packs scattered around.)*
 - Orientation is physical: printed text and logos sit where the {P}'s pose puts them, turned with it; never redrawn upright on a tilted or upside-down object.
 - People keep their face, hair, clothes and build; hands have five fingers; nothing anatomically wrong.
-- The place keeps its structures, layout and light; nothing in it changes unless asked.
+- The place keeps its structures, layout and light; nothing in it changes unless asked. (The scene plan's re-themed place counts as asked: see `remix-workflow.md` step 4 — a place that suits the old product, not the new one, is a planning bug, not a rule to obey.)
 - Exactly the picture asked for, in the layout asked for; never paste or collage the reference pictures into it.
 - Nothing added: no text, captions, watermarks, extra logos, hands, people or effects that are not asked for.
 - Printed text on the {P} stays correct and readable, never mirrored or garbled.

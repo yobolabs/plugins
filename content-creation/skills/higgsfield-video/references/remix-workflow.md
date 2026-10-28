@@ -19,11 +19,19 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
    > unless the camera really moves.
 
    Do not put an example that matches one ad's framing ("eye level from the side") — the reading copies it.
-4. **Rewrite only the subject.** Send the beats plus the merchant's note, framed as: "use it ONLY for what to swap
-   or add, never to reword a beat. Keep each beat's own words; change only the words that name or describe the
-   old subject."
-5. **References**: character sheet → product storyboard per shot (see `references-and-sheets.md`).
-6. **Prompt** in the SKILL.md layout. Draft, review (`review.md`), fix, repeat.
+4. **Re-theme every scene to the new product's world — a must, not an option.** The source ad was made for
+   another product; its places, props and actions belong to that product. For each scene ask: "would a real person
+   use, keep or show THIS product here?" Keep the shot's job (its framing, timing, energy and what the beat sells:
+   grab, reveal, carry, use, enjoy) and move it to a place where the new product makes sense. Check physical sense:
+   temperature (frozen food never sits in a pocket, a bag or the sun), size, how it is held, opened and eaten or used.
+   *(Run: a lip-balm ad remixed to 90 ml gelato cups kept "balm in a jeans back pocket" → a frozen cup in a pocket;
+   "make-up display" had to become a supermarket freezer.)* Write the new place into the scene's words before any
+   picture is made; the merchant approves the scene plan.
+5. **Rewrite the subject in each beat.** Send the beats plus the merchant's note, framed as: "use it ONLY for what
+   to swap or add, never to reword a beat. Keep each beat's own words; change only the words that name or describe
+   the old subject" — and the place, props and action already re-themed in step 4.
+6. **References**: character sheet → product storyboard per shot (see `references-and-sheets.md`).
+7. **Prompt** in the SKILL.md layout. Draft, review (`review.md`), fix, repeat.
 
 ## Traps
 
