@@ -1,7 +1,7 @@
 {
   "name": "content-creation",
-  "description": "Build short-form campaign ads by talking to Claude — one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation",
-  "version": "1.2.4",
+  "description": "Build short-form campaign ads by talking to Claude — one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation. Plus a Higgsfield video skill: prompts, references and review for Seedance and Kling, by video style",
+  "version": "1.3.0",
   "author": {
     "name": "Sean Liao"
   },
@@ -22,6 +22,11 @@
     "motion-graphics",
     "overlays",
     "mp4",
-    "transitions"
+    "transitions",
+    "higgsfield",
+    "seedance",
+    "kling",
+    "ai-video",
+    "video-prompts"
   ]
 }
