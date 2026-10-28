@@ -20,9 +20,16 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
 
    Do not put an example that matches one ad's framing ("eye level from the side") — the reading copies it.
 4. **Re-theme every scene to the new product's world — a must, not an option.** The source ad was made for
-   another product; its places, props and actions belong to that product. For each scene ask: "would a real person
-   use, keep or show THIS product here?" Keep the shot's job (its framing, timing, energy and what the beat sells:
-   grab, reveal, carry, use, enjoy) and move it to a place where the new product makes sense. Check physical sense:
+   another product; its places, props and actions belong to that product. For each scene, still photos included:
+   1. **Purpose**: what is this shot FOR — what does it make the viewer feel or believe about the product
+      (easy to grab, fun, premium, tasty texture, goes everywhere with you)?
+   2. **Fit**: does its place, props and action make sense for the new product — would a real person buy, keep,
+      carry, use or eat THIS product there?
+   3. **New idea** when it doesn't fit: a comparable shot in the new product's world that gives the SAME purpose,
+      with the same framing, timing and energy (balm in a jeans pocket = "goes everywhere" → gelato cup in a small
+      cooler bag; applying balm = "enjoyment in use" → spooning the gelato).
+   One text pass over all scenes answers this as `Scene N | purpose | fits | why | new` (lab v7.84 "Check what each
+   scene is for"); the merchant picks "Use this idea" per scene. Check physical sense:
    temperature (frozen food never sits in a pocket, a bag or the sun), size, how it is held, opened and eaten or used.
    *(Run: a lip-balm ad remixed to 90 ml gelato cups kept "balm in a jeans back pocket" → a frozen cup in a pocket;
    "make-up display" had to become a supermarket freezer.)* Write the new place into the scene's words before any
