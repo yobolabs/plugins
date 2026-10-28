@@ -12,6 +12,7 @@ Grouped by what must stay consistent. Source: a run that broke it, or a known AI
 
 | Rule | Text sent (shortened) | Guards against |
 |---|---|---|
+| **Look (first rule, pictures and videos)** | one style for the whole ad — preset (photoreal live-action, clean 3D render, claymation, 2D cartoon, anime) plus the ad's own look and light, or the merchant's own words; names the styles it must never drift into | Separate generations of one ad coming back mixed — one photoreal, one plastic CGI, one cartoon or clay (Sean) |
 | Product | one {P}, identical in every shot — shape, size, colours, materials, printed design; never morphs, duplicates, splits, melts or swaps | The product growing another object's parts (run) |
 | **Orientation is physical** | keeps its orientation until something visibly turns it; upside down stays upside down until seen rotating; the printed design turns WITH it, never redrawn upright | A can upside down that "lands" right way up with its logo re-drawn, no rotation seen (Sean) |
 | Object permanence | nothing appears, vanishes or changes count without a visible cause; same number of products, people and props in a shot | Extra cans, people popping in |
@@ -31,6 +32,7 @@ For prompt limits (Kling, 2,500 characters) send each rule's first sentence only
 
 ## Pictures (character sheets, storyboard swaps: appended as `Rules:`)
 
+- LOOK, identical in every picture and every shot of this ad: <the look>. (Same rule leads the video rules; one setting feeds both.)
 - One {P} identity: same shape, colours, materials, size and printed design as its reference; never a different model or variant.
 - Same form as the subject it replaces: when the ad shows the food, drink or contents itself, show what is inside the {P} that way, never its package; when the ad shows a package, show the {P}'s package. The {P} keeps its own real shape and make-up, never the old subject's shape, layers or filling. The same count as the old subject; never extra copies, packs or logos. *(Run: a food-burst photo swapped to a packaged food came back as the new food moulded into the old food's shape, the old food's sauces kept, and small packs scattered around.)*
 - Orientation is physical: printed text and logos sit where the {P}'s pose puts them, turned with it; never redrawn upright on a tilted or upside-down object.
