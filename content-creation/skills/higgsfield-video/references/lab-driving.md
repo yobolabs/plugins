@@ -1,32 +1,30 @@
-# Driving the merchant's open Remix lab tab
+# Driving the Remix lab yourself
 
-Back to [SKILL.md](../SKILL.md). Read when the merchant (Sean) asks you to "do it yourself" in the lab page that is
-open in HIS Chrome — set the ad up, apply the plan, run the swaps — instead of giving him clicks.
+Back to [SKILL.md](../SKILL.md). Read when the merchant (Sean) asks you to "do it yourself" in the lab: set the ad
+up, apply the plan, run the swaps, instead of giving him clicks.
 
-## The one rule: ONE connection for the whole job
+## The one rule: NEVER attach to the merchant's own Chrome
 
-Chrome's own remote debugging (chrome://inspect → port 9222, `DevToolsActivePort` in the Chrome profile folder)
-shows an **"Allow remote debugging?" pop-up on every new websocket**. Approval does not stick across connections.
-A script run per step, or a 20 s status poll that reconnects, pops it again and again on top of his page
-(2026-10-28: the chief had to stop a worker for this).
+Chrome's own remote debugging (chrome://inspect, port 9222, `DevToolsActivePort` in his Chrome profile folder) shows
+an **"Allow remote debugging?" pop-up on top of his work for every connection**. Approval does not stick. On
+2026-10-28 it was stopped twice in one evening: first a 20 s status poll, then per-step scripts AND a "single"
+long-lived bridge — each still popped it again and again. Sean: STOP, and remember it.
 
-- Write ONE long-lived script (Node, global `WebSocket`) that opens one websocket, does set-up + clicks + polling,
-  then detaches and exits. Tell the merchant to click **Allow** once.
-- Poll progress on that same socket, or with no browser at all: Cadra `GET /api/v1/executions?pageSize=40` and
-  Higgsfield `GET /requests/<id>/status` (see `review.md`).
-- Never `browser-use`/a new daemon per call on his Chrome. Your own tests go to your own headless Chrome on another
-  port.
+- **Drive your OWN browser tab** (cmux: `browser-tab.sh`, your own profile) on the same lab server
+  (`http://127.0.0.1:<lab port>/remix-lab.html`). He can watch it in the BROWSERS pane. Paste the dev key into it
+  yourself (vault → page, never printed). His tab's saved state (readings, swaps) is not in yours; the source copy
+  and agent plan/picks files are on the server and load in any tab.
+- **Read progress without any browser**: Cadra `GET /api/v1/executions?pageSize=40` and Higgsfield
+  `GET /requests/<id>/status` (see `review.md`).
+- If something truly needs HIS tab, ask him in one line first; he clicks, you read results from the API.
 
-## Attach and evaluate
+## Evaluate in your own tab
 
-```js
-const port = fs.readFileSync(`${HOME}/Library/Application Support/Google/Chrome/DevToolsActivePort`, 'utf8').trim().split('\n');
-const ws = new WebSocket('ws://127.0.0.1:' + port[0] + port[1]);           // browser-level socket
-// Target.getTargets → the page whose url matches /127\.0\.0\.1:<lab port>\/remix-lab/
-// Target.attachToTarget {targetId, flatten:true} → sessionId; then Runtime.evaluate {expression, awaitPromise, returnByValue}
+```sh
+C="cmux browser --surface $S"         # S from browser-tab.sh
+$C goto http://127.0.0.1:51908/remix-lab.html
+$C eval '<js expression>'              # same expressions as the table below
 ```
-
-`/json/version` on 9222 answers 404 for this kind of debugging; read the port file instead.
 
 ## Drive through the DOM only
 
