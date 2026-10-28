@@ -30,7 +30,29 @@ def frames(src):
     return np.frombuffer(raw, np.uint8).reshape(-1, SIDE * SIDE).astype(np.float32)
 
 
-def cuts_and_shots(f, dur):
+def native_fps(src):
+    out = subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate',
+                                   '-of', 'csv=p=0', src]).decode().strip()
+    n, _, d = out.partition('/')
+    return float(n) / float(d or 1)
+
+
+def exact_cut(src, t, fps):
+    """The 4 fps scan finds a cut to within a quarter second; re-read +-0.3 s at full frame rate and return the
+    time of the first frame of the new shot, so scene lengths and edits land on the source's own frames."""
+    a = max(0.0, t - 0.3)
+    raw = subprocess.run(['ffmpeg', '-v', 'error', '-ss', '%.3f' % a, '-t', '0.6', '-i', src, '-vf',
+                          'scale=%d:%d,format=gray' % (SIDE, SIDE), '-f', 'rawvideo', 'pipe:1'], capture_output=True).stdout
+    g = np.frombuffer(raw, np.uint8)
+    if len(g) < 2 * SIDE * SIDE:
+        return t
+    g = g[: len(g) // (SIDE * SIDE) * SIDE * SIDE].reshape(-1, SIDE * SIDE).astype(np.float32)
+    d = np.abs(np.diff(g, axis=0)).mean(axis=1)
+    k = round(a * fps) + int(np.argmax(d)) + 1        # first frame of the new shot, counted from the start
+    return k / fps
+
+
+def cuts_and_shots(f, dur, src=None):
     diffs = np.abs(np.diff(f, axis=0)).mean(axis=1)          # diffs[i] = change from sample i to i+1
     times = (np.arange(1, len(f)) + 0.5) * STEP - STEP / 2    # cut time sits between the two samples
     med = float(np.median(diffs)) if len(diffs) else 0.0
@@ -44,12 +66,17 @@ def cuts_and_shots(f, dur):
             hard = x >= hard_bar or (x >= SPIKE_MIN and x >= SPIKE_RATIO * max(l, r, 1)) or jump
             cuts.append({'t': round(float(times[i]), 2), 'strength': round(float(x), 1), 'hard': bool(hard)})
             last = times[i]
-    edges = [0.0] + [c['t'] for c in cuts if c['hard']] + [round(dur, 2)]
+    if src and cuts:
+        fps = native_fps(src)
+        for c in cuts:
+            c['t'] = round(exact_cut(src, c['t'], fps), 3)
+            c['frame'] = round(c['t'] * fps)
+    edges = [0.0] + [c['t'] for c in cuts if c['hard']] + [round(dur, 3)]
     shots = []
     for a, b in zip(edges, edges[1:]):
-        inner = [float(diffs[i]) for i in range(len(diffs)) if a + 0.2 < (i + 1) * STEP < b - 0.05]
+        inner = [float(diffs[i]) for i in range(len(diffs)) if a + 0.2 < times[i] < b - 0.2]   # keep the cut itself out
         kind = ('still' if b - a < 1 else 'motion') if not inner else ('still' if max(inner) < STILL_MAX else 'motion')
-        shots.append({'a': round(a, 2), 'b': round(b, 2), 'len': round(b - a, 2), 'type': kind,
+        shots.append({'a': round(a, 3), 'b': round(b, 3), 'len': round(b - a, 3), 'type': kind,
                       'motion': round(max(inner), 1) if inner else None})
     return cuts, shots, med
 
@@ -114,7 +141,7 @@ def main():
     ap.add_argument('src'); ap.add_argument('--json'); ap.add_argument('--sheet')
     a = ap.parse_args()
     dur, has_audio = probe(a.src)
-    cuts, shots, med = cuts_and_shots(frames(a.src), dur)
+    cuts, shots, med = cuts_and_shots(frames(a.src), dur, a.src)
     music = beats(a.src, dur) if has_audio else None
     on_beat = None
     if music and music['beats']:

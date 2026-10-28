@@ -127,6 +127,13 @@ Request shapes, how to read a model's real limits without paying, and costs: `re
 Detail, including cache traps that silently reuse an old reading: `references/remix-workflow.md`.
 Driving the merchant's open lab tab for them (one CDP connection, DOM only): `references/lab-driving.md`.
 
+### Edit on the source's own frames (universal)
+
+When the remix keeps the source's music, every cut must land on the source's cut frame, or the edit drifts off the
+beat. Use frame-exact cut times (`analyze-video`), never rounded ones; render a video scene in whole seconds rounded
+UP and trim it to the exact scene length; join parts as whole frames counted from the running total; then measure
+the export's cuts against the source's and report the drift (more than ~1 frame is a fail).
+
 ## 6 · Review every result against the source
 
 Never judge from a single frame or a task id. Extract frames from both at matched times, side by side, then a
