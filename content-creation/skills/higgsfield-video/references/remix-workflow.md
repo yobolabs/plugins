@@ -49,6 +49,19 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
    step 1 next time that ad or product comes up, so it comes out right the first time. Ad- and product-specific
    detail lives only in these notes, never in the generic rules.
 
+## Assembly (cutting the parts into the source's timeline)
+
+- **Pick each clip's payoff, not a fixed offset.** Make a timed contact sheet of every clip (2–4 fps, time on each
+  frame) and give each slot the moment that pays off: the landing, the reveal, the label turned to camera. A slot
+  shorter than the payoff starts just before it so the payoff lands inside the slot.
+- **Never the same product in two shots in a row.** Reorder stills and clips first; reuse a clip only when its two
+  windows look clearly different (an invisible jump cut is a lost beat).
+- **No audio in the parts when the source's music replaces the sound.** A silent AAC track on each part adds
+  padding at the join; on a 24-shot reel it pushed later cuts 33–100 ms late.
+- **Stop each part by frame count only** (`-frames:v N`), never an output `-t`: a short part from a 24 fps clip
+  loses a frame to `-t` rounding. Read the clip with ~0.5 s spare so the frame count can be met.
+- **Measure the export:** run `analyze-video` on the result; cut count and times must equal the source's.
+
 ## Traps
 
 | Trap | Effect | Fix |

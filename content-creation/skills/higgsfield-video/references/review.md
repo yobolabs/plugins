@@ -29,7 +29,11 @@ Then: the cause (with evidence: the prompt line or the reference), the fix, and 
 
 ## Checklist
 
-- [ ] Number of cuts and their times match
+- [ ] Number of cuts and their times match — re-run `analyze-video` on the export; same count, same frames
+- [ ] Each clip shows its payoff (landing, reveal, label to camera), not a fixed offset
+- [ ] No product in two shots in a row
+- [ ] On-screen text copies the source's own type look (font weight, size, position, logo spot), not a generic box
+- [ ] **Against the brief, row by row** (must keep / must change / never / text / end card / size) before the merchant sees it
 - [ ] Each shot's size, height, three-quarter / side-on, distance
 - [ ] The setting keeps its shape (in one run a curved slab became a loop)
 - [ ] People: same number, same actions, faces consistent across shots; lines spoken as written

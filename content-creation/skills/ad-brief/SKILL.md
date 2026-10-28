@@ -57,3 +57,6 @@ read `references/how-to-analyse.md` before writing. The sections below are the o
   (shape sentence, packs) in its product notes.
 - The creative review at the end checks every finished picture and video against this brief, scene by scene,
   before anything paid is re-made.
+- The finished MP4 gets that review too, before the merchant sees it (table: brief rule · ad · pass/fail).
+- Measured facts in the brief (cut count, shot lengths, where text sits) come from `analyze-video` and the frames,
+  never from the reading model; re-check them on frames before the brief drives an edit.
