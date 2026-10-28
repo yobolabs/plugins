@@ -67,4 +67,5 @@ panel. No logo, label, sticker or watermark on the <product>.
 | "Hero still" (product in the ad's scene and light) | Became frame 1; its framing overrode the camera; its sticker leaked the logo |
 | Product photo with a sticker | Logo visible from the first frame despite "logo at the end" |
 | Tiny 10-panel storyboard | Panels too small to carry anything; the model invented angles |
+| Product storyboard with a character sheet as Image 2 | Each panel copied a different sheet view (side, top, three-quarter), product floating, sheet letterboxed in black — say "ONE continuous shot: same side and angle in every panel, rests on the ground; never copy the sheet's views", and ask for the sheet's own aspect ratio |
 | Redo that re-ran the original edit with the notes added | A completely different product: the fix re-rolled everything (Nano Banana takes only 2 pictures, so the last try was never sent) |
