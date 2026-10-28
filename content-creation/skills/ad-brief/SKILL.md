@@ -21,6 +21,10 @@ The brief is generated, never typed from scratch; the merchant edits it.
 - Post facts when the source is a social post: account name and handle, caption, hashtags, date, views/likes.
 - Saved notes for this exact ad, if it was remixed before (knowledge base, keyed by the source link).
 
+**How to think while analysing** (watch three times, start from the job, hook and hold, message architecture,
+why each visual choice was made, what transfers vs what is category- or brand-bound, specific testable claims):
+read `references/how-to-analyse.md` before writing. The sections below are the output; that file is the expertise.
+
 ## The analysis (write every section; mark a guess as unverified)
 
 1. **Who made it and why.** Brand, agency, creator/freelancer, UGC, or spec work ("fake campaigns until they
