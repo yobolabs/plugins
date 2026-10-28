@@ -16,6 +16,7 @@ The style decides the references, the camera language and what can go wrong. Loa
 | Style | Has people | Has voice | File | Status |
 |---|---|---|---|---|
 | **Product-hero** — the product is the only character (stunt, reveal, transformation) | No | No (music + SFX) | `references/styles/product-hero.md` | Proven in runs |
+| Creator product reel — a compilation of one-shot product ads, product fills the frame, bold colour | Sometimes (hands, a model) | No (music) | `references/styles/product-reel.md` | One remix run, lessons from review |
 | Presenter — a person talks about the product | Yes | Yes | `references/styles/presenter.md` | Stub, not proven |
 | UGC — someone filmed doing something, phone look | Yes | Sometimes | `references/styles/ugc.md` | Stub, not proven |
 | Cinematic dialogue — scenes, characters, acting | Yes | Yes | `references/styles/cinematic-dialogue.md` | Stub, from Higgsfield's own tutorial |

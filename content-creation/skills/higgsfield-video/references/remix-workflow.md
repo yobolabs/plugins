@@ -20,35 +20,25 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
 
    Do not put an example that matches one ad's framing ("eye level from the side") — the reading copies it.
 4. **Re-theme every scene to the new product's world — a must, not an option.** The source ad was made for
-   another product; its places, props and actions belong to that product. For each scene, still photos included:
-   1. **Purpose**: what is this shot FOR — what does it make the viewer feel or believe about the product
-      (easy to grab, fun, premium, tasty texture, goes everywhere with you)?
-   2. **Fit**: does its place, props and action make sense for the new product — would a real person buy, keep,
-      carry, use or eat THIS product there?
-   3. **New idea** when it doesn't fit: a comparable shot in the new product's world that gives the SAME purpose,
-      with the same framing, timing and energy (balm in a jeans pocket = "goes everywhere" → gelato cup in a small
-      cooler bag; applying balm = "enjoyment in use" → a big spoonful lifted to the camera).
-   **Keep what made THIS source work** (Sean, 2026-10-28, from one run that went wrong). Read the source's own
-   style first; it differs per creator and per ad, so these are checks, not one house style:
-   - **Same product scale.** The product stays as big in each frame as the old one was. Example: the Baby Lips
-     reel's creator made the product the star, filling most of the frame; a new idea where a person became the
-     subject was wrong there.
-   - **Same look and kind of scene.** That reel was bold, big items, loud colour backgrounds, brash. Its new ideas
-     must stay that way; the first pass moved studio shots to benches and cafés (three bench-eating shots). A quiet
-     lifestyle source stays quiet.
-   - **Smallest change.** Swap only the wrong prop or action; shape, angle, stack or pose differences are NOT a
-     misfit (the first pass flagged 8 of 10 scenes on that; the fixed one flags 5).
-   - **Each scene keeps its own product.** Name every scene's product in the pass; naming only the main product
-     made every new idea the same flavour.
-   - **Spot a reel.** Many creator videos are a compilation of separate one-shot ads ("fake campaigns until they
-     hire me"). Then judge each scene as its own complete ad whose idea makes the product the star — not as a beat
-     in one story — and no two scenes get the same idea.
-   One text pass over all scenes answers this as `Scene N | purpose | fits | why | new` (lab "Check what each
-   scene is for"); the merchant picks "Use this idea" per scene. Check physical sense:
-   temperature (frozen food never sits in a pocket, a plain bag or the sun; an insulated cooler bag is fine), size, how it is held, opened and eaten or used.
-   *(Run: a lip-balm ad remixed to 90 ml gelato cups kept "balm in a jeans back pocket" → a frozen cup in a pocket;
-   "make-up display" had to become a supermarket freezer.)* Write the new place into the scene's words before any
-   picture is made; the merchant approves the scene plan.
+   another product; its places, props and actions belong to that product. First identify the source's style and load
+   its file from `styles/` (SKILL.md §1); the style file says what made that kind of ad work. Then, for each scene,
+   still photos included:
+   1. **Purpose**: what is this shot FOR — what does it make the viewer feel or believe about the product?
+   2. **Fit**: do its place, props and action make sense for the new product — would a real person buy, keep,
+      carry, use or eat THIS product there? Check physical sense: temperature, size, how it is held, opened, used
+      or eaten.
+   3. **New idea** when it doesn't fit: a comparable shot in the new product's world with the SAME purpose.
+   Universal checks for every new idea:
+   - **Keep the source's own style**: the product as big in the frame as the old one was, the same kind of scene,
+     background, colour and energy. Whatever the source did, the new idea does too.
+   - **Smallest change**: swap only the wrong prop or action. A different shape, angle, stack or pose is not a
+     misfit.
+   - **Each scene keeps its own product** (name every scene's product in the pass, not only the main one).
+   - **No two scenes get the same new idea.**
+   One text pass over all scenes answers this as `Scene N | purpose | fits | why | new` (lab "Check what each scene
+   is for"); the merchant picks "Use this idea" per scene. Write the new place into the scene's words before any
+   picture is made; the merchant approves the scene plan. Worked example and its mistakes:
+   `styles/product-reel.md` (lip balm → gelato).
 5. **Rewrite the subject in each beat.** Send the beats plus the merchant's note, framed as: "use it ONLY for what
    to swap or add, never to reword a beat. Keep each beat's own words; change only the words that name or describe
    the old subject" — and the place, props and action already re-themed in step 4.
