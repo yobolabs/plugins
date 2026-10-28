@@ -30,7 +30,7 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
       cooler bag; applying balm = "enjoyment in use" → spooning the gelato).
    One text pass over all scenes answers this as `Scene N | purpose | fits | why | new` (lab v7.84 "Check what each
    scene is for"); the merchant picks "Use this idea" per scene. Check physical sense:
-   temperature (frozen food never sits in a pocket, a bag or the sun), size, how it is held, opened and eaten or used.
+   temperature (frozen food never sits in a pocket, a plain bag or the sun; an insulated cooler bag is fine), size, how it is held, opened and eaten or used.
    *(Run: a lip-balm ad remixed to 90 ml gelato cups kept "balm in a jeans back pocket" → a frozen cup in a pocket;
    "make-up display" had to become a supermarket freezer.)* Write the new place into the scene's words before any
    picture is made; the merchant approves the scene plan.
