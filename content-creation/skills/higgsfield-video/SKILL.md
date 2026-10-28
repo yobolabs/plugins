@@ -66,8 +66,10 @@ Rules that came from failed runs — each one cost a paid video:
    distance ("far back, the whole setting in frame").
 6. **Every reference states its job and what it must NOT do** ("defines what it looks like — never framing").
    An unlabelled product picture becomes the opening frame.
-7. **Logos are timed**: "appears only in the final 2 s; before that, no logo anywhere." A sticker on the product
-   photo leaks the logo into every frame; draw product references without it.
+7. **Time the end-card logo, never strip the product's own print.** The separate logo picture: "shown on its own
+   only in the final 2 s". The product's printed design (a can's label, a box's artwork) IS the product: "its own
+   labels, logo and text stay exactly as in its pictures". Forbid only ADDED text. A "no logo, no text" rule on
+   the character sheet turned a branded can blank.
 
 Camera vocabulary (sizes, angles, lenses, moves) and the wording that works: `references/camera-language.md`.
 
@@ -116,5 +118,5 @@ checklist: `references/review.md`.
 - [ ] Style file loaded; references labelled with role + what they must not do
 - [ ] CAMERA block present, one line per shot, no "tripod"
 - [ ] Cut count and times stated; no length cap you invented
-- [ ] Logo timing stated; product references drawn without the logo
+- [ ] End-card logo timed; the product's own printed design kept, only added text forbidden
 - [ ] The person who pays approved the run (renders cost real money)

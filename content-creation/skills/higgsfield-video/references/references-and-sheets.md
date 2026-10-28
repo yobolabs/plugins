@@ -15,7 +15,7 @@ camera movement follow the shot instructions."
 | PRODUCT CHARACTER SHEET | what the product looks like from every side | "views of ONE <product>"; "never sets camera position, framing or how big it is in frame" |
 | PRODUCT VIEW (extra photo of the same product) | another side of the same product | "the same ONE <product>, never framing" — do not call it a prop |
 | PROP | another object's look | "looks exactly like its photo whenever it appears" |
-| LOGO | the logo | "appears only in the final 2 s, exactly as drawn; before that, no logo anywhere" |
+| LOGO (separate end-card picture) | the logo | "shown on its own only in the final 2 s; before that, do not add this logo anywhere; the product's own printed design stays as it is" |
 | VIDEO REFERENCE (source ad / its shot) | cuts, camera moves, framing, timing | "never how anything looks" |
 
 Name the product by its base name: photos named "<product> left side", "<product> top" are views of one product.
@@ -31,7 +31,9 @@ side by side at the same size and spacing — front, three-quarter, side and bac
 Calm, clean reference sheet: the <product> alone on a plain mid-grey seamless background, nothing else, no scene.
 Even soft studio light from the front and above, soft grounded shadow under each view, no colour cast.
 The <product> looks exactly like Image 1 in every view: same shape, colours, materials, size and real surface
-detail, sharp focus. Image 1 gives only the <product>'s look. No logo, label, sticker, text or watermark.
+detail, sharp focus. Image 1 gives the <product>'s exact look, including its own printed design: every label,
+logo, word and colour on it stays exactly as in the photo, sharp and readable. Add nothing else: no extra text,
+captions, numbers or watermark.
 ```
 
 Aspect 16:9.
@@ -54,7 +56,7 @@ Image 1 is a storyboard sheet of real frames from one continuous shot of an ad, 
 Redraw the whole sheet exactly, panel for panel: the same layout, panel labels, environment, people, light,
 effects, colours, camera angle, distance and framing in every panel. In every panel replace the <old subject> with
 the <product> from Image 2, at the same place, size, angle and pose. Change nothing else. One <product> per
-panel. No logo, label, sticker or watermark on the <product>.
+panel. Its own printed labels, logo and text exactly as in Image 2; add no other text or watermark.
 This is ONE continuous shot: in every panel the <product> is seen from the same side and angle the <old subject>
 is seen from, turned the same way, with the same kind of contact — resting on a surface, held in a hand, worn,
 or moving — and a real contact shadow, never floating. It sits in the natural position for that contact, never
@@ -71,7 +73,8 @@ and everything else stay exactly as they are. Fill the whole picture edge to edg
 |---|---|
 | Line-drawing storyboard traced from the source | The new product grew the old subject's taillights and bumper |
 | "Hero still" (product in the ad's scene and light) | Became frame 1; its framing overrode the camera; its sticker leaked the logo |
-| Product photo with a sticker | Logo visible from the first frame despite "logo at the end" |
+| Product photo with a sticker | Logo visible from the first frame despite "logo at the end" — the fix is timing the separate logo picture, not stripping the product |
+| Sheet prompt said "no logo, label, text" | A branded can came out blank: the label is the product |
 | Tiny 10-panel storyboard | Panels too small to carry anything; the model invented angles |
 | Product storyboard with a character sheet as Image 2 | Each panel copied a different sheet view (side, top, three-quarter), product floating, sheet letterboxed in black — say "ONE continuous shot: same side and angle in every panel, rests on the ground; never copy the sheet's views", and ask for the sheet's own aspect ratio |
 | Redo that re-ran the original edit with the notes added | A completely different product: the fix re-rolled everything (Nano Banana takes only 2 pictures, so the last try was never sent) |
