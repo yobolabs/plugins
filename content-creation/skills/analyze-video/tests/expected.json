@@ -1,0 +1,118 @@
+{
+ "note": "Source videos are third-party ads and are not stored here; keep a local copy to re-run. Shots: [start, end, type]. Times may move by one sample (0.25 s).",
+ "ads": {
+  "car-stunt-ramp-16s": {
+   "duration": 16.02,
+   "shots": [
+    [
+     0.0,
+     2.25,
+     "motion"
+    ],
+    [
+     2.25,
+     16.02,
+     "motion"
+    ]
+   ],
+   "mode": "one video per shot, assembled at the source cut times"
+  },
+  "lip-balm-slideshow-9s": {
+   "duration": 9.49,
+   "shots": [
+    [
+     0.0,
+     4.25,
+     "motion"
+    ],
+    [
+     4.25,
+     4.75,
+     "still"
+    ],
+    [
+     4.75,
+     5.25,
+     "still"
+    ],
+    [
+     5.25,
+     6.0,
+     "still"
+    ],
+    [
+     6.0,
+     6.5,
+     "still"
+    ],
+    [
+     6.5,
+     7.0,
+     "still"
+    ],
+    [
+     7.0,
+     7.75,
+     "still"
+    ],
+    [
+     7.75,
+     8.25,
+     "still"
+    ],
+    [
+     8.25,
+     8.75,
+     "still"
+    ],
+    [
+     8.75,
+     9.49,
+     "still"
+    ]
+   ],
+   "mode": "mix"
+  },
+  "macarons-egg-8s": {
+   "duration": 8.57,
+   "shots": [
+    [
+     0.0,
+     2.5,
+     "motion"
+    ],
+    [
+     2.5,
+     3.25,
+     "still"
+    ],
+    [
+     3.25,
+     4.5,
+     "still"
+    ],
+    [
+     4.5,
+     5.5,
+     "still"
+    ],
+    [
+     5.5,
+     6.5,
+     "still"
+    ],
+    [
+     6.5,
+     7.5,
+     "motion"
+    ],
+    [
+     7.5,
+     8.57,
+     "motion"
+    ]
+   ],
+   "mode": "mix"
+  }
+ }
+}

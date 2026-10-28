@@ -103,6 +103,8 @@ Request shapes, how to read a model's real limits without paying, and costs: `re
 
 ## 5 · Remixing a source video
 
+0. **Analyze first** with `content-creation:analyze-video`: cuts, shots, still vs moving, beats, and a suggested
+   structure. Wrong cuts corrupt everything after them.
 1. **Read the source** with a video model and ask for the camera like a director (size, height, three-quarter /
    side-on / head-on, distance, lens, subject size and place, direction of travel, move or static).
 2. **Find the real cuts** from the pixels, not from the reading; pass them in so no shot crosses a cut.
