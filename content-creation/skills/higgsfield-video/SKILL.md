@@ -108,10 +108,16 @@ Request shapes, how to read a model's real limits without paying, and costs: `re
 1. **Read the source** with a video model and ask for the camera like a director (size, height, three-quarter /
    side-on / head-on, distance, lens, subject size and place, direction of travel, move or static).
 2. **Find the real cuts** from the pixels, not from the reading; pass them in so no shot crosses a cut.
-3. **Rewrite only the subject.** The merchant's note says what to swap; it never rewords a beat.
-4. **Build references** (§3), then the prompt (§2). Draft at 480p; re-render winners at 1080p.
+3. **Purpose → fit → new idea, every scene (a must).** What is each shot FOR (what it makes the viewer feel or
+   believe about the product)? Does its place, props and action make sense for the new product? If not, move it to a
+   comparable shot in the new product's world with the same purpose, framing, timing and energy (lip-balm ad →
+   gelato: jeans pocket ✗ → cooler bag; make-up display → supermarket freezer).
+4. **Rewrite the subject** in each beat (plus the re-themed place). The merchant's note says what to swap; it never
+   rewords a beat.
+5. **Build references** (§3), then the prompt (§2). Draft at 480p; re-render winners at 1080p.
 
 Detail, including cache traps that silently reuse an old reading: `references/remix-workflow.md`.
+Driving the merchant's open lab tab for them (one CDP connection, DOM only): `references/lab-driving.md`.
 
 ## 6 · Review every result against the source
 
