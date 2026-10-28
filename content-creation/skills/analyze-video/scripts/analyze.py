@@ -15,6 +15,8 @@ STILL_MAX = 0.5      # a shot is 'still' only when NO sampled change inside it r
 JUMP_MIN, JUMP_RATIO = 40, 1.6   # a cut beside a moving shot: big AND well above both neighbours
 SPIKE_MIN, SPIKE_RATIO = 25, 4   # a cut between still shots: from ~0 to 25+
 MIN_GAP = 0.45       # two cuts closer than this are one cut (photo slideshows cut every ~0.5 s)
+FR_MIN, FR_RATIO, FR_WIN = 20, 4, 5   # full-rate cut: change >= 20 and >= 4x the median of the 5 frames each side
+FR_MIN_GAP = 0.1     # ignore a 'cut' in the first/last 3 frames (fades, encoder glitches)
 
 
 def probe(src):
@@ -37,19 +39,23 @@ def native_fps(src):
     return float(n) / float(d or 1)
 
 
-def exact_cut(src, t, fps):
-    """The 4 fps scan finds a cut to within a quarter second; re-read +-0.3 s at full frame rate and return the
-    time of the first frame of the new shot, so scene lengths and edits land on the source's own frames."""
-    a = max(0.0, t - 0.3)
-    raw = subprocess.run(['ffmpeg', '-v', 'error', '-ss', '%.3f' % a, '-t', '0.6', '-i', src, '-vf',
-                          'scale=%d:%d,format=gray' % (SIDE, SIDE), '-f', 'rawvideo', 'pipe:1'], capture_output=True).stdout
+def full_rate_cuts(src):
+    """Every hard cut, read at the source's own frame rate: one 32x32 grey pass over all frames (cheap for short ads).
+    A cut is one frame whose change is big AND far above the frames around it, so cuts inside moving shots and
+    cuts a beat apart (~0.25 s) are kept; the time is the first frame of the new shot, counted from the start."""
+    fps = native_fps(src)
+    raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', src, '-vf', 'scale=%d:%d,format=gray' % (SIDE, SIDE),
+                          '-fps_mode', 'passthrough', '-f', 'rawvideo', 'pipe:1'], capture_output=True, check=True).stdout
     g = np.frombuffer(raw, np.uint8)
-    if len(g) < 2 * SIDE * SIDE:
-        return t
     g = g[: len(g) // (SIDE * SIDE) * SIDE * SIDE].reshape(-1, SIDE * SIDE).astype(np.float32)
-    d = np.abs(np.diff(g, axis=0)).mean(axis=1)
-    k = round(a * fps) + int(np.argmax(d)) + 1        # first frame of the new shot, counted from the start
-    return k / fps
+    d = np.abs(np.diff(g, axis=0)).mean(axis=1)               # d[i] = change from frame i to i+1
+    out = []
+    for i, x in enumerate(d):
+        around = np.concatenate([d[max(0, i - FR_WIN):i], d[i + 1:i + 1 + FR_WIN]])
+        base = float(np.median(around)) if len(around) else 0.0
+        if x >= FR_MIN and x >= FR_RATIO * max(base, 1.0) and x == d[max(0, i - 2):i + 3].max():
+            out.append({'t': round((i + 1) / fps, 3), 'strength': round(float(x), 1), 'hard': True, 'frame': i + 1})
+    return [c for c in out if FR_MIN_GAP <= c['t'] <= len(g) / fps - FR_MIN_GAP]
 
 
 def cuts_and_shots(f, dur, src=None):
@@ -66,11 +72,10 @@ def cuts_and_shots(f, dur, src=None):
             hard = x >= hard_bar or (x >= SPIKE_MIN and x >= SPIKE_RATIO * max(l, r, 1)) or jump
             cuts.append({'t': round(float(times[i]), 2), 'strength': round(float(x), 1), 'hard': bool(hard)})
             last = times[i]
-    if src and cuts:
-        fps = native_fps(src)
-        for c in cuts:
-            c['t'] = round(exact_cut(src, c['t'], fps), 3)
-            c['frame'] = round(c['t'] * fps)
+    if src:
+        hard = full_rate_cuts(src)          # hard cuts from the full-rate pass; soft ones stay 4 fps unless a hard cut is there
+        cuts = hard + [c for c in cuts if not c['hard'] and all(abs(c['t'] - h['t']) > 0.2 for h in hard)]
+        cuts.sort(key=lambda c: c['t'])
     edges = [0.0] + [c['t'] for c in cuts if c['hard']] + [round(dur, 3)]
     shots = []
     for a, b in zip(edges, edges[1:]):

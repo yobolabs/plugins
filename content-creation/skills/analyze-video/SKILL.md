@@ -21,7 +21,7 @@ Needs `ffmpeg`, `ffprobe`, `numpy`. Prints one line per shot plus the plan; `--j
 
 | Output | How | Trust |
 |---|---|---|
-| **Cuts** | 32×32 grey frames at 4 fps; mean change between neighbours; a cut is a spike (rules below); then each cut is re-read ±0.3 s at full frame rate and set to the first frame of the new shot (`t` to 3 decimals + `frame`). A 4 fps cut is up to 0.125 s off, enough to put every edit off the music's beat | High — tuned on real ads |
+| **Cuts** | Hard cuts: one pass over EVERY frame at the source frame rate (32×32 grey); a cut is a frame whose change is ≥ 20 and ≥ 4× the median of the 5 frames each side; `t` = first frame of the new shot (3 decimals + `frame`). Soft cuts: the 4 fps scan (rules below). The old 4 fps scan + ±0.3 s re-read missed cuts inside moving shots and cuts a beat apart, and landed some 1 frame late (Social Sauce reel: 20 of 23 found, 4 late) — the edit then drifts off the music | High — tuned on real ads |
 | **Shots** | The time between hard cuts | High |
 | **Shot type** | `still` when NO change inside the shot reaches 0.5; else `motion` | High — a locked wide shot with a tiny moving subject measures ≈1, so it stays `motion` |
 | **Music** | Spectral-flux onsets → tempo by autocorrelation → beat grid | **Experimental**: can lock on half or double tempo (184 bpm on a ~92 bpm track) |

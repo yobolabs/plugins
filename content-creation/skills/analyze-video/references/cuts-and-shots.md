@@ -29,6 +29,7 @@ absolute difference of the 1,024 pixels (0–255 scale). Typical values:
 |---|---|---|
 | Slideshow (many stills, a cut every ~0.5 s) | High median hides cuts; neighbours merge | Spike ≥ 25 and ≥ 4× neighbours; min gap 0.45 s |
 | A cut out of a moving shot into a still | Moving shot + photo merge into one "moving" shot | Jump ≥ 40 and ≥ 1.6× both neighbours |
+| Beat-cut reel with moving shots (a cut every beat, ~0.65 s; two cuts 0.23 s apart) | 4 fps scan misses cuts inside motion and merges close cuts; re-read lands 1 frame late | Hard cuts from the full-rate pass: change ≥ 20 and ≥ 4× the median of 5 frames each side (`FR_*` in analyze.py) |
 | Dissolve / cross-fade | Change spread over several samples, no spike | Not handled — split by hand |
 | Flash frame or whip pan | Spike inside one shot | Not handled — join by hand |
 | Long slow push-in | Continuous small change | Correctly one motion shot |
