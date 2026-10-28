@@ -35,5 +35,6 @@ Then: the cause (with evidence: the prompt line or the reference), the fix, and 
 - [ ] People: same number, same actions, faces consistent across shots; lines spoken as written
 - [ ] The action order and timing — every step present, not early, not skipped
 - [ ] The product is the product: no parts, features or text of the old subject
+- [ ] Slop check, frame by frame: orientation changes only with a visible turn (printed design turns with it); nothing appears or vanishes; counts stay the same; faces, hands and clothes stay the same; the place keeps its layout; nothing floats; every glow or effect has a source; screen direction holds across cuts
 - [ ] Logo only where asked
 - [ ] Sound present and not silent

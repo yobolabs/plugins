@@ -8,20 +8,33 @@ them in ONE place in your tool (a constant), never re-typed inside each prompt b
 
 ## Video (a `CORE RULES` block right after ACTIVE REFERENCES)
 
-| Rule | Text sent | Broken in a run when |
+Grouped by what must stay consistent. Source: a run that broke it, or a known AI-video failure ("slop") class.
+
+| Rule | Text sent (shortened) | Guards against |
 |---|---|---|
-| Continuity | one {P}, identical in every shot and frame — same shape, size, colours, materials and printed design. It never morphs, duplicates, splits or swaps for another object. | The product grew another object's parts |
-| References do only their job | pictures of the {P} set how it looks, never the framing; storyboards and the CAMERA block set framing, angle and distance. | A product picture became the opening frame |
-| Camera obeys the words | no cuts, angles, close-ups, zooms or camera moves beyond the ones written. A static camera never moves. | Extra cuts; a label close-up nobody asked for |
-| Time obeys the words | every shot lasts exactly its written length; every cut lands at its written time. | A 1.7 s shot ran 4–5 s (still happens — trim after) |
-| Real physics | things move only the way they physically can, or by the means written; contact with the ground and shadows stay consistent; nothing floats unless written. | A can became a rocket; products floated |
-| Nothing added | no text, captions, watermarks, extra logos, hands, people, animals, glows or effects that are not written. | A hand, glows and light streaks appeared |
-| Printed text | printed text on the {P} stays correct and readable, never mirrored or garbled. | A can label came out mirrored |
-| Light | light stays continuous within a shot; it changes only at a cut or where written. | — (keeps the look stable) |
+| Product | one {P}, identical in every shot — shape, size, colours, materials, printed design; never morphs, duplicates, splits, melts or swaps | The product growing another object's parts (run) |
+| **Orientation is physical** | keeps its orientation until something visibly turns it; upside down stays upside down until seen rotating; the printed design turns WITH it, never redrawn upright | A can upside down that "lands" right way up with its logo re-drawn, no rotation seen (Sean) |
+| Object permanence | nothing appears, vanishes or changes count without a visible cause; same number of products, people and props in a shot | Extra cans, people popping in |
+| People | same face, age, hair, skin, build, clothes, accessories in every shot; five fingers; correct limbs, joints, teeth; held objects stay in the hand | Face drift, extra fingers, swapped hands |
+| Place | same layout, structures, signs, surfaces, weather, time of day within a scene; left stays left | A curved slab becoming a loop (run); walls moving |
+| Real physics | moves only as it physically can or by the written means; believable gravity, momentum, speed; ground contact and shadows match the light; liquids, smoke, fabric behave for real; nothing floats unless written | A can flying like a rocket (run); floating products (run) |
+| Cause and effect | every change has a visible cause — landing makes dust, impact moves what it hits, a glow has a source | Glows and effects from nowhere (run) |
+| Screen direction | moving right keeps moving right across a cut; eyelines and camera side stay consistent | Flipped direction after a cut |
+| References do only their job | product and people pictures set looks, never framing; storyboards and CAMERA set framing | A product picture as the opening frame (run) |
+| Camera obeys the words | no cuts, angles, close-ups, zooms or moves beyond the written ones; static never moves | Extra cuts; a label close-up (run) |
+| Time obeys the words | each shot its written length; cuts at written times | 1.7 s shot ran 4–5 s (run; still happens — trim after) |
+| Nothing added | no text, captions, watermarks, extra logos, hands, people, animals, glows, sparkles, effects not written | A hand, glows, light streaks (run) |
+| Printed text | on the product and on signs: correct, readable, identical frame to frame; never mirrored, garbled, rewritten | Mirrored can label (run) |
+| Light | same direction, colour, strength within a shot; changes only at a cut or where written | Flicker, light jumping sides |
+
+For prompt limits (Kling, 2,500 characters) send each rule's first sentence only.
 
 ## Pictures (character sheets, storyboard swaps: appended as `Rules:`)
 
 - One {P} identity: same shape, colours, materials, size and printed design as its reference; never a different model or variant.
+- Orientation is physical: printed text and logos sit where the {P}'s pose puts them, turned with it; never redrawn upright on a tilted or upside-down object.
+- People keep their face, hair, clothes and build; hands have five fingers; nothing anatomically wrong.
+- The place keeps its structures, layout and light; nothing in it changes unless asked.
 - Exactly the picture asked for, in the layout asked for; never paste or collage the reference pictures into it.
 - Nothing added: no text, captions, watermarks, extra logos, hands, people or effects that are not asked for.
 - Printed text on the {P} stays correct and readable, never mirrored or garbled.
@@ -31,4 +44,4 @@ them in ONE place in your tool (a constant), never re-typed inside each prompt b
 ## Changing a rule
 
 Change it in the one constant, note the run that motivated it in the table above, and re-run one Draft to check
-it did not break another rule. A rule with no run behind it does not go in.
+it did not break another rule. A rule needs a reason: a run that broke it, or a known AI-video failure class named in the table.
