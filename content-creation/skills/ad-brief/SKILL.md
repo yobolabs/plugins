@@ -49,6 +49,19 @@ read `references/how-to-analyse.md` before writing. The sections below are the o
   the new one), **never** (old brand, old packaging parts, the same idea twice…).
 - Text on screen (as overlays) and music (keep the source's track or not).
 
+## Evidence: one source per kind of fact
+
+| Fact | Only source |
+|---|---|
+| Cut times, shot count, lengths, still/moving | the measured shot list (`analyze-video`) |
+| What each shot shows | a keyframe sheet: one frame per measured shot, labelled `S<n> <start>-<end> s` |
+| Text position and look, end card | the keyframes that show it; else "unverified" |
+| Tempo | measured bpm; never a "% on the beat" from the experimental grid |
+
+The scene table has one row per measured shot. A reading model's own times and a draft's scene list are hints,
+never sources: on the Social Sauce reel they gave 22 shots (really 24), a lower-third banner (really centred) and an
+invented logo end card. With the measured list + keyframe sheet attached, all 24 rows came back right.
+
 ## Rules
 
 - Evidence for every claim: a time, a scene, a frame, the caption. No evidence → "unverified".
