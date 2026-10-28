@@ -33,7 +33,7 @@ Then: the cause (with evidence: the prompt line or the reference), the fix, and 
 - [ ] Each shot's size, height, three-quarter / side-on, distance
 - [ ] The setting keeps its shape (in one run a curved slab became a loop)
 - [ ] People: same number, same actions, faces consistent across shots; lines spoken as written
-- [ ] The action order and timing (launch, flip, landing) — not early, not skipped
-- [ ] The product is the product: no parts of the old subject (wheels, lights, plates)
+- [ ] The action order and timing — every step present, not early, not skipped
+- [ ] The product is the product: no parts, features or text of the old subject
 - [ ] Logo only where asked
 - [ ] Sound present and not silent
