@@ -111,8 +111,8 @@ Request shapes, how to read a model's real limits without paying, and costs: `re
 2. **Find the real cuts** from the pixels, not from the reading; pass them in so no shot crosses a cut.
 3. **Purpose → fit → new idea, every scene (a must).** What is each shot FOR (what it makes the viewer feel or
    believe about the product)? Does its place, props and action make sense for the new product? If not, move it to a
-   comparable shot in the new product's world with the same purpose, framing, timing and energy (lip-balm ad →
-   gelato: jeans pocket ✗ → cooler bag; make-up display → supermarket freezer).
+   comparable shot in the new product's world with the same purpose, framing, timing and energy. Keep the
+   source's own style (product scale, kind of scene, look); the style file says what that is.
 4. **Rewrite the subject** in each beat (plus the re-themed place). The merchant's note says what to swap; it never
    rewords a beat.
 5. **Build references** (§3), then the prompt (§2). Draft at 480p; re-render winners at 1080p.

@@ -37,8 +37,7 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
    - **No two scenes get the same new idea.**
    One text pass over all scenes answers this as `Scene N | purpose | fits | why | new` (lab "Check what each scene
    is for"); the merchant picks "Use this idea" per scene. Write the new place into the scene's words before any
-   picture is made; the merchant approves the scene plan. Worked example and its mistakes:
-   `styles/product-reel.md` (lip balm → gelato).
+   picture is made; the merchant approves the scene plan.
 5. **Rewrite the subject in each beat.** Send the beats plus the merchant's note, framed as: "use it ONLY for what
    to swap or add, never to reword a beat. Keep each beat's own words; change only the words that name or describe
    the old subject" — and the place, props and action already re-themed in step 4.
