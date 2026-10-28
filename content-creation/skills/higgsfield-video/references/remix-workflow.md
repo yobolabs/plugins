@@ -27,8 +27,20 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
       carry, use or eat THIS product there?
    3. **New idea** when it doesn't fit: a comparable shot in the new product's world that gives the SAME purpose,
       with the same framing, timing and energy (balm in a jeans pocket = "goes everywhere" → gelato cup in a small
-      cooler bag; applying balm = "enjoyment in use" → spooning the gelato).
-   One text pass over all scenes answers this as `Scene N | purpose | fits | why | new` (lab v7.84 "Check what each
+      cooler bag; applying balm = "enjoyment in use" → a big spoonful lifted to the camera).
+   **Keep what made the source work** (Sean, 2026-10-28, all from one run that went wrong):
+   - **The product is the star.** It fills most of the frame, as much as the old product did; people, hands and
+     props only frame it. A new idea where a person becomes the subject is wrong.
+   - **Keep the look.** Bold source (big items, loud colour backgrounds, brash, graphic) stays bold. Never turn a
+     studio shot into a quiet real-life scene (bench, café, street); that run produced three bench-eating shots.
+   - **Smallest change.** Swap only the wrong prop or action; shape, angle, stack or pose differences are NOT a
+     misfit (the first pass flagged 8 of 10 scenes on that; the fixed one flags 5).
+   - **Each scene keeps its own product.** Name every scene's product in the pass; naming only the main product
+     made every new idea the same flavour.
+   - **Spot a reel.** Many creator videos are a compilation of separate one-shot ads ("fake campaigns until they
+     hire me"). Then judge each scene as its own complete ad whose idea makes the product the star — not as a beat
+     in one story — and no two scenes get the same idea.
+   One text pass over all scenes answers this as `Scene N | purpose | fits | why | new` (lab "Check what each
    scene is for"); the merchant picks "Use this idea" per scene. Check physical sense:
    temperature (frozen food never sits in a pocket, a plain bag or the sun; an insulated cooler bag is fine), size, how it is held, opened and eaten or used.
    *(Run: a lip-balm ad remixed to 90 ml gelato cups kept "balm in a jeans back pocket" → a frozen cup in a pocket;
