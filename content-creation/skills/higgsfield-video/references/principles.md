@@ -32,13 +32,14 @@ For prompt limits (Kling, 2,500 characters) send each rule's first sentence only
 ## Pictures (character sheets, storyboard swaps: appended as `Rules:`)
 
 - One {P} identity: same shape, colours, materials, size and printed design as its reference; never a different model or variant.
+- Same form as the subject it replaces: when the ad shows the food, drink or contents itself, show what is inside the {P} that way, never its package; when the ad shows a package, show the {P}'s package. The {P} keeps its own real shape and make-up, never the old subject's shape, layers or filling. The same count as the old subject; never extra copies, packs or logos. *(Run: a food-burst photo swapped to a packaged food came back as the new food moulded into the old food's shape, the old food's sauces kept, and small packs scattered around.)*
 - Orientation is physical: printed text and logos sit where the {P}'s pose puts them, turned with it; never redrawn upright on a tilted or upside-down object.
 - People keep their face, hair, clothes and build; hands have five fingers; nothing anatomically wrong.
 - The place keeps its structures, layout and light; nothing in it changes unless asked.
 - Exactly the picture asked for, in the layout asked for; never paste or collage the reference pictures into it.
 - Nothing added: no text, captions, watermarks, extra logos, hands, people or effects that are not asked for.
 - Printed text on the {P} stays correct and readable, never mirrored or garbled.
-- Real contact: the {P} rests, stands or is held naturally, with a matching shadow; never floating unless asked.
+- Real contact: the {P} rests, stands, is held or floats exactly as the subject it replaces does, with a matching shadow.
 - The merchant's own instructions win over every default.
 
 ## Changing a rule
