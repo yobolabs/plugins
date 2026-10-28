@@ -37,7 +37,6 @@ moment (launch, flip, landing), the logo at the very end.
 | Line-drawing storyboards, product photo | Night look, smoke, launch | Car outline on the product; extra cuts → outline warning, one camera per shot |
 | Hero still in the scene | Product look | Became frame 1; logo leaked → hero dropped, character sheet |
 | Camera block + cut count | One locked far-back take after the cut | Side-on loop instead of three-quarter slab; a tripod drawn → three-quarter wording, "static camera" |
-
 | Product storyboards both shots, Seedance 2.0 | Shot-2 storyboard placed the can right in every panel | Camera followed the can like a rocket; a label close-up appeared |
 | Same storyboards, **Seedance 2.5** | One locked shot of the curved ramp; climb, flip, thrusters, landing, drive-off all present | Shot 1 held 4.0 s instead of 1.7 s; climb squeezed |
 

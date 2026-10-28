@@ -54,6 +54,10 @@ LIGHTING · SOUND · STYLE
 <light source + direction + quality>; <music / SFX / voice>; <look, grade, texture>.
 ```
 
+Every prompt also carries the **core rules** (continuity, references do only their job, camera and time obey the
+words, real physics, nothing added, printed text, light) as a `CORE RULES` block after ACTIVE REFERENCES; pictures
+get their own short set. Keep them in one constant: `references/principles.md`.
+
 Rules that came from failed runs — each one cost a paid video:
 
 1. **Camera first, never trimmed.** Never cut a prompt to fit a length you invented; Seedance accepted a
