@@ -14,6 +14,9 @@ Back to [SKILL.md](../SKILL.md). Read when picking a model, building a request, 
 | Kling 4.0 image-to-video | `/kling-video/v4.0/image-to-video` | `prompt` + `image_url` (one start frame), 3–30 s, 720p/1080p |
 | GPT Image Flare (pictures) | via the Higgsfield image tool | `prompt`, `image_urls` ≤16, `resolution` 1k/2k/4k, `aspect_ratio` auto 1:1 3:2 2:3 4:3 3:4 16:9 9:16 21:9, `quality` low…max |
 
+Shot lengths: both Seedance versions stretched a 1.7 s opening shot to 4–5 s in every run so far, even when the
+prompt stated the length. Plan short shots as a post-render trim.
+
 Seedance reference-to-video cannot pin the first frame. To force an exact opening, use a model that takes
 `first_frame_url` (Kling O3) or put the opening in the storyboard.
 

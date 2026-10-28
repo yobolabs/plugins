@@ -38,4 +38,11 @@ moment (launch, flip, landing), the logo at the very end.
 | Hero still in the scene | Product look | Became frame 1; logo leaked → hero dropped, character sheet |
 | Camera block + cut count | One locked far-back take after the cut | Side-on loop instead of three-quarter slab; a tripod drawn → three-quarter wording, "static camera" |
 
-Next to prove: product storyboard swap + Seedance 2.5 + the source as video reference.
+| Product storyboards both shots, Seedance 2.0 | Shot-2 storyboard placed the can right in every panel | Camera followed the can like a rocket; a label close-up appeared |
+| Same storyboards, **Seedance 2.5** | One locked shot of the curved ramp; climb, flip, thrusters, landing, drive-off all present | Shot 1 held 4.0 s instead of 1.7 s; climb squeezed |
+
+Seen so far (2 runs each, unverified beyond that): **Seedance 2.5 holds a locked wide take; 2.0 drifts into
+following the subject.** Both stretch a sub-2-second opening shot to about 4–5 s whatever the prompt says.
+A product that can't move on its own (a can) needs the "how" in words ("rolls on its side"), or the model makes it a rocket.
+
+Next to prove: the source as video reference; trimming an over-long short shot after render.
