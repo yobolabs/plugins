@@ -20,8 +20,10 @@ bare wall, look-alike cast members swapped, garbled screens and burned-in captio
    must keep / change / never. Speaker fixes (who says which line) go into the script here, before any picture.
 3. **Line drawings**: position and framing only. Never sent to a video model on their own.
 4. **Storyboard images**: the ad's real frames redrawn with the new cast, set and product
-   (`references/references-and-sheets.md`). This is what tells the video model how things look. Clean pictures:
-   no panel labels, numbers, captions, text or logos drawn in them; labels live in the UI only.
+   (`references/references-and-sheets.md`). People or dialogue ads: one picture per shot on a fixed set (master
+   picture + seat map) with named cast pictures. This is what tells the video model how things look. Clean pictures:
+   no captions, text or logos drawn in them; per-shot pictures carry no labels either. Only keyframe-sequence
+   frame sheets keep their small panel labels, and no label ever reaches a video.
 5. **AI review** of every storyboard against the brief (`references/review.md` → Storyboard review); redo the ones that fail.
 6. **Human approval** of every storyboard. The agent makes, self-checks, shows and waits. It never clicks Approve
    for the human.
@@ -177,7 +179,7 @@ wrong (`references/review.md` → Fixing a part).
 ## Before you send a paid run
 
 - [ ] Brief written; every storyboard image made, AI-reviewed and approved by the human — never line drawings alone
-- [ ] Storyboards and cast sheets clean: no labels, text, logos, old-brand marks
+- [ ] Storyboards and cast sheets clean: no text, logos, old-brand marks; labels only on keyframe-sequence frame sheets, never in a video
 - [ ] People/dialogue ad: a part ≤ the model's max, not one clip per scene; one fixed voice per role, same in every part
 - [ ] Already-made results checked and reused; draft quality (480p video, 1k pictures)
 - [ ] Style file loaded; references labelled with role + what they must not do

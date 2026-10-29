@@ -12,7 +12,8 @@ camera movement follow the shot instructions."
 |---|---|---|
 | STORYBOARD (real frames, new cast, set and product drawn in) | environment, people, light, colours, angle, distance, where the subject is, per panel | "Match each panel at its time" |
 | STORYBOARD (line drawing) | only alongside the storyboard images, never alone: where things are, the subject's path | "the outline of the <old subject> only marks WHERE the <product> is and how big; never copy its shape — no wheels, lights, windows, plates or body panels" |
-| CAST SHEET — <ROLE> | what that role's person looks like, and their voice description | "plays <role> only; never framing" — one sheet per role, cleaned of logos first |
+| SET — <PLACE> | the place: room, furniture, colours, light, where everyone sits (with the written seat map) | "this is the place for every shot; seats as the seat map" — one approved master picture |
+| CAST — <NAME> | what that named person looks like, and their voice description | "<Name> only; never framing" — one picture per person (background people too), file named after the person, cleaned of logos first |
 | PRODUCT CHARACTER SHEET | what the product looks like from every side | "views of ONE <product>"; "never sets camera position, framing or how big it is in frame" |
 | PRODUCT VIEW (extra photo of the same product) | another side of the same product | "the same ONE <product>, never framing" — do not call it a prop |
 | PROP | another object's look | "looks exactly like its photo whenever it appears" |
@@ -54,10 +55,15 @@ The strongest layout reference and the one that tells the video model how things
 redrawn with the new cast, set and product. Line drawings come first (position and framing) and become these
 pictures; a video request never goes out with line drawings alone.
 
+**Which layout:** ads with people or dialogue get ONE picture per shot (next section), never a multi-panel sheet.
+Ads without people whose scenes are keyframe sequences (a product moving through one shot) use the frame sheet
+below.
+
 1. Build a sheet from the source's real frames for the moments that matter (fewer panels = more pixels per
-   product; 4–8 is a good range). The sheet carries NO labels, numbers, times or captions: panel number, time and
-   ★ for highlights live in the UI and file names only. Labels drawn on a storyboard leaked into a final video
-   as "10 · 2.3 s".
+   product; 4–8 is a good range). Keyframe-sequence sheets keep their small panel labels (panel order and time):
+   the ad types that use them need them, and removing them broke those types. Labels must never reach a
+   video: every video prompt says "no text, panel labels or numbers anywhere", and QC checks for them
+   ("10 · 2.3 s" once leaked into a final video). Per-shot pictures carry no labels at all.
 2. Image model (GPT Image Flare, `resolution` 2k, `aspect_ratio` auto) with the sheet + the character sheet:
 
 ```
@@ -90,6 +96,31 @@ pasted the character sheet under it and added a hand.
 3. AI review of every panel against the brief (`review.md` → Storyboard review), then the human approves each
    storyboard. The agent never clicks Approve for them.
 
+## People and dialogue ads: one picture per shot, on a fixed set
+
+A multi-panel sheet with several people fails (wrong person per panel, different person per frame, the cast
+sheet drawn into the picture). Make one storyboard picture per shot, and give every shot the same three anchors:
+
+1. **The SET**: one approved master picture of the place (room, furniture, colours, light) plus a written **seat
+   map** — who sits or stands where, in the layout the source actually has (desk pods, a counter, a sofa; never
+   classroom rows unless the source shows rows). Send both with every storyboard. Without them each shot invents
+   its own room and seats.
+2. **Named cast**: every character has a name; rename the cast picture files to those names. Each gets a one-line
+   **identity card** (hair, skin tone, clothes, seat, role, feeling) used word for word in storyboard prompts,
+   video prompts, voice descriptions and reviews. **Every visible person, background included, has their own
+   reference picture**; a person with no picture gets invented.
+3. **The shot's brief slice**: that shot's row from the brief (action, line, feeling) plus the brief's tone, set,
+   colours, light and "never" list (`remix-workflow.md` → Brief).
+
+Picture models behave differently here; pick by what the shot needs:
+
+| Model | Takes | Does well | Fails at | Write in the prompt |
+|---|---|---|---|---|
+| Nano Banana / Nano Banana Pro (2-image functions) | prompt + Image 1 + Image 2 only | edits Image 1's composition; realistic expressions | cannot move the camera away from Image 1; with a combined cast sheet as Image 2 it copied the sheet's full-body pose | Image 1 = the frame to keep; "keep EXACT framing; the sheet is reference only" |
+| GPT Image Flare | ≤16 reference pictures | send the set picture + EACH person's own picture by name: identities and seats stay stable across calls | ignores Image 1 as a camera reference; drew smiling background people by default | the camera every time in words (shot size, angle, who is in frame, where); the feeling from the brief, and for a tense brief "nobody smiles" |
+
+Never merge several people into one cast sheet for a model that can take them one by one.
+
 ## Things that went wrong
 
 | Reference | What happened |
@@ -104,5 +135,10 @@ pasted the character sheet under it and added a hand.
 | Listing contact types ("held in a hand") | A hand appeared in a panel with no person |
 | Sheet prompt said "no logo, label, text" | A branded can came out blank: the label is the product |
 | Tiny 10-panel storyboard | Panels too small to carry anything; the model invented angles |
+| Multi-panel sheets for a dialogue ad, all roles on one cast board, no pictures for background people | Old cast kept, wrong person per role, cast board drawn into the picture, a different person per frame |
+| No set picture or seat map | Every shot invented its own room and seating |
+| One combined cast sheet sent to a 2-image model | It copied the sheet's full-body pose instead of the frame's framing |
+| Many-reference model given the frame as Image 1 and no camera words | Right people, wrong camera: it ignores Image 1 as a camera reference |
+| No feeling written for background people | Everyone smiling in a tense scene |
 | Product storyboard with a character sheet as Image 2 | Each panel copied a different sheet view (side, top, three-quarter), product floating, sheet letterboxed in black — say "ONE continuous shot: same side and angle in every panel, rests on the ground; never copy the sheet's views", and ask for the sheet's own aspect ratio |
 | Redo that re-ran the original edit with the notes added | A completely different product: the fix re-rolled everything (Nano Banana takes only 2 pictures, so the last try was never sent) |

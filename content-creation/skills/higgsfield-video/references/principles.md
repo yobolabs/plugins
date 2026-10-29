@@ -44,8 +44,13 @@ For prompt limits (Kling, 2,500 characters) send each rule's first sentence only
 - Each person is the cast member for their role (from that role's sheet); the people behind or around the speaker
   in the source stay, as the new team, softly out of focus; nobody duplicated. A speaker is never alone on a bare
   wall unless the source shows that.
-- Clean storyboard: no panel labels, numbers, times, captions, text or logos drawn anywhere (labels live in the UI
-  only; one leaked into a final video). The source brand's logos, mascots and signs are removed; clothes carry no
+- People ads: every visible person is a NAMED cast member drawn from their own picture and identity card, seated
+  as the seat map says, in the approved set picture; faces show the brief's feeling (never default smiles).
+- The camera is written in words in every picture prompt (shot size, angle, who is in frame); never left to
+  Image 1 alone.
+- Clean storyboard: no captions, text or logos drawn anywhere; per-shot pictures carry no labels or numbers.
+  Keyframe-sequence frame sheets keep only their small panel labels; a label never reaches a video (one leaked
+  into a final video). The source brand's logos, mascots and signs are removed; clothes carry no
   logos or emblems.
 - A phone, app or website screen is a phone held by a character, its screen flat chroma green, no screen text.
 - The place keeps its structures, layout and light; nothing in it changes unless asked. (The scene plan's re-themed place counts as asked: see `remix-workflow.md` step 4 — a place that suits the old product, not the new one, is a planning bug, not a rule to obey.)

@@ -40,10 +40,19 @@ Then: the cause (with evidence: the prompt line or the reference), the fix, and 
 AI review of every storyboard image against the brief; any fail is redone before it is shown. Then the human
 approves each one; an agent never clicks Approve for them.
 
-- [ ] The right cast member for each role in every panel; look-alikes not swapped; nobody repeated or duplicated
+**How:** put the storyboard NEXT TO the named cast pictures (and the set picture) on one review sheet, each
+labelled with the person's name, and send that one image to the vision call with the shot's brief slice, the
+identity cards and the seat map. A review that sees the storyboard alone, against brief text, passed pictures
+with the wrong hair, skin and seats.
+
+- [ ] The right person per name: face, hair, skin tone and clothes match that person's picture; look-alikes not swapped; nobody repeated or duplicated
+- [ ] Seats as the seat map; the room is the set picture
+- [ ] Scale: people the right size for where they stand (no tiny or giant people)
+- [ ] Framing as the shot asks (shot size, angle, who is in frame)
+- [ ] Feeling: faces and body language as the brief says, background people included
 - [ ] The people the ad shows behind or around the speaker are kept, as the new team, softly out of focus — never a speaker alone on a bare wall unless the ad shows that
 - [ ] Room, set and colours match the brief's set + palette
-- [ ] No text, panel labels, numbers, captions or logos drawn; no logos, mascots or signs of the old brand
+- [ ] No text, captions or logos drawn (panel labels only on keyframe-sequence frame sheets); no logos, mascots or signs of the old brand
 - [ ] App / chat / website screens are a phone held by a character with a flat green screen
 - [ ] Product is the product (shape, label), at the source subject's size and place
 

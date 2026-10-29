@@ -45,6 +45,12 @@ No step is optional; a video request never goes out with line drawings alone.
    the old subject" — and the place, props and action already re-themed in step 4.
 6. **Brief + script check**: the brief (`content-creation:ad-brief`) names the cast per role, set + palette and
    product. Who says which line is fixed in the script now, before any storyboard.
+   **The brief is written right after the reading, but the merchant's direction and answers to the questions come
+   later.** Rewrite the brief's remix section when the questions are done: stamp it with the inputs it used and
+   rewrite only when they change. Version the brief's saved copy with the rules it was written under, so a brief
+   from older rules is never reused (one asked for captions and logo overlays after both were banned). Feed each
+   shot's slice of the brief (its row + tone, set, colours, light, people, never) into that shot's storyboard
+   prompt, its video prompt and its review. A brief that reaches only text steps steers nothing.
 7. **References**: clean cast sheets (logos removed) and the product character sheet → line drawings (position and
    framing) → storyboard image per shot (`references-and-sheets.md`) → AI review against the brief (`review.md` →
    Storyboard review) → the human approves each storyboard. The agent shows and waits; it never approves for them.
@@ -96,6 +102,7 @@ every paid output to disk the moment it lands; a result that only lives behind a
 | Trap | Effect | Fix |
 |---|---|---|
 | A saved reading is reused per source link | Old wording keeps coming back after the instructions changed | Version the cache key with the reading instructions; show when it was made |
+| Fixing one ad type in a shared tool | A fix for dialogue ads removed what product ads needed (frame-sheet panel labels, Mix as the default) | Before shipping a tool change, diff against the last version and restore anything another ad type relies on. The default mode follows the ad: people talking → whole ad in parts, otherwise Mix; the user's pick wins |
 | Browser restores textarea text on reload | An old note is sent again unseen | `autocomplete="off"` on note fields |
 | The reading names an adjective as the subject ("the ad's futuristic") | Garbled reference line | Fall back to "the original main subject" |
 | An invented prompt-length cap trimmed the end | Camera and style lines lost | No cap except a model's documented one; trim actions first |
