@@ -9,6 +9,29 @@ Write video prompts and reference sets that Higgsfield models actually follow, a
 source frame by frame. Bare invocation: ask which **style** the video is (table below), load that style's file,
 then build the prompt with the layout in this file.
 
+## 0 · The fixed pipeline (every remix — no step is optional)
+
+Owner 2026-10-29: storyboards are "not an option at this point. Line drawings must become storyboard images during
+the process." Every remix runs these steps in this order. Skipping one produced wrong rooms, a speaker alone on a
+bare wall, look-alike cast members swapped, garbled screens and burned-in captions.
+
+1. **Read the ad**: `content-creation:analyze-video` cuts + a director's reading (§5).
+2. **Brief** (teardown, `content-creation:ad-brief`): what made it work, cast per role, set + palette, product,
+   must keep / change / never. Speaker fixes (who says which line) go into the script here, before any picture.
+3. **Line drawings**: position and framing only. Never sent to a video model on their own.
+4. **Storyboard images**: the ad's real frames redrawn with the new cast, set and product
+   (`references/references-and-sheets.md`). This is what tells the video model how things look. Clean pictures:
+   no panel labels, numbers, captions, text or logos drawn in them; labels live in the UI only.
+5. **AI review** of every storyboard against the brief (`references/review.md` → Storyboard review); redo the ones that fail.
+6. **Human approval** of every storyboard. The agent makes, self-checks, shows and waits. It never clicks Approve
+   for the human.
+7. **Video**: ads with people or dialogue in a few long parts, made one after another, each reviewed before the next
+   (`references/remix-workflow.md` → Whole ad in parts); QC every part (§6).
+
+Drafts until the human signs off: video 480p, pictures 1k; final quality only after. Before any paid render, look
+for results already made (earlier executions and requests) and reuse them; save every paid output to disk the
+moment it lands.
+
 ## 1 · Pick the style first
 
 The style decides the references, the camera language and what can go wrong. Load its file before writing.
@@ -71,19 +94,26 @@ Rules that came from failed runs — each one cost a paid video:
    distance ("far back, the whole setting in frame").
 6. **Every reference states its job and what it must NOT do** ("defines what it looks like — never framing").
    An unlabelled product picture becomes the opening frame.
-7. **Time the end-card logo, never strip the product's own print.** The separate logo picture: "shown on its own
-   only in the final 2 s". The product's printed design (a can's label, a box's artwork) IS the product: "its own
-   labels, logo and text stay exactly as in its pictures". Forbid only ADDED text. A "no logo, no text" rule on
-   the character sheet turned a branded can blank.
+7. **No logo added in the video, never strip the product's own print.** End cards and logos are added in
+   post-production (below), so no logo picture is sent as a video reference. The product's printed design (a can's
+   label, a box's artwork) IS the product: "its own labels, logo and text stay exactly as in its pictures". Forbid
+   only ADDED text and logos. A "no logo, no text" rule on the character sheet turned a branded can blank.
 
 Camera vocabulary (sizes, angles, lenses, moves) and the wording that works: `references/camera-language.md`.
 
-### Text on screen is always an overlay (universal)
+### No text or logos in the video — they are added in post (universal)
 
-Captions, titles, prices, CTAs and logo text are added as a separate overlay layer after the pictures and video are
-made, in the player and in the export. The picture and video models never draw them: every prompt says no text,
-and any caption in the source frames is removed and its area left clean. Only text printed on the product itself
-(its label) stays.
+Captions, titles, prices, CTAs, end cards and logos are added by the merchant in post-production, as an overlay
+layer in the player and the export. The picture and video models never draw them: every prompt says no text and no
+logos, and any caption or logo in the source frames is removed and its area left clean. Only text printed on the
+product itself (its label) stays. A logo the merchant left out is never sent as a reference.
+
+### App, chat and website screens: a green phone, keyed afterwards (universal)
+
+A screen is shown INSIDE a phone held by a character: close-up, phone about 2/3 of the frame, held steady, the screen
+drawn flat chroma green. The real screenshot is keyed in afterwards, frame by frame (corner tracking, despill, screen
+sheen, colour match). Never a full-frame screenshot, never screen text drawn by the model (a laptop came back with
+garbled text instead of the phone).
 
 ## 3 · References: what to send
 
@@ -91,7 +121,8 @@ and any caption in the source frames is removed and its area left clean. Only te
 |---|---|---|
 | **Character sheet** (product or person: front, three-quarter, side, back on plain grey) | What the subject looks like from every side | Framing — label it so |
 | **Product storyboard** (the source's real frames, product swapped in by an image model, 1 paid picture per shot) | Real environment, light, angle, distance, where the subject is | — strongest layout reference we have |
-| Line-drawing storyboard traced from the source | Motion path when nothing better exists | Shape — it carries the OLD subject's outline (a mouse came out with car taillights) |
+| Line-drawing storyboard traced from the source | Position and framing, as the step before the storyboard images | Sending to the video model alone — it carries the OLD subject's outline (a mouse came out with car taillights) and no colours, set or people (a whole part came back with wrong room colours and swapped cast) |
+| Cast (person) sheet | What each role's person looks like | Use before it is clean: logos, emblems or symbols on clothes are removed first, or they appear in every scene |
 | Video reference (the source ad or its shot) | Camera moves, cuts, timing | Looks — say "never how anything looks" |
 | A "hero still" of the product in the scene | Nothing — dropped | It sets the opening framing and is copied as frame 1 |
 
@@ -122,7 +153,8 @@ Request shapes, how to read a model's real limits without paying, and costs: `re
    source's own style (product scale, kind of scene, look); the style file says what that is.
 4. **Rewrite the subject** in each beat (plus the re-themed place). The merchant's note says what to swap; it never
    rewords a beat.
-5. **Build references** (§3), then the prompt (§2). Draft at 480p; re-render winners at 1080p.
+5. **Build references in the fixed order** (§0): line drawings → storyboard images → AI review → human approval.
+   Then the prompt (§2), one per part. Draft at 480p; re-render winners at 1080p only after sign-off.
 
 Detail, including cache traps that silently reuse an old reading: `references/remix-workflow.md`.
 Driving the merchant's open lab tab for them (one CDP connection, DOM only): `references/lab-driving.md`.
@@ -136,14 +168,20 @@ the export's cuts against the source's and report the drift (more than ~1 frame 
 
 ## 6 · Review every result against the source
 
-Never judge from a single frame or a task id. Extract frames from both at matched times, side by side, then a
-table: time · source · ours · verdict. Check sound with `ffmpeg -af volumedetect`. Commands and the review
-checklist: `references/review.md`.
+Never judge from a single frame or a task id. Check every clip and every part second by second: a 1 fps strip of
+the source over the remix, then a table: time · source · ours · verdict, and the brief row by row. One frame per
+scene missed burned-in captions in 7 kept clips. Check sound with `ffmpeg -af volumedetect`. Commands and the
+review checklist: `references/review.md`. Fix 1–2 bad shots by splicing; remake a part only when most of it is
+wrong (`references/review.md` → Fixing a part).
 
 ## Before you send a paid run
 
+- [ ] Brief written; every storyboard image made, AI-reviewed and approved by the human — never line drawings alone
+- [ ] Storyboards and cast sheets clean: no labels, text, logos, old-brand marks
+- [ ] People/dialogue ad: a part ≤ the model's max, not one clip per scene; one fixed voice per role, same in every part
+- [ ] Already-made results checked and reused; draft quality (480p video, 1k pictures)
 - [ ] Style file loaded; references labelled with role + what they must not do
 - [ ] CAMERA block present, one line per shot, no "tripod"
 - [ ] Cut count and times stated; no length cap you invented
-- [ ] End-card logo timed; the product's own printed design kept, only added text forbidden
+- [ ] No logo or text added (end card is post-production); the product's own printed design kept
 - [ ] The person who pays approved the run (renders cost real money)

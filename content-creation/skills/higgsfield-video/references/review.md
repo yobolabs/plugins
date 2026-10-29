@@ -4,7 +4,15 @@ Back to [SKILL.md](../SKILL.md). Read after every paid run, before changing the 
 
 ## Commands
 
+Check EVERY clip and every part, second by second, never one frame per scene (a one-frame check missed burned-in
+captions in 7 kept clips). Compare against the source AND against the brief.
+
 ```bash
+# 1 fps strip, source on top, remix below (whole part)
+ffmpeg -v error -i source.mp4 -vf "fps=1,scale=150:-1,tile=30x1" -frames:v 1 -y s_strip.jpg
+ffmpeg -v error -i result.mp4 -vf "fps=1,scale=150:-1,tile=30x1" -frames:v 1 -y o_strip.jpg
+ffmpeg -v error -i s_strip.jpg -i o_strip.jpg -filter_complex vstack -y strip.jpg
+
 # matched frames: source time t, result time t * (result_len / source_len)
 for t in 0.8 2.5 5 7.5 9.5 10.5 11.5 12.5 14 15.5; do
   ffmpeg -v error -ss $t -i source.mp4 -frames:v 1 -vf scale=150:267 -y s_$t.jpg
@@ -27,7 +35,19 @@ a reference, not the words.
 
 Then: the cause (with evidence: the prompt line or the reference), the fix, and what to try next.
 
-## Checklist
+## Storyboard review (before the human sees a storyboard)
+
+AI review of every storyboard image against the brief; any fail is redone before it is shown. Then the human
+approves each one; an agent never clicks Approve for them.
+
+- [ ] The right cast member for each role in every panel; look-alikes not swapped; nobody repeated or duplicated
+- [ ] The people the ad shows behind or around the speaker are kept, as the new team, softly out of focus — never a speaker alone on a bare wall unless the ad shows that
+- [ ] Room, set and colours match the brief's set + palette
+- [ ] No text, panel labels, numbers, captions or logos drawn; no logos, mascots or signs of the old brand
+- [ ] App / chat / website screens are a phone held by a character with a flat green screen
+- [ ] Product is the product (shape, label), at the source subject's size and place
+
+## Checklist (every generated part)
 
 - [ ] Number of cuts and their times match — re-run `analyze-video` on the export; same count, same frames
 - [ ] Each clip shows its payoff (landing, reveal, label to camera), not a fixed offset
@@ -40,5 +60,15 @@ Then: the cause (with evidence: the prompt line or the reference), the fix, and 
 - [ ] The action order and timing — every step present, not early, not skipped
 - [ ] The product is the product: no parts, features or text of the old subject
 - [ ] Slop check, frame by frame: orientation changes only with a visible turn (printed design turns with it); nothing appears or vanishes; counts stay the same; faces, hands and clothes stay the same; the place keeps its layout; nothing floats; every glow or effect has a source; screen direction holds across cuts
-- [ ] Logo only where asked
+- [ ] No logo anywhere except the product's own printed label
+- [ ] No text, captions, prices or logos burned in anywhere (they are added in post)
+- [ ] Right person per role in every shot; the background people present; no repeated people
+- [ ] Set and colours as the brief; phone shots: phone held steady, screen green and keyable
+- [ ] Timing drift against the source per cut; voices the same per role across parts
 - [ ] Sound present and not silent
+
+## Fixing a part
+
+1–2 shots wrong → splice: cut them out and remake just those shots, using that part's own audio as the lip-sync
+reference, so the voices stay identical. Most shots wrong → remake the whole part (every clip bills at least 4 s, so
+many small remakes cost more).

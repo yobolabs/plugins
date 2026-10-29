@@ -10,15 +10,17 @@ camera movement follow the shot instructions."
 
 | Type | Controls | Must say |
 |---|---|---|
-| STORYBOARD (real frames, product swapped in) | environment, people, light, angle, distance, where the subject is, per panel | "Match each panel at its time" |
-| STORYBOARD (line drawing) | where things are, the subject's path | "the outline of the <old subject> only marks WHERE the <product> is and how big; never copy its shape — no wheels, lights, windows, plates or body panels" |
+| STORYBOARD (real frames, new cast, set and product drawn in) | environment, people, light, colours, angle, distance, where the subject is, per panel | "Match each panel at its time" |
+| STORYBOARD (line drawing) | only alongside the storyboard images, never alone: where things are, the subject's path | "the outline of the <old subject> only marks WHERE the <product> is and how big; never copy its shape — no wheels, lights, windows, plates or body panels" |
+| CAST SHEET — <ROLE> | what that role's person looks like, and their voice description | "plays <role> only; never framing" — one sheet per role, cleaned of logos first |
 | PRODUCT CHARACTER SHEET | what the product looks like from every side | "views of ONE <product>"; "never sets camera position, framing or how big it is in frame" |
 | PRODUCT VIEW (extra photo of the same product) | another side of the same product | "the same ONE <product>, never framing" — do not call it a prop |
 | PROP | another object's look | "looks exactly like its photo whenever it appears" |
-| LOGO (separate end-card picture) | the logo | "shown on its own only in the final 2 s; before that, do not add this logo anywhere; the product's own printed design stays as it is" |
 | VIDEO REFERENCE (source ad / its shot) | cuts, camera moves, framing, timing | "never how anything looks" |
 
 Name the product by its base name: photos named "<product> left side", "<product> top" are views of one product.
+No LOGO reference: end cards and logos are added in post-production (SKILL.md §2), and a logo the merchant left out
+is never sent.
 
 ## Character sheet (product or person) — 1 paid picture
 
@@ -38,23 +40,30 @@ captions, numbers or watermark.
 
 Aspect 16:9.
 
+**Cast (person) sheets are cleaned before use.** Remove every logo, emblem, crest or symbol on clothes, bags and
+props first (an edit pass on the sheet), then check it. A logo left on a cast sheet appears in every scene.
+
 **Redo with notes = edit the last try**, never re-run the first edit: Image 1 = the last try, Image 2 = the
 product, "Keep everything in it exactly … and change only this: <notes>. The <product> must still look exactly
 like Image 2." This also fits models that take only 2 pictures (Nano Banana). Nano Banana Pro answers square,
 which squashes a storyboard sheet; use GPT Image Flare (`aspect_ratio` auto) for sheets.
 
-## Product storyboard — 1 paid picture per shot
+## Storyboard images — 1 paid picture per shot (a required step, never skipped)
 
-The strongest layout reference: the source's real frames with the product swapped in.
+The strongest layout reference and the one that tells the video model how things look: the source's real frames
+redrawn with the new cast, set and product. Line drawings come first (position and framing) and become these
+pictures; a video request never goes out with line drawings alone.
 
 1. Build a sheet from the source's real frames for the moments that matter (fewer panels = more pixels per
-   product; 4–8 is a good range). Keep the panel labels (number, time, ★ for highlights).
+   product; 4–8 is a good range). The sheet carries NO labels, numbers, times or captions: panel number, time and
+   ★ for highlights live in the UI and file names only. Labels drawn on a storyboard leaked into a final video
+   as "10 · 2.3 s".
 2. Image model (GPT Image Flare, `resolution` 2k, `aspect_ratio` auto) with the sheet + the character sheet:
 
 ```
 Image 1 is a storyboard sheet of real frames from one continuous shot of an ad, panel by panel in time order.
-Redraw the whole sheet exactly, panel for panel: the same layout, panel labels, environment, people, light,
-effects, colours, camera angle, distance and framing in every panel. In every panel replace the <old subject> with
+Redraw the whole sheet exactly, panel for panel: the same layout, environment, people, light, effects, colours,
+camera angle, distance and framing in every panel. No labels, numbers, captions, text or logos in any panel. In every panel replace the <old subject> with
 the <product> from Image 2, at the same place, size, angle and pose. Change nothing else. One <product> per
 panel. Its own printed labels, logo and text exactly as in Image 2; add no other text or watermark.
 This is ONE continuous shot: keep the camera angle of each panel and the same <product> position in every panel.
@@ -73,15 +82,24 @@ Use GPT Image Flare for storyboards (`aspect_ratio` = the sheet's own shape). Na
 pasted the character sheet under it and added a hand.
 ```
 
-3. Check every panel before approving: the old subject is gone, the setting and people kept their shape, the product sits naturally.
+   **With people**: each person becomes the cast member for that role (one CAST SHEET per role, named); the
+   people the ad shows behind or around the speaker stay, as the new team, softly out of focus — a speaker is never
+   alone on a bare wall unless the ad shows that. The room's colours and set follow the brief's set + palette.
+   The source brand's logos, mascots and signs are removed. An app or chat screen is a phone held by a character,
+   its screen flat chroma green (SKILL.md §2).
+3. AI review of every panel against the brief (`review.md` → Storyboard review), then the human approves each
+   storyboard. The agent never clicks Approve for them.
 
 ## Things that went wrong
 
 | Reference | What happened |
 |---|---|
 | Line-drawing storyboard traced from the source | The new product grew the old subject's taillights and bumper |
+| A whole-ad part made from line drawings only | Wrong room colours, speaker alone on a bare wall, two look-alike cast members swapped, a laptop with garbled text instead of a phone |
+| Storyboard with panel labels drawn in | The label ("10 · 2.3 s") came out burned into the final video |
+| Cast sheet with a logo on the shirt | The logo showed in every scene |
 | "Hero still" (product in the ad's scene and light) | Became frame 1; its framing overrode the camera; its sticker leaked the logo |
-| Product photo with a sticker | Logo visible from the first frame despite "logo at the end" — the fix is timing the separate logo picture, not stripping the product |
+| Product photo with a sticker | Logo visible from the first frame despite "logo at the end" — the fix is never stripping the product; the logo end card is added in post-production |
 | "Same side as the old subject" when the source shows it from behind | A can turned its back (nutrition panel) to camera; say "front label faces the camera" |
 | Listing contact types ("held in a hand") | A hand appeared in a panel with no person |
 | Sheet prompt said "no logo, label, text" | A branded can came out blank: the label is the product |

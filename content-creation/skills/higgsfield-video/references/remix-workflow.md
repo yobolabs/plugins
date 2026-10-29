@@ -1,6 +1,8 @@
 # Remixing a source video with a new product
 
-Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or clip.
+Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or clip. The order is fixed
+(SKILL.md §0): read the ad → brief → line drawings → storyboard images → AI review → human approval → video.
+No step is optional; a video request never goes out with line drawings alone.
 
 ## Steps
 
@@ -41,13 +43,39 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
 5. **Rewrite the subject in each beat.** Send the beats plus the merchant's note, framed as: "use it ONLY for what
    to swap or add, never to reword a beat. Keep each beat's own words; change only the words that name or describe
    the old subject" — and the place, props and action already re-themed in step 4.
-6. **References**: character sheet → product storyboard per shot (see `references-and-sheets.md`).
-7. **Prompt** in the SKILL.md layout. Draft, review (`review.md`), fix, repeat.
-8. **Save what this ad and this product needed.** After the remix, write the **ad notes** (keyed by the source
+6. **Brief + script check**: the brief (`content-creation:ad-brief`) names the cast per role, set + palette and
+   product. Who says which line is fixed in the script now, before any storyboard.
+7. **References**: clean cast sheets (logos removed) and the product character sheet → line drawings (position and
+   framing) → storyboard image per shot (`references-and-sheets.md`) → AI review against the brief (`review.md` →
+   Storyboard review) → the human approves each storyboard. The agent shows and waits; it never approves for them.
+8. **Video** in parts (below), in the SKILL.md layout. Draft (480p video, 1k pictures), QC (`review.md`), fix,
+   repeat; final quality only after the human signs off.
+9. **Save what this ad and this product needed.** After the remix, write the **ad notes** (keyed by the source
    ad: format, exact cuts, what made it work, caption handling, scene ideas that worked, traps) and the **product
    notes** (keyed by the product: shape sentence, reference photos, packs never to mix, colours). Load both at
    step 1 next time that ad or product comes up, so it comes out right the first time. Ad- and product-specific
    detail lives only in these notes, never in the generic rules.
+
+## Whole ad in parts (ads with people or dialogue)
+
+Never one clip per scene when the ad has people or dialogue: per-scene clips drift in voice, change the people,
+add captions and logos, and each clip bills at least 4 s. Instead:
+
+- **Split into n = ceil(ad length / the model's max)** parts (Seedance 2.5: 30 s), near-equal lengths, each part
+  ending on a hard cut of the source.
+- **Generate incrementally**: part 1 → QC against the source and the brief → part 2, with part 1's video as a
+  reference (same people, clothes, voices) → … Never fire all parts at once.
+- **Voices**: the video model speaks the lines inside each part; no separate TTS laid over. Each role has ONE fixed
+  voice description taken from the NEW cast member (never the old ad's person), word-for-word the same in every
+  part. The source's soundtrack is never laid over voiced parts.
+- **No text or logos** in any part; the merchant adds captions, prices, titles and the end card in post.
+- **Screens**: phone held by a character, flat green screen; key the real screenshot in afterwards (SKILL.md §2).
+- **Fix by splicing** when 1–2 shots are wrong; remake the part when most are (`review.md` → Fixing a part).
+
+## Paid results
+
+Before any paid render, check what was already made (earlier executions and provider requests) and reuse it. Save
+every paid output to disk the moment it lands; a result that only lives behind a request id gets paid for twice.
 
 ## Assembly (cutting the parts into the source's timeline)
 
@@ -56,7 +84,8 @@ Back to [SKILL.md](../SKILL.md). Read when the job starts from an existing ad or
   shorter than the payoff starts just before it so the payoff lands inside the slot.
 - **Never the same product in two shots in a row.** Reorder stills and clips first; reuse a clip only when its two
   windows look clearly different (an invisible jump cut is a lost beat).
-- **No audio in the parts when the source's music replaces the sound.** A silent AAC track on each part adds
+- **No audio in the parts when the source's music replaces the sound** (only for parts with no voice; voiced
+  parts keep their own audio and the source's track is never laid over them). A silent AAC track on each part adds
   padding at the join; on a 24-shot reel it pushed later cuts 33–100 ms late.
 - **Stop each part by frame count only** (`-frames:v N`), never an output `-t`: a short part from a 24 fps clip
   loses a frame to `-t` rounding. Read the clip with ~0.5 s spare so the frame count can be met.

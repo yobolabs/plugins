@@ -13,11 +13,11 @@ moment (launch, flip, landing), the logo at the very end.
 
 ## References (in this order)
 
-1. One **product storyboard** per shot (real frames, product swapped in) — or line drawings with the outline
-   warning when no swap exists yet.
+1. One **product storyboard** per shot (real frames, product swapped in), made from the line drawings, reviewed
+   and approved before the video (SKILL.md §0). Never line drawings alone.
 2. The **product character sheet** (front, three-quarter, side, back). Extra photos of the same product as
    PRODUCT VIEW, never PROP.
-3. The **logo**, last, timed to the final 2 s.
+3. No logo reference: the end card is added in post-production (SKILL.md §2).
 4. Optional: the source as a VIDEO REFERENCE for camera and timing (strongest motion copy).
 
 ## Words that matter for this style
