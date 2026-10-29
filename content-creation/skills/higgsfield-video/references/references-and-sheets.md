@@ -121,6 +121,26 @@ Picture models behave differently here; pick by what the shot needs:
 
 Never merge several people into one cast sheet for a model that can take them one by one.
 
+### Masters per camera setup: every shot is an edit of its master
+
+The fixed set and seat map are not enough on their own. Drawn one by one, each shot re-imagines the desks and seats
+and drifts to a wide view of the whole room, so people move between shots and nothing follows the source. What
+holds (proven on a dialogue ad: 11 shots, 11 pictures, faces and rooms stable):
+
+1. **List the source's camera setups** from the teardown (`analyze-video` → Camera setups): who is in frame, shot size,
+   angle, which way they face, depth of field, what is behind them, and which shots reuse the setup.
+2. **One master picture per setup**, framed like the source frame, with the framing written in words. Do not send a
+   captioned source frame: Flare copies captions and UI into the picture. Send the person's own picture and the set
+   picture. When the source uses a shallow depth of field, ask for it: a blurred background also hides small layout
+   differences between shots.
+3. **Every other shot of that setup is an edit of its master**: Image 1 = the master to keep ("same person, clothes,
+   chair, desk, background, light and camera angle"), Image 2 = the person's picture. Change only the expression,
+   gesture, a held prop, or "the camera a little closer". Never redraw a shot of an existing setup from scratch.
+4. **Inserts** (an object close-up, a screen) are their own pictures, no people.
+5. A phone whose screen is keyed later: "a smartphone whose whole screen is plain flat bright green (#00FF00) with
+   nothing on it, held upright, screen facing the camera".
+6. Show each shot's speaker and line next to its storyboard; the human cannot judge a picture without the words.
+
 ## Things that went wrong
 
 | Reference | What happened |
@@ -134,6 +154,7 @@ Never merge several people into one cast sheet for a model that can take them on
 | "Same side as the old subject" when the source shows it from behind | A can turned its back (nutrition panel) to camera; say "front label faces the camera" |
 | Listing contact types ("held in a hand") | A hand appeared in a panel with no person |
 | Sheet prompt said "no logo, label, text" | A branded can came out blank: the label is the product |
+| Every people-shot drawn fresh from the set picture + seat map, no source frame | Desks and people moved between shots; every shot became a wide view; shots stopped following the source — use masters per camera setup |
 | Tiny 10-panel storyboard | Panels too small to carry anything; the model invented angles |
 | Multi-panel sheets for a dialogue ad, all roles on one cast board, no pictures for background people | Old cast kept, wrong person per role, cast board drawn into the picture, a different person per frame |
 | No set picture or seat map | Every shot invented its own room and seating |

@@ -39,3 +39,12 @@ absolute difference of the 1,024 pixels (0–255 scale). Typical values:
 `still` only when no sampled change inside the shot (away from its edges) reaches 0.5. Shots too short to
 measure (no inner sample) count as `still` under 1 s. Always let a person switch the type: a photo with a slow
 zoom is `motion` to the measure but is made as a photo plus a zoom in the edit.
+
+## Camera setups and the dialogue track (ads with people)
+
+- **Camera setups**: group the shots by setup: who or what is in frame, shot size (wide, medium, close-up, extreme
+  close-up, insert), angle, which way the person faces, depth of field, background. Many dialogue ads use a few
+  close-up setups with a blurred background, not views of the whole room; a remix that re-imagines each shot as a
+  new wide view loses the ad.
+- **Dialogue track**: every spoken line with start–end time, speaker, ON or OFF screen. Lines are not bound to shots:
+  a voice often starts over the previous shot (an insert, a reaction) and carries into the speaker's own shot.

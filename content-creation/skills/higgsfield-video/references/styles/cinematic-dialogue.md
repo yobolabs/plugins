@@ -16,6 +16,12 @@ Back to [SKILL.md](../../SKILL.md). Status: **stub — from Higgsfield's own cre
 - Drafts at 480p; batch takes; cut on movement; overlap the last line of the previous take for an edit handle.
 - Blocking reference: an overhead frame with marked start positions when the model confuses who stands where.
 
+## Proven here (storyboards)
+
+- Masters per camera setup, every other shot an edit of its master (`references-and-sheets.md`): stable faces,
+  seats and rooms across a part's shots.
+- Write the dialogue as a track by time and speaker; off-screen voices carry across cuts.
+
 ## To prove
 
-All of it in our runs.
+The rest in our runs: element naming, lenses, acting intent, takes.

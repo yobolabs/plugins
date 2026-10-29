@@ -53,6 +53,13 @@ Card index = card order, which changes after Move up/down.
   storage); the agent plan's `sw` URLs restore approved swaps. Ask before reloading a tab with paid work in it.
 - Paid steps (swaps, redraws, videos) only when the merchant asked for that run.
 - Flare prompts fail over 5,000 characters.
+- **Video will not load in a hidden browser tab** (WebKit: `readyState` 0, duration NaN, even for a plain file URL) when
+  the tab's workspace is not on screen; the ad never loads and the lab sits on step 1. Show the tab's workspace (a
+  second window is fine). Moving a workspace between windows can rebuild the browser panes and close or reload the
+  tab, which wipes the lab: open the window before loading the lab, not during a run.
+- **A mirrored "live view" is read-only** unless clicks are relayed back to the real tab; the human's clicks on the
+  copy do nothing. Relay with a secret key in the link, and match the button text before replaying a click.
+- **Step-3 "work out what we need" can fail with OUTPUT_INVALID**; one retry usually passes.
 - The still-photo picker is single-select, and ticking it means "use my photo as it is".
 - A plan scene with several products shows one tick but holds all of them.
 - The person picture only goes to scenes whose words name a person.

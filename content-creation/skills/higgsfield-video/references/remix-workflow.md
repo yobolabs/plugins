@@ -45,6 +45,8 @@ No step is optional; a video request never goes out with line drawings alone.
    the old subject" — and the place, props and action already re-themed in step 4.
 6. **Brief + script check**: the brief (`content-creation:ad-brief`) names the cast per role, set + palette and
    product. Who says which line is fixed in the script now, before any storyboard.
+   Write the script as a **dialogue track**: each line with start–end time, speaker, ON or OFF screen. A line can start
+   over the shot before its speaker appears and carry across a cut; never assign one line per shot.
    **The brief is written right after the reading, but the merchant's direction and answers to the questions come
    later.** Rewrite the brief's remix section when the questions are done: stamp it with the inputs it used and
    rewrite only when they change. Version the brief's saved copy with the rules it was written under, so a brief
@@ -52,7 +54,7 @@ No step is optional; a video request never goes out with line drawings alone.
    shot's slice of the brief (its row + tone, set, colours, light, people, never) into that shot's storyboard
    prompt, its video prompt and its review. A brief that reaches only text steps steers nothing.
 7. **References**: clean cast sheets (logos removed) and the product character sheet → line drawings (position and
-   framing) → storyboard image per shot (`references-and-sheets.md`) → AI review against the brief (`review.md` →
+   framing) → storyboard image per shot (`references-and-sheets.md`; people ads: masters per camera setup, every shot an edit of its master) → AI review against the brief (`review.md` →
    Storyboard review) → the human approves each storyboard. The agent shows and waits; it never approves for them.
 8. **Video** in parts (below), in the SKILL.md layout. Draft (480p video, 1k pictures), QC (`review.md`), fix,
    repeat; final quality only after the human signs off.
@@ -76,6 +78,11 @@ add captions and logos, and each clip bills at least 4 s. Instead:
   part. The source's soundtrack is never laid over voiced parts.
 - **No text or logos** in any part; the merchant adds captions, prices, titles and the end card in post.
 - **Screens**: phone held by a character, flat green screen; key the real screenshot in afterwards (SKILL.md §2).
+- **The part request must agree with the approved storyboards**: each shot's camera words (shot size, lens) come
+  from its storyboard, not from the first reading; a single-picture storyboard is described as one picture of the
+  shot, never as "panels"; each line names its speaker and marks off-screen voices.
+- **No placeholders reach a model**: fill "merchant to fill" fields from the merchant's answers or drop them before
+  any paid request.
 - **Fix by splicing** when 1–2 shots are wrong; remake the part when most are (`review.md` → Fixing a part).
 
 ## Paid results
