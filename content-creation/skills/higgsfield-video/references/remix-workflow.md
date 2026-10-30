@@ -92,6 +92,11 @@ every paid output to disk the moment it lands; a result that only lives behind a
 
 ## Assembly (cutting the parts into the source's timeline)
 
+- **Cuts go on the beat, not on the source's cut frames.** With the source's music, place each cut at
+  `analyze-video` `cuts[].on_beat` (nearest beat; the half-beat after it when two cuts share one beat). Source reels
+  often cut 100–250 ms after the beat; copying their cut times copies the lag. Check the export: re-run
+  `analyze-video` on it and give a table cut · beat · offset ms; more than 1 frame (33 ms at 30 fps) is a fail.
+
 - **Pick each clip's payoff, not a fixed offset.** Make a timed contact sheet of every clip (2–4 fps, time on each
   frame) and give each slot the moment that pays off: the landing, the reveal, the label turned to camera. A slot
   shorter than the payoff starts just before it so the payoff lands inside the slot.

@@ -23,7 +23,8 @@ Back to [SKILL.md](../SKILL.md). Read when deciding how to make each shot and ho
 
 ## Timing and music
 
-- Assemble at the **source cut times**: that is the only way to get exact timing back.
-- When most cuts land on the beat, keep them on the beat in the edit and use the music as the timeline.
+- Assemble at the **source cut times** when there is no music to follow (voice, ambient sound).
+- With music, the music is the timeline: put each cut at its snapped time `cuts[].on_beat`, not the source cut time.
+  Source reels often cut 100–250 ms after the beat, so their cut times are not on the beat even when they look it.
 - Shots under 1 s are never generated as video.
 - Using the source's music in a published ad needs rights; for publishing, use a licensed track in the same tempo.

@@ -87,29 +87,70 @@ def cuts_and_shots(f, dur, src=None):
 
 
 def beats(src, dur):
-    """Onset envelope (spectral flux) → tempo by autocorrelation → beat grid fitted to the strongest onsets."""
-    sr, hop, win = 22050, 512, 2048
+    """Beat grid: spectral-flux onsets timed at the window CENTRE (hop 5.8 ms) → tempo by autocorrelation →
+    period + phase refined by fitting the low-band (kick) onsets, then least squares on the inliers.
+    The old version timed onsets at the window start (+1 hop from the diff), ~70 ms early, with a whole-hop tempo;
+    its grid locked off the beat (Social Sauce reel: cuts_on_beat 0.04)."""
+    sr, hop, win = 22050, 128, 1024
     pcm = subprocess.run(['ffmpeg', '-v', 'error', '-i', src, '-vn', '-ac', '1', '-ar', str(sr), '-f', 'f32le', 'pipe:1'],
                          capture_output=True).stdout
     y = np.frombuffer(pcm, np.float32)
-    if len(y) < sr:
+    if len(y) < 2 * sr:
         return None
     n = 1 + (len(y) - win) // hop
     idx = np.arange(win)[None, :] + hop * np.arange(n)[:, None]
     mag = np.abs(np.fft.rfft(y[idx] * np.hanning(win), axis=1))
-    flux = np.maximum(0, np.diff(np.log1p(mag), axis=0)).sum(axis=1)
-    flux = (flux - flux.mean()) / (flux.std() + 1e-9)
+    fq = np.fft.rfftfreq(win, 1 / sr)
+    t = (np.arange(n) * hop + win / 2) / sr                          # window centre
+
+    def flux(band):
+        f = np.maximum(0, np.diff(np.log1p(mag[:, band] * 10), axis=0)).sum(axis=1)
+        return np.concatenate([[0], f])                              # flux[i] = rise INTO frame i
+
+    def onsets(f):
+        thr, g = np.median(f) + 1.5 * f.std(), int(0.12 * sr / hop)
+        return np.array([t[i] for i in range(1, n - 1) if f[i] >= thr and f[i] == f[max(0, i - g):i + g + 1].max()])
+
+    full, low = flux(fq >= 0), flux(fq < 160)
     fps = sr / hop
-    ac = np.correlate(flux, flux, 'full')[len(flux) - 1:]
+    z = full - full.mean()
+    ac = np.correlate(z, z, 'full')[len(z) - 1:]
     lo, hi = int(fps * 60 / 180), int(fps * 60 / 70)              # 70–180 bpm
     if hi >= len(ac):
         return None
-    lag = lo + int(np.argmax(ac[lo:hi]))
-    bpm = 60 * fps / lag
-    phase = max(range(lag), key=lambda p: flux[p::lag].sum())
-    grid = [round((phase + k * lag) / fps, 2) for k in range(int((len(flux) - phase) / lag) + 1)]
+    period = (lo + int(np.argmax(ac[lo:hi]))) / fps
+    ons = onsets(low)
+    if len(ons) < 8:
+        ons = onsets(full)
+    if len(ons) < 4:
+        return None
+    best = None
+    for pc in np.arange(period * 0.97, period * 1.03, 0.0005):
+        for ph in np.arange(0, pc, 0.002):
+            r = (ons - ph) / pc
+            err = np.abs(r - np.round(r)) * pc
+            hit = err < 0.04
+            key = (hit.sum(), -(err[hit].mean() if hit.any() else 1))
+            if best is None or key > best[0]:
+                best = (key, pc, ph)
+    _, pc, ph = best
+    k = np.round((ons - ph) / pc)
+    inl = np.abs((ons - ph) / pc - k) * pc < 0.04
+    if inl.sum() >= 3:
+        pc, ph = np.linalg.lstsq(np.vstack([k[inl], np.ones(inl.sum())]).T, ons[inl], rcond=None)[0]
+    ph %= pc
+    grid = [round(ph + i * pc, 3) for i in range(int(dur / pc) + 2) if ph + i * pc < dur]
     loud = 20 * np.log10(np.sqrt(np.mean(y ** 2)) + 1e-9)
-    return {'bpm': round(bpm, 1), 'beats': [t for t in grid if t < dur], 'mean_db': round(float(loud), 1)}
+    return {'bpm': round(60 / pc, 2), 'period': round(float(pc), 4), 'beats': grid, 'mean_db': round(float(loud), 1)}
+
+
+def snap_to_beat(t, music, prev=None):
+    """Nearest whole beat; if the cut before already took that beat (a fast flash), the half-beat after it."""
+    p, b0 = music['period'], music['beats'][0]
+    b = b0 + round((t - b0) / p) * p
+    if prev is not None and b <= prev + 0.001:
+        b = prev + p / 2
+    return round(b, 3)
 
 
 def plan(shots, music, on_beat):
@@ -134,8 +175,10 @@ def plan(shots, music, on_beat):
     else:
         mode = 'one video per shot, assembled at the source cut times'
     notes = []
-    if on_beat is not None and on_beat >= 0.5:
-        notes.append('cuts land on the beat (%d%%): keep the source cut times and cut the edit to the music' % round(on_beat * 100))
+    if music and music.get('beats'):
+        notes.append('cut the edit ON the beat grid: put each cut at its snapped time (cuts[].on_beat), not the source cut '
+                     'time; source reels often cut 100-250 ms after the beat (source cuts on the beat: %s%%)'
+                     % (round(on_beat * 100) if on_beat is not None else '?'))
     if any(s['len'] < 1 for s in shots):
         notes.append('very short shots (<1 s): never generate them as video; photos or trimmed clips only')
     return {'mode': mode, 'shots': steps, 'notes': notes}
@@ -150,9 +193,13 @@ def main():
     music = beats(a.src, dur) if has_audio else None
     on_beat = None
     if music and music['beats']:
+        prev = None
+        for c in cuts:
+            c['on_beat'] = prev = snap_to_beat(c['t'], music, prev)
+            c['beat_off_ms'] = round(1000 * (c['t'] - c['on_beat']))
         hard = [c['t'] for c in cuts if c['hard']]
         if hard:
-            on_beat = round(sum(1 for t in hard if min(abs(t - b) for b in music['beats']) <= 0.12) / len(hard), 2)
+            on_beat = round(sum(1 for t in hard if min(abs(t - b) for b in music['beats']) <= 0.05) / len(hard), 2)
     res = {'duration': round(dur, 2), 'median_change': round(med, 1), 'cuts': cuts, 'shots': shots,
            'music': music, 'cuts_on_beat': on_beat, 'plan': plan(shots, music, on_beat)}
     for s in shots:

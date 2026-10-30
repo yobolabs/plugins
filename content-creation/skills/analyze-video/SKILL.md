@@ -24,8 +24,8 @@ Needs `ffmpeg`, `ffprobe`, `numpy`. Prints one line per shot plus the plan; `--j
 | **Cuts** | Hard cuts: one pass over EVERY frame at the source frame rate (32×32 grey); a cut is a frame whose change is ≥ 20 and ≥ 4× the median of the 5 frames each side; `t` = first frame of the new shot (3 decimals + `frame`). Soft cuts: the 4 fps scan (rules below). The old 4 fps scan + ±0.3 s re-read missed cuts inside moving shots and cuts a beat apart, and landed some 1 frame late (Social Sauce reel: 20 of 23 found, 4 late) — the edit then drifts off the music | High — tuned on real ads |
 | **Shots** | The time between hard cuts | High |
 | **Shot type** | `still` when NO change inside the shot reaches 0.5; else `motion` | High — a locked wide shot with a tiny moving subject measures ≈1, so it stays `motion` |
-| **Music** | Spectral-flux onsets → tempo by autocorrelation → beat grid | **Experimental**: can lock on half or double tempo (184 bpm on a ~92 bpm track) |
-| **Cuts on beat** | Share of hard cuts within 0.12 s of a beat | As good as the beat grid |
+| **Music** | Spectral-flux onsets timed at the window centre (5.8 ms hop) → tempo by autocorrelation → period + phase fitted to the kick-band onsets (least squares) | Medium: matched the Social Sauce reel to ±13 ms; can still lock on half or double tempo |
+| **Cuts on beat** | Per cut: `on_beat` (nearest beat; the half-beat after it when two cuts share one beat) and `beat_off_ms`; `cuts_on_beat` = share within 50 ms | As good as the beat grid. The old grid (≤1.7.9) timed onsets ~70 ms early and locked off the beat |
 | **Plan** | Per shot: photo / video / video + trim; one mode for the whole video | Heuristic; see `references/plan.md` |
 
 ## Cut rules (each came from a real miss)
