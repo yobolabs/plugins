@@ -99,7 +99,8 @@ every paid output to disk the moment it lands; a result that only lives behind a
 
 - **Pick each clip's payoff, not a fixed offset.** Make a timed contact sheet of every clip (2–4 fps, time on each
   frame) and give each slot the moment that pays off: the landing, the reveal, the label turned to camera. A slot
-  shorter than the payoff starts just before it so the payoff lands inside the slot.
+  shorter than the payoff starts just before it so the payoff lands inside the slot. Put the payoff frame ON a beat and keep at least
+  one beat after it on screen (a landing that hits on the cut is never seen); find the frame on a frame-exact strip.
 - **Each picture and each clip window once.** Fewer assets than slots → hold some shots for 2 beats (cuts stay on
   beats); never fill a slot with a second window of a clip already shown or a near-twin picture (same product, same
   angle). Viewers read both as repeats.
