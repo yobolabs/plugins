@@ -2,6 +2,7 @@
 """Decompose a short video: cuts, shots (still / motion), music beats, loudness.
 
   python3 analyze.py <video file or https url> [--json out.json] [--sheet sheet.jpg]
+  python3 analyze.py <music file> --music-only [--json out.json]     # beat grid of a track, no picture
 
 Needs ffmpeg + ffprobe on PATH and numpy. Prints a short table; --json writes the full result.
 Thresholds are tuned on real ads (see references/cuts-and-shots.md); change them there and here together.
@@ -17,6 +18,8 @@ SPIKE_MIN, SPIKE_RATIO = 25, 4   # a cut between still shots: from ~0 to 25+
 MIN_GAP = 0.45       # two cuts closer than this are one cut (photo slideshows cut every ~0.5 s)
 FR_MIN, FR_RATIO, FR_WIN = 20, 4, 5   # full-rate cut: change >= 20 and >= 4x the median of the 5 frames each side
 FR_MIN_GAP = 0.1     # ignore a 'cut' in the first/last 3 frames (fades, encoder glitches)
+MAX_EDIT_BPM = 140   # a grid faster than this is a double-tempo lock (186 on a 93 bpm track): halve it, keep the kick phase
+FADE_DB = 10         # last hit: an onset counts while the music is within 10 dB of its mean level (not the fade tail)
 
 
 def probe(src):
@@ -139,9 +142,31 @@ def beats(src, dur):
     if inl.sum() >= 3:
         pc, ph = np.linalg.lstsq(np.vstack([k[inl], np.ones(inl.sum())]).T, ons[inl], rcond=None)[0]
     ph %= pc
+    if 60 / pc > MAX_EDIT_BPM:                                    # double-tempo lock (hats/off-beats): edit on every 2nd beat,
+        kick = lambda p: low[np.clip(np.round((np.arange(p, len(y) / sr, 2 * pc) * sr - win / 2) / hop).astype(int), 0, n - 1)].sum()
+        ph = ph if kick(ph) >= kick(ph + pc) else ph + pc          # the phase that carries the kick
+        pc *= 2
+        ph %= pc
     grid = [round(ph + i * pc, 3) for i in range(int(dur / pc) + 2) if ph + i * pc < dur]
     loud = 20 * np.log10(np.sqrt(np.mean(y ** 2)) + 1e-9)
-    return {'bpm': round(60 / pc, 2), 'period': round(float(pc), 4), 'beats': grid, 'mean_db': round(float(loud), 1)}
+    return {'bpm': round(60 / pc, 2), 'period': round(float(pc), 4), 'beats': grid, 'mean_db': round(float(loud), 1),
+            'last_hit': last_hit(y, sr, onsets(full), grid, loud)}
+
+
+def last_hit(y, sr, ons, grid, loud):
+    """The track's last hit: the last strong onset while the music still plays at level (short-term RMS within
+    FADE_DB of the track's mean), i.e. before the fade-out / tail. On the grid when within 40 ms of a beat.
+    The end card starts here, not at a fixed time before the end."""
+    if not len(ons):
+        return None
+    w = int(0.1 * sr)
+    level = lambda t: 20 * np.log10(np.sqrt(np.mean(y[max(0, int(t * sr) - w // 2):int(t * sr) + w // 2] ** 2)) + 1e-9)
+    hits = [float(t) for t in ons if level(t) >= loud - FADE_DB]
+    if not hits:
+        return None
+    h = hits[-1]
+    b = min(grid, key=lambda g: abs(g - h)) if grid else None
+    return round(b if b is not None and abs(b - h) < 0.04 else h, 3)
 
 
 def snap_to_beat(t, music, prev=None):
@@ -187,8 +212,16 @@ def plan(shots, music, on_beat):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('src'); ap.add_argument('--json'); ap.add_argument('--sheet')
+    ap.add_argument('--music-only', action='store_true', help='beat grid of a music track only (no picture pass)')
     a = ap.parse_args()
     dur, has_audio = probe(a.src)
+    if a.music_only:
+        music = beats(a.src, dur) if has_audio else None
+        print('music: %s · %d beats · last hit %s' % (('%s bpm' % music['bpm']) if music else 'none',
+              len(music['beats']) if music else 0, music['last_hit'] if music else None))
+        if a.json:
+            json.dump({'duration': round(dur, 2), 'music': music}, open(a.json, 'w'), indent=1)
+        return
     cuts, shots, med = cuts_and_shots(frames(a.src), dur, a.src)
     music = beats(a.src, dur) if has_audio else None
     on_beat = None
