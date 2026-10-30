@@ -193,9 +193,12 @@ def main():
     music = beats(a.src, dur) if has_audio else None
     on_beat = None
     if music and music['beats']:
-        prev = None
+        prev = None                                              # only hard cuts chain: a soft cut never pushes a hard one
         for c in cuts:
-            c['on_beat'] = prev = snap_to_beat(c['t'], music, prev)
+            if c['hard']:
+                c['on_beat'] = prev = snap_to_beat(c['t'], music, prev)
+            else:
+                c['on_beat'] = snap_to_beat(c['t'], music)
             c['beat_off_ms'] = round(1000 * (c['t'] - c['on_beat']))
         hard = [c['t'] for c in cuts if c['hard']]
         if hard:

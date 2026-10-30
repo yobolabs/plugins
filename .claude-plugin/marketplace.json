@@ -72,7 +72,7 @@
       "name": "content-creation",
       "source": "./content-creation",
       "description": "Build short-form campaign ads by talking to Claude \u2014 one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation. Plus a Higgsfield video skill: prompts, references and review for Seedance and Kling, by video style",
-      "version": "1.7.13",
+      "version": "1.7.14",
       "keywords": [
         "capcut",
         "video",
