@@ -100,6 +100,9 @@ every paid output to disk the moment it lands; a result that only lives behind a
 - **Pick each clip's payoff, not a fixed offset.** Make a timed contact sheet of every clip (2–4 fps, time on each
   frame) and give each slot the moment that pays off: the landing, the reveal, the label turned to camera. A slot
   shorter than the payoff starts just before it so the payoff lands inside the slot.
+- **Each picture and each clip window once.** Fewer assets than slots → hold some shots for 2 beats (cuts stay on
+  beats); never fill a slot with a second window of a clip already shown or a near-twin picture (same product, same
+  angle). Viewers read both as repeats.
 - **Never the same product in two shots in a row.** Reorder stills and clips first; reuse a clip only when its two
   windows look clearly different (an invisible jump cut is a lost beat).
 - **No audio in the parts when the source's music replaces the sound** (only for parts with no voice; voiced
