@@ -78,6 +78,22 @@ with the wrong hair, skin and seats.
 
 ## Fixing a part
 
-1–2 shots wrong → splice: cut them out and remake just those shots, using that part's own audio as the lip-sync
-reference, so the voices stay identical. Most shots wrong → remake the whole part (every clip bills at least 4 s, so
-many small remakes cost more).
+1–2 shots wrong → splice: cut them out and remake just those shots as one short fix clip (send that part's own audio
+of the line as the voice reference, so the voice stays the same). Most shots wrong → remake the whole part (every clip
+bills at least 4 s, so many small remakes cost more).
+
+**Splice the fix clip with its OWN audio, never the part's.** A fix clip does not follow its reference audio word for
+word: it re-says the line at its own pace, so its mouth runs late or early against the part's audio (seen: ~0.6 s).
+Picture and sound from the same render always match.
+
+1. Find the clip's words: transcript with word times (give the expected line as the prompt so short words are
+   caught) plus a loudness envelope (50 ms steps) for the words the transcript drops.
+2. Fix clips also re-say the words just before the shot. Start the clip's audio right after any word the part's
+   audio already says, and start its picture a little earlier, so the mouth moves on the part's last word.
+3. Join: part audio up to the cut → clip audio (same clip time as its picture) → part audio again, each join with a
+   20 ms fade. If the next shot's line starts before the cut (a pre-lap), hold the clip's last frame a few frames
+   (`tpad=stop_mode=clone`) so the clip's last word ends before the next line starts; the part gets that much longer.
+4. Check before showing: a transcript of the joined window has every line once, in order, nothing doubled or cut.
+
+Spot the fault first: cross-correlate the part's audio with the clip's own audio over the shot. A low match
+(< 0.3) means the cut plays sound that is not from that clip, so the lips cannot match.
