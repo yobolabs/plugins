@@ -113,9 +113,10 @@ product itself (its label) stays. A logo the merchant left out is never sent as 
 ### App, chat and website screens: a green phone, keyed afterwards (universal)
 
 A screen is shown INSIDE a phone held by a character: close-up, phone about 2/3 of the frame, held steady, the screen
-drawn flat chroma green. The real screenshot is keyed in afterwards, frame by frame (corner tracking, despill, screen
-sheen, colour match). Never a full-frame screenshot, never screen text drawn by the model (a laptop came back with
-garbled text instead of the phone).
+drawn flat chroma green. The merchant's OWN screenshot is keyed in afterwards: one still frame per phone shot, corners
+pinned once (median of every frame), full bleed past the screen edge, keyed at 1080p. Never a full-frame screenshot,
+never screen text drawn by the model (a laptop came back with garbled text instead of the phone), never a redrawn or
+invented screen. Method and checks: [references/screen-keying.md](references/screen-keying.md).
 
 ## 3 · References: what to send
 
