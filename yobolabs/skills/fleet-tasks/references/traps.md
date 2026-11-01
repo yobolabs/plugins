@@ -212,3 +212,15 @@ not delivered").
   `deliverRun`. A field added to `TaskNotifyInput` for `deliverRun` must be set there too. `briefTip` was
   missing, so the adapter never checked the 24 h chat window: tip-without-tap sent 0/190 on prod. Fixed in yobo
   `23e97ff39`; that path now writes `todaysTipSentDirect` / `todaysTipInAlert` with `markRunTipDelivery`.
+
+## "Nobody gets the brief" on a free org = the tap paywall, not a worker fault (2026-09-14)
+
+The CTA is delivered and READ; the tap reaches the responder agent, whose brief tool clone is tagged
+`billing_class=generative`, so the p75 gate refuses `PAYMENT_REQUIRED / NO_ACTIVE_SUBSCRIPTION` for any
+`subscriptions.status=free` org. Every free test org "fails" the same way, and people clone definitions
+hunting a bug that is the paywall. Sean's decision (2026-09-14): "morning brief should be received
+regardless of paywall". A brief needs BOTH: definition `scheduled_paywall_policy='no_paywall'` AND its
+Cadra brief tool tagged `read` (not `generative`), or free orgs stay blocked. Triage order: an
+`is_active` definition exists (scanner `definitions:0` = none) → run `status_reason`
+(`payment-required`, `data-gate-empty`) → gateway message status for the wamid → the tap execution's
+`metadata.entitlement.refusals` in Cadra. Test on a paid or `is_admin_override` org.
