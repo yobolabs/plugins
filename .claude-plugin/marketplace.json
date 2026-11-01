@@ -37,7 +37,7 @@
       "name": "yobolabs",
       "source": "./yobolabs",
       "description": "Configure YoboLabs apps from Claude Code, Codex, or CI via their REST APIs \u2014 CadraOS agents, roles, skills and tools (with a config auditor), plus Slides landing pages (microsites)",
-      "version": "1.13.9",
+      "version": "1.13.10",
       "keywords": [
         "yobolabs",
         "cadra",
@@ -72,7 +72,7 @@
       "name": "content-creation",
       "source": "./content-creation",
       "description": "Build short-form campaign ads by talking to Claude \u2014 one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation. Plus a Higgsfield video skill: prompts, references and review for Seedance and Kling, by video style",
-      "version": "1.7.15",
+      "version": "1.7.16",
       "keywords": [
         "capcut",
         "video",

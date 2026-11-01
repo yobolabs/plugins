@@ -4,6 +4,7 @@ Moved verbatim from `SKILL.md` (2026-09-30). Read before diagnosing a lost, late
 
 ## Traps
 
+- **The task KEY switches the brief rules on.** `isMorningBriefTask(taskKey)` (`morning-brief-artifact.ts`) is a substring check for `morning_brief` / `daily_brief`; it gates the brief-validity shape rule, the Files copy and source traceability (the `iteration_cap_exhausted` refusal applies to every key). A proof under any other key (2026-09-15: `dev_brief_validity_proof` let a headless stop and a stub reach CTAs) proves nothing and looks like a gate bug: name every brief proof or test task `morning_brief_*`. To force a run now, set the enrolment `sendTimeHour` to the org's current local hour; to stop tomorrow's run without expiring an outstanding CTA, switch the schedule to weekly instead of deactivating.
 - **A finished brief is no longer lost (YMS-191, on prod 2026-09-18).** Before this, a brief that
   finished after `limits.runTimeoutMinutes` was swept `failed/timeout-swept` and never sent, and a
   failed CTA send could only be retried by REGENERATING (new LLM cost, different brief). Now the
