@@ -1,0 +1,153 @@
+---
+name: remix
+description: "Use when working on Ad Studio Remix (spec p131): remaking an existing video ad (Ad Library ad, YouTube/IG/TikTok link or upload) for a merchant's own business, in slides, yobo, msg-api or the Cadra agent and functions, on the web or on WhatsApp. Covers the fixed pipeline, the brief, storyboards, the AI review gate, human approval, video parts, join with the ad's own music, export and post. Also use when the user mentions \"remix\", \"remix video\", \"storyboard\", \"storyboard review\", \"line drawing\", \"brief\", \"Use these\", \"go:yes\", \"needs:use\", \"join\", \"remix stuck\", \"remix journey\", or \"remix_make\". A bare invocation: read the pipeline below, then load only the reference for the stage or ad type at hand."
+---
+
+# Remix (p131)
+
+Remix = take an existing video ad and make it for THIS merchant: new cast, set, product, same structure and timing.
+It is the main entry of Ad Studio video. General Ad Studio video, Higgsfield routes and the editor stay in
+`yobo:ad-studio-video`; everything about the remix pipeline lives here.
+
+**Universal rules only in this file.** Anything true for one ad type goes in `references/types/<type>.md`; anything
+true for one stage goes in `references/<stage>.md`. Never add a brand, customer or run name to a generic file.
+Load a type file only when the source ad is that type (see "Pick the type").
+
+## Rule 0: lab defaults are the product
+
+The remix lab (v8.69) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
+sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
+or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
+and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
+same day, never a silent default (that is how the ad's own music, per-shot line drawings and the breakdown view all
+shipped off). Lab manual: `yobo:ad-studio-video` `references/remix-lab.md`.
+
+## The contract (Sean, 2026-11-03)
+
+- **The storyboard is the contract.** A clean, well-formed storyboard (clear scenes, picture or clip each, dialogue
+  that makes sense across scenes, beats mapped to the audio) means the video comes out close. Every storyboard fault
+  (a 2 s scene with a 10 s beat, a different presenter per scene, an invented person) is visible before a cent is spent.
+- **The brief is the contract.** What each scene must show: cast, set, lines, beats, keep/change/never. The check
+  never invents its own target; where the brief lacks a field a check needs, the brief gains that field.
+- **The quality checks are the gate.** Code checks plus AI review run on every set BEFORE the merchant sees it.
+  A failed check is fixed and re-run; the merchant never sees a failed set.
+
+## The fixed pipeline (no step optional, none skippable)
+
+1. **Read the ad**: cuts, shots, still/moving, music bpm from pixels and audio (code, never the LLM). Then one reading
+   (`video_blueprint`) fed the measured cut list.
+2. **Brief** -> `references/brief.md`. Rewritten when the merchant's answers come in.
+3. **Needs / questions**: ask everything missing ONCE (photos, product, cast), filled first from what the business already has.
+4. **Line drawings**: position and framing only, per shot, from that shot's own source frame. Never sent to a video model alone.
+5. **Storyboard images** -> `references/storyboard.md`: line drawing redrawn with new cast, set, product.
+6. **AI review + code checks** -> `references/review.md`.
+7. **Human approval** of each storyboard. Only the merchant approves; the agent never does.
+8. **Video parts** (draft first, then final on request). Type decides how: `references/types/`.
+9. **Join** -> `references/join-and-sound.md`: the ad's own music laid ONCE, cuts on its beats.
+10. **Final -> approve / export -> post** (Buffer / Hootsuite route; direct IG/FB waits on Meta review).
+
+**One exception — "Just swap the product" (merchant's choice, Sean 2026-11-03 ~20:2x: "Yes, let's add that. So that
+would basically bypass a whole bunch of things."; YMS-705, p132 §15).** When the merchant picks it, steps 2-7 are
+skipped. A product swap ALWAYS keeps the ad's own scenes without the product and remakes only the product scenes
+(Sean 2026-11-04: "It should be default if you're just swapping the product … There should be no option to turn that
+off"); see "Every finished video becomes a template" below for the parts. Each remade part is a Seedance 2.0
+reference-to-video call with `video_urls=[that part]` + `image_urls=[one product photo]`, 480p draft, prompt "Recreate
+the reference video exactly … only change: the product becomes the product in the reference image (<name>), label
+exact. No text on screen." + the size rule + the template-prompt rule below. Then review → export → post as usual.
+Inputs must come from fast storage (Cadra / S3 presigned): a slow public link failed with "Downloading an input file
+timed out". The full pipeline stays the default; never pick the fast path for the merchant.
+
+- **Real size, always** (Sean 2026-11-04: "One of the key things we need to do is make sure the dimensions are
+  correct"). Ask the product's real size (e.g. "500 ml can, 17 cm tall") before any paid call; every swap prompt
+  (video and picture) says: show it at its real-world size and proportions next to people, hands and objects, never
+  scaled to the product it replaces; change how it is held or placed instead. Without it a small tub came out the
+  size of the bag it replaced.
+- **Template reels carry their own prompt** (Sean 2026-11-04: "grab the prompt from the video because it's shown on
+  the left side … we should actually include that"). When the ad sits beside a static text panel, crop that panel
+  strip (ad height, ≤600 px wide), read it with `ad_layout_reader`; ≥200 characters = the prompt that made the ad.
+  Give it to the model as the script ("follow it shot for shot; wherever it names the advertised product, use ours
+  and adapt how it is shown"). A larger crop (≈800×3800) pushed the reader past Cloudflare's 100 s limit (524). Never
+  send the panel as a reference IMAGE: the model copies images visually, and the panel's own product photo won.
+- **Only suggest a template the product fits** (Sean 2026-11-04: "[that product] doesn't make sense for this type
+  of video … we should never offer this as a suggested ad template"). Before suggesting or running a template for a
+  product, check the product belongs in that ad's scenes and actions (category, setting, how the product is used in
+  the shot list). A snack tin in a fashion-bag laundry ad came out as nonsense even with size and crop right.
+
+**Every finished video becomes a template** (Sean 2026-11-03 ~21:2x: "Basically, every video created should become a
+template."; p132 §16). Save the cropped ad, the reading (scenes, product shots), the kept-vs-remade plan, the kept
+clips and the product-scene prompt. A remix from a template regenerates ONLY the product scenes and joins them with
+the kept scenes and the ad's own sound. Seedance bills at least 4 s per call, so merge neighbouring product scenes
+into one call; product scenes use `generate_audio: false`. Higgsfield's nsfw filter refuses scary themes: say so in
+one line and offer the full pipeline. A product scene that does not move is ONE picture edit of its middle frame, held for its length — no video call
+(Sean 2026-11-03: "for product scenes that are images, then there's no video generation cost"); still/moving comes from
+the analyzer's per-shot type.
+
+**Reuse first** (Sean 2026-11-03: "we wanna minimize the time. We wanna minimize the generation, maximize the
+reuse."). Per part, cheapest first: no product → keep the ad's own clip; product still → one picture edit held for
+its length; product moving → video for those seconds only (neighbours merged, 4 s floor); template already read →
+no new reading or plan. No crop step for the user (Sean 2026-11-04): find the ad area automatically (pixels that
+change across frames); kept clips and still pictures are cut to that area and resized to a standard shape in the
+join; remade parts may go uncropped ONLY with the prompt line "if the reference is a layout with a text panel … recreate
+only the main video, full frame, ignore the panel, its text and its photo" (proven: panel removed and product
+swapped, Higgsfield 01a1a46a). Without that line Seedance kept the panel's own product (01a1a184). A raw crop
+(e.g. 392×712) is refused by Seedance ("video dimensions or aspect ratio are not supported"): resize every crop to
+720×1280 / 720×960 / 720×720 / 960×720 / 1280×720.
+
+**Source download is server-side.** An Instagram CDN video URL (Apify `videoUrl`) answers a browser User-Agent or any
+Referer with a 302 carrying no CORS header; a server request gets 200. The URL also expires (signed `oe=`). Download on
+the server, store our own copy, and never hand the CDN URL to a browser or keep it in a template.
+
+Draft = 480p video, 1k pictures, until sign-off. Regenerate only what changed; reuse paid output; save every paid
+output the moment it lands. Text, captions, prices and logos are added in post, never drawn by a model; the product's
+own printed label stays.
+
+## WhatsApp first
+
+- Every step is a **button tap** in the chat (msg-api reply buttons -> yobo `tap.ts`), never the agent, never typing,
+  never a required web page. A web link is an optional extra.
+- Every failure is **ONE plain line** in the chat's language saying what happens next, with a button when there is a
+  next step. Never silence, two lines, or a contradicting line.
+- The agent handles free text and questions only, with typed remix tools. It never presses Approve, never states a
+  price, never promises text/logos drawn by AI. Detail: `references/whatsapp-journey.md`.
+
+## Standing rules
+
+- **No paid render without Sean's OK for that run** (pictures, draft clips, finals all bill the platform key, dev too).
+  Prove with unit tests and free pages; name the cost (scenes x seconds x model) before an end-to-end run. Every
+  subagent brief says "no paid renders".
+- **Pricing is parked.** Never add or change a price or credit UX. The free first remix is the MQL waiver; every paid
+  quote or start must name the remix so the waiver applies.
+- **Say "Remix", never "Remake"** (UI copy, routes, code names, docs).
+- **A limit needs a `LIMITS.md` row** (caps, timeouts, retries); a limit that fires logs on the job.
+- **Never remove what another ad type needs.** Diff against the last version before shipping a fix for one type.
+- **Dev passing is not prod passing.** Cadra prompts/skills/tools are per-env rows; diff dev vs prod before a promote.
+  A proof is a real end-to-end run (link to delivered video) per ad type, not free steps on a synthetic inbound.
+- **Agents make, self-check, show and wait.**
+
+## Pick the type
+
+Decide from the reading, before the brief. The default follows the ad: people talking -> people-dialogue; else
+product-hero. Merchant's own pick wins.
+
+| Source ad is | Load |
+|---|---|
+| people on screen, speech or dialogue | `references/types/people-dialogue.md` |
+| a product moving through shots, no people speaking | `references/types/product-hero.md` |
+| fast cuts of stills held on beats | `references/types/montage.md` |
+| video and stills mixed (keep/mine clips) | `references/types/mixed.md` |
+| a phone / app / website screen shown | `references/types/screens.md` (also applies inside any other type) |
+
+## References (load on demand)
+
+| File | When |
+|---|---|
+| `references/brief.md` | writing, rewriting or feeding the brief |
+| `references/storyboard.md` | line drawings, storyboard cards, per-card fields |
+| `references/review.md` | AI review, set check, code checks, known gaps |
+| `references/join-and-sound.md` | joining parts, music, beats, export |
+| `references/whatsapp-journey.md` | tap ids, copy rows, per-step buttons, failure lines |
+| `references/code-map.md` | where each step runs in slides / yobo / msg-api / Cadra |
+| `references/types/*.md` | one per ad type |
+
+Related: `yobo:ad-studio-video` (Ad Studio video generally, Higgsfield routes, lab manual), `yobo:whatsapp` (rendering),
+`yobo:social` (post route), `yobo:messaging` (msg-api). Specs: `_context/slides/_specs/p131-remix-in-ad-studio/`.
