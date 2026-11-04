@@ -213,6 +213,14 @@ not delivered").
   missing, so the adapter never checked the 24 h chat window: tip-without-tap sent 0/190 on prod. Fixed in yobo
   `23e97ff39`; that path now writes `todaysTipSentDirect` / `todaysTipInAlert` with `markRunTipDelivery`.
 
+## Proving a Runs-tab change: agents have no Super User login (2026-11-04)
+
+- **`bo.listRuns` answers `Permission required: admin:agent_tasks_read` from every agent login
+  profile.** The shared yobo logins are Owner of a merchant org, not Super User; another profile is
+  simply unauthorised. Prove a Runs/dialog change with the component test (`run-table.test.tsx`)
+  plus a read-only owner-role query of the new SQL on dev; say the rendered page was not checked.
+  Dev has very few recipient failure rows, so a refusal usually cannot be shown on dev data at all.
+
 ## "Nobody gets the brief" on a free org = the tap paywall, not a worker fault (2026-09-14)
 
 The CTA is delivered and READ; the tap reaches the responder agent, whose brief tool clone is tagged

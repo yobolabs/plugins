@@ -108,6 +108,26 @@ until it is corrected.**
 Measured cost is `ai_usage_records.cost_usd` joined on `execution_uuid`. Three runs read
 `0.500000` while costing `~0.0106` — 47× over. Caps are per definition, never global.
 
+## Runs tab: the error indicator and "Run error details" (YOBO-3642, YOBO-3788)
+
+The red indicator in the Reason column opens a read-only dialog. It shows when the run has
+`error_message` **or** any recipient row has an issue, so a person whose CTA failed stays visible
+when another person got the brief and the run reads `notified` with no run error.
+
+- **Run error** = `agent_task_runs.error_message`. All-failed runs list each failed recipient (masked
+  phone, code, redacted reason).
+- **Notification delivery** = per-recipient rows from `bo.listRuns` → `recipients[]` (masked phone,
+  state, `failure_code`, redacted `error_message`, attempts, last attempt time, digest id as the
+  copyable delivery reference). Never the provider message id: a wamid encodes the phone.
+- **Codes:** a thrown send keeps `send-error[:<msg-api code>]`; an adapter refusal (`ok:false`) is
+  `send-refused:<reason>` (e.g. `template-not-approved`, `destination-invalid`) plus the redacted
+  detail; `processing-error` also keeps its redacted cause. Bare `send-refused` = refusal with no text.
+- `awaiting_digest` + a failure code reads "Failed, retry scheduled"; a later success clears the code
+  and detail (`digestFinishFields` nulls them).
+- The Cadra link reads **"View brief generation (Cadra)"**: it shows how the brief was written, never
+  why delivery failed.
+- New runs only: rows written before the fix carry codes without detail; no backfill exists.
+
 ## Source
 
 | File | Role |
