@@ -1,6 +1,6 @@
 ---
 name: remix
-description: "Use when working on Ad Studio Remix (spec p131): remaking an existing video ad (Ad Library ad, YouTube/IG/TikTok link or upload) for a merchant's own business, in slides, yobo, msg-api or the Cadra agent and functions, on the web or on WhatsApp. Covers the fixed pipeline, the brief, storyboards, the AI review gate, human approval, video parts, join with the ad's own music, export and post. Also use when the user mentions \"remix\", \"remix video\", \"storyboard\", \"storyboard review\", \"line drawing\", \"brief\", \"Use these\", \"go:yes\", \"needs:use\", \"join\", \"remix stuck\", \"remix journey\", or \"remix_make\". A bare invocation: read the pipeline below, then load only the reference for the stage or ad type at hand."
+description: "Use when working on Ad Studio Remix (spec p131): remaking an existing video ad (Ad Library ad, YouTube/IG/TikTok link or upload) for a merchant's own business, in slides, yobo, msg-api or the Cadra agent and functions, on the web or on WhatsApp. Covers the fixed pipeline, the brief, storyboards, the AI review gate, human approval, video parts, join with the ad's own music, export and post. Also use when the user mentions \"remix\", \"remix video\", \"storyboard\", \"storyboard review\", \"line drawing\", \"brief\", \"Use these\", \"go:yes\", \"needs:use\", \"join\", \"remix stuck\", \"remix journey\", or \"remix_make\". Invoked with or without an ad link: first-time setup if needed (Remix KB MCP), then open the team Remix Lab in the browser with the ad loaded, then follow the pipeline below."
 ---
 
 # Remix (p131)
@@ -18,11 +18,31 @@ Load a type file only when the source ad is that type (see "Pick the type").
 Users of this skill have no repo or `_context` files. Every spec, lab manual, how-to and learnings note named below
 lives in the Remix knowledge base: connect the `remix-context` MCP server, then `search` → `read_document`, and cite
 the resource URI. A path below (`_context/…`, `yobo:ad-studio-video` `references/…`) is the document's source path in
-the KB, not a file to open. Not connected → stop and ask the user to connect it; never guess a rule from memory.
+the KB, not a file to open. Not connected → run the first-time setup in `references/setup.md` (or ask the user to); never guess a rule
+from memory.
+
+## When someone invokes this skill (with or without an ad link)
+
+Sean 2026-11-04: "When someone invokes the remix skill and passes in the URL, even if they don't pass the URL,
+let's pop open the browser and load the remix site." Do this first, every time:
+
+1. **First time on this machine?** `claude mcp list | grep -q remix-context` fails → run the setup in
+   `references/setup.md` (Remix KB MCP; users have no local context files, the KB is their only source).
+2. **Search the Remix KB** for this ad type and any past run of the same ad (`remix-context` `search`).
+3. **Open the team lab** in the user's own browser (they sign in with Yobo Connect; never ask for a key):
+   ```bash
+   L='https://remix-lab.yobolabs.ai'
+   AD='<ad link, or empty>'                     # Instagram/TikTok/YouTube link or a direct .mp4
+   [ -n "$AD" ] && L="$L/?ad=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1],safe=""))' "$AD")"
+   open "$L" 2>/dev/null || xdg-open "$L" 2>/dev/null || cmd.exe /c start "" "$L"
+   ```
+   `?ad=` loads that ad as soon as the page opens (it survives the sign-in). A session that drives its own
+   browser tab opens the same URL there instead.
+4. Tell the user in one line what to do next on the page (product name, real size, product photo, Make it).
 
 ## Rule 0: lab defaults are the product
 
-The remix lab (v8.69) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
+The remix lab (v8.70) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
 sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
 or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
@@ -161,6 +181,7 @@ product-hero. Merchant's own pick wins.
 | `references/whatsapp-journey.md` | tap ids, copy rows, per-step buttons, failure lines |
 | `references/code-map.md` | where each step runs in slides / yobo / msg-api / Cadra |
 | `references/learnings.md` | after every finished or failed paid remix: the learnings note + Remix KB upload |
+| `references/setup.md` | first use on a machine: Remix KB MCP + the upload key |
 | `references/types/*.md` | one per ad type |
 
 Related (team repos only): `yobo:ad-studio-video`, `yobo:whatsapp`, `yobo:social`, `yobo:messaging`. Specs, lab manual,
