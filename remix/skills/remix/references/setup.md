@@ -2,21 +2,23 @@
 
 Users of this plugin have no local context files and install nothing locally (Sean 2026-11-04). The only setup is
 connecting Claude to the Remix knowledge base (one `claude mcp add`); everything else runs in the lab page. Run this
-the first time the skill is used on a machine (`claude mcp list` has no `remix-context`).
+the first time the skill is used (the Remix knowledge base tools are missing).
 
-## 1. The Remix KB MCP (read) — no key, sign in once
+## 1. The Remix KB connection (read) — no key, sign in once
 
-Sean 2026-11-04: "no one needs keys … The MCP is authenticated through OAuth." Run:
+Sean 2026-11-04: "no one needs keys … The MCP is authenticated through OAuth" · "Nobody uses terminal. Everyone's
+using claude app." In the **Claude app** (desktop or claude.ai):
 
-```bash
-claude mcp add -s user --transport http --client-id cadra-claude-code --callback-port 33418 \
-  remix-context https://app.cadraos.com/api/mcp/kb/88204510-bdff-47b3-bb81-daacf90b06fb
-```
+1. Settings → **Connectors** → **Add custom connector**.
+2. Name: `Remix context`. URL: `https://app.cadraos.com/api/mcp/kb/88204510-bdff-47b3-bb81-daacf90b06fb`.
+3. **Advanced settings** → OAuth Client ID: `cadra-claude` (Cadra's pre-registered client for the Claude app,
+   `cadra-web/src/extensions/knowledge-bases/client-instructions.ts`).
+4. **Add** → **Connect** → sign in with your Cadra account → allow access.
 
-Then in Claude Code: `/mcp` → **remix-context** → **Authenticate** → sign in with your Cadra account → Allow access.
-Check: `claude mcp list` shows `remix-context … Connected`; `remix-context` `search` for "how remix works" returns
-`HOW-REMIX-WORKS.md`. Sign-in refused or the KB isn't visible → your Cadra account is not in the org that owns it: ask
-Sean (one line). Use the name `remix-context` exactly (the skill calls it by that name). Never paste a key anywhere.
+Check: ask Claude to search the Remix knowledge base for "how remix works"; it should cite `HOW-REMIX-WORKS.md`.
+Sign-in refused or no results → your Cadra account is not in the org that owns it: ask Sean (one line).
+Claude Code in a terminal (rare): `claude mcp add -s user --transport http --client-id cadra-claude-code
+--callback-port 33418 remix-context <the URL above>`, then `/mcp` → Authenticate. Never paste a key anywhere.
 
 ## 2. The team lab
 
