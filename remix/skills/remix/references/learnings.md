@@ -44,9 +44,10 @@ uploads it to the Remix KB under `slides/_specs/p131-remix-in-ad-studio/learning
 answers "Saved … as <name>". Never upload it any other way and never ask the user for a key.
 Check it landed: `remix-context` `search` for the note's title.
 
-**Sean's machines** (they hold the context repo): write the note into
+**Sean's machines, only when the session's working directory IS the monorepo context repo** (`_context/` present): write the note into
 `_context/slides/_specs/p131-remix-in-ad-studio/learnings/` and run the chief-of-staff `kb-sync.py run --kb remix
 --since-hours 3` instead (the sanctioned writer there; upsert, never delete).
+Any other working directory (an Obsidian vault, a home folder, a teammate's machine) → use the lab's Share learnings box, even on Sean's Mac.
 
 Never write to the KB any other way, and never put a key, customer data or a personal number in a note.
 
