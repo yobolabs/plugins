@@ -39,11 +39,18 @@ let's pop open the browser and load the remix site." Do this first, every time:
    `?ad=` loads that ad as soon as the page opens (it survives the sign-in). A session that drives its own
    browser tab opens the same URL there instead.
 4. **Drive the lab yourself** (Sean 2026-11-04: "You're supposed to help me with this. You're supposed to drive
-   it"). Never hand the user a list of clicks. With the browser control this Claude already has (Claude in Chrome or
-   the session's browser tool; never install one), in the tab you opened:
-   1. wait until the ad has loaded ("Loaded: … s"); if the sign-in page shows, ask the user to sign in, then go on;
+   it"). Never hand the user a list of clicks. **Browser tool:** use the browser tool that is already connected in
+   this session (look at your tool list: a browser-use MCP, Claude in Chrome, or another). Never ask the user which
+   one, never install a CLI or extension, never switch tools mid-run. A tool that answers "not connected" is skipped
+   for the next one in your list. Open the lab in that tool (`?ad=` URL), then:
+   1. wait until the ad has loaded ("Loaded: … s"); if the sign-in page shows, ask the user to sign in, then go on.
+      Ad stuck (no "Loaded", the video never gets a first frame): the tab is in the background and the browser
+      paused its media. Turn on focus emulation (CDP `Emulation.setFocusEmulationEnabled`) and reload the video;
+      never bring the user's window to the front. Short checks (a few seconds each), never long wait loops;
    2. type the product name and its **real size** (ask the user once if you do not know the size);
-   3. put the product photo the user gave you into the photo box (a file the chat attached, dropped into the box);
+   3. put the product photo the user gave you into the photo box: read the file the chat attached, then in the page
+      build a `File` from its bytes (base64), wrap it in a `DataTransfer` and dispatch `drop` on the photo box
+      (`#qPick`); the thumbnail and file name appear when it worked;
    4. check fit: does this product belong in this ad's scenes? If not, say so and stop (rule: only templates that fit);
    5. say the plan and cost in one line (from the lab's plan line), then press **Make it**: the user asking for the
       remix is the go, no second confirmation;
