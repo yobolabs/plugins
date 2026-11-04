@@ -56,20 +56,30 @@ let's pop open the browser and load the remix site." Do this first, every time:
       (ml, g, oz) → the user's own files (product notes, photos) → the Remix KB (product research for a known
       merchant) → the product's own listing or site (web search) → a stated estimate from a similar product. Say which source you used in one line and keep going.
       The only thing you may ask the user for is the sign-in;
-   3. put the product photo the user gave you into the photo box. File on disk: CDP `DOM.setFileInputFiles` on
-      `#qPhoto` (simplest). Otherwise build a `File` from its bytes (base64), wrap it in a `DataTransfer` and dispatch
-      `drop` on `#qPick`. The thumbnail and file name appear when it worked;
-   4. check fit: does this product belong in this ad's scenes? If not, say so and stop (rule: only templates that fit);
-   5. say the plan and cost in one line (from the lab's plan line), then press **Make it**: the user asking for the
-      remix is the go, no second confirmation;
-   6. watch the progress line until the video shows ("Reading the prompt shown beside the ad… N s" has its own
+   3. put the product photos into the photo box: every photo you have of it (front, side, top; up to 8), not only
+      one. Files on disk: CDP `DOM.setFileInputFiles` on `#qPhoto` (it takes several). Otherwise build `File`s from
+      their bytes (base64), wrap them in a `DataTransfer` and dispatch `drop` on `#qPick`. The thumbnail and file
+      names appear when it worked. Every change the user or merchant wants (flyer words, which hand holds it, a fix
+      after a bad run) goes into the **Prompt** box, nowhere else (Sean 2026-11-04: "it's also the place for the team
+      to put in any overrides or adjustments"): on template reels it is pre-filled with the panel's prompt, so edit
+      that text in place; what the box says wins over the lab's own lines;
+   4. press **Make the product sheet** (1 paid picture: front, three-quarter, side, back) and look at it: every side
+      must look like the product (shape, label, colours), nothing from the photos' background. Wrong → press again.
+      Make it refuses to start without a sheet (Sean 2026-11-04: "create a character sheet even if it's a product
+      swap");
+   5. check fit: does this product belong in this ad's scenes? If not, say so and stop (rule: only templates that fit);
+   6. press **Check the plan (free)** and read the plan line: which parts are kept (free) and which are remade (paid
+      seconds). Every Keep part must be free of the old product, including on props (flyers, posters, screens,
+      clothes); if a kept part still shows it, stop and report it. Say the plan and cost in one line, then press
+      **Make it**: the user asking for the remix is the go, no second confirmation;
+   7. watch the progress line until the video shows ("Reading the prompt shown beside the ad… N s" has its own
       timer and is skipped after 90 s; a 480p part usually takes 5–8 min at Higgsfield, longer at 720p+ or when it
       is busy; tell the user that expected time once; the run carries on by itself, so never reload mid-run); look at frames across the result (product visible, real size,
       no panel, no pasted-in look) and tell the user what you see, good and bad. The lab has no frame tool: in
       `browser_exec`, seek the result `<video>` to 6–8 times spread over its length, `drawImage` each onto one canvas
       strip, `toDataURL('image/jpeg')`, save and look at it. Check the KEPT parts too: props in the background
       (flyers, posters, screens, packaging) must not still show the old product, and an ending poster must stay a poster;
-   7. save the MP4. **Download the MP4** is a `blob:` link: a click lands in the driven Chrome's own downloads folder,
+   8. save the MP4. **Download the MP4** is a `blob:` link: a click lands in the driven Chrome's own downloads folder,
       which your session may not be able to read. Instead, in `browser_exec`: `fetch(<the link's href>)` → `blob()` →
       `FileReader.readAsDataURL` → return the base64, decode it to a file in your scratchpad, and tell the user the
       path (a ~6 MB video passes fine). Then write the learnings note (`references/learnings.md`)
@@ -92,7 +102,7 @@ what the lab and Ad Studio do inside; they are for builders, not steps for a use
 
 ## Rule 0: lab defaults are the product
 
-The remix lab (v8.70) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
+The remix lab (v8.82) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
 sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
 or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
@@ -128,9 +138,12 @@ would basically bypass a whole bunch of things."; YMS-705, p132 §15).** When th
 skipped. A product swap ALWAYS keeps the ad's own scenes without the product and remakes only the product scenes
 (Sean 2026-11-04: "It should be default if you're just swapping the product … There should be no option to turn that
 off"); see "Every finished video becomes a template" below for the parts. Each remade part is a Seedance 2.0
-reference-to-video call with `video_urls=[that part]` + `image_urls=[one product photo]`, 480p draft, prompt "Recreate
+reference-to-video call with `video_urls=[that part]` + `image_urls=[the product sheet]`, 480p draft, prompt "Recreate
 the reference video exactly … only change: the product becomes the product in the reference image (<name>), label
-exact. No text on screen." + the size rule + the template-prompt rule below. Then review → export → post as usual.
+exact. No text on screen." + the size rule + the template-prompt rule below. **The product sheet comes first, even on
+a swap** (Sean 2026-11-04: "create a character sheet even if it's a product swap … the side view is not clear"):
+one turnaround picture (front, three-quarter, side, back) from all the product's photos, shown for OK, then sent as the
+product image. One photo shows one side; the model invents the rest. Then review → export → post as usual.
 Inputs must come from fast storage (Cadra / S3 presigned): a slow public link failed with "Downloading an input file
 timed out". The full pipeline stays the default; never pick the fast path for the merchant.
 
@@ -141,10 +154,17 @@ timed out". The full pipeline stays the default; never pick the fast path for th
   size of the bag it replaced.
 - **Template reels carry their own prompt** (Sean 2026-11-04: "grab the prompt from the video because it's shown on
   the left side … we should actually include that"). When the ad sits beside a static text panel, crop that panel
-  strip (ad height, ≤600 px wide), read it with `ad_layout_reader`; ≥200 characters = the prompt that made the ad.
+  strip (full height, ≤420 px wide) and read it with a plain TRANSCRIBE function (`panel_prompt_reader`: "copy every
+  word exactly, never summarise"), ONE call on the whole strip; ≥200 characters = the prompt that made the ad.
+  A yes/no or describe function summarises long text ("a long paragraph of prompt text"), and a layout reader
+  (`ad_layout_reader`) runs past 90 s; slicing the strip did not help and repeated the overlap.
   Give it to the model as the script ("follow it shot for shot; wherever it names the advertised product, use ours
-  and adapt how it is shown"). A larger crop (≈800×3800) pushed the reader past Cloudflare's 100 s limit (524). Never
-  send the panel as a reference IMAGE: the model copies images visually, and the panel's own product photo won.
+  and adapt how it is shown"). **The script also decides which parts are remade:** every scene overlapping a timed
+  line that names the product (@Image1, product, logo, branding, label, packaging) is remade, even if the reading
+  saw no product there (the product printed on flyers or a shirt pocket); a script with no time codes = remake the
+  whole ad. Text the script prints on props (a flyer's words) follows the script, edited for the merchant; no
+  captions or added text. Never send the panel as a reference IMAGE: the model copies images visually, and the
+  panel's own product photo won.
 - **Only suggest a template the product fits** (Sean 2026-11-04: "[that product] doesn't make sense for this type
   of video … we should never offer this as a suggested ad template"). Before suggesting or running a template for a
   product, check the product belongs in that ad's scenes and actions (category, setting, how the product is used in
