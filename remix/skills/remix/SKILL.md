@@ -39,10 +39,10 @@ let's pop open the browser and load the remix site." Do this first, every time:
    `?ad=` loads that ad as soon as the page opens (it survives the sign-in). A session that drives its own
    browser tab opens the same URL there instead.
 4. **Drive the lab yourself** (Sean 2026-11-04: "You're supposed to help me with this. You're supposed to drive
-   it"). Never hand the user a list of clicks. **Browser tool:** use the browser tool that is already connected in
-   this session (look at your tool list: a browser-use MCP, Claude in Chrome, or another). Never ask the user which
-   one, never install a CLI or extension, never switch tools mid-run. A tool that answers "not connected" is skipped
-   for the next one in your list. Open the lab in that tool (`?ad=` URL), then:
+   it"). Never hand the user a list of clicks. **Browser tool = browser-use** (Sean 2026-11-04: "It should use
+   browser use, not claude-in-Chrome"): the browser-use plugin's MCP tools (`browser_exec`, `browser_screenshot`),
+   which drive the user's own Chrome where they are signed in. Never Claude in Chrome, never a browser-use CLI, never
+   install anything, never ask the user which tool. Open the lab with browser-use `new_tab(<?ad= URL>)`, then:
    1. wait until the ad has loaded ("Loaded: … s"); if the sign-in page shows, ask the user to sign in, then go on.
       Ad stuck (no "Loaded", the video never gets a first frame): the tab is in the background and the browser
       paused its media. Turn on focus emulation (CDP `Emulation.setFocusEmulationEnabled`) and reload the video;
@@ -57,7 +57,8 @@ let's pop open the browser and load the remix site." Do this first, every time:
    6. watch the progress line until the video shows; look at frames across the result (product visible, real size,
       no panel, no pasted-in look) and tell the user what you see, good and bad;
    7. press **Download the MP4** (or give the user its link), then write the learnings note (`references/learnings.md`).
-   No browser control at all → say so in one line and guide click by click as the fallback.
+   browser-use not available in this session → say so in one line (the user enables the browser-use plugin) and
+   guide click by click meanwhile.
 
 ## Who does what — users install nothing (Sean 2026-11-04)
 
