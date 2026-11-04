@@ -6,9 +6,10 @@ chat is a lesson the next run pays for again (Sean 2026-11-04).
 
 ## 1. Write one learnings note
 
-Where: `_context/slides/_specs/p131-remix-in-ad-studio/learnings/<YYYY-MM-DD>-<ad-type>-<4-word-topic>.md`
-(that spec folder is on the Remix KB allow-list; a file anywhere else never reaches the KB). One note per run or
-per sitting; never overwrite an earlier one.
+Name: `<YYYY-MM-DD>-<ad-type>-<4-word-topic>.md`, unique per run (never reuse a name; never edit an earlier note).
+Its KB path is always `slides/_specs/p131-remix-in-ad-studio/learnings/<name>` so all learnings sit together.
+Write it in a scratch folder on your machine (users of this plugin have no local context files); it only has to
+exist until the upload in § 2.
 
 ```markdown
 ---
@@ -37,17 +38,25 @@ Rules for the note:
 
 ## 2. Upload it to the Remix KB
 
-The only writer is the chief-of-staff `kb-sync.py` (upsert, never delete). On a machine that has it and the vault:
+**Teammates (the normal case)**: one call with your own upload key (setup: `references/setup.md` § 2).
 
 ```bash
-python3 <chief-of-staff>/skills/chief-of-staff/scripts/kb-sync.py run --kb remix --since-hours 3
+F=<path to the note>; N=$(basename "$F")
+curl -sS -X POST "https://app.cadraos.com/api/v1/knowledge-bases/$CADRA_REMIX_KB/documents" \
+  -H "Authorization: Bearer $CADRA_REMIX_KB_KEY" \
+  -F "file=@$F;type=text/markdown" \
+  -F "source_path=slides/_specs/p131-remix-in-ad-studio/learnings/$N" -o /tmp/kb-upload.json -w '%{http_code}\n'
 ```
 
-Report `kb: <N uploaded>` in your final message. Check it landed: `remix-context` `search` for the note's title.
+- `201`/`200` = uploaded (the document indexes in a minute). `401/403` = key missing, expired or without
+  `knowledgeBase:update`; `429` = the shared hourly upload budget, wait for `Retry-After`. Never print the key.
+- Check it landed: `remix-context` `search` for the note's title. Report `kb: uploaded <name>` in your final message.
 
-No `kb-sync.py` on your machine (most teammates): still write the note, then put its path in your final message
-and send it to the chief or Sean's session; the daily 06:17 sync uploads it once the file is in `_context`.
-Never upload to a KB by any other route and never write to the KB directly.
+**Sean's machines** (they hold the context repo): write the note into
+`_context/slides/_specs/p131-remix-in-ad-studio/learnings/` and run the chief-of-staff `kb-sync.py run --kb remix
+--since-hours 3` instead (the sanctioned writer there; upsert, never delete).
+
+Never write to the KB any other way, and never put a key, customer data or a personal number in a note.
 
 ## 3. Promote what is general
 
