@@ -123,6 +123,12 @@ own printed label stays.
 - **Dev passing is not prod passing.** Cadra prompts/skills/tools are per-env rows; diff dev vs prod before a promote.
   A proof is a real end-to-end run (link to delivered video) per ad type, not free steps on a synthetic inbound.
 - **Agents make, self-check, show and wait.**
+- **Every finished remix uploads its learnings to the Remix knowledge base** (Sean 2026-11-04: "because it's run by
+  internal users … after a remix completes a video, it needs to upload the learnings up to the remix knowledge base").
+  Finished = a final video delivered, or a paid run that failed. Same turn, before you report done: write one
+  learnings note and sync it → `references/learnings.md` (where, format, how to upload, what goes to the skill).
+  Never leave a paid run's lesson only in chat. Read the KB first (`remix-context` MCP: `search`, then `read_document`)
+  before any remix, so the team's past learnings are applied.
 
 ## Pick the type
 
@@ -147,6 +153,7 @@ product-hero. Merchant's own pick wins.
 | `references/join-and-sound.md` | joining parts, music, beats, export |
 | `references/whatsapp-journey.md` | tap ids, copy rows, per-step buttons, failure lines |
 | `references/code-map.md` | where each step runs in slides / yobo / msg-api / Cadra |
+| `references/learnings.md` | after every finished or failed paid remix: the learnings note + Remix KB upload |
 | `references/types/*.md` | one per ad type |
 
 Related: `yobo:ad-studio-video` (Ad Studio video generally, Higgsfield routes, lab manual), `yobo:whatsapp` (rendering),
