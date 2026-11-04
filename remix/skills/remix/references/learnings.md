@@ -38,10 +38,10 @@ Rules for the note:
 
 ## 2. Upload it to the Remix KB
 
-**Teammates (the normal case) — nothing to install:** write the note as text in the chat, then the user saves it
-with the lab's **Share learnings** box under the result (the lab's server uploads it to the Remix KB under
-`slides/_specs/p131-remix-in-ad-studio/learnings/<name>`). Until that box ships (YMS-714 L6), give the user the note
-and ask them to send it to Sean; never upload it any other way and never ask the user for a key.
+**Teammates (the normal case) — nothing to install:** put the note into the lab's **Share learnings** box (title +
+text) and press **Save to the Remix knowledge base** — you drive it, like the rest of the lab. The lab's server
+uploads it to the Remix KB under `slides/_specs/p131-remix-in-ad-studio/learnings/<date>-<title>-<id>.md` and the box
+answers "Saved … as <name>". Never upload it any other way and never ask the user for a key.
 Check it landed: `remix-context` `search` for the note's title.
 
 **Sean's machines** (they hold the context repo): write the note into
