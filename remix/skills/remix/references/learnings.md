@@ -6,7 +6,8 @@ chat is a lesson the next run pays for again (Sean 2026-11-04).
 
 ## 1. Write one learnings note
 
-Where: `_context/slides/_specs/p131-remix-in-ad-studio/learnings/<YYYY-MM-DD>-<ad-type>-<4-word-topic>.md`
+No repo access → send the note text to Sean's session or the chief of staff; they file it.
+Where (team): `_context/slides/_specs/p131-remix-in-ad-studio/learnings/<YYYY-MM-DD>-<ad-type>-<4-word-topic>.md`
 (that spec folder is on the Remix KB allow-list; a file anywhere else never reaches the KB). One note per run or
 per sitting; never overwrite an earlier one.
 

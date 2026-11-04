@@ -13,6 +13,13 @@ It is the main entry of Ad Studio video. General Ad Studio video, Higgsfield rou
 true for one stage goes in `references/<stage>.md`. Never add a brand, customer or run name to a generic file.
 Load a type file only when the source ad is that type (see "Pick the type").
 
+## Setup: connect the `remix-context` MCP (required)
+
+Users of this skill have no repo or `_context` files. Every spec, lab manual, how-to and learnings note named below
+lives in the Remix knowledge base: connect the `remix-context` MCP server, then `search` → `read_document`, and cite
+the resource URI. A path below (`_context/…`, `yobo:ad-studio-video` `references/…`) is the document's source path in
+the KB, not a file to open. Not connected → stop and ask the user to connect it; never guess a rule from memory.
+
 ## Rule 0: lab defaults are the product
 
 The remix lab (v8.69) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
@@ -20,7 +27,7 @@ sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). N
 or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
 same day, never a silent default (that is how the ad's own music, per-shot line drawings and the breakdown view all
-shipped off). Lab manual: `yobo:ad-studio-video` `references/remix-lab.md`.
+shipped off). Lab manual: `remix-context` search "Remix lab — how it works"; team steps: search "Remix Lab — team how-to".
 
 ## The contract (Sean, 2026-11-03)
 
@@ -156,5 +163,5 @@ product-hero. Merchant's own pick wins.
 | `references/learnings.md` | after every finished or failed paid remix: the learnings note + Remix KB upload |
 | `references/types/*.md` | one per ad type |
 
-Related: `yobo:ad-studio-video` (Ad Studio video generally, Higgsfield routes, lab manual), `yobo:whatsapp` (rendering),
-`yobo:social` (post route), `yobo:messaging` (msg-api). Specs: `_context/slides/_specs/p131-remix-in-ad-studio/`.
+Related (team repos only): `yobo:ad-studio-video`, `yobo:whatsapp`, `yobo:social`, `yobo:messaging`. Specs, lab manual,
+Higgsfield gotchas and learnings: `remix-context` MCP (search "p131", "remix lab", "higgsfield gotchas").

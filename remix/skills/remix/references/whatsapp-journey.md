@@ -83,8 +83,8 @@ answers; the matcher never swaps products.
   `getRemix`).
 - **Writers get one retry on bad OUTPUT** (Cadra `OUTPUT_INVALID`), never on bad input; a second failure is the job's
   one failed-step line.
-- Fetch detail (yt-dlp sections, byte caps, YouTube from a datacenter IP → Apify tool): `yobo:ad-studio-video`
-  `references/higgsfield-and-gotchas.md` → Remix front entry.
+- Fetch detail (yt-dlp sections, byte caps, YouTube from a datacenter IP → Apify tool): `remix-context` search
+  "higgsfield gotchas remix front entry".
 
 ## Go-ask rules (back chain)
 

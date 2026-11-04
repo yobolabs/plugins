@@ -32,5 +32,5 @@ leaks into the new product).
 - Show each shot's speaker and line next to its storyboard; a picture cannot be judged without the words.
 - Review & approve: ONE "storyboards ready" message with one button, not one message per storyboard. A failed one is
   named, never hidden behind a count.
-- Models for pictures, which fits which job: `yobo:ad-studio-video` `references/higgsfield-and-gotchas.md` and the
+- Models for pictures, which fits which job: `remix-context` search "higgsfield gotchas" and the
   type files. Prompts over 5,000 characters are refused by the many-reference picture model: fall back to each rule's first sentence.

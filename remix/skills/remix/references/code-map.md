@@ -1,6 +1,6 @@
 # Code map (where each step runs)
 
-Back to [SKILL.md](../SKILL.md). Paths relative to each repo root; verify in live code (`git grep`) before relying on a name.
+Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the lab manual are read through the `remix-context` MCP. Paths relative to each repo root; verify in live code (`git grep`) before relying on a name.
 
 | Piece | Where |
 |---|---|
@@ -13,8 +13,8 @@ Back to [SKILL.md](../SKILL.md). Paths relative to each repo root; verify in liv
 | Chat taps and deliveries | yobo `.../remix/tap.ts`, `deliver.ts`, `deliver-export.ts` |
 | Chat transport | msg-api (reply buttons; native prefixes `needs:`/`go:` handed to yobo) |
 | Cadra agent + functions | skill/tools on the remix agent; functions `video_blueprint`, `remix_brief_writer`, `remix_beats_writer`, `remix_scene_idea`, `remix_scene_reword`, `remix_needs_writer`, `remix_storyboard_review` (v7), `remix_set_check` (v2), `remix_video_prompt_writer`, `remix_sheet_*`, `remix_storyboard_*` |
-| Specs, audits, journey plan | `_context/slides/_specs/p131-remix-in-ad-studio/` (`HOW-REMIX-WORKS.md`, `REASSESSMENT-2026-11-03.md`, `review-20261103/JOURNEY-PLAN.md`, `WHY.md`) |
-| Lab (reference implementation) | `yobo:ad-studio-video` `references/remix-lab.md` |
+| Specs, audits, journey plan | `remix-context` MCP, source path `_context/slides/_specs/p131-remix-in-ad-studio/` (`HOW-REMIX-WORKS.md`, `REASSESSMENT-2026-11-03.md`, `review-20261103/JOURNEY-PLAN.md`, `WHY.md`) |
+| Lab (reference implementation) | `remix-context` search "Remix lab — how it works" |
 
 ## Traps
 
