@@ -102,7 +102,7 @@ what the lab and Ad Studio do inside; they are for builders, not steps for a use
 
 ## Rule 0: lab defaults are the product
 
-The remix lab (v8.82) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
+The remix lab (v8.88) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
 sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
 or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
@@ -146,6 +146,26 @@ one turnaround picture (front, three-quarter, side, back) from all the product's
 product image. One photo shows one side; the model invents the rest. Then review → export → post as usual.
 Inputs must come from fast storage (Cadra / S3 presigned): a slow public link failed with "Downloading an input file
 timed out". The full pipeline stays the default; never pick the fast path for the merchant.
+
+- **Swap only when the product is shown as itself** (Sean 2026-11-04: "product swap is not so straightforward for
+  many cases … when the product appears not clearly … on reflections or on pages … use our normal process with
+  storyboards"). After the reading, check every product appearance: the product held, placed or shown as an object =
+  swap is fine; printed on pages, flyers, posters or clothes, shown on a screen, in a reflection, or tiny/blurred =
+  NO swap. Say why in one line and use the storyboard pipeline. Seedance copies printed art from the reference video
+  whatever the prompt says.
+- **Spend the fewest paid seconds** (Sean 2026-11-04: "make sure that we're using the clipped version and we can save
+  money on generation"): send each remade part CLIPPED to the ad area at a standard size; a remade part that ends on a
+  held frame is split into video for the moving seconds + ONE picture for the held tail; make held pictures FIRST and
+  pass the first one to the video parts as a second image for any printed art they share. Show the plan (kept / video
+  seconds / pictures) before anything is paid.
+- **Spell out every text change.** A long edited script in the prompt is not enough: compare it with the original and
+  list each change as `"OLD" becomes "NEW"` in every video and picture prompt (a poster kept "SAVE THE DATE" when the
+  change sat only inside the script).
+- **Product sheet views follow the shape.** A round product (cup, tub, can, bottle, jar) has no front or back: ask for
+  top-down, high three-quarter, side and base, every view different. Boxy products: front, three-quarter, side, back.
+  A faulty sheet is fixed by EDITING the last try with notes ("Image 1 = last try … change only: <notes>"), never a
+  blind redo. Photos go in as flattened JPEGs (long side 1024–2048 px): a tiny transparent PNG made Higgsfield fail
+  "We could not prepare the media for generation".
 
 - **Real size, always** (Sean 2026-11-04: "One of the key things we need to do is make sure the dimensions are
   correct"). Ask the product's real size (e.g. "500 ml can, 17 cm tall") before any paid call; every swap prompt
@@ -239,6 +259,7 @@ product-hero. Merchant's own pick wins.
 | fast cuts of stills held on beats | `references/types/montage.md` |
 | video and stills mixed (keep/mine clips) | `references/types/mixed.md` |
 | a phone / app / website screen shown | `references/types/screens.md` (also applies inside any other type) |
+| the ad beside a static prompt panel (template post) | `references/types/template-reel.md` (also applies inside any other type) |
 
 ## References (load on demand)
 
