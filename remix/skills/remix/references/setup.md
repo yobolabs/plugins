@@ -1,8 +1,8 @@
 # First-time setup (once per machine)
 
-Users of this plugin have no local context files (Sean 2026-11-04). Everything they read comes from the Remix
-knowledge base in Cadra, through its MCP server; everything they learn goes back into it. Run this the first time
-the skill is used on a machine (`claude mcp list` has no `remix-context`).
+Users of this plugin have no local context files and install nothing locally (Sean 2026-11-04). The only setup is
+connecting Claude to the Remix knowledge base (one `claude mcp add`); everything else runs in the lab page. Run this
+the first time the skill is used on a machine (`claude mcp list` has no `remix-context`).
 
 ## 1. The Remix KB MCP (read)
 
@@ -19,20 +19,7 @@ the skill is used on a machine (`claude mcp list` has no `remix-context`).
 
 Never paste the key into a chat, a file in a repo or a learnings note. It lives only in your Claude config.
 
-## 2. The upload key (write learnings)
-
-Learnings go up through the Cadra KB API with a key that belongs to you:
-
-1. Cadra → **Settings → API keys** → create a key in the same org with the permission `knowledgeBase:update`
-   (no other permission is needed). The KB route refuses a key with no owner, so make it yourself.
-2. Put it in your shell profile, not in any repo:
-   ```bash
-   export CADRA_REMIX_KB_KEY='<key>'
-   export CADRA_REMIX_KB='<the Remix context KB uuid, from its Cadra page URL or the Connect endpoint>'
-   ```
-3. How it is used: `references/learnings.md` § 2.
-
-## 3. The team lab
+## 2. The team lab
 
 Nothing to install. https://remix-lab.yobolabs.ai signs you in with Yobo Connect (team email domains only).
 If it says your email is not a team email, sign in with your company account.

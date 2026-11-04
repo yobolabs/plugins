@@ -40,6 +40,19 @@ let's pop open the browser and load the remix site." Do this first, every time:
    browser tab opens the same URL there instead.
 4. Tell the user in one line what to do next on the page (product name, real size, product photo, Make it).
 
+## Who does what — users install nothing (Sean 2026-11-04)
+
+"Users will not be installing local things" · "All the users of this remix lab … will not and should not need to
+install anything locally." A teammate's Claude session is a guide, not the engine:
+
+| The lab page does (in their browser) | The user's Claude session does | The user's session never does |
+|---|---|---|
+| load the ad (link or file), read it, crop, read the panel prompt, plan kept vs remade parts, cut and join (ffmpeg.wasm), every paid call (Cadra team key inside the lab's server), the MP4 download | open the lab (`?ad=`), search the Remix KB, say the next step in one line, look at what the user shares (screenshot, MP4 link), write the learnings note | run ffmpeg or any local tool, read local folders, call the Higgsfield MCP/API, use any Cadra key, vault or proxy, install anything (pip, brew, npm, env vars, keys) |
+
+If a step seems to need something from the right-hand column, the lab is missing a feature: tell the user in one line
+and report it (Sean / the lab owner). Never work around it on the user's machine. The pipeline sections below describe
+what the lab and Ad Studio do inside; they are for builders, not steps for a user's session to run.
+
 ## Rule 0: lab defaults are the product
 
 The remix lab (v8.70) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
@@ -181,7 +194,7 @@ product-hero. Merchant's own pick wins.
 | `references/whatsapp-journey.md` | tap ids, copy rows, per-step buttons, failure lines |
 | `references/code-map.md` | where each step runs in slides / yobo / msg-api / Cadra |
 | `references/learnings.md` | after every finished or failed paid remix: the learnings note + Remix KB upload |
-| `references/setup.md` | first use on a machine: Remix KB MCP + the upload key |
+| `references/setup.md` | first use on a machine: connect the Remix KB MCP (nothing else) |
 | `references/types/*.md` | one per ad type |
 
 Related (team repos only): `yobo:ad-studio-video`, `yobo:whatsapp`, `yobo:social`, `yobo:messaging`. Specs, lab manual,
