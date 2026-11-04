@@ -65,8 +65,14 @@ let's pop open the browser and load the remix site." Do this first, every time:
    6. watch the progress line until the video shows ("Reading the prompt shown beside the ad… N s" has its own
       timer and is skipped after 90 s; a 480p part usually takes 5–8 min at Higgsfield, longer at 720p+ or when it
       is busy; tell the user that expected time once; the run carries on by itself, so never reload mid-run); look at frames across the result (product visible, real size,
-      no panel, no pasted-in look) and tell the user what you see, good and bad;
-   7. press **Download the MP4** (or give the user its link), then write the learnings note (`references/learnings.md`)
+      no panel, no pasted-in look) and tell the user what you see, good and bad. The lab has no frame tool: in
+      `browser_exec`, seek the result `<video>` to 6–8 times spread over its length, `drawImage` each onto one canvas
+      strip, `toDataURL('image/jpeg')`, save and look at it. Check the KEPT parts too: props in the background
+      (flyers, posters, screens, packaging) must not still show the old product, and an ending poster must stay a poster;
+   7. save the MP4. **Download the MP4** is a `blob:` link: a click lands in the driven Chrome's own downloads folder,
+      which your session may not be able to read. Instead, in `browser_exec`: `fetch(<the link's href>)` → `blob()` →
+      `FileReader.readAsDataURL` → return the base64, decode it to a file in your scratchpad, and tell the user the
+      path (a ~6 MB video passes fine). Then write the learnings note (`references/learnings.md`)
       and save it yourself with the lab's **Share learnings** box (title + text → Save).
    browser-use not available in this session → say so in one line (the user enables the browser-use plugin) and
    guide click by click meanwhile.
