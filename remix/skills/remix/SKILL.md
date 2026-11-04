@@ -102,7 +102,7 @@ what the lab and Ad Studio do inside; they are for builders, not steps for a use
 
 ## Rule 0: lab defaults are the product
 
-The remix lab (v8.96) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
+The remix lab (v8.98) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
 sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
 or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
@@ -200,6 +200,12 @@ timed out". The full pipeline stays the default; never pick the fast path for th
   of video … we should never offer this as a suggested ad template"). Before suggesting or running a template for a
   product, check the product belongs in that ad's scenes and actions (category, setting, how the product is used in
   the shot list). A snack tin in a fashion-bag laundry ad came out as nonsense even with size and crop right.
+- **Swap only when ONE thing changes: the product** (Sean 2026-11-04: "it's actually better to run it as a normal
+  storyboard … because we have more than just a product image involved"). If the remix must also change what goes
+  into the product (ingredients, a recipe), its packaging AND its contents, or several different items, use the
+  storyboard pipeline: each changed scene gets its own approved picture. One video call cannot hold several changes:
+  a making-of box ad kept the cookie ingredients when the box was swapped (01a1a5a4), and kept the cookie box when the
+  ingredients were swapped (01a1a5b0).
 - **Swap only within the same product type** (Sean 2026-11-04: "where the product is not the same type, for example
   a beauty product versus food or a pet … it doesn't translate well"). Food/drink, beauty/personal care, pet, fashion,
   tech and home products are used, held and shown differently; a swap keeps the original's actions, so a cross-type
