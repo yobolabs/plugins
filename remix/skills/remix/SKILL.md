@@ -50,18 +50,20 @@ let's pop open the browser and load the remix site." Do this first, every time:
    2. type the product name and its **real size**. **Never ask the user for anything you can look up** (Sean
       2026-11-04: "You are supposed to search for that information. Stop asking me questions"; "It's fine to look
       for local, but it should also look and search online if needed"). Size, in this order: the label in the photo
-      (ml, g, oz) → the user's own files (product notes, photos) → the product's own listing or site (web search) →
-      the Remix KB → a stated estimate from a similar product. Say which source you used in one line and keep going.
+      (ml, g, oz) → the user's own files (product notes, photos) → the Remix KB (product research for a known
+      merchant) → the product's own listing or site (web search) → a stated estimate from a similar product. Say which source you used in one line and keep going.
       The only thing you may ask the user for is the sign-in;
-   3. put the product photo the user gave you into the photo box: read the file the chat attached, then in the page
-      build a `File` from its bytes (base64), wrap it in a `DataTransfer` and dispatch `drop` on the photo box
-      (`#qPick`); the thumbnail and file name appear when it worked;
+   3. put the product photo the user gave you into the photo box. File on disk: CDP `DOM.setFileInputFiles` on
+      `#qPhoto` (simplest). Otherwise build a `File` from its bytes (base64), wrap it in a `DataTransfer` and dispatch
+      `drop` on `#qPick`. The thumbnail and file name appear when it worked;
    4. check fit: does this product belong in this ad's scenes? If not, say so and stop (rule: only templates that fit);
    5. say the plan and cost in one line (from the lab's plan line), then press **Make it**: the user asking for the
       remix is the go, no second confirmation;
-   6. watch the progress line until the video shows; look at frames across the result (product visible, real size,
+   6. watch the progress line until the video shows ("Reading the prompt shown beside the ad… N s" has its own
+      timer and is skipped after 90 s; the run carries on by itself, so never reload mid-run); look at frames across the result (product visible, real size,
       no panel, no pasted-in look) and tell the user what you see, good and bad;
-   7. press **Download the MP4** (or give the user its link), then write the learnings note (`references/learnings.md`).
+   7. press **Download the MP4** (or give the user its link), then write the learnings note (`references/learnings.md`)
+      and save it yourself with the lab's **Share learnings** box (title + text → Save).
    browser-use not available in this session → say so in one line (the user enables the browser-use plugin) and
    guide click by click meanwhile.
 
