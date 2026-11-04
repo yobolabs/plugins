@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Claude Code plugins for YoboLabs apps \u2014 landing pages, campaigns, and more",
-    "version": "1.8.11",
+    "version": "1.8.12",
     "pluginRoot": "./"
   },
   "plugins": [
@@ -240,7 +240,7 @@
       "name": "remix",
       "source": "./remix",
       "description": "Ad Studio Remix: remake an existing video ad for a merchant's business. Fixed pipeline from reading the ad to a posted video, run mostly from WhatsApp. Skill = universal rules + per-type and per-stage references; agent = remix-dev.",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "keywords": [
         "remix",
         "ad-studio",

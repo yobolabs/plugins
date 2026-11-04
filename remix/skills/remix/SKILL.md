@@ -47,7 +47,11 @@ let's pop open the browser and load the remix site." Do this first, every time:
       Ad stuck (no "Loaded", the video never gets a first frame): the tab is in the background and the browser
       paused its media. Turn on focus emulation (CDP `Emulation.setFocusEmulationEnabled`) and reload the video;
       never bring the user's window to the front. Short checks (a few seconds each), never long wait loops;
-   2. type the product name and its **real size** (ask the user once if you do not know the size);
+   2. type the product name and its **real size**. **Never ask the user for anything you can look up** (Sean
+      2026-11-04: "You are supposed to search for that information. Stop asking me questions"). Size, in this
+      order: the label in the photo (ml, g, oz) → the product's own listing or site (web search) → the Remix KB →
+      a stated estimate from a similar product. Say which source you used in one line and keep going. The only
+      thing you may ask the user for is the sign-in;
    3. put the product photo the user gave you into the photo box: read the file the chat attached, then in the page
       build a `File` from its bytes (base64), wrap it in a `DataTransfer` and dispatch `drop` on the photo box
       (`#qPick`); the thumbnail and file name appear when it worked;
