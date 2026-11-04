@@ -38,16 +38,28 @@ let's pop open the browser and load the remix site." Do this first, every time:
    ```
    `?ad=` loads that ad as soon as the page opens (it survives the sign-in). A session that drives its own
    browser tab opens the same URL there instead.
-4. Tell the user in one line what to do next on the page (product name, real size, product photo, Make it).
+4. **Drive the lab yourself** (Sean 2026-11-04: "You're supposed to help me with this. You're supposed to drive
+   it"). Never hand the user a list of clicks. With the browser control this Claude already has (Claude in Chrome or
+   the session's browser tool; never install one), in the tab you opened:
+   1. wait until the ad has loaded ("Loaded: … s"); if the sign-in page shows, ask the user to sign in, then go on;
+   2. type the product name and its **real size** (ask the user once if you do not know the size);
+   3. put the product photo the user gave you into the photo box (a file the chat attached, dropped into the box);
+   4. check fit: does this product belong in this ad's scenes? If not, say so and stop (rule: only templates that fit);
+   5. say the plan and cost in one line (from the lab's plan line), then press **Make it**: the user asking for the
+      remix is the go, no second confirmation;
+   6. watch the progress line until the video shows; look at frames across the result (product visible, real size,
+      no panel, no pasted-in look) and tell the user what you see, good and bad;
+   7. press **Download the MP4** (or give the user its link), then write the learnings note (`references/learnings.md`).
+   No browser control at all → say so in one line and guide click by click as the fallback.
 
 ## Who does what — users install nothing (Sean 2026-11-04)
 
 "Users will not be installing local things" · "All the users of this remix lab … will not and should not need to
-install anything locally." A teammate's Claude session is a guide, not the engine:
+install anything locally." The lab page is the engine; a teammate's Claude session drives the page (step 4 above):
 
-| The lab page does (in their browser) | The user's Claude session does | The user's session never does |
+| The lab page does (in their browser) | The user's Claude session does (by driving the page) | The user's session never does |
 |---|---|---|
-| load the ad (link or file), read it, crop, read the panel prompt, plan kept vs remade parts, cut and join (ffmpeg.wasm), every paid call (Cadra team key inside the lab's server), the MP4 download | open the lab (`?ad=`), search the Remix KB, say the next step in one line, look at what the user shares (screenshot, MP4 link), write the learnings note | run ffmpeg or any local tool, read local folders, call the Higgsfield MCP/API, use any Cadra key, vault or proxy, install anything (pip, brew, npm, env vars, keys) |
+| load the ad (link or file), read it, crop, read the panel prompt, plan kept vs remade parts, cut and join (ffmpeg.wasm), every paid call (Cadra team key inside the lab's server), the MP4 download | open the lab (`?ad=`), search the Remix KB, fill the product, check fit, press Make it, watch, review the frames, download, write the learnings note | run ffmpeg or any local tool, read local folders, call the Higgsfield MCP/API, use any Cadra key, vault or proxy, install anything (pip, brew, npm, env vars, keys) |
 
 If a step seems to need something from the right-hand column, the lab is missing a feature: tell the user in one line
 and report it (Sean / the lab owner). Never work around it on the user's machine. The pipeline sections below describe
