@@ -102,7 +102,7 @@ what the lab and Ad Studio do inside; they are for builders, not steps for a use
 
 ## Rule 0: lab defaults are the product
 
-The remix lab (v8.98) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
+The remix lab (v9.00) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
 sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
 or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
@@ -138,9 +138,12 @@ would basically bypass a whole bunch of things."; YMS-705, p132 §15).** When th
 skipped. A product swap ALWAYS keeps the ad's own scenes without the product and remakes only the product scenes
 (Sean 2026-11-04: "It should be default if you're just swapping the product … There should be no option to turn that
 off"); see "Every finished video becomes a template" below for the parts. Each remade part is a Seedance 2.0
-reference-to-video call with `video_urls=[that part]` + `image_urls=[the product sheet]`, 480p draft, prompt "Recreate
-the reference video exactly … only change: the product becomes the product in the reference image (<name>), label
-exact. No text on screen." + the size rule + the template-prompt rule below. **The product sheet comes first, even on
+reference-to-video call with `video_urls=[that part]` + `image_urls=[the product sheet]`, 480p draft. The prompt
+binds the inputs with @ tags first (`@Video1` = the part: people, place, camera, timing, never looks · `@Image1` =
+<name> as a product sheet: looks and packaging, never framing), then says "Recreate @Video1 exactly … only change: the
+advertised product becomes @Image1 (<name>), label exact. No text on screen." + the size rule + the template-prompt
+rule below. Every mention uses the tag (`content-creation:higgsfield-video` § 2, rule 8); a panel script's own
+`@Image1` then means our product. **The product sheet comes first, even on
 a swap** (Sean 2026-11-04: "create a character sheet even if it's a product swap … the side view is not clear"):
 one turnaround picture (front, three-quarter, side, back) from all the product's photos, shown for OK, then sent as the
 product image. One photo shows one side; the model invents the rest. Then review → export → post as usual.

@@ -54,9 +54,9 @@ Higgsfield's own Seedance layout. Write the blocks in this order, headings in ca
 
 ```
 ACTIVE REFERENCES
-Image 1 — STORYBOARD — SHOT 1: <what it controls>.
-Image 3 — PRODUCT CHARACTER SHEET — <NAME>: <what it controls>. It never sets framing.
-Video 1 — VIDEO REFERENCE — <NAME>: <what it controls>.
+@Image1 — STORYBOARD — SHOT 1: <what it controls>.
+@Image3 — PRODUCT CHARACTER SHEET — <NAME>: <what it controls>. It never sets framing.
+@Video1 — VIDEO REFERENCE — <NAME>: <what it controls>.
 Preserve these exact bindings. References control their assigned roles; framing and camera movement follow the shot instructions.
 
 SCENE CONTEXT
@@ -96,6 +96,12 @@ Rules that came from failed runs — each one cost a paid video:
    distance ("far back, the whole setting in frame").
 6. **Every reference states its job and what it must NOT do** ("defines what it looks like — never framing").
    An unlabelled product picture becomes the opening frame.
+8. **Name every reference with an @ tag, then use only that tag** (Sean 2026-11-04: "the standard prompt protocol is
+   to name the characters or name the items with an @ symbol. And then reference them with that @ name"). Every
+   Higgsfield model, Seedance included: bind each input ONCE in ACTIVE REFERENCES by input order (`@Image1` = first
+   image, `@Image2` = second, `@Video1` = first video) with its name and job, then write `@Image1`, never "the
+   reference image", "the product" or "Image 1", in every later line (action, camera, rules). Shared prompts from
+   template reels already use this form (`@Image1 visible in the breast pocket`).
 7. **No logo added in the video, never strip the product's own print.** End cards and logos are added in
    post-production (below), so no logo picture is sent as a video reference. The product's printed design (a can's
    label, a box's artwork) IS the product: "its own labels, logo and text stay exactly as in its pictures". Forbid
