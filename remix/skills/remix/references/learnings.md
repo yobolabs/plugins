@@ -8,8 +8,8 @@ chat is a lesson the next run pays for again (Sean 2026-11-04).
 
 Name: `<YYYY-MM-DD>-<ad-type>-<4-word-topic>.md`, unique per run (never reuse a name; never edit an earlier note).
 Its KB path is always `slides/_specs/p131-remix-in-ad-studio/learnings/<name>` so all learnings sit together.
-Write it in a scratch folder on your machine (users of this plugin have no local context files); it only has to
-exist until the upload in § 2.
+Write it as text in the chat (users of this plugin have no local context files and install nothing); § 2 says how
+it gets into the KB.
 
 ```markdown
 ---
@@ -38,19 +38,11 @@ Rules for the note:
 
 ## 2. Upload it to the Remix KB
 
-**Teammates (the normal case)**: one call with your own upload key (setup: `references/setup.md` § 2).
-
-```bash
-F=<path to the note>; N=$(basename "$F")
-curl -sS -X POST "https://app.cadraos.com/api/v1/knowledge-bases/$CADRA_REMIX_KB/documents" \
-  -H "Authorization: Bearer $CADRA_REMIX_KB_KEY" \
-  -F "file=@$F;type=text/markdown" \
-  -F "source_path=slides/_specs/p131-remix-in-ad-studio/learnings/$N" -o /tmp/kb-upload.json -w '%{http_code}\n'
-```
-
-- `201`/`200` = uploaded (the document indexes in a minute). `401/403` = key missing, expired or without
-  `knowledgeBase:update`; `429` = the shared hourly upload budget, wait for `Retry-After`. Never print the key.
-- Check it landed: `remix-context` `search` for the note's title. Report `kb: uploaded <name>` in your final message.
+**Teammates (the normal case) — nothing to install:** write the note as text in the chat, then the user saves it
+with the lab's **Share learnings** box under the result (the lab's server uploads it to the Remix KB under
+`slides/_specs/p131-remix-in-ad-studio/learnings/<name>`). Until that box ships (YMS-714 L6), give the user the note
+and ask them to send it to Sean; never upload it any other way and never ask the user for a key.
+Check it landed: `remix-context` `search` for the note's title.
 
 **Sean's machines** (they hold the context repo): write the note into
 `_context/slides/_specs/p131-remix-in-ad-studio/learnings/` and run the chief-of-staff `kb-sync.py run --kb remix
