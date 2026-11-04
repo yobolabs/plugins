@@ -54,3 +54,27 @@ Close these before claiming the gate works. After the gate, test the hypothesis 
 ## After video: QC of every part
 
 Second by second, never one frame per scene: 1 fps strip, source over result; against the brief row by row; cut count and times re-measured on the export (more than 1 frame off = fail); sound present; no burned text/labels; no slop (orientation, counts, hands, floating, screen direction). 1-2 bad shots: splice with the fix clip's OWN audio; most bad: remake the part.
+
+## The QA reviewer (one AI reviewer next to the original ad)
+
+One Cadra AI function (`remix_qa_review`) checks the storyboards, each made part and the final joined video **next to
+the original ad's own frames**, so a fault the original also shows passes. Switch: yobo config
+`ads_gen.remix_qa_function_key` (`''` = off, the old checks run). Order of fixes: free first (re-trim at the join,
+redraw a storyboard), then ONE paid re-render of a part per approved go (our cost; the cap has a `LIMITS.md` row),
+then hold the video and ask the merchant ONE question with [Remake it] / [Keep it]. A fixed video reaches the chat with
+exactly one plain fix line, never a list of checks.
+
+Rules that cost a prod incident to learn:
+
+- **The QA record lives under `result.qaReview`, never `result.review`.** slides reads every remix job result with
+  `review: string[]` and drops a result that does not parse; an object there means the part or joined video never
+  reaches the remix. `review` stays the plain check lines.
+- **A fix job yobo starts on its own must name what it replaces** (`result.qaReview.fixOf` = the replaced job). slides
+  never recorded it as started, so without that it is stored stale, slides reports `applied:false`, and the chat gets
+  nothing. slides adopts a done part that names the part's current job (same run inputHash); yobo also delivers a done
+  QA fix job when slides says `applied:false` (ask → the one question; pass → ready + the one fix line; the replaced
+  video is never sent).
+- **A replay proof must include the consumer's read.** Replaying a gate inside the worker proves the reviewer; it does
+  not prove slides parses and applies the result. Before calling a QA change proven, run the produced result through
+  slides' own `RemixJobResultSchema` and `applyRemixJob`, or watch one real run reach the chat.
+- **Turn the switch off first when the chat goes quiet.** `''` restores the old checks at once; fix, prove, then on again.
