@@ -48,10 +48,11 @@ let's pop open the browser and load the remix site." Do this first, every time:
       paused its media. Turn on focus emulation (CDP `Emulation.setFocusEmulationEnabled`) and reload the video;
       never bring the user's window to the front. Short checks (a few seconds each), never long wait loops;
    2. type the product name and its **real size**. **Never ask the user for anything you can look up** (Sean
-      2026-11-04: "You are supposed to search for that information. Stop asking me questions"). Size, in this
-      order: the label in the photo (ml, g, oz) → the product's own listing or site (web search) → the Remix KB →
-      a stated estimate from a similar product. Say which source you used in one line and keep going. The only
-      thing you may ask the user for is the sign-in;
+      2026-11-04: "You are supposed to search for that information. Stop asking me questions"; "It's fine to look
+      for local, but it should also look and search online if needed"). Size, in this order: the label in the photo
+      (ml, g, oz) → the user's own files (product notes, photos) → the product's own listing or site (web search) →
+      the Remix KB → a stated estimate from a similar product. Say which source you used in one line and keep going.
+      The only thing you may ask the user for is the sign-in;
    3. put the product photo the user gave you into the photo box: read the file the chat attached, then in the page
       build a `File` from its bytes (base64), wrap it in a `DataTransfer` and dispatch `drop` on the photo box
       (`#qPick`); the thumbnail and file name appear when it worked;
@@ -71,7 +72,7 @@ install anything locally." The lab page is the engine; a teammate's Claude sessi
 
 | The lab page does (in their browser) | The user's Claude session does (by driving the page) | The user's session never does |
 |---|---|---|
-| load the ad (link or file), read it, crop, read the panel prompt, plan kept vs remade parts, cut and join (ffmpeg.wasm), every paid call (Cadra team key inside the lab's server), the MP4 download | open the lab (`?ad=`), search the Remix KB, fill the product, check fit, press Make it, watch, review the frames, download, write the learnings note | run ffmpeg or any local tool, read local folders, call the Higgsfield MCP/API, use any Cadra key, vault or proxy, install anything (pip, brew, npm, env vars, keys) |
+| load the ad (link or file), read it, crop, read the panel prompt, plan kept vs remade parts, cut and join (ffmpeg.wasm), every paid call (Cadra team key inside the lab's server), the MP4 download | open the lab (`?ad=`), search the Remix KB, fill the product, check fit, press Make it, watch, review the frames, download, write the learnings note | run ffmpeg or any local tool for the remix itself, call the Higgsfield MCP/API, use any Cadra key, vault or proxy, install anything (pip, brew, npm, env vars, keys) |
 
 If a step seems to need something from the right-hand column, the lab is missing a feature: tell the user in one line
 and report it (Sean / the lab owner). Never work around it on the user's machine. The pipeline sections below describe
