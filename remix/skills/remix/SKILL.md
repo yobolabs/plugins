@@ -26,8 +26,8 @@ from memory.
 Sean 2026-11-04: "When someone invokes the remix skill and passes in the URL, even if they don't pass the URL,
 let's pop open the browser and load the remix site." Do this first, every time:
 
-1. **First time on this machine?** `claude mcp list | grep -q remix-context` fails → run the setup in
-   `references/setup.md` (Remix KB MCP; users have no local context files, the KB is their only source).
+1. **First time?** No Remix knowledge base tools in this session (no `search` on the Remix KB) → walk the user
+   through `references/setup.md` (Claude app → Settings → Connectors) (Remix KB MCP; users have no local context files, the KB is their only source).
 2. **Search the Remix KB** for this ad type and any past run of the same ad (`remix-context` `search`).
 3. **Open the team lab** in the user's own browser (they sign in with Yobo Connect; never ask for a key):
    ```bash
