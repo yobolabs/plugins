@@ -24,3 +24,15 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 - Model token caps: a thinking model can eat the whole output budget (empty brief); keep writers on a bounded, tested model; re-run the eval set on any model/prompt change.
 - Silent errors: log `finishReason` errors; "ready: N" must name failures.
 - Worked from the lab: lab frames beats from soft cuts and picks a highlight (★) from motion; the product stores neither soft-cut spans nor motion, and one frame per scene feeds the storyboard. Check `HOW-REMIX-WORKS.md` §C before touching keyframes.
+- Error codes die at the tRPC hop: slides' internal remix tool route turns every `TRPCError` except CONFLICT into
+  `invalid_request` (BAD_GATEWAY → 502). A refusal the merchant can act on (e.g. `too_large`) must ride as a typed
+  `cause` on the TRPCError and be translated into a `RemixToolError` (own code + `outcome`) in `remix-tools.ts`.
+  A bare 502 `invalid_request` reads as a platform fault and the agent falls back to payment options.
+- Every list that offers a template to REMIX applies the reference copy cap (`ads_gen.video_ref_max_bytes`, read from
+  yobo `/enabled`): fit candidates, stored picks and the library fallback, in SQL (`remixSizeSql`) so paging never
+  stops at an all-oversized page. The start-time copy check stays; unknown size is offered and re-checked at copy.
+- The chat picks message closes the agent's turn (picks intro `closesTurn: true`), so the agent's own reply after it is
+  dropped. Any reason line ("that ad is too big, pick another") is posted by the tool BEFORE the cards.
+- Develop carries held remix work that prod `main` lacks (e.g. the verified-entry start path). A fix in
+  `remix-tools.ts` / `router.ts` / `deconstruct-source.ts` may not cherry-pick onto main: give the release captain a
+  main-based port branch (off `origin/main`, tsc = base, same tests) alongside the develop branch.
