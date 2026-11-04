@@ -40,9 +40,12 @@ let's pop open the browser and load the remix site." Do this first, every time:
    browser tab opens the same URL there instead.
 4. **Drive the lab yourself** (Sean 2026-11-04: "You're supposed to help me with this. You're supposed to drive
    it"). Never hand the user a list of clicks. **Browser tool = browser-use** (Sean 2026-11-04: "It should use
-   browser use, not claude-in-Chrome"): the browser-use plugin's MCP tools (`browser_exec`, `browser_screenshot`),
-   which drive the user's own Chrome where they are signed in. Never Claude in Chrome, never a browser-use CLI, never
-   install anything, never ask the user which tool. Open the lab with browser-use `new_tab(<?ad= URL>)`, then:
+   browser use, not claude-in-Chrome"): the browser-use plugin's MCP tools (`browser_exec`, `browser_screenshot`).
+   They drive whichever Chrome browser-use is attached to: often a separate agent Chrome window, not the one the
+   user is looking at. So **in your first line say which window and tab** (the tab title starts with "Remix lab"),
+   and bring that tab to the front (`activate_tab`) when the run starts so the user can watch; that is the one
+   time to activate. Never Claude in Chrome, never a browser-use CLI, never install anything, never ask the user
+   which tool. Open the lab with browser-use `new_tab(<?ad= URL>)`, then:
    1. wait until the ad has loaded ("Loaded: … s"); if the sign-in page shows, ask the user to sign in, then go on.
       Ad stuck (no "Loaded", the video never gets a first frame): the tab is in the background and the browser
       paused its media. Turn on focus emulation (CDP `Emulation.setFocusEmulationEnabled`) and reload the video;
@@ -60,7 +63,8 @@ let's pop open the browser and load the remix site." Do this first, every time:
    5. say the plan and cost in one line (from the lab's plan line), then press **Make it**: the user asking for the
       remix is the go, no second confirmation;
    6. watch the progress line until the video shows ("Reading the prompt shown beside the ad… N s" has its own
-      timer and is skipped after 90 s; the run carries on by itself, so never reload mid-run); look at frames across the result (product visible, real size,
+      timer and is skipped after 90 s; a 480p part usually takes 5–8 min at Higgsfield, longer at 720p+ or when it
+      is busy; tell the user that expected time once; the run carries on by itself, so never reload mid-run); look at frames across the result (product visible, real size,
       no panel, no pasted-in look) and tell the user what you see, good and bad;
    7. press **Download the MP4** (or give the user its link), then write the learnings note (`references/learnings.md`)
       and save it yourself with the lab's **Share learnings** box (title + text → Save).
