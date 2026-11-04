@@ -102,7 +102,7 @@ what the lab and Ad Studio do inside; they are for builders, not steps for a use
 
 ## Rule 0: lab defaults are the product
 
-The remix lab (v8.89) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
+The remix lab (v8.96) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
 sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
 or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
@@ -158,6 +158,17 @@ timed out". The full pipeline stays the default; never pick the fast path for th
   held frame is split into video for the moving seconds + ONE picture for the held tail; make held pictures FIRST and
   pass the first one to the video parts as a second image for any printed art they share. Show the plan (kept / video
   seconds / pictures) before anything is paid.
+- **Text is removed from the source by default** (Sean 2026-11-04: "it ended up showing some weird text at the top. We
+  should remove text by default"). Overlay text in the reference video (captions, view counts, handles, watermarks,
+  QR codes) is found and blurred out BEFORE any model call; telling the model "no text" is not enough (a "1.1M Views"
+  overlay came back as garbled letters). Text comes back only when the prompt asks for it (e.g. a flyer's words); real
+  logos and captions are added in post, never drawn by the model (it wrote "CHICKENN" on a box).
+- **A making-of ad needs a real recipe** (Sean 2026-11-04: "I don't think that's how you make a chicken with just an
+  egg. There needs to be a chicken added"). When the ad shows ingredients turning into the product, the swapped
+  ingredients must be a believable recipe for the merchant's product, with its MAIN raw ingredient in the most visible
+  slot (the biggest pile, the first pour). Write this into the prompt; a 1:1 ingredient swap is not enough.
+- **Use one ad out of a compilation.** Cut the source to the one ad first (the lab's "Use only from … to …"), never
+  run a compilation as a whole: it bills every product scene of every ad in it.
 - **Spell out every text change.** A long edited script in the prompt is not enough: compare it with the original and
   list each change as `"OLD" becomes "NEW"` in every video and picture prompt (a poster kept "SAVE THE DATE" when the
   change sat only inside the script).
