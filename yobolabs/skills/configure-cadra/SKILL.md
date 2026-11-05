@@ -47,10 +47,8 @@ the deploy-pointer (`action: rollback`) needs no id. A daily audit matches every
 gate-log row, so writes from scripts or the app UI are caught too. Standard the review checks:
 `cadra:agents` -> `references/agent-structure-best-practices.md`.
 
-**Agents are release-pinned, dev agents too.** Editing a harness, skill, role or root changes HEAD only;
-runs keep reading the pinned release until you cut + promote. A proof counts only if its run logs the
-changed version (`harness <uuid> vN` log line, `agent_executions.agent_version_id`). The cut pattern
-(hold every other pending pin, diff must show only your change) and its traps: `references/releases.md`.
+Pinned-release cut, diff, deploy-pointer, spent-id handling, the ~5 min config cache and how to prove a turn: `references/prod-releases.md`. Spent id: ask the lead for a new one, never `AGENT_GATE_OVERRIDE`.
+Dev agents are release-pinned too: an edit changes HEAD only; a proof counts only if its run logs the changed version (`harness <uuid> vN`, `agent_executions.agent_version_id`).
 
 ## Setup
 
@@ -429,6 +427,7 @@ meaningless until descriptions pass (a role with no when-to-use never overlaps).
 - `references/agent-authoring.md` — writing a single agent that actually works.
 - `references/tool-authoring.md` — API/MCP/WEBHOOK tool definitions.
 - `references/roles.md` — roles, product roles, golden locks, spawning.
+- `references/prod-releases.md` — **prod agent changes**: pinned-release cut/diff/deploy-pointer, gate-id traps, config cache, proof turns.
 - `references/recipes.md` — git-backed definitions, promoting local → dev, Codex usage.
 - `scripts/audit.mjs` — the auditor (`--help` for checks and flags).
 - Live OpenAPI: `GET {CADRA_API_URL}/api/v1/docs`.
