@@ -279,6 +279,12 @@ pipeline (swap fit, product fit, drift, source length, QA, credits, needs) and f
 A new check, gate or refusal is not done until it has its fix step and its question. Reviewers block a gate that
 only stops.
 
+**Every choice or stop has a forward option** (Sean 2026-11-05, agent standard R6): the merchant can always move the
+work on without fixing anything themselves: [Continue] / [Keep it] / [Use your best pick], with the change option
+BESIDE it, never instead. A message whose only button is [Change more], [Try again] or "tell me what to change" is a
+bug. When the run truly cannot continue, the forward option is another way: [Pick a ready ad], [Try another video], a
+simpler version, or "the team is on it". Passes: [Keep original people] [Allow new person]; [Keep it] [Remake it].
+
 **Where it lives in Cadra (Sean 2026-11-05: "this is where we set the intent … there must be a way for it to solve and
 troubleshoot problems … the tools must support this too … the tools need to be accommodating").** Three parts, per
 the Cadra standard (root prompt = routing, voice, hard rules only; feature behaviour in the role's skill + reference
