@@ -260,6 +260,8 @@ gate-20261105-12.)
   wardrobe and prop details. Record them as info on the run; never stop on them.
 - **Still block (harms the merchant):** the wrong product or a mismatched product, another brand's logo or text,
   off-brand or unsafe content, broken quality (garbled faces or text, a person who changes look inside OUR ad).
+  "Block" means: not shown to the merchant, fixed once automatically (regenerate that part with the cast reference),
+  then ask with buttons [Use it anyway] / [Try again]. Never a dead stop (R6).
 - A product swap and a template still keep the ad's own clips by design (merchant's choice); the principle governs
   what the checks treat as a failure, not which parts are kept.
 - Changing a check's threshold is a behaviour change. If a counted cap changes, it still needs its `LIMITS.md` row.
