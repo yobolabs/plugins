@@ -59,3 +59,21 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   on its output looks clean. Run with `NODE_OPTIONS=--max-old-space-size=12288` and count `error TS` against the base.
   The mini has no ffmpeg: `deconstruct.test.ts` fails there with `spawn ffmpeg ENOENT`; `remix-chat-ux.test.ts` needs
   `DATABASE_URL` set to any value.
+- **The storyboard job uuid is `scene.storyboard.ref.jobUuid`.** The storyboard object is a strict schema
+  (`ref`, `review`, `verdict`, `guide`, `redrawFailed`); `scene.storyboard.jobUuid` does not exist and reads as
+  `undefined` with no error. Two R10 fixes (the [Use it anyway] re-send and the web-approval go ask) shipped green and
+  did nothing live, because their test fixtures used the same invented shape. Build fixtures from the schema
+  (`RemixProjectSchema.parse`) or a real stored row, never by hand.
+- **A port rebase can drop commits main no longer has.** `git rebase origin/main` skips a commit as "already applied"
+  when main has it by ancestry, even after a later hold-out commit on main reverted its content. Check content
+  (`git show origin/main:<file> | grep <new symbol>`), not ancestry; cherry-pick again onto a fresh branch. The branch
+  guard blocks a force-push of any branch whose name contains `main`: push the re-made port under a new name.
+- **A yobo tsc count is only real next to its base count.** Even with the memory flag, a run can fail fast and print
+  `0` (one base run took half the time of a real one). Save the output to a file, check its tail and line count, and
+  compare `grep -c "error TS"` on the base commit with the branch (develop carries ~190 known errors).
+- `vercel logs` filters to the CURRENT git branch by default: add `--no-branch` (and `--environment production`, or
+  the dev domain) or a prod log read shows nothing.
+- **Proving on the prod test org (fictional sender number):** every outbound to that number fails delivery
+  (WhatsApp 131026), and a tap on an ask whose `remix_deliveries` row is `failed` is refused or re-posted. Before each
+  test tap, flip that one row to `delivered` with an undo line logged first (the test org's undo file in the spec's
+  `build/`), then inject the tap. Never on a real merchant's chat.
