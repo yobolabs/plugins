@@ -251,6 +251,15 @@ Draft = 480p video, 1k pictures, until sign-off. Regenerate only what changed; r
 output the moment it lands. Text, captions, prices and logos are added in post, never drawn by a model; the product's
 own printed label stays.
 
+## Core principle: build every video from a template (Sean 2026-11-05, architect gate-20261105-22)
+
+Sean: "Templates give us a step-by-step way to build a video. We just have to build from a template."
+Every way in (library template, the agent's script, a source ad) first becomes a TEMPLATE: each scene's job (hook,
+product hero, proof, CTA), timing, roles, product scenes, reusable clips. The template is the plan on the one yobo run
+record, versioned per edit; every step reads and writes it, and no step keeps its own copy. Then one pipeline builds
+from it. Another merchant's offers, prices, brand and product names in a stored template become placeholders on load.
+Design: `REVIEW.md` §13.28.
+
 ## Core principle: a source ad is optional; the storyboard is the contract (Sean 2026-11-05)
 
 Sean: "I don't think we need an existing ad. We can create them from scratch as long as we can come up with a script
