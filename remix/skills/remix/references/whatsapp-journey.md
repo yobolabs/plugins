@@ -21,10 +21,12 @@ string (an object whose keys contain ':' broke every "Use these").
 
 A go binds to an open ask, never to a stray "yes". A tap with no handler falls to the agent: that is a bug.
 
-**msg-api forwards only ids matching `^(needs|go):[a-z]+$`** (`msg-api` `remix-tap-forwarder.ts` `REMIX_TAP_ID`): no
-`_`, `:`, digits or uppercase after the prefix. Any other id silently goes to the agent. Name new buttons `go:<letters>`,
-or change the regex in msg-api first. It also forwards a WhatsApp photo with no tap id (`nativeReplyId: null`,
-`photo: { attachmentUuid, mimeType }`, caption in `text`) — see *Needs list and chat photos*.
+**msg-api forwards only ids matching `^(needs|go):[a-z][a-z_]*(:[A-Za-z0-9_-]{16})?$`** (`msg-api`
+`remix-tap-forwarder.ts` `REMIX_TAP_ID`, dev + prod since 2026-11): lowercase + `_` after the prefix, plus an optional
+16-char action token. Any other id silently goes to the agent. A new id must also be added to yobo
+`REMIX_TOKEN_ACTIONS` (`extensions/remix/events/action-tokens.ts`), or it goes out bare and a yobo-owned tap answers
+"That button is old". (Corrected: this line used to say `[a-z]+` only.) It also forwards a WhatsApp photo with no tap id
+(`nativeReplyId: null`, `photo: { attachmentUuid, mimeType }`, caption in `text`) — see *Needs list and chat photos*.
 
 ## Steps as buttons
 
@@ -104,6 +106,42 @@ answers; the matcher never swaps products.
   answered" and stays silent; refuse with 412 (or 400) and the tap posts its failure line.
 - **Several failed storyboards** redo on one ask (`make:redraw` + every failed scene). A failed video redoes one at a
   time (`make:remake` + that part); more than one failed video keeps a typed note.
+
+## Forward option on every stop (R6) — how it is built
+
+The rule is in SKILL.md ("Every choice or stop has a forward option"). How yobo enforces it:
+
+- **ONE table.** `extensions/remix/advance/forward-options.ts` `STOP_FORWARD` maps every stop kind to its forward
+  button; every sender builds its buttons with `withForward(kind, changeButtons, titles)`. The contract test
+  (`advance/__tests__/forward-options.test.ts`) runs over every kind (≥1 forward id, ≤3 buttons, ids tokenized +
+  msg-api-valid) and scans the senders: a file that builds `CHANGE_MORE` / `TRY_AGAIN_BUTTONS` without `withForward`
+  fails the build. A new stop = a new `STOP_FORWARD` row first.
+- **Never put the forward button first** when other buttons exist: the ask row's `action` is derived from the FIRST
+  button (`remixAskActionOf`), and handlers route on that action.
+- **Forward ids:** `needs:readyad` [Pick a ready ad] (lists through the one recommender, any run state),
+  `needs:another_video` [Try another video] (any ask), `go:continue` [Looks good] / [Continue] / [Keep it] (ask items
+  `{resume: <askId> | 'newest'}` → that ask's buttons again as a NEW ask row, else ONE line), `go:keep_draft`.
+  `go:yes` never counts as forward on its own (it is [Try again] as often as [Yes, go ahead]).
+- **The advance loop answers a forward press FIRST,** whatever the ask's action: an action-specific handler drops
+  unknown buttons (a `front_retry` ask returned `front_idle` = silence).
+- **A forward press is "done" only on a post msg-api took** (`sent` / `duplicate`); any other status posts the ONE
+  line and closes the unposted row — never silence.
+- Titles from copy rows in the chat's language (`ads_gen.copy.remix.<copyKey>.<lang>`), ≤20 chars, English fallback.
+
+## Storyboard stop (one open stop per remix)
+
+Both owners' storyboard stops reach the chat through yobo `deliver.ts` `storyboard_check_failed` (slides sends key +
+English text only), so the rules live there, once:
+
+- **One open stop per remix, claimed before the post** under a per-remix `pg_advisory_xact_lock` and ordered by the
+  JOB's `created_at` (never by delivery order): a newer stop replaces the older ("Update: …", its ask closed); an older
+  stop arriving after a newer one posts nothing; a redelivery repeats its text with no second alert.
+- **Promise only what is true:** "The team has been told." only when the team alert really went out for this remix
+  (once per remix); never "I'm looking into it and will message you here" (nobody owns it).
+- **No internal words** (cast sheet, set picture, set check, beats) — replaced with the merchant's words, the article
+  consumed with the term. The added prefix / told line come from copy rows in the chat's language.
+- A provider render failure is not a merchant stop (it retries) — that is decided at the source (slides set gate),
+  because yobo receives no typed reason.
 
 ## Owner files and copy
 
