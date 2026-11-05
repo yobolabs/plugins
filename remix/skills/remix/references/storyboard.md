@@ -25,7 +25,18 @@ leaks into the new product).
 - No text, captions, logos or numbers drawn (panel labels only on keyframe-sequence frame sheets: `types/product-hero.md`).
 - A scene is one continuous shot between hard cuts; a short scene keeps its own timing (a model may render longer than
   the window; the player stops at the window).
-- Redo with notes = edit the last try (Image 1 = last try), change only the note. A fix typed in chat re-draws only
+- **The global prompt reaches every storyboard picture.** It holds brand, product, cast and look only; scene beats go
+  in each scene's own words. A whole-ad scene plan in the global prompt drew every beat into every scene.
+- **The product image goes only to scenes that show the product** (from the plan). Every storyboard and video prompt
+  carries the real-size line. Sent to every scene, the product was pasted huge into the room, toast and presenter
+  shots, and a "replaces the ad's main subject" line made the presenter hold it.
+- **End cards and text masks never reach the picture model.** Drop the source's logo/end-card frames from the panels at
+  read time (they came back as a model-drawn brand name), and inpaint caption masks (white boxes were copied as boxes).
+- **Re-imagined scene, different business:** pick "a new set" and use the per-scene purpose check's new idea before
+  any picture; line drawings of the old place (landmark, stands, logo card, captions) are framing only.
+- Redo with notes = edit the last try (Image 1 = last try), change only the note. Removal notes ("remove the plate in
+  the foreground") stick; replace notes ("make view 2 a plate") often keep the old content: after one failed edit,
+  drop it and draw fresh. A fix typed in chat re-draws only
   that scene, after asking (paid).
 - The merchant's instruction goes first in the swap prompt and wins over every default.
 - Merchant photo marked "use my image" is used as is for that scene, not redrawn.
