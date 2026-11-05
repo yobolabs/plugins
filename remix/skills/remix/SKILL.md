@@ -5,7 +5,8 @@ description: "Use when working on Ad Studio Remix (spec p131): remaking an exist
 
 # Remix (p131)
 
-Remix = take an existing video ad and make it for THIS merchant: new cast, set, product, same structure and timing.
+Remix = take an existing video ad and make something NEW for THIS merchant. The original ad is the quality
+benchmark, not the blueprint (see Core principle: benchmark, not blueprint).
 It is the main entry of Ad Studio video. General Ad Studio video, Higgsfield routes and the editor stay in
 `yobo:ad-studio-video`; everything about the remix pipeline lives here.
 
@@ -245,6 +246,23 @@ fetch fix by running the shipped function inside the prod worker container, neve
 Draft = 480p video, 1k pictures, until sign-off. Regenerate only what changed; reuse paid output; save every paid
 output the moment it lands. Text, captions, prices and logos are added in post, never drawn by a model; the product's
 own printed label stays.
+
+## Core principle: benchmark, not blueprint (Sean 2026-11-05)
+
+Sean: "Remix = take something that exists and make something NEW. It does not mean replicate scene by scene. The
+original ad is a BENCHMARK for quality, not the exact BLUEPRINT. Lower our thresholds." (agent-architect
+gate-20261105-12.)
+
+- **Every check that compares with the source ad judges the ad's job, not a match.** Drift, storyboard review, the QA
+  reviewer and set/scene checks ask: does the hook still hook, is the product the hero, does the call to action land,
+  are pacing, energy and quality at least as good as the original.
+- **Not failures:** different people, a different set, a different scene count or order, merged or dropped scenes,
+  wardrobe and prop details. Record them as info on the run; never stop on them.
+- **Still block (harms the merchant):** the wrong product or a mismatched product, another brand's logo or text,
+  off-brand or unsafe content, broken quality (garbled faces or text, a person who changes look inside OUR ad).
+- A product swap and a template still keep the ad's own clips by design (merchant's choice); the principle governs
+  what the checks treat as a failure, not which parts are kept.
+- Changing a check's threshold is a behaviour change. If a counted cap changes, it still needs its `LIMITS.md` row.
 
 ## Core principle: the agent is a problem solver (Sean 2026-11-05)
 
