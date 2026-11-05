@@ -10,12 +10,12 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
 
 - **Audio = the ad's own music by default when it has no speech**, ONE track laid ONCE over the whole joined video, cuts
   on its beats (Sean 2026-11-03: "Why not just use the same audio?"). Chat line: "Using the original ad's sound." No extra tap.
-- **A source track with speech (voiceover, spoken lines) is never laid as-is** (Sean 2026-11-05: "The audio is strange.
-  Doesn't really match the scene": a drink ad's voiceover played over gelato shots). Default then = the best mood-matched
-  track from our own music library; no paid music vendor. The joined-video message carries [Make it final] [Change a part]
-  [Change music] (Meta max 3 buttons); [Change music] lists up to 9 library tracks, plus [Keep the ad's sound] only when
-  it has no speech. A pick re-joins by itself. Internal keys (`adMusic`) never reach text the agent can relay.
-  Licensed-track plumbing is later work.
+- **A source track with speech (voiceover, spoken lines) is a known fault, default not yet decided** (Sean 2026-11-05:
+  "The audio is strange. Doesn't really match the scene": a drink ad's voiceover played over gelato shots). There is NO
+  own music library (yobo `music.ts` searches only the paid Epidemic vendor, unconfigured), and a KB rule says never swap
+  in crossfades or a library track. Until Sean picks the default (voice removed from the ad's track / generated
+  instrumental / licensed library), the join keeps the ad's track; `remix_sources.has_voice` marks the case. Internal keys
+  (`adMusic`) never reach text the agent can relay. A picked track must reach the join.
 - Parts WITHOUT voices are encoded with no audio (`-an`); a silent AAC per part pads every join and pushed later cuts 33-100 ms late.
 - Voiced parts keep the video model's own audio; the ad's track is never laid over them; their cuts follow the speech.
 - **Cuts land ON the beat** (`cuts[].on_beat`), not on the source's cut frames (those lag 100-250 ms). Proof = a table
