@@ -51,6 +51,8 @@ let's pop open the browser and load the remix site." Do this first, every time:
       Ad stuck (no "Loaded", the video never gets a first frame): the tab is in the background and the browser
       paused its media. Turn on focus emulation (CDP `Emulation.setFocusEmulationEnabled`) and reload the video;
       never bring the user's window to the front. Short checks (a few seconds each), never long wait loops;
+      A CDN link that sends no CORS header (e.g. an Ad Library `fbcdn` mp4) fails "Couldn't read the video's frames":
+      save the video file, reload the lab WITHOUT `?ad=` and upload the file (the old link stays bound otherwise).
    2. type the product name and its **real size**. **Never ask the user for anything you can look up** (Sean
       2026-11-04: "You are supposed to search for that information. Stop asking me questions"; "It's fine to look
       for local, but it should also look and search online if needed"). Size, in this order: the label in the photo
@@ -180,7 +182,9 @@ timed out". The full pipeline stays the default; never pick the fast path for th
   top-down, high three-quarter, side and base, every view different. Boxy products: front, three-quarter, side, back.
   A faulty sheet is fixed by EDITING the last try with notes ("Image 1 = last try … change only: <notes>"), never a
   blind redo. Photos go in as flattened JPEGs (long side 1024–2048 px): a tiny transparent PNG made Higgsfield fail
-  "We could not prepare the media for generation".
+  "We could not prepare the media for generation". A plated dish has no packaging: name it as plated food ("<dish> on a
+  round white plate, food on a plate, no box") and ask for plate views; a menu-item name alone drew a branded takeout
+  box. A defect that survives one edit → "Don't use it", fix the name or notes, fresh draw (an edit keeps its input).
 
 - **Real size, always** (Sean 2026-11-04: "One of the key things we need to do is make sure the dimensions are
   correct"). Ask the product's real size (e.g. "500 ml can, 17 cm tall") before any paid call; every swap prompt
