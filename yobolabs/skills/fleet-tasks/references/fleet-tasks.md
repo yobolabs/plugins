@@ -480,6 +480,29 @@ run moves `failed → viewed`; `notified_at` is set to the CTA attempt time.
 per-org. ⚠️ Any agent tools save deletes and recreates all links — re-verify after any agent
 edit.
 
+**A brief from another day is never served as today's (YMS-745, prod 2026-11-05).** The no-id
+lookup (`findRunWithoutId` step A) takes the newest `notified` morning-brief run of ANY age. An
+untapped, never-expired run stays `notified` for weeks, and was served as "today's".
+- The result carries `briefDate` (`run_local_date`) and `isToday`, the merchant-local date in
+  the org's timezone (`brief-freshness.ts`).
+- **Not today and no run id:** yobo posts the notice itself, closes the turn, and pulls nothing;
+  the run stays `notified`. The notice is "Your latest brief is from <date>; none for today yet."
+  plus either "Next one: <slot>" or "No brief is scheduled…". The slot comes from the task
+  schedule plus `subscription.send_time_hour`. One [See it anyway] button carries the run's own
+  CTA payload. The result is `deliverable: 'notice'`, `nextAction: 'see_latest_brief'`.
+- There is no "make a new brief" offer, because no on-demand brief path exists.
+- **Tapped by id:** the old brief is served with "Brief date: …" as its first line, without inline
+  posts or tip (both say "today's"). The run becomes `viewed` only then.
+- **Copy:** `system_config` `agent_task.brief_stale_copy.<en|id>`
+  (`{text,next,noSchedule,button}`, `{date}` / `{next}` tokens, button ≤ 20 characters). A missing
+  row means no post; the structured fields are still returned and the miss is logged.
+- **Inline posts are not repeated:** `sendBriefPostsToChat` returns `postedLines` (the brief line
+  indexes each caption was built from). The body returned to the agent drops them
+  (`stripPostedLines`), along with any heading left empty.
+- **Known gap:** a tap that lands while the notice's run is still finishing is lost in msg-api
+  (queued, then "execution claim no longer eligible"). This affects every `closesTurn` + button
+  pattern.
+
 ---
 
 ## Storage and retention
