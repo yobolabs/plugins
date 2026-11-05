@@ -36,3 +36,20 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 - Develop carries held remix work that prod `main` lacks (e.g. the verified-entry start path). A fix in
   `remix-tools.ts` / `router.ts` / `deconstruct-source.ts` may not cherry-pick onto main: give the release captain a
   main-based port branch (off `origin/main`, tsc = base, same tests) alongside the develop branch.
+- Facebook `share/v/…` and `share/p/…` links from the prod worker's IP: the share link 302s to `story.php?story_fbid=…`,
+  which is login-walled ("Unsupported URL" / "only available for registered users"), while `facebook.com/watch/?v=<story_fbid>`
+  reads. yobo resolves the share link first (`safe-fetch-video.ts` `resolveFacebookShare`, one GET, redirect manual,
+  5 s, LIMITS row) and logs `video_fetch_fb_share_resolved` / `_unresolved`. **The User-Agent matters:** a full browser
+  User-Agent gets HTTP 400 with no `Location`; `curl/8.5.0` + `accept: */*` gets the 302. `share/r/` (reels) and
+  `/reel/` read as sent. `ads_gen.video_fetch_tools` has no facebook entry, so there is no Apify fallback for Facebook.
+- Proving a fetch / network fix on prod (free, no data written): `docker cp` a small `.ts` that imports the shipped
+  function from `/app/src/...` into the worker container, run it with `node_modules/.bin/tsx` from `/app`, then remove
+  it with `docker exec -u root … rm`. A fix that passed unit tests and a fetch from a dev machine failed this way.
+- A needs-list drop count over several days mixes builds: split the drops by the time the needs fix reached prod `main`
+  before calling it a live cause (most "needs drops" were older than the fix).
+- The needs list never marks a missing item with a bare `?`: merchants read it as broken text. The marker is the copy
+  row `ads_gen.copy.remix.needs_missing.<lang>` ("Needed:").
+- yobo checks on the shared mini: full `pnpm tsc` aborts (SIGABRT, out of memory) and prints NO type errors, so a grep
+  on its output looks clean. Run with `NODE_OPTIONS=--max-old-space-size=12288` and count `error TS` against the base.
+  The mini has no ffmpeg: `deconstruct.test.ts` fails there with `spawn ffmpeg ENOENT`; `remix-chat-ux.test.ts` needs
+  `DATABASE_URL` set to any value.
