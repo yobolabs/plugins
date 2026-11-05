@@ -1,6 +1,6 @@
 # Review (the gate before the merchant sees any storyboard)
 
-Back to [SKILL.md](../SKILL.md). Rule: **any fail is redone before it is shown.** Then the human approves each storyboard.
+Back to [SKILL.md](../SKILL.md). Rule: **any block is redone before it is shown; good enough passes** (see below). Then the human approves each storyboard.
 The AI review and code checks run on every set; "Fix it" for the merchant is a button, never an automatic retry loop.
 
 ## How: one review sheet
@@ -9,24 +9,41 @@ Put the storyboard NEXT TO the named cast pictures (and the set picture) on ONE 
 name. Send that image to the vision call with the shot's brief slice, the identity cards and the seat map. A review
 that sees the storyboard alone against brief text passed pictures with the wrong hair, skin and seats.
 
-## Per-storyboard AI checklist
+## Good enough passes: the source ad is a benchmark, not a blueprint
 
-- [ ] Right person per name: face, hair, skin, clothes match that person's picture; no look-alike swaps; nobody duplicated
-- [ ] Seats as the seat map; room = the set picture
-- [ ] Scale: nobody tiny or giant for where they stand
-- [ ] Framing as the shot asks (size, angle, who is in frame)
-- [ ] Feeling as the brief says, background people included
-- [ ] Background people the ad shows are kept (the new team, softly out of focus); no speaker alone on a bare wall unless the ad shows that
-- [ ] Room, set and colours match the brief
-- [ ] No text, captions, logos drawn; no old-brand logos, mascots or signs
-- [ ] Screens are a phone held by a character with a flat green screen
-- [ ] Product is the product (shape, label), at the source subject's size and place
-- [ ] Matches the line drawing's framing and position
+Sean 2026-11-05 ~21:1x: "these remix videos are not blueprints … We need flexibility … think about what the end goal
+is … providing a video quality video to the user who has no idea how to do this. They are not gonna be that nitpicky.
+We need to reduce how critical we are and pass approve things or pass things that are done well enough." (A reviewer
+failed every storyboard because the new cast differed from the source person, and failed one because the source shot
+showed a hand and ours showed the hand plus part of the body.)
+
+**The reviewer judges against the brief, never against the source frame.** Its input is built by code from the run
+record (approved cast + cast sheet, the scene's beats and lines in the brief, the scene's job), not prose asking it to
+remember the brief. The source reading is context only. Every finding has one verdict:
+
+| Verdict | Only for | Effect |
+|---|---|---|
+| **block** | wrong product (or its label/shape/real size clearly wrong) · another brand's logo, mascot or sign · garbled or invented text, captions or logos · an extra person the brief does not have · broken anatomy (extra limbs, melted faces, a giant or tiny person) · unsafe or off-brand · a screen that is not a flat green phone screen when the scene shows one | the set is held: fixed once automatically, still blocked → shown with the shot, the reason and a way forward |
+| **look** | a scene clearly shows a DIFFERENT person from the approved cast (not hair, light or angle) | waivable: fixed once, then [Keep it] |
+| **pass** (info at most) | the cast differs from the source ad (that is the remix) · framing, zoom or crop differ from the source or line drawing · pose, beat or moment differ from the one source frame · seats, room details or colours differ slightly from the brief | never shown to the merchant as a problem |
+
+A per-shot block gates the set in code; the set check alone never decides. A check that could not run is a fail, not a
+pass.
+
+## Per-storyboard AI checklist (what to look at, verdicts as above)
+
+- [ ] Right person per name vs the approved cast picture (look), nobody duplicated, no extra person (block)
+- [ ] Product is the product, label exact, real size (block when clearly wrong)
+- [ ] No drawn text, captions, logos; no old-brand logos, mascots or signs (block)
+- [ ] Anatomy and scale believable (block when broken)
+- [ ] Screens are a phone held by a character with a flat green screen (block)
+- [ ] Feeling, room, background people, framing as the brief says (pass/info: good enough wins)
 
 ## Set check (whole set, vision)
 
-One cast, one set across all scenes: a person changes look, an extra person appears, the set drifts, the same panel
-repeated. (A pass once let 16 repeated panels and an invented person through: check for repeats explicitly.)
+One cast across all scenes: a person clearly becomes someone else (look), an extra person appears (block), the same
+panel repeated (block). Small set or colour drift between scenes = info. (A pass once let 16 repeated panels and an
+invented person through: check for repeats explicitly.)
 
 ## Code checks (deterministic)
 
