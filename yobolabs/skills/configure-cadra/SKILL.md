@@ -47,6 +47,11 @@ the deploy-pointer (`action: rollback`) needs no id. A daily audit matches every
 gate-log row, so writes from scripts or the app UI are caught too. Standard the review checks:
 `cadra:agents` -> `references/agent-structure-best-practices.md`.
 
+**Agents are release-pinned, dev agents too.** Editing a harness, skill, role or root changes HEAD only;
+runs keep reading the pinned release until you cut + promote. A proof counts only if its run logs the
+changed version (`harness <uuid> vN` log line, `agent_executions.agent_version_id`). The cut pattern
+(hold every other pending pin, diff must show only your change) and its traps: `references/releases.md`.
+
 ## Setup
 
 | Env var | Purpose |
