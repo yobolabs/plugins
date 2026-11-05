@@ -109,6 +109,19 @@ answers; the matcher never swaps products.
   that started nothing (`started: 0`) gets one plain failure line.
 - **A refusal the merchant must hear is never HTTP 409.** The tap path reads a slides 409 as "this ask was already
   answered" and stays silent; refuse with 412 (or 400) and the tap posts its failure line.
+- **A tap that posts nothing is never silent (R10).** Every tap outcome that leaves the chat without a new line
+  (`not_blocked`, a ready re-send that did not go out) logs on the run (`remix_tap_posted_nothing`) and posts ONE plain
+  line with the next button. A re-send through `remixApplied` must name its own post key (`resend`), or deliver
+  refuses it for having no message key.
+- **The last storyboard approved on the web asks the video go in chat** (`sb_approved_go` [Yes, go ahead][Not yet],
+  once per storyboard set, key `<remixId>:sb_approved_go:<set>`). The web review page is the path the ready line's link
+  offers; without this the merchant approves and hears nothing. An approval is never a go for paid work.
+- **A stale or already-used button re-posts the live ask.** Under "That button is old" / "already used", post the
+  remix's newest OPEN ask again with fresh tokens; nothing open: the line carries [Pick a ready ad]. "Open" = the
+  remix's newest post with stored buttons (`remix_deliveries.payload_ref.repost`) with no tap on this remix after it
+  (`remix_events`). Button tokens are NOT an answered signal: most taps never consume theirs.
+- **No part ask while the auto-join runs.** A QA LOOK verdict on a part is info (logged on the run); when every part is
+  made and the join starts by itself, post no [Approve / Make it again] ask and no QA words ("source cuts").
 - **Several failed storyboards** redo on one ask (`make:redraw` + every failed scene). A failed video redoes one at a
   time (`make:remake` + that part); more than one failed video keeps a typed note.
 

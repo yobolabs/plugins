@@ -91,6 +91,9 @@ Rules that cost a prod incident to learn:
   nothing. slides adopts a done part that names the part's current job (same run inputHash); yobo also delivers a done
   QA fix job when slides says `applied:false` (ask → the one question; pass → ready + the one fix line; the replaced
   video is never sent).
+- **Unit-green is not done: prove a fix on one real run.** Two chat fixes passed every test and did nothing live (a
+  wrong field read on an invented fixture shape). One real run on the dev test chat, free (stop before any paid go),
+  per fix, before the prod request.
 - **A replay proof must include the consumer's read.** Replaying a gate inside the worker proves the reviewer; it does
   not prove slides parses and applies the result. Before calling a QA change proven, run the produced result through
   slides' own `RemixJobResultSchema` and `applyRemixJob`, or watch one real run reach the chat.
