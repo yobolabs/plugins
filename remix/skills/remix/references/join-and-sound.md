@@ -14,8 +14,8 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
   default sound is the clips' native Higgsfield audio, TTS voiceover and a music bed optional; Sean 2026-11-05: "Voice
   over prob needs higgsfield generation", after a drink ad's voiceover played over gelato shots). Source with a person
   talking on screen → those parts render voiced (native model audio, the brief's lines in the chat's language). Source
-  with a voiceover only → a TTS voiceover of the brief's NEW lines (one pinned voice) over the join; the clips keep their
-  own ambience. The source track is used only when it has no speech, cut to the scene windows. No source slice that
+  with a voiceover only → the off-screen role gets one fixed voice and its NEW lines are generated inside the voiced parts
+  (TTS only for a held still). The source track is used only when it has no speech, cut to the scene windows. No source slice that
   contains speech is ever laid. The join only follows the brief's audio plan (`brief.md` → Audio plan, set at the teardown); it makes no audio decision itself. There is no own music
   library (yobo `music.ts` = Epidemic only, unconfigured), so no library swap. Internal keys (`adMusic`) never reach
   text the agent can relay; a picked track must reach the join.
