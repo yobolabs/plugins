@@ -254,6 +254,12 @@ Draft = 480p video, 1k pictures, until sign-off. Regenerate only what changed; r
 output the moment it lands. Text, captions, prices and logos are added in post, never drawn by a model; the product's
 own printed label stays.
 
+## Core principle: remix lives in yobo only (Sean 2026-11-05)
+
+Sean: "move everything to Yobo out of slides, put it directly in Yobo." Every remix runs in yobo on the one yobo record;
+the slides remix pipeline is switched off (never a second path), then the Ad Studio remix editor and the Ad Library move
+into yobo. New remix work goes into yobo; never add remix behaviour to slides. Design: `REVIEW.md` §13.29.
+
 ## Core principle: build every video from a template (Sean 2026-11-05, architect gate-20261105-22)
 
 Sean: "Templates give us a step-by-step way to build a video. We just have to build from a template."
