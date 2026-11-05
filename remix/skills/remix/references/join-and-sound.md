@@ -10,15 +10,15 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
 
 - **Audio = the ad's own music by default when it has no speech**, ONE track laid ONCE over the whole joined video, cuts
   on its beats (Sean 2026-11-03: "Why not just use the same audio?"). Chat line: "Using the original ad's sound." No extra tap.
-- **The sound is ours, made by Higgsfield; the source's voice is never reused** (p129 specs §0, Sean 2026-10-23: the
-  default sound is the clips' native Higgsfield audio, TTS voiceover and a music bed optional; Sean 2026-11-05: "Voice
-  over prob needs higgsfield generation", after a drink ad's voiceover played over gelato shots). Source with a person
-  talking on screen → those parts render voiced (native model audio, the brief's lines in the chat's language). Source
-  with a voiceover only → the off-screen role gets one fixed voice and its NEW lines are generated inside the voiced parts
-  (TTS only for a held still). The source track is used only when it has no speech, cut to the scene windows. No source slice that
-  contains speech is ever laid. The join only follows the brief's audio plan (`brief.md` → Audio plan, set at the teardown); it makes no audio decision itself. There is no own music
-  library (yobo `music.ts` = Epidemic only, unconfigured), so no library swap. Internal keys (`adMusic`) never reach
-  text the agent can relay; a picked track must reach the join.
+- **A remade part that had a voice keeps that voice** (Sean 2026-11-05: "if there's any part that needs to be
+  regenerated and if it has a VoiceOver, we would send a clip that contains the voice as a reference so that for newly
+  generated video, it has the voice sample to generate with"). The teardown marks which source parts carry a voice
+  (measured speech, set by code). The remade part's video call gets that part's source clip with its audio as the voice
+  reference, bound in the prompt ("@Audio1 = the speaker's voice; say the brief's line in this voice"). For remix this
+  overrides the general "never the old ad's speaker's voice" rule. The join keeps each part's own audio (remade = model
+  audio, kept = its source slice); the full source track is never laid over a remade voice part (a drink ad's voiceover
+  once played over gelato shots this way). A music-only source = the ad's music, cut to the scene windows. No separate
+  voiceover, TTS or sound-effect track. Internal keys (`adMusic`) never reach text the agent can relay.
 - Parts WITHOUT voices are encoded with no audio (`-an`); a silent AAC per part pads every join and pushed later cuts 33-100 ms late.
 - Voiced parts keep the video model's own audio; the ad's track is never laid over them; their cuts follow the speech.
 - **Cuts land ON the beat** (`cuts[].on_beat`), not on the source's cut frames (those lag 100-250 ms). Proof = a table
