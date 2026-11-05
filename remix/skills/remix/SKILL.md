@@ -308,9 +308,12 @@ files):
 
 ## Standing rules
 
-- **No paid render without Sean's OK for that run** (pictures, draft clips, finals all bill the platform key, dev too).
-  Prove with unit tests and free pages; name the cost (scenes x seconds x model) before an end-to-end run. Every
-  subagent brief says "no paid renders".
+- **No paid render without a cleared budget** (pictures, draft clips, finals all bill the platform key, dev too).
+  When Sean has given a budget for the day, the ledger owner (the remix lead) clears each run inside it and logs it in
+  the day's paid-budget ledger; never ask Sean again per run (Sean 2026-11-05: "I already gave a budget today so no
+  need to ask me if the budget is still there"). No budget given → ask Sean for that run. Prove with unit tests and
+  free pages first; name the cost (scenes x seconds x model) before an end-to-end run. Every subagent brief says "no
+  paid renders" unless the lead cleared that run.
 - **Pricing is parked.** Never add or change a price or credit UX. The free first remix is the MQL waiver; every paid
   quote or start must name the remix so the waiver applies.
 - **Say "Remix", never "Remake"** (UI copy, routes, code names, docs).
