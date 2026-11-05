@@ -251,6 +251,18 @@ Draft = 480p video, 1k pictures, until sign-off. Regenerate only what changed; r
 output the moment it lands. Text, captions, prices and logos are added in post, never drawn by a model; the product's
 own printed label stays.
 
+## Core principle: a source ad is optional; the storyboard is the contract (Sean 2026-11-05)
+
+Sean: "I don't think we need an existing ad. We can create them from scratch as long as we can come up with a script
+and then a storyboard can be generated. Remember, the key is we get to a storyboard, and the storyboard has all the
+elements to generate the video."
+
+- A remix starts from a source ad OR from a script (the agent's agreed concept). With a script, the script IS the
+  brief: scenes, seconds, what each shows, lines, cast roles, product scenes. Then the same storyboard → review →
+  approval → video pipeline runs.
+- Never answer "make this idea" by offering unrelated ads. A source ad, when used, is a quality benchmark (see below).
+- Design: `REVIEW.md` §13.27 (remix_start script source; architect gate pending).
+
 ## Core principle: benchmark, not blueprint (Sean 2026-11-05)
 
 Sean: "Remix = take something that exists and make something NEW. It does not mean replicate scene by scene. The
