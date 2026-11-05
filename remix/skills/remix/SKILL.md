@@ -351,6 +351,10 @@ files):
 
 - Every step is a **button tap** in the chat (msg-api reply buttons -> yobo `tap.ts`), never the agent, never typing,
   never a required web page. A web link is an optional extra.
+- **Every line remix posts itself speaks in the agent's Instinct persona** (Sean 2026-11-05: "we're supposed to use the
+  instinct persona"; p126, Yobo KB `yobo-agent/_specs/p126-instinct-persona/skill/persona-rules.md`). Copy rows and code
+  fallbacks are written in that voice and scored with the Jev voice scorer (precedent YMS-490). Never a machine line
+  ("That button cannot do this now").
 - Every failure is **ONE plain line** in the chat's language saying what happens next, with a button when there is a
   next step. Never silence, two lines, or a contradicting line.
 - The agent handles free text and questions only, with typed remix tools. It never presses Approve, never states a
