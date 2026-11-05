@@ -268,6 +268,18 @@ pipeline (swap fit, product fit, drift, source length, QA, credits, needs) and f
 A new check, gate or refusal is not done until it has its fix step and its question. Reviewers block a gate that
 only stops.
 
+**Where it lives in Cadra (Sean 2026-11-05: "this is where we set the intent … there must be a way for it to solve and
+troubleshoot problems … the tools must support this too … the tools need to be accommodating").** Three parts, per
+the Cadra standard (root prompt = routing, voice, hard rules only; feature behaviour in the role's skill + reference
+files):
+
+| Part | Holds |
+|---|---|
+| **Intent** (the remix role / skill template, first line) | The mission: this merchant gets a finished video they approve. Every turn is judged by whether it moves the run toward that. |
+| **Troubleshooting reference** (a reference file of the remix skill, read on demand) | One row per refusal code: what it means, the fix the agent tries, the question + buttons if the fix fails, which tool applies the answer. |
+| **Accommodating tools** | A refusal is never a bare error: it returns `{code, reason (plain), fix, ask: {question, buttons}}`. Anything a check can ask to change has a tool that changes it (cast, people kept, product, size, trim, scene, route), so the answer to a question always has a way to land. |
+
+
 ## WhatsApp first
 
 - Every step is a **button tap** in the chat (msg-api reply buttons -> yobo `tap.ts`), never the agent, never typing,
