@@ -103,6 +103,15 @@ Two consequences to know:
   the new one. A role edit that "has no effect" is usually this.
 - Pass `changeNotes` on updates that change the method — it is the only
   human-readable label the version history gets.
+- **Promote alone does not reach a deployed agent either.** The agent's deployed
+  version (release) pins each role's golden lock (`role_lock` pin). After a
+  promote, move the agent too: dev = publish + deploy the agent; prod = cut a
+  release and move the deploy pointer (`prod-releases.md`). Check the run log
+  line "Role spawn: snapshot built from role@golden lock" for the lock id it
+  actually used.
+- Promote is a session (tRPC) call: `agentRoles.promoteGolden {uuid, changeNotes,
+  revalidated: true}`, then poll `agentRoles.getPromotionStatus {uuid}`. From a
+  signed-in tab, `fetch` both from the page.
 
 ## Structured output (`outputSchema`)
 
@@ -237,6 +246,13 @@ listings; do not try to reuse or reassign one.
   targeted a platform role.
 - Roles are keyed by name for `apply`; two roles with the same name in one org
   make `apply` ambiguous and it will refuse rather than guess.
+- tRPC `Agent role not found` for EVERY role (even ones REST returns) while
+  `/api/auth/session` shows the right org = the tab's server-side org context is
+  stale. Fix in the page: `userOrg.switchOrg {orgId}` then POST `/api/auth/session`
+  with `{csrfToken, data: {currentOrgId}}`, and retry. It is not the
+  creator-less ("orphan") rule: a role with a golden lock is readable by every
+  member (`role-visibility.ts` `canReadLibraryRole`), so don't data-fix
+  `created_by` for this.
 - A role can reference a capability that does not exist in the target
   environment. Nothing fails at save time — it fails at spawn. Verify uuids
   against the target with `cadra tool find` / `cadra skill find` before applying
