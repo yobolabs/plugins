@@ -314,6 +314,9 @@ files):
 - **Pricing is parked.** Never add or change a price or credit UX. The free first remix is the MQL waiver; every paid
   quote or start must name the remix so the waiver applies.
 - **Say "Remix", never "Remake"** (UI copy, routes, code names, docs).
+- **Never call the source ad "your ad"** (Sean 2026-11-05: "why would it tell me a person isn't in my ad — Yobo built
+  this ad"). The merchant's ad is the remix; the one being copied is "the original ad" (id "iklan aslinya", es "el
+  anuncio original") in every line, copy row and prompt the merchant sees.
 - **A limit needs a `LIMITS.md` row** (caps, timeouts, retries); a limit that fires logs on the job.
 - **Never remove what another ad type needs.** Diff against the last version before shipping a fix for one type.
 - **Dev passing is not prod passing.** Cadra prompts/skills/tools are per-env rows; diff dev vs prod before a promote.
