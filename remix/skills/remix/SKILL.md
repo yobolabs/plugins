@@ -259,6 +259,8 @@ product hero, proof, CTA), timing, roles, product scenes, reusable clips. The te
 record, versioned per edit; every step reads and writes it, and no step keeps its own copy. Then one pipeline builds
 from it. Another merchant's offers, prices, brand and product names in a stored template become placeholders on load.
 Design: `REVIEW.md` §13.28.
+Music (Sean 2026-11-05): default = the source ad's own track; also offer a few similar tracks found by audio match, and
+let the merchant search a track of their own. From scratch, the same match and search, seeded by the script's mood.
 
 ## Core principle: a source ad is optional; the storyboard is the contract (Sean 2026-11-05)
 
