@@ -342,6 +342,10 @@ files):
   anuncio original") in every line, copy row and prompt the merchant sees.
 - **A limit needs a `LIMITS.md` row** (caps, timeouts, retries); a limit that fires logs on the job.
 - **Never remove what another ad type needs.** Diff against the last version before shipping a fix for one type.
+- **Proofs never post into a chat a person is using** (2026-11-05: test replays landed in Sean's live dev chat 3 min
+  after his real tap and read as his remix dying). Replays and injected taps go to a test conversation or test number.
+  With no test line, mark every posted text "[TEST]" and tell whoever watches that chat first. One driver per chat:
+  when the person is live, builders watch and do not tap.
 - **Dev passing is not prod passing.** Cadra prompts/skills/tools are per-env rows; diff dev vs prod before a promote.
   A proof is a real end-to-end run (link to delivered video) per ad type, not free steps on a synthetic inbound.
 - **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (see Core principle above).
