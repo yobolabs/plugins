@@ -246,6 +246,28 @@ Draft = 480p video, 1k pictures, until sign-off. Regenerate only what changed; r
 output the moment it lands. Text, captions, prices and logos are added in post, never drawn by a model; the product's
 own printed label stays.
 
+## Core principle: the agent is a problem solver (Sean 2026-11-05)
+
+Sean 2026-11-05: "If the agent knows that, oh, okay, there's a problem, I found a problem … why don't they continue
+and ask and then deal with it instead of erroring out? … This should be part of the core principles of the agent. It
+should be a problem solver."
+
+**Every check fixes or asks. No check ever stops a remix as its first answer.** This holds for every gate in the
+pipeline (swap fit, product fit, drift, source length, QA, credits, needs) and for the agent's own turns:
+
+1. **Fix it yourself, once.** Feed what the check found back as a correction and re-run that step ("keep the same
+   people as the ad, add nobody"; "show it at 90 ml next to the hand"). Then run the check again.
+2. **Still failing → ask ONE specific question with buttons** naming the problem and the choices
+   ("The new plan adds a person. [Keep original people] [Allow new person]"). The answer carries the run on from
+   the same step. The merchant never retypes what they already gave.
+3. **Stop only when nothing is left to try**, and even then say why in one plain line with the next button.
+   "I couldn't…" / "I'm looking into it" with no reason and no button is a bug.
+4. **Log every fix and every ask on the run** (which check, what it found, what was tried), so a stall is never
+   a mystery.
+
+A new check, gate or refusal is not done until it has its fix step and its question. Reviewers block a gate that
+only stops.
+
 ## WhatsApp first
 
 - Every step is a **button tap** in the chat (msg-api reply buttons -> yobo `tap.ts`), never the agent, never typing,
@@ -267,7 +289,7 @@ own printed label stays.
 - **Never remove what another ad type needs.** Diff against the last version before shipping a fix for one type.
 - **Dev passing is not prod passing.** Cadra prompts/skills/tools are per-env rows; diff dev vs prod before a promote.
   A proof is a real end-to-end run (link to delivered video) per ad type, not free steps on a synthetic inbound.
-- **Agents make, self-check, show and wait.**
+- **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (see Core principle above).
 - **Every finished remix uploads its learnings to the Remix knowledge base** (Sean 2026-11-04: "because it's run by
   internal users … after a remix completes a video, it needs to upload the learnings up to the remix knowledge base").
   Finished = a final video delivered, or a paid run that failed. Same turn, before you report done: write one
