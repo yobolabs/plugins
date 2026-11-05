@@ -14,8 +14,9 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
   regenerated and if it has a VoiceOver, we would send a clip that contains the voice as a reference so that for newly
   generated video, it has the voice sample to generate with"). The teardown marks which source parts carry a voice
   (measured speech, set by code). The remade part's video call gets that part's source clip with its audio as the voice
-  reference, bound in the prompt ("@Audio1 = the speaker's voice; say the brief's line in this voice"). For remix this
-  overrides the general "never the old ad's speaker's voice" rule. The join keeps each part's own audio (remade = model
+  reference, bound in the prompt ("@Audio1 = the speaker's voice; say the brief's line in this voice"). Only when the source is the
+  merchant's OWN ad or upload (`sourceOwnedByMerchant`); for another brand's ad the voice reference waits on Sean
+  (legal/likeness: it clones a real third-party voice) and the part uses the model's own fixed voice per role. The join keeps each part's own audio (remade = model
   audio, kept = its source slice); the full source track is never laid over a remade voice part (a drink ad's voiceover
   once played over gelato shots this way). A music-only source = the ad's music, cut to the scene windows. No separate
   voiceover, TTS or sound-effect track. Internal keys (`adMusic`) never reach text the agent can relay.
