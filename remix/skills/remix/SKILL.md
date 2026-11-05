@@ -259,8 +259,8 @@ product hero, proof, CTA), timing, roles, product scenes, reusable clips. The te
 record, versioned per edit; every step reads and writes it, and no step keeps its own copy. Then one pipeline builds
 from it. Another merchant's offers, prices, brand and product names in a stored template become placeholders on load.
 Design: `REVIEW.md` §13.28.
-Music (Sean 2026-11-05): default = the source ad's own track; also offer a few similar tracks found by audio match, and
-let the merchant search a track of their own. From scratch, the same match and search, seeded by the script's mood.
+Music (Sean 2026-11-05): default = the source ad's own track; the merchant can search or pick a track we already have;
+similar-track matching only with a free source (no paid music vendor). From scratch, the same match and search, seeded by the script's mood.
 
 ## Core principle: a source ad is optional; the storyboard is the contract (Sean 2026-11-05)
 
@@ -357,6 +357,11 @@ files):
 
 - **Proof replays never post into a chat a person uses** (a dev chat may be someone's phone: a replayed stop was read
   as a real failure). Use a test conversation, or put "[TEST]" in the text.
+- **The remix lead decides; never ask Sean for sign-off on video work** (Sean 2026-11-05: "Stop asking me about
+  sign-off on these video ads. You have a budget, use the budget, do this autonomously." and "No paid" for vendors).
+  Architecture calls go to the agents lead's gate, template approval is the lead's QC check (frames, product right and
+  real size, no other brand, no garbled faces/text), spend stays inside the day's budget. No paid third-party vendor
+  (music libraries etc.) without Sean naming one. Ask Sean only for what the CLAUDE.md money/customer/delete rules name.
 - **No paid render without a cleared budget** (pictures, draft clips, finals all bill the platform key, dev too).
   When Sean has given a budget for the day, the ledger owner (the remix lead) clears each run inside it and logs it in
   the day's paid-budget ledger; never ask Sean again per run (Sean 2026-11-05: "I already gave a budget today so no
