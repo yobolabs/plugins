@@ -264,6 +264,14 @@ pipeline (swap fit, product fit, drift, source length, QA, credits, needs) and f
    "I couldn't…" / "I'm looking into it" with no reason and no button is a bug.
 4. **Log every fix and every ask on the run** (which check, what it found, what was tried), so a stall is never
    a mystery.
+5. **Effort has an end (Sean 2026-11-05: "make sure that the agent will not go on indefinitely if the problem is
+   unsolvable … it really made an effort … then at some point it won't be able to continue and … let the team know
+   … in the meantime maybe try a different thing, maybe try a different video").** Per check: one self-fix, then one
+   ask. Per remix: a fixed budget of failed fixes (LIMITS row `remix_fix_budget`, Cadra limit, Sean's number). When
+   the budget is spent, or no fix is left to try: stop that remix, tell the merchant ONE line with the way forward
+   ("This video isn't working out. The team is looking at it. Meanwhile:" [Pick a ready ad] [Try another video]),
+   and alert the team once (the run lands in the back-office Remix monitor "needs help" queue + one team post with the
+   remix, the check, and what was tried). Never loop, never re-ask the same question, never spend more after the stop.
 
 A new check, gate or refusal is not done until it has its fix step and its question. Reviewers block a gate that
 only stops.
