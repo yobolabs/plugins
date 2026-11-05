@@ -191,6 +191,9 @@ timed out". The full pipeline stays the default; never pick the fast path for th
   (video and picture) says: show it at its real-world size and proportions next to people, hands and objects, never
   scaled to the product it replaces; change how it is held or placed instead. Without it a small tub came out the
   size of the bag it replaced.
+  Exception: a template whose concept is deliberately giant (e.g. a CGI "giant product launches like a rocket" ad) is
+  marked `scale: hero` on the template; only then do swap prompts skip the real-size line (arch-5 2026-11-05,
+  template 15b938a1). Accidental mis-scaling is always a fail.
 - **Template reels carry their own prompt** (Sean 2026-11-04: "grab the prompt from the video because it's shown on
   the left side … we should actually include that"). When the ad sits beside a static text panel, crop that panel
   strip (full height, ≤420 px wide) and read it with a plain TRANSCRIBE function (`panel_prompt_reader`: "copy every
