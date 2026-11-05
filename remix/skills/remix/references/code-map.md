@@ -18,6 +18,12 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 
 ## Traps
 
+- yobo's remote has a branch named `integration`, so any `integration/<x>` push fails "directory file conflict": name
+  integration branches `integration-<x>`.
+- Typecheck on the mini needs `NODE_OPTIONS=--max-old-space-size=12288`: without it tsc runs out of memory and a
+  `grep "error TS"` filter shows nothing (a false "0 errors"). The mini has no `rg`; use grep in mini-run commands.
+- Delivery proof for a remix chat line: yobo `remix_deliveries.message_ids` (+ `remix_action_tokens` for the buttons);
+  a msg-api DB from the vault may not be the one the deployed env posts to.
 - Config is not code: Cadra prompts/skills/tools/releases are hand-edited per env. Diff dev vs prod before promote; prod may pin an old tool version after a fix.
 - Cross-service races: slides project, yobo jobs/worker, Cadra runs, msg-api chat. One idempotent advance per remix owns "what happens next"; do not add another per-hop patch.
 - Worker and migration changes do not ship on a merge (see the polyrepo "a merge is not a deploy" rule); verify by code inside the container.

@@ -355,6 +355,8 @@ files):
 
 ## Standing rules
 
+- **Proof replays never post into a chat a person uses** (a dev chat may be someone's phone: a replayed stop was read
+  as a real failure). Use a test conversation, or put "[TEST]" in the text.
 - **No paid render without a cleared budget** (pictures, draft clips, finals all bill the platform key, dev too).
   When Sean has given a budget for the day, the ledger owner (the remix lead) clears each run inside it and logs it in
   the day's paid-budget ledger; never ask Sean again per run (Sean 2026-11-05: "I already gave a budget today so no
