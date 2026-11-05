@@ -29,6 +29,24 @@ Prefer **declarative** for anything a team maintains. `apply` is an idempotent
 upsert keyed on `name`, so the same file re-applies cleanly to local, dev, and
 prod.
 
+## PROD agent changes need a review gate id (Sean 2026-11-05, HARD RULE, hook-enforced)
+
+Every change to a **prod** Cadra agent's config needs an approved review id from the agent architect
+before it is written: root prompt, intent, model, harness / run rules, a role (content, belt, promote),
+a skill (template, reference, link), a tool row, or a deploy-pointer promote. Dev needs no id.
+
+1. Prove on dev first (N >= 3 real channel runs, execution ids).
+2. Send ONE `agent-review:` request to `m-agent-architect` (SendMessage) in the format of
+   `_context/cadra/_specs/p152-agent-architecture/3-review-gate.md` §2: agent + live base release,
+   one change, layer, dev proof ids, diff + undo file, root `+N/-M` chars, LIMITS row, lane approval.
+3. On `APPROVED prod gate-YYYYMMDD-N`, put `AGENT_GATE=gate-YYYYMMDD-N` in the write command and
+   `gate: gate-…` in your DEPLOY-LOCK row and release note. One id = one change, used once.
+
+The monorepo hook `agent-gate-guard.py` denies a prod write without a valid id. A rollback through
+the deploy-pointer (`action: rollback`) needs no id. A daily audit matches every prod release to a
+gate-log row, so writes from scripts or the app UI are caught too. Standard the review checks:
+`cadra:agents` -> `references/agent-structure-best-practices.md`.
+
 ## Setup
 
 | Env var | Purpose |
