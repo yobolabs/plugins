@@ -4,9 +4,14 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
 
 - **The join runs by itself as soon as every part has landed** (Sean 2026-11-05 ~21:5x: "I expect the final assembled
   video."). There is no parts approval and no join ask: the merchant sees ONE joined video with [Looks good] / [Change a
-  part]. The join keeps its existing price (pricing is parked): it is included in the parts go's price ("video parts +
-  putting it together: N credits") and debited under that one consent, and a failed-join retry adds no charge. A re-join
-  after a part or music change also runs by itself, its credits shown on that change's quote. Parts shown only on request.
+  part]. Parts shown only on request.
+- **The join is part of making the video, never its own step, ask or charge** (Sean 2026-11-06 ~00:4x: "Joining
+  should NOT be separated from creating a video. It's an essential part of the delivery. A video's 'price' should be
+  all-inclusive."). The merchant sees ONE all-inclusive price for the video: parts + join + every re-join. Never name
+  the join in a quote, a price line or a button ("putting it together: N credits" is wrong). The join's credits stay
+  in the total (price value unchanged; pricing is parked) and are debited under the video's one consent. A re-join
+  after a part or music change runs by itself and adds no charge of its own; a failed-join retry adds none either.
+  A closure where every part is kept (free) still has one video price, never a "join" line.
 
 - **Audio = the ad's own music by default when it has no speech**, ONE track laid ONCE over the whole joined video, cuts
   on its beats (Sean 2026-11-03: "Why not just use the same audio?"). Chat line: "Using the original ad's sound." No extra tap.
