@@ -13,6 +13,7 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 | Goal / platform / length | |
 | Dialogue track | each line: start-end time, speaker, ON or OFF screen. A line may start before its speaker appears and cross a cut. Never one line per shot |
 | Per-shot rows | what happens, **keep / change / never**, size (shot size, angle, lens), tone/feeling, lines in its window |
+| Audio plan | decided at the teardown, never at the join (Sean 2026-11-05: "This needs to be determined during the ad teardown"). The teardown records per scene the source sound (dialogue on screen · voiceover · music · sfx · silent) and whether the source track carries speech; the brief then sets per scene: **voiced** (native Higgsfield audio, lines in the chat's language) · **tts** (a new voiceover line, one pinned voice) · **source-music** (only when the track has no speech) · **ambience**. Its cost is in the parts quote. Unclassified = treated as speech |
 | Never list | old brand logos, mascots, signs; text, captions, logos drawn by a model |
 
 ## Rules

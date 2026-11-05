@@ -16,7 +16,7 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
   talking on screen → those parts render voiced (native model audio, the brief's lines in the chat's language). Source
   with a voiceover only → a TTS voiceover of the brief's NEW lines (one pinned voice) over the join; the clips keep their
   own ambience. The source track is used only when it has no speech, cut to the scene windows. No source slice that
-  contains speech is ever laid. Read `remix_sources.has_voice` / the transcript to pick the case. There is no own music
+  contains speech is ever laid. The join only follows the brief's audio plan (`brief.md` → Audio plan, set at the teardown); it makes no audio decision itself. There is no own music
   library (yobo `music.ts` = Epidemic only, unconfigured), so no library swap. Internal keys (`adMusic`) never reach
   text the agent can relay; a picked track must reach the join.
 - Parts WITHOUT voices are encoded with no audio (`-an`); a silent AAC per part pads every join and pushed later cuts 33-100 ms late.
