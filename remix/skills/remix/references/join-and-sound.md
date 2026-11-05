@@ -10,12 +10,15 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
 
 - **Audio = the ad's own music by default when it has no speech**, ONE track laid ONCE over the whole joined video, cuts
   on its beats (Sean 2026-11-03: "Why not just use the same audio?"). Chat line: "Using the original ad's sound." No extra tap.
-- **A source track with speech (voiceover, spoken lines) is a known fault, default not yet decided** (Sean 2026-11-05:
-  "The audio is strange. Doesn't really match the scene": a drink ad's voiceover played over gelato shots). There is NO
-  own music library (yobo `music.ts` searches only the paid Epidemic vendor, unconfigured), and a KB rule says never swap
-  in crossfades or a library track. Until Sean picks the default (voice removed from the ad's track / generated
-  instrumental / licensed library), the join keeps the ad's track; `remix_sources.has_voice` marks the case. Internal keys
-  (`adMusic`) never reach text the agent can relay. A picked track must reach the join.
+- **The sound is ours, made by Higgsfield; the source's voice is never reused** (p129 specs §0, Sean 2026-10-23: the
+  default sound is the clips' native Higgsfield audio, TTS voiceover and a music bed optional; Sean 2026-11-05: "Voice
+  over prob needs higgsfield generation", after a drink ad's voiceover played over gelato shots). Source with a person
+  talking on screen → those parts render voiced (native model audio, the brief's lines in the chat's language). Source
+  with a voiceover only → a TTS voiceover of the brief's NEW lines (one pinned voice) over the join; the clips keep their
+  own ambience. The source track is used only when it has no speech, cut to the scene windows. No source slice that
+  contains speech is ever laid. Read `remix_sources.has_voice` / the transcript to pick the case. There is no own music
+  library (yobo `music.ts` = Epidemic only, unconfigured), so no library swap. Internal keys (`adMusic`) never reach
+  text the agent can relay; a picked track must reach the join.
 - Parts WITHOUT voices are encoded with no audio (`-an`); a silent AAC per part pads every join and pushed later cuts 33-100 ms late.
 - Voiced parts keep the video model's own audio; the ad's track is never laid over them; their cuts follow the speech.
 - **Cuts land ON the beat** (`cuts[].on_beat`), not on the source's cut frames (those lag 100-250 ms). Proof = a table
