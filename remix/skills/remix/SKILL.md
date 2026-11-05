@@ -375,6 +375,11 @@ files):
   when the person is live, builders watch and do not tap.
 - **Dev passing is not prod passing.** Cadra prompts/skills/tools are per-env rows; diff dev vs prod before a promote.
   A proof is a real end-to-end run (link to delivered video) per ad type, not free steps on a synthetic inbound.
+- **Team alerts stay in their own env** (YMS-738, 2026-11-05: a dev alert in the prod channel linked to prod → "remix
+  not found"). Links use the server's own host (`NEXT_PUBLIC_APP_URL`, else `NEXTAUTH_URL`), never a hard-coded prod
+  fallback; the env label comes from `NEXT_PUBLIC_ENVIRONMENT`, never `NODE_ENV` (it is `production` on the dev
+  worker); dev reads only `YOBO_REMIX_ALERTS_DEV_CHANNEL_ID`. Never join a dev bot into a prod channel or put a prod
+  channel id in a dev proof to make it pass.
 - **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (see Core principle above).
 - **Every finished remix uploads its learnings to the Remix knowledge base** (Sean 2026-11-04: "because it's run by
   internal users … after a remix completes a video, it needs to upload the learnings up to the remix knowledge base").
