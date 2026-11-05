@@ -2,6 +2,10 @@
 
 Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, exporting.
 
+- **The join runs by itself as soon as every part has landed** (Sean 2026-11-05 ~21:5x: "I expect the final assembled
+  video."). There is no parts approval, no join ask and no join price: the merchant sees ONE joined video with [Looks good]
+  / [Change a part]. A re-join after a part or music change also runs by itself. Parts are shown only on request.
+
 - **Audio = the ad's own music by default** on every remix, ONE track laid ONCE over the whole joined video, cuts on its
   beats (Sean 2026-11-03: "Why not just use the same audio?"). Chat line: "Using the original ad's sound." No extra tap.
   Licensed-track plumbing is later work.

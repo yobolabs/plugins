@@ -32,11 +32,16 @@ A go binds to an open ask, never to a stray "yes". A tap with no handler falls t
 
 link/ad pick -> "studying it" -> breakdown (one short message) -> needs list (one message, everything missing, own
 catalog products by name, chat's language, at most one short question per message) -> [Make storyboards] -> "Storyboards
-ready: N" + [Review & approve] -> [Make the video] -> videos ready + [Put it together] -> joined shown + [Make the
-final] -> finals reviewed -> joined again -> [Approve it] -> "Your video is ready." + the MP4 -> [Post it] / [Not now] ->
+ready: N" (the pictures first, then the ask) + [Approve all] / [Change one] -> [Make the video] -> parts render and
+JOIN BY THEMSELVES -> ONE joined video + [Looks good] / [Change a part] -> [Make the final] -> finals joined by
+themselves -> [Approve it] -> "Your video is ready." + the MP4 -> [Post it] / [Not now] ->
 "Posted: <link>". [Approve it] (`make:cut`) is ONE tap = approve the cut + start the export on that same go (the web
 "Approve and export" button); there is no separate [Get the file] step. [Try again] (`make:export`) appears only when
 the cut was approved but the export did not start.
+**The merchant gets the assembled video, never the parts** (Sean 2026-11-05 ~21:5x: "Why is Yobo sending me the
+separate clips? I expect the final assembled video."). When every part has landed, the join starts by itself: no parts
+approval, no join ask, no web-only review step. The ad's own music is laid once, cuts on its beats. Part clips are shown
+only after [Change a part] (one button per part). A web link is an optional extra under the video, never the only way on.
 Failure of any step: ONE line + [Make it again] / [Try again]. A photo sent in chat binds to the product row it
 answers; the matcher never swaps products.
 
