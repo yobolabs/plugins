@@ -242,6 +242,11 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   somewhere"). The source ad, every paid output and the final are stored the moment each exists, not only on Save.
   They are listed in one index in context. A source that was only on someone's laptop is lost (the egg-drop original,
   kedai-egg-reel-v6.mp4).
+- Sizes start at the cheapest (Sean 2026-11-06: "These montage/slide-style videos are super cheap for us to make, so
+  we'll offer more of these at the 'small' or 'tiny' size. Still need to come up with a naming convention"). A
+  montage / slide-style template (stills held on beats, little or no paid video) is the smallest size band, and the
+  ready-ad stock favours them. Size names are not decided; never show a size name to merchants until Sean picks one.
+  Design: KB `slides/_specs/p131-remix-in-ad-studio/arch-review-20261103/SIZING.md`.
 - Every remix after the first is offered per-category ready ads (Sean: "3 per category is after the first one"). Every
   category keeps at least 3 approved templates on dev and on prod. A daily check logs `remix_template_stock_low`, and
   the back-office Overview shows a count per category (YMS-778).
