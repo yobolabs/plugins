@@ -92,6 +92,15 @@ answers; the matcher never swaps products.
   one failed-step line.
 - Fetch detail (yt-dlp sections, byte caps, YouTube from a datacenter IP → Apify tool): `remix-context` search
   "higgsfield gotchas remix front entry".
+- **A pick tap is checked against msg-api facts, not only the entry.** yobo `remix-entry.ts` accepts a tap only when
+  the facts' `customerRun` names this run and generation and its source message is the tap. A refusal returns
+  `selection_required` with a `reason` (`no_inbound`, `id_mismatch`, `facts_unavailable`, `run_mismatch`,
+  `generation_mismatch`, `not_a_current_pick`) and logs `remix_selection_refused`. Read that reason before
+  guessing. A turn that never records `customerRun` refuses every tap (the YMS-750 incident).
+- **Re-showing cards already in chat sends nothing.** The same picks under the same idempotency key are a msg-api
+  `duplicate`. The entry tool therefore does not re-post cards shown by an earlier run. It returns `alreadyInChat` and
+  tells the agent to ask, in one line, for a tap on the cards above. A refused tap tells the agent the same and never
+  to claim a start.
 
 ## Go-ask rules (back chain)
 
