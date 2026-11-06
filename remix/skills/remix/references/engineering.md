@@ -226,6 +226,14 @@ Sean: "I need to make sure we're always having ready to go ads on Dev and prod."
 providing 1 or 2 universal templates for free. This will be either the 'egg drop' template or one other TBD."
 - A merchant's FIRST remix is offered 1-2 UNIVERSAL templates, free (no credits). A universal template fits every
   category and every product: its hook is kept as the ad's own clip, and only the product scenes are remade.
+- The universal shape (Sean 2026-11-06, the egg drop: "Reused beginning clip, then montage"): the ad's own opening clip
+  is kept as is (a suspense hook with no product in it), then a montage of the merchant's product, held on the music's
+  beats. Because the hook has no product and the montage is all product, it fits any category, so the same-type swap
+  rule does not apply to a universal template.
+- Every remix video is kept (Sean 2026-11-06: "You need to have every video I make with remix in context stored
+  somewhere"). The source ad, every paid output and the final are stored the moment each exists, not only on Save.
+  They are listed in one index in context. A source that was only on someone's laptop is lost (the egg-drop original,
+  kedai-egg-reel-v6.mp4).
 - Every remix after the first is offered per-category ready ads (Sean: "3 per category is after the first one"). Every
   category keeps at least 3 approved templates on dev and on prod. A daily check logs `remix_template_stock_low`, and
   the back-office Overview shows a count per category (YMS-778).
