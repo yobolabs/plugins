@@ -163,3 +163,8 @@ problem, not a wiring problem.
   over `delete` while debugging.
 - Deleting a tool that agents reference leaves those agents with a dangling
   grant. Detach first.
+- **A list the API returns unordered must be ordered by the tool, not the prompt.**
+  With result handles the model chooses its own `read_result` query, and it will
+  slice (`[:3]`) a list it assumes is newest-first. A prompt line "sort by
+  timestamp" is not reliably followed. Sort (and project to the fields agents use)
+  in the tool response. Evidence: Apify instagram-scraper posts, YMS-760.
