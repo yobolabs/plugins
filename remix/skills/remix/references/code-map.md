@@ -140,6 +140,12 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 - **App-speaks-next.** A started `remix_start` carries `appSpeaksNext: { ref: remixId }`; msg-api drops the agent's
   own text after it only when its holding line for that execution went out (`agent_text_suppressed`; else
   `agent_text_kept_app_missing`). Refused / resumed starts carry no flag and keep the agent's words.
+  **Changing (note-20261106-cf, build-53):** keeping the agent text when the holding line is missing let the agent
+  promise "the breakdown will arrive here" 7 s before a file_unavailable line (prod conv 2639, msgs 82976/82977).
+  New rule: after a started remix_start the agent's own text is never sent. msg-api sends `remix.reading` copy
+  instead, else `chat.early_ack`, else nothing, and logs `agent_text_replaced_app_next`. The app always speaks next,
+  with the breakdown or the failure line. Agent prompts backstop this: after remix_start, say nothing about what
+  comes next.
 - **Web chat agent = `COPILOT_TEAM_UUID` (yobo system_config).** Web-only Main Chat AND every side chat use it (via
   msg-api WEBCHAT); a WhatsApp-linked Main Chat uses the WA conversation's agent. The copilot key and that agent must
   sit in the SAME Cadra org: an agent in another org makes cadra-web's stream route answer `wrong_org` → SSE 404
