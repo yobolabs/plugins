@@ -36,3 +36,16 @@ Never put one video's words, names, labels or colours into a type or universal f
 10. **Index.** Fill the row in `video-breakdowns/INDEX.md` (techniques → skill refs, status).
 
 Repeatable checklist: `_context/_runbooks/yobo-video-breakdown.md`.
+
+## Intake from an IG collection
+
+The owner saves reels to one Instagram collection; `scripts/ig_intake.py` turns new ones into ONE queued task per
+run (`--queue` writes `tasks/m-ig-breakdown-<mmdd-hhmm>.md` via chief-of-staff `tasks.py`; `queue-run.sh` spawns it).
+
+- **Read-only.** Input is the collection page HTML from a dedicated logged-in browser profile on the owner's Mac.
+  Never log in from the script, never click, like, follow, post or DM. Cookies never leave that Mac.
+- **Login wall or checkpoint → exit 3.** Stop, log, file one ask. Never re-login automatically.
+- **Watermark** `~/.ig-intake/seen.json`: a URL is marked seen only once it is queued.
+- **Limits** (rows in `_context/LIMITS.md`): `--max-per-run 3` (the rest stay unseen for the next run, logged as
+  `limit_hit`), `--hours 8-23`, poll every 60 min with jitter. One JSON line per run in `~/Library/Logs/ig-intake.log`.
+- Tests: `python3 tests/test_ig_intake.py` (fixtures in `tests/fixtures/`).
