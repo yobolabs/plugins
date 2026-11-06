@@ -11,6 +11,23 @@ that sees the storyboard alone against brief text passed pictures with the wrong
 
 ## Good enough passes: the source ad is a benchmark, not a blueprint
 
+Sean: "Remix = take something that exists and make something NEW. It does not mean replicate scene by scene. The
+original ad is a BENCHMARK for quality, not the exact BLUEPRINT. Lower our thresholds." (agent-architect
+gate-20261105-12.)
+
+- **Every check that compares with the source ad judges the ad's job, not a match.** Drift, storyboard review, the QA
+  reviewer and set/scene checks ask: does the hook still hook, is the product the hero, does the call to action land,
+  are pacing, energy and quality at least as good as the original.
+- **Not failures:** different people, a different set, a different scene count or order, merged or dropped scenes,
+  wardrobe and prop details. Record them as info on the run; never stop on them.
+- **Still block (harms the merchant):** the wrong product or a mismatched product, another brand's logo or text,
+  off-brand or unsafe content, broken quality (garbled faces or text, a person who changes look inside OUR ad).
+  "Block" means: not shown to the merchant, fixed once automatically (regenerate that part with the cast reference),
+  then ask with buttons [Use it anyway] / [Try again]. Never a dead stop (R6, `whatsapp-journey.md` § Problem solver).
+- A product swap and a template still keep the ad's own clips by design (merchant's choice); the principle governs
+  what the checks treat as a failure, not which parts are kept.
+- Changing a check's threshold is a behaviour change. If a counted cap changes, it still needs its `LIMITS.md` row.
+
 Sean 2026-11-05 ~21:1x: "these remix videos are not blueprints … We need flexibility … think about what the end goal
 is … providing a video quality video to the user who has no idea how to do this. They are not gonna be that nitpicky.
 We need to reduce how critical we are and pass approve things or pass things that are done well enough." (A reviewer
