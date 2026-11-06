@@ -223,3 +223,24 @@ org binding (msg-api contact → conversations; yobo remix_runs for that org). A
 open ask: a "1" meant for a menu proof started a paid storyboard batch on another dev org's remix. Use a new number,
 or close the old conversation first.
 
+
+## Paid starts on yobo-native runs: keys, go, parts, retries (2026-11-06)
+The first yobo run past storyboard approval hit six gaps in a row. Each rule below holds for every yobo-owned run.
+- **A paid start key is exactly `runId:target`** (`jobs.ts` `checkRemixStartKey`). Never add a suffix to a paid key.
+  A [Try again] into a paid phase consumes its ask as a NEW press (`press-port` `consumeFullKeyPress`) and restarts
+  under that press's plain key. The join body keys `<press>:main`; the run's own record key stays `<press>:join:main`.
+- **Every paid go carries `approvalId`**: the ask the press consumed (`db-ports` `pressAskIdOf`). This is the same for
+  parts and the join, whether the press is a system auto_join or a [Try again].
+- **A part start writes its `project.parts` entry** (`video-view` `partRecord`, slides `makeRemixVideos` upsert).
+  Without it `applyPart` drops every landed video: `made` stays empty, the join never starts, and a retry bills done
+  parts again.
+- **Prove a new paid start path with every pure check before the first paid run**: key, then input, then go, then quote
+  (`paid-start-contract.test.ts` `startChecks`). The worker log drops the 400 message (`part:invalid_request`). To read
+  it for free, rebuild the body in the dev worker with a tsx script in `/tmp` (never `/app`) and remove it as root.
+- **There is no staff resume out of `needs_help` yet.** A second 400 on the same step is a system stop. To resume by
+  hand, use the legal edge `needs_help → waiting_merchant` (it needs `waitReason` and `pausedFrom`). Then re-post the
+  refusal ask through `postFrontRefusal` with the repeat check off. Back up the run state first.
+- **Product photos have one rule**: `spend.ts` `productPhotoUrls` (the product's own images, else research photos with
+  a `usable` verdict) feeds the video catalog, storyboard assets and chat-photo. A storyboard sheet with no photo asks
+  in chat: ONE `photo` ask naming the item, with the sheet target on its item. A chat photo then binds to that ask
+  (`sheet-photo-bind.ts`), consumes it as the `retry:sheet` press, and wakes the run.
