@@ -94,6 +94,11 @@
  *                 kb upload; a kb name is still resolved with a read-only lookup)
  *   --quiet       suppress the per-record apply log
  *
+ * Promote (p151 - copy one proven release to its twin agent in another env):
+ *   cadra agent promote --from dev:<agent>@<releaseId> --to prod:<agent> [--apply [--deploy]]
+ *   cadra agent promote ... --link [--apply] [--host <srcHost>=<dstHost>]
+ *     needs CADRA_<ENV>_API_URL + CADRA_<ENV>_BUILDER_API_KEY per side; see promote.mjs
+ *
  * Exit code is non-zero on any HTTP or validation error.
  */
 import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
@@ -533,6 +538,13 @@ if (first === "ping") {
   const data = await api("GET", "/agents?limit=1");
   const n = itemsOf(data).length;
   console.log(`OK  ${BASE}  key accepted  (agents:read works; ${n ? "org has agents" : "no agents visible yet"})`);
+  process.exit(0);
+}
+
+// --- agent promote (p151): one proven release, env -> env, as one new release ---
+if (first === "agent" && second === "promote") {
+  const { runPromote } = await import("./promote.mjs");
+  await runPromote(rest);
   process.exit(0);
 }
 
