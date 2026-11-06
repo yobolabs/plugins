@@ -23,6 +23,13 @@ string (an object whose keys contain ':' broke every "Use these").
 - The agent handles free text and questions only, with typed remix tools. It never presses Approve, never states a
   price, never promises text/logos drawn by AI. Detail: `references/whatsapp-journey.md`.
 
+### Words the merchant sees
+
+- **Say "Remix", never "Remake"** (UI copy, routes, code names, docs).
+- **Never call the source ad "your ad"** (Sean 2026-11-05: "why would it tell me a person isn't in my ad — Yobo built
+  this ad"). The merchant's ad is the remix; the one being copied is "the original ad" (id "iklan aslinya", es "el
+  anuncio original") in every line, copy row and prompt the merchant sees.
+
 ## Tap ids
 
 | Prefix | Meaning | Examples |

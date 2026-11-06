@@ -40,3 +40,8 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
 - WhatsApp video cap is 16 MB: the chat gets a copy that fits (about 15 MB, 720p if needed); the full file stays in Ad
   Studio. If the send fails: one line with the link.
 - Export waiver: the MQL waiver applies at export too (quote passes the remixId).
+
+## Music
+
+Music (Sean 2026-11-05): default = the source ad's own track; the merchant can search or pick a track we already have;
+similar-track matching only with a free source (no paid music vendor). From scratch, the same match and search, seeded by the script's mood.
