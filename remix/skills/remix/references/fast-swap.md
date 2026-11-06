@@ -87,7 +87,10 @@ and out), video and picture model, quality, shape, look, exact timings, on-scree
 VARIABLE, drop none. The variables
 are the slots a new merchant fills: product (sheet, real size, type), cast, set and look, text changes ("OLD" becomes
 "NEW"), offer, caption, language, and which scenes they choose to remake. Save the configuration frozen and the
-variables as named slots with defaults; a rerun fills slots only. Harm if not: every rerun re-reads the ad and re-asks
+variables as named slots with defaults; a rerun fills slots only. The template is what the agent follows (Sean 2026-11-06: "the templates will be your
+prompt that the agent knows how to proceed. It will know what to set, it will know what to do"): the template
+reaches the agent as a tool result listing each variable with its question and default; code applies the fixed
+configuration, the agent only asks for and fills the variables. Harm if not: every rerun re-reads the ad and re-asks
 choices already settled, costing time and paid calls, and two runs of one template drift apart.
 
 **Every finished video becomes a template** (Sean 2026-11-03 ~21:2x: "Basically, every video created should become a
