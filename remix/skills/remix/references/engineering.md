@@ -114,8 +114,13 @@ control, never copied. Harm if not: the lab makes good videos while merchants on
 ## Web chat runs the same remix (Sean 2026-11-06)
 
 Sean: "a pure Yobo web chat experience … which will need to work with WhatsApp". Only merchants who use WhatsApp get
-it. `/chat` Main Chat already runs on the merchant's WhatsApp conversation (yobo `webchat/ingress/route.ts`), so the
-responder is the same Yobo agent: no responder swap, no second agent. A run started or driven from the web is
+it. **A web remix runs in a SIDE CHAT, never in Main Chat** (Sean 2026-11-06: "the idea of doing a remix inside of a
+Yobo web chat it's to use a side chat not the main chat because the main chat is a mirror of the WhatsApp chat the
+point of using side chat is to do very specific tasks"). Main Chat (`/chat`) mirrors the merchant's WhatsApp
+conversation (yobo `webchat/ingress/route.ts`); a Side Chat (`ChatSessionKind.SIDE`, p143) is one task. Harm if not:
+the remix's steps, buttons and progress lines flood the merchant's WhatsApp thread. Web proofs and web entry points
+(an "Open side chat" card, a remix deep link) open or create a side chat for the run. The responder is the same Yobo
+agent: no second agent with its own remix rules. A run started or driven from the web is
 `surface='web'`: step turns go to the web only (msg-api `webOnly`). WhatsApp then gets ONE line + [Continue in Yobo]
 per step only while the merchant is off the web, one status line if they write there mid-run, and the final video.
 Harm if not: every step lands twice, once in each place.
@@ -163,7 +168,7 @@ comment. Harm if not: work stops on rules nobody needed (staff could not approve
 ## Prove in Yobo web chat first (Sean 2026-11-06)
 
 Sean: "a major thing that we should've done first was to make sure that our Yobo web chat could do this and create a
-remix first before WhatsApp". Every remix change is proven end to end in dev Yobo web chat (`/chat`) first, driven in
+remix first before WhatsApp". Every remix change is proven end to end in a dev Yobo web SIDE CHAT first, driven in
 the session's own browser tab (start → storyboards → parts → join → final). Web chat and WhatsApp share one run engine,
 so engine bugs show up there without a phone. Then the WhatsApp proof on a real handset, then prod.
 
