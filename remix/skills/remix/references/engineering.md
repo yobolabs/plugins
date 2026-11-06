@@ -68,8 +68,9 @@ elements to generate the video."
   An agent ships as a WHOLE VERSION, never piecemeal (Sean 2026-11-01 + 2026-11-06: "we're deploying the entire version
   from dev to prod. That's how we do deployments of agents"). A release (p144) pins one version of every tool, skill,
   role lock, harness and delegate (`agent_version_pins`). Change dev 443 first, prove it, then promote that release to
-  prod 362 as one new prod release: `cadra agent promote --from dev:443@<release> --to prod:362` (p151; dry run first,
-  agents-lead gate). Never hand-edit a prod tool/skill/prompt row. Before any promote, dry-run BOTH ways: anything prod
+  prod 362 as one new prod release. The one-step tool `cadra agent promote` (p151) is SPEC ONLY, not built
+  (agents-lead 2026-11-06); until it exists, dev-proven objects are copied to prod one by one under the agents-lead
+  gate, with a full release diff before and after proving no prod-only item was overwritten. Never hand-edit a prod tool/skill/prompt row. Before any promote, dry-run BOTH ways: anything prod
   has that dev lacks (a fix made live on prod only) would be OVERWRITTEN by the promote, so port it to dev, prove it,
   then promote (Sean 2026-11-06: "if anything changes … because it's live, but it was not done on dev, then will we be
   overwriting"). Same as code: main never carries what develop lacks. Comparing dev vs prod = diff the two pinned releases
