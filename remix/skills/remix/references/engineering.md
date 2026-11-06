@@ -51,6 +51,13 @@ elements to generate the video."
 - **Never hold a run-row lock while another connection writes a row that references it** (2026-11-06 deadlock: FOR
   UPDATE on `remix_runs` + a second-connection `remix_asks` insert).
 
+- **Before porting a held-out chain to main, look for its owner's port** (`git branch -r | grep <ticket>`, the lane's
+  session file). Refresh that port (new branch, merge main) instead of building a second one.
+- **When main deliberately held out a sibling feature, a port merge keeps only your ticket's half.** Trace each
+  conflicting line to its commit (`git log -S`); lines from another ticket stay out and its owner is named.
+- **"Port-only" failures from a loaded full-suite run are re-run alone on both trees** (port and main) before
+  anyone calls them regressions; a slow graph-walking test needs a raised timeout.
+
 - **A limit needs a `LIMITS.md` row** (caps, timeouts, retries); a limit that fires logs on the job.
 - **Never remove what another ad type needs.** Diff against the last version before shipping a fix for one type.
 - **Proofs and proof replays never post into a chat a person is using** (a dev chat may be someone's phone; 2026-11-05: test replays landed in Sean's live dev chat 3 min
