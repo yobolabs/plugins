@@ -123,10 +123,7 @@ async function resolveAgent(call, env, ref) {
   if (!r.ok) fail(env, r);
   const a = r.data?.agent ?? r.data;
   if (!a?.uuid) die(`(${env}) agent ${ref}: no uuid in the response`);
-  // A deploy must name the pointer it read (server refuses without it). Never guess it.
-  const ptr = "deployedVersionId" in a ? a.deployedVersionId : "deployed_version_id" in a ? a.deployed_version_id : undefined;
-  if (ptr === undefined) die(`(${env}) agent ${ref}: the response has no deployedVersionId; cannot name the live pointer`);
-  return { id: a.id, uuid: a.uuid, name: a.name, deployedVersionId: ptr };
+  return { id: a.id, uuid: a.uuid, name: a.name };
 }
 
 function summarise(plan) {
@@ -158,17 +155,28 @@ export async function runPromote(argv) {
 
   if (o.link) return link({ o, to, dst, dstAgent, bundle });
 
+  // The v1 agent read does not carry the deployed pointer. The dry run returns the target's
+  // current pointer (plan.target.deployedVersionId); an apply names exactly that pointer, so a
+  // move by anyone in between is refused (409 RELEASE_MOVED), never overwritten.
+  let expectedFromId;
+  if (o.apply) {
+    const pre = await dst("POST", `/agents/${dstAgent.uuid}/promotions`, { bundle, dryRun: true, deploy: false, overwrite: o.overwrite, drop: o.drop, sharedOk: o.sharedOk });
+    if (!pre.ok) fail(to.env, pre);
+    const t = pre.data?.plan?.target ?? pre.data?.target;
+    if (!t || !("deployedVersionId" in t)) die(`(${to.env}) the dry run did not return the target's deployed pointer; not applying`);
+    expectedFromId = t.deployedVersionId;
+  }
   const body = {
     bundle,
     dryRun: !o.apply,
     deploy: o.deploy,
-    expectedFromId: dstAgent.deployedVersionId,
+    ...(o.apply ? { expectedFromId } : {}),
     overwrite: o.overwrite,
     drop: o.drop,
     sharedOk: o.sharedOk,
   };
   const r = await dst("POST", `/agents/${dstAgent.uuid}/promotions`, body);
-  const plan = r.data?.plan ?? r.data ?? r.json?.error?.details ?? null;
+  const plan = r.ok ? r.data?.plan ?? r.data ?? null : r.json?.error?.details ?? null;
   const file =
     o.planOut ?? `promote-plan-${from.env}-${from.agent}@${from.release}-${to.env}-${to.agent}-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
   writeFileSync(file, JSON.stringify({ from: o.from, to: o.to, request: { ...body, bundle: { bundleHash: bundle.bundleHash } }, status: r.status, result: r.json }, null, 2));
@@ -197,7 +205,9 @@ async function link({ o, to, dst, dstAgent, bundle }) {
   for (const p of bundle.pins) if (p.scope !== "platform") add(PIN_TWIN[p.kind], p.subjectUuid ?? String(p.subjectId), p.name);
   for (const r of [...(bundle.agent.envRefs ?? []), ...bundle.pins.flatMap((p) => p.envRefs ?? [])]) add(r.kind, r.sourceKey, r.name);
 
+  const CREATABLE = new Set(["tool", "skill", "role"]);
   const proposals = [];
+  const created = [];
   const unmatched = [];
   for (const w of want.values()) {
     if (w.kind === "agent" && w.sourceKey === bundle.agent.uuid) {
@@ -205,6 +215,12 @@ async function link({ o, to, dst, dstAgent, bundle }) {
       continue;
     }
     const path = LIST[w.kind];
+    if (w.kind === "model_provider") {
+      // Provider keys are name-keyed per org; propose the same name (a platform provider like
+      // "cadra" is identical everywhere). A different prod key name is set by hand.
+      proposals.push({ kind: w.kind, sourceKey: w.sourceKey, targetKey: w.sourceKey, name: w.name, how: "same provider name" });
+      continue;
+    }
     if (!path) {
       unmatched.push(w);
       continue;
@@ -213,16 +229,18 @@ async function link({ o, to, dst, dstAgent, bundle }) {
     const rows = r.ok ? (Array.isArray(r.data) ? r.data : r.data?.items ?? r.data?.data ?? Object.values(r.data ?? {}).find(Array.isArray) ?? []) : [];
     const exact = rows.filter((x) => (x.name ?? x.title) === w.name);
     if (exact.length === 1) proposals.push({ kind: w.kind, sourceKey: w.sourceKey, targetId: exact[0].id, name: w.name, how: "exact name" });
+    else if (exact.length === 0 && CREATABLE.has(w.kind)) created.push(w);
     else unmatched.push({ ...w, candidates: exact.length });
   }
   console.log(`LINK  ${bundle.sourceEnv} → ${to.env}:${dstAgent.name}   twins present ${twins.size}, missing ${want.size}`);
-  for (const p of proposals) console.log(`  match   ${p.kind}:${p.sourceKey} → ${p.targetId}  (${p.how}: ${p.name})`);
+  for (const p of proposals) console.log(`  match   ${p.kind}:${p.sourceKey} → ${p.targetId ?? p.targetKey}  (${p.how}: ${p.name})`);
+  for (const c of created) console.log(`  new     ${c.kind}:${c.sourceKey}  "${c.name}" — no same-name target; the promote creates it and records the twin`);
   for (const u of unmatched) console.log(`  CONFIRM ${u.kind}:${u.sourceKey}  "${u.name}"${u.candidates ? `  (${u.candidates} same-name rows)` : ""} — set by hand: PUT /agents/{id}/twins`);
   if (!o.apply) return console.log("dry run: nothing saved (add --apply to save the matches above).");
   if (!proposals.length && !o.hosts.length) return console.log("nothing to save.");
   const r = await dst("PUT", `/agents/${dstAgent.uuid}/twins`, {
     sourceEnv: bundle.sourceEnv,
-    twins: proposals.map(({ kind, sourceKey, targetId }) => ({ kind, sourceKey, targetId })),
+    twins: proposals.map(({ kind, sourceKey, targetId, targetKey }) => ({ kind, sourceKey, ...(targetKey ? { targetKey } : { targetId }) })),
     hostMaps: o.hosts,
   });
   if (!r.ok) fail(to.env, r);
