@@ -76,6 +76,15 @@ timed out". The full pipeline stays the default; never pick the fast path for th
 
 ## Templates, reuse and source download
 
+**A template = the finished run's configuration + its variables** (Sean 2026-11-06: "what are the variables that can
+be changed from that configuration, and that's basically what the template is"). The configuration is everything the
+run settled: cut list and timings, beats, the ad's music, keep vs remake per scene, still vs moving per scene, the
+ad-area crop and overlay-text blur, the line drawings, the kept clips, and each remade part's prompt. The variables
+are the slots a new merchant fills: product (sheet, real size, type), cast, set and look, text changes ("OLD" becomes
+"NEW"), offer, caption, language, and which scenes they choose to remake. Save the configuration frozen and the
+variables as named slots with defaults; a rerun fills slots only. Harm if not: every rerun re-reads the ad and re-asks
+choices already settled, costing time and paid calls, and two runs of one template drift apart.
+
 **Every finished video becomes a template** (Sean 2026-11-03 ~21:2x: "Basically, every video created should become a
 template."; p132 §16). Save the cropped ad, the reading (scenes, product shots), the kept-vs-remade plan, the kept
 clips and the product-scene prompt. A remix from a template regenerates ONLY the product scenes and joins them with
