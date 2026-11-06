@@ -3,7 +3,7 @@
 Back to [SKILL.md](../SKILL.md). For sessions that change remix code, Cadra rows or prompts; a lab user's session
 does not need this file. Every rule keeps its source quote and date.
 
-## Where remix lives and how a run is planned (SKILL.md P1, P3)
+## Where remix lives and how a run is planned (`../remix-agent/SKILL.md` P1, P3)
 
 **remix lives in yobo only (Sean 2026-11-05).**
 
@@ -19,7 +19,7 @@ product hero, proof, CTA), timing, roles, product scenes, reusable clips. The te
 record, versioned per edit; every step reads and writes it, and no step keeps its own copy. Then one pipeline builds
 from it. Another merchant's offers, prices, brand and product names in a stored template become placeholders on load.
 Design: `REVIEW.md` §13.28.
-Music: `join-and-sound.md` § Music.
+Music: `../remix-agent/references/join-and-sound.md` § Music.
 
 **a source ad is optional; the storyboard is the contract (Sean 2026-11-05).**
 
@@ -30,7 +30,7 @@ elements to generate the video."
 - A remix starts from a source ad OR from a script (the agent's agreed concept). With a script, the script IS the
   brief: scenes, seconds, what each shows, lines, cast roles, product scenes. Then the same storyboard → review →
   approval → video pipeline runs.
-- Never answer "make this idea" by offering unrelated ads. A source ad, when used, is a quality benchmark (SKILL.md P2).
+- Never answer "make this idea" by offering unrelated ads. A source ad, when used, is a quality benchmark (`../remix-agent/SKILL.md` P2).
 - Design: `REVIEW.md` §13.27 (remix_start script source; architect gate pending).
 
 ## Shipping and proving
@@ -72,7 +72,7 @@ elements to generate the video."
   worker); dev reads only `YOBO_REMIX_ALERTS_DEV_CHANNEL_ID`. Never join a dev bot into a prod channel or put a prod
   channel id in a dev proof to make it pass.
 
-## Who decides, budget, pricing (SKILL.md P4)
+## Who decides, budget, pricing (`../remix-agent/SKILL.md` P4)
 
 - **The remix lead decides; never ask Sean for sign-off on video work** (Sean 2026-11-05: "Stop asking me about
   sign-off on these video ads. You have a budget, use the budget, do this autonomously." and "No paid" for vendors).
@@ -87,7 +87,7 @@ elements to generate the video."
   paid renders" unless the lead cleared that run.
 - **Pricing is parked.** Never add or change a price or credit UX. The free first remix is the MQL waiver; every paid
   quote or start must name the remix so the waiver applies.
-- **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (SKILL.md P6, `whatsapp-journey.md` § Problem solver).
+- **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (`../remix-agent/SKILL.md` P6, `../remix-agent/references/whatsapp-journey.md` § Problem solver).
 
 ## Pictures sent to people are compressed (Sean 2026-11-06)
 

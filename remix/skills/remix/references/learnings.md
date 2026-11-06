@@ -61,5 +61,5 @@ Never write to the KB any other way, and never put a key, customer data or a per
 ## 3. Promote what is general
 
 A GENERAL rule candidate becomes a rule in this skill (`SKILL.md` or the stage reference) and a TYPE candidate goes
-into `references/types/<type>.md`, through `dev-workflow:update-references` (bump, commit, push). The note stays in
+into `../remix-agent/references/types/<type>.md`, through `dev-workflow:update-references` (bump, commit, push). The note stays in
 the KB as the evidence; the rule lives in the skill.

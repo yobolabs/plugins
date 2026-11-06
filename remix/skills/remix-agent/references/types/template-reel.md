@@ -17,7 +17,7 @@ shows the prompt that made it (often with a small product photo and a "comment X
   saw no product there (the product printed on flyers or a shirt pocket); a script with no time codes = remake the
   whole ad. Text the script prints on props (a flyer's words) follows the script, edited for the merchant; no
   captions or added text. Never send the panel as a reference IMAGE: the model copies images visually, and the
-  panel's own product photo won. The read prompt pre-fills the lab's Prompt box; the team edits it there.
+  panel's own product photo won. The read prompt pre-fills the run's prompt; edits change that prompt, never replace it.
 - **Clip to the ad area.** Kept clips, remade parts and held pictures are all cut to the ad area (pixels that change
   across frames) and resized to a standard shape. Never send the panel as an image: its product photo wins.
 - **Check how the product appears.** Template reels often print the product on props (flyers, posters, a shirt
