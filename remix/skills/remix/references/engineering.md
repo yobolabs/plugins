@@ -245,7 +245,8 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
 - Sizes start at the cheapest (Sean 2026-11-06: "These montage/slide-style videos are super cheap for us to make, so
   we'll offer more of these at the 'small' or 'tiny' size. Still need to come up with a naming convention"). A
   montage / slide-style template (stills held on beats, little or no paid video) is the smallest size band, and the
-  ready-ad stock favours them. Size names are not decided; never show a size name to merchants until Sean picks one.
+  ready-ad stock favours them. Size names: XS / S / M / L (Sean 2026-11-07); montage / slide-style = XS. Credits per
+  size are interim config rows (`ads_gen.remix_rate_card.credits_per_size`), set now and recalibrated on measured cost.
   Design: KB `slides/_specs/p131-remix-in-ad-studio/arch-review-20261103/SIZING.md`.
 - Every remix after the first is offered per-category ready ads (Sean: "3 per category is after the first one"). Every
   category keeps at least 3 approved templates on dev and on prod. A daily check logs `remix_template_stock_low`, and
