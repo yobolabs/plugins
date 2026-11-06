@@ -66,7 +66,7 @@ timed out". The full pipeline stays the default; never pick the fast path for th
   into the product (ingredients, a recipe), its packaging AND its contents, or several different items, use the
   storyboard pipeline: each changed scene gets its own approved picture. One video call cannot hold several changes:
   a making-of box ad kept the cookie ingredients when the box was swapped (01a1a5a4), and kept the cookie box when the
-  ingredients were swapped (01a1a5b0).
+  ingredients were swapped (01a1a5b0). The recipe rule for making-of ads: `types/product-hero.md` "A making-of ad needs a real recipe".
 - **Swap only within the same product type** (Sean 2026-11-04: "where the product is not the same type, for example
   a beauty product versus food or a pet … it doesn't translate well"). Food/drink, beauty/personal care, pet, fashion,
   tech and home products are used, held and shown differently; a swap keeps the original's actions, so a cross-type
