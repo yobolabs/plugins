@@ -216,3 +216,10 @@ retry consumes its ask without re-billing parts (115607fe4 + d51b44674 + c897912
 `<pressRunId>:main`. Harm if not: every new prod remix waits at 'reading' forever, or re-bills parts, or never
 joins. This is the one named exception to switch parity, and it ends when the bundle ships.
 
+## A proof number must be fresh (2026-11-06)
+
+Before a dev proof sends from a fictional or test number, check that the number has no open remix, conversation or
+org binding (msg-api contact → conversations; yobo remix_runs for that org). A reused number answers someone else's
+open ask: a "1" meant for a menu proof started a paid storyboard batch on another dev org's remix. Use a new number,
+or close the old conversation first.
+
