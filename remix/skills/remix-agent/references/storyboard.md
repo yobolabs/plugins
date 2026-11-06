@@ -7,6 +7,12 @@ source frame (position and framing only). A master picture or set picture is a r
 substitutes for the shot's own line drawing. Line drawings never go to a video model alone (the old subject's shape
 leaks into the new product).
 
+**Video model: Seedance only, never Kling** (Sean 2026-11-06: "No, do not use Kling. We have plenty of experience to
+know"). Every remix video part, draft and final, runs on Seedance. A clip of one continuous shot uses Seedance
+image-to-video with the start picture as `image_url` and the end picture as `end_image_url`. A clip spanning several
+shots uses Seedance reference-to-video: ordered `image_urls` (start picture first, end picture last), bound by @ tags
+in the prompt. Reference-to-video takes no first/last frame field and must not be mixed with one.
+
 **What a storyboard set must hold** (Sean 2026-11-06: "Storyboard must have an image for every unique shot and for
 start and end shot of clips"): one image for every UNIQUE shot (a shot that comes back, the same setup and framing,
 reuses its image rather than getting a new one), PLUS an image for the first and the last frame of every video part
