@@ -77,3 +77,9 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   (WhatsApp 131026), and a tap on an ask whose `remix_deliveries` row is `failed` is refused or re-posted. Before each
   test tap, flip that one row to `delivered` with an undo line logged first (the test org's undo file in the spec's
   `build/`), then inject the tap. Never on a real merchant's chat.
+- **A polled Cadra step has no job and no callback: its wake is its only re-check.** The teardown is polled; never clear
+  `next_wake_at` while it runs (prod run 836e29c2 stalled when `advance/stall-guard.ts` cleared it; fix yobo 8944fb752).
+  A failed, cancelled or vanished (Cadra 404) teardown ends the poll: clear the wake, send the one refusal line.
+- **Close a run's open asks when the run ends or is replaced.** Stale asks win the match for a typed reply (35 stale
+  asks swallowed a merchant's typed "yes", T1c). A typed reply always resolves against the newest live run.
+
