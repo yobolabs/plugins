@@ -90,9 +90,12 @@ what the lab and Ad Studio do inside; they are for builders, not steps for a use
 The remix lab (v9.00) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
 sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
 or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
-and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a question to Sean the
-same day, never a silent default (that is how the ad's own music, per-shot line drawings and the breakdown view all
-shipped off). Lab manual: `remix-context` search "Remix lab — how it works"; team steps: search "Remix Lab — team how-to".
+and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a BUG in the port: fix the
+port to match the lab, never a silent default (that is how the ad's own music, per-shot line drawings and the
+breakdown view all shipped off). **It is never a question to Sean** (Sean 2026-11-06, on a storyboard ask: "This is
+already all fully designed and understood when we did remix lab. Why is this a question?"). Before filing any remix
+design ask, or re-filing one you inherited, read the lab manual and the lab code. If the lab answers it, apply that.
+Ask Sean only when someone wants the product to differ from the lab. Lab manual: `remix-context` search "Remix lab — how it works"; team steps: search "Remix Lab — team how-to".
 
 ## Lab traps seen 2026-11-06 (fast-cut food montage, KB note 2026-11-06-fast-cut-food-montage-lab-misses-8544)
 - **A storyboard grid sent to the video model carries no panel labels.** Captions like "1 · 0.1 s" on the grid were
