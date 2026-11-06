@@ -212,8 +212,9 @@ apologising, instead of a product that works.
 
 ## The yobo start switch waits for the yobo-path bundle (2026-11-06)
 
-`ads_gen.remix_owner_at_start = yobo` is ON for dev (global) and absent on prod (prod starts are slides-owned).
-**Do NOT copy it to prod by switch parity** until these yobo-path fixes are on prod main, checked by content:
+`ads_gen.remix_owner_at_start = yobo` is ON for dev (global) and, since 2026-11-06 13:13Z, ON for prod too (global row,
+system_config 23867; yobo main 0037ded3f carried the bundle). The rule stays for any future rollback or new env:
+**do NOT copy it by switch parity** until these yobo-path fixes are on prod main, checked by content:
 analyze start after a native source read (build-49, the 'reading' stall), part record at part start (7b505f735),
 retry consumes its ask without re-billing parts (115607fe4 + d51b44674 + c89791249), join startKey
 `<pressRunId>:main`. Harm if not: every new prod remix waits at 'reading' forever, or re-bills parts, or never
@@ -254,5 +255,6 @@ Check each one on prod by name before calling a remix release done (switch parit
 - yobo `SLIDES_API_URL` + `SLIDES_API_KEY` (slides PROD key): the one Ad Library adapter reads slides with them.
   Missing → every staff read fails "That ad could not be read." (log `remix_adlib_read_failed …unset`).
 - yobo `REMIX_HOUSE_ORG_ID` = the prod YoboLabs org (211 on prod; 1 on dev). Prod org 1 is a merchant.
-- `ads_gen.remix_owner_at_start`: stays OFF on prod until the yobo-path bundle is on main (section above).
+- `ads_gen.remix_owner_at_start`: global `yobo` on dev and prod (prod since 2026-11-06). The bundle check above applies
+  before setting it on any env. The owner is read uncached at each remix_start, and a run keeps the owner it started with.
 
