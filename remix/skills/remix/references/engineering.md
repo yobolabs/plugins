@@ -207,3 +207,12 @@ Facts from the 2026-11-06 recovery (investor org 4115):
 Never a human takeover reply for a pipeline failure. Harm if not: the merchant sees silence, then a person
 apologising, instead of a product that works.
 
+## The yobo start switch waits for the yobo-path bundle (2026-11-06)
+
+`ads_gen.remix_owner_at_start = yobo` is ON for dev (global) and absent on prod (prod starts are slides-owned).
+**Do NOT copy it to prod by switch parity** until these yobo-path fixes are on prod main, checked by content:
+analyze start after a native source read (build-49, the 'reading' stall), part record at part start (7b505f735),
+retry consumes its ask without re-billing parts (115607fe4 + d51b44674 + c89791249), join startKey
+`<pressRunId>:main`. Harm if not: every new prod remix waits at 'reading' forever, or re-bills parts, or never
+joins. This is the one named exception to switch parity, and it ends when the bundle ships.
+
