@@ -53,6 +53,15 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   `{ "base": { "fromVersionId": <live> }, "pinOverrides": [{ "kind": "tool", "subjectId": <tool id>, "versionId": <head> }],
   "deploy": true, "expectedFromId": <live> }` and check the diff shows only that pin. Name the never-deployed probe
   release in the lock row.
+- **A tool-row PUT never reaches a pinned agent, including tools its spawned roles use.** The PUT mints a new
+  `tool_versions` row; the deployed release keeps its pins (rows with `source='spawn'` and a `viaRoleLockId` for
+  role tools). Proofs after a PUT alone run the OLD tool bytes (waiting out the config cache does not help). One
+  `pinOverrides` entry for the tool moves every pin of it in the release. A read-only DB alternative to the probe
+  cut for the head id: `SELECT max(id) FROM tool_versions WHERE tool_id=<id>`.
+- **Before changing a shared tool, list who reaches it two ways**: agents whose deployed release pins it
+  (`agent_version_pins` joined on `agents.deployed_version_id`, `kind='tool'`, `tool_version_id IN (tool_versions of
+  the tool)`) AND `agent_tools` links (an agent with no release reads the row live). Each pinned agent needs its own
+  release; a linked unreleased agent changes on the PUT.
 - **Role promote alone does not reach spawned roles**: the agent version pins the role lock. A role change needs
   role promote + agent publish + deploy.
 - `promoteGolden` NOT_FOUND on a role is usually a **stale browser org context**, not an ownerless role: switch org
@@ -68,6 +77,9 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Direct `/agents/<id>/execute` proofs lack org context**: tools that need an org (yobo tools with a global key)
   return 400 ("requires X-Execution-Context or X-Org-Id"). Prove through the real channel (for a WhatsApp agent,
   inject through the WhatsApp gateway), at least 3 runs, and record the execution ids for the review request.
+- **Waiting on a REST `/agents/<uuid>/execute` run: poll `GET /executions/<executionUuid>`** (`cadra execution
+  get`) until the status leaves `running`. The `streamUrl` it returns serves the app's HTML shell to an API key,
+  not events. Read the tool result from `agent_execution_logs` (`outputLength`, `resultRef`) for the proof.
 - **Proofs run on a TEST contact** (fictional sender, test org), never a real person's chat or the owner's own
   dev conversation, and each lane on its own test conversation (shared test chats collide).
 - **Dev twin write route** when the dev org's API-key quota is full: session tRPC `tools.update` +
