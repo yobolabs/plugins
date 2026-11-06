@@ -90,7 +90,11 @@ are the slots a new merchant fills: product (sheet, real size, type), cast, set 
 variables as named slots with defaults; a rerun fills slots only. The template is what the agent follows (Sean 2026-11-06: "the templates will be your
 prompt that the agent knows how to proceed. It will know what to set, it will know what to do"): the template
 reaches the agent as a tool result listing each variable with its question and default; code applies the fixed
-configuration, the agent only asks for and fills the variables. Harm if not: every rerun re-reads the ad and re-asks
+configuration, the agent only asks for and fills the variables. Each variable is filled in this order (Sean 2026-11-06: "is this something I could go find
+myself … is there something I can suggest? Or is it something that I need approval or need an idea … from the
+user and I'll give them some choices"): FIND it in the catalog, Business DNA or earlier remixes; else SUGGEST
+1–3 candidates ("Use this?"); else ASK with 2–3 choices plus "Keep as the template". Offer, price and claims are
+never taken from the template. Harm if not: the merchant is asked for things we already have. Harm if not: every rerun re-reads the ad and re-asks
 choices already settled, costing time and paid calls, and two runs of one template drift apart.
 
 **Every finished video becomes a template** (Sean 2026-11-03 ~21:2x: "Basically, every video created should become a
