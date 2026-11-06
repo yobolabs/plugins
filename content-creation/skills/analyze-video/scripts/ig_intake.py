@@ -117,7 +117,7 @@ def queue_task(urls, now, tasks_dir):
         "New reels saved to the intake collection (ig_intake.py). For EACH URL follow",
         "_context/_runbooks/yobo-video-breakdown.md end to end (fetch free, S3, breakdown, technique map,",
         "lead APPROVED, skill refs). Check _context/yobolabs/video-breakdowns/INDEX.md first; skip any already there.",
-        "No paid generation.",
+        "no paid generation; breakdown only, follow _runbooks/yobo-video-breakdown.md; 20 min budget",
         "",
         *[f"- {u}" for u in urls],
         "",
