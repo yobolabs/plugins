@@ -15,6 +15,11 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 | Cadra agent + functions | skill/tools on the remix agent; functions `video_blueprint`, `remix_brief_writer`, `remix_beats_writer`, `remix_scene_idea`, `remix_scene_reword`, `remix_needs_writer`, `remix_storyboard_review` (v7), `remix_set_check` (v2), `remix_video_prompt_writer`, `remix_sheet_*`, `remix_storyboard_*` |
 | Specs, audits, journey plan | `remix-context` MCP, source path `_context/slides/_specs/p131-remix-in-ad-studio/` (`HOW-REMIX-WORKS.md`, `REASSESSMENT-2026-11-03.md`, `review-20261103/JOURNEY-PLAN.md`, `WHY.md`) |
 | Lab (reference implementation) | `remix-context` search "Remix lab — how it works" |
+| Templates: v2 schema (configuration FIXED + variables + brief) and capture from a run | yobo `src/extensions/remix/template/schema-v2.ts`, `capture-v2.ts` (v1 readers via `toV1View`) |
+| Back office (Overview, Remixes, Templates, Review, Save as template, New template) | yobo `src/app/backoffice/remix/**`, `src/extensions/remix/components/Remix*.tsx`, `SaveAsTemplate.tsx`, `NewTemplateDialog.tsx`, `monitor/*-router.ts` |
+| Merchant template gallery + card | yobo `src/app/(org)/remix/templates/page.tsx`, `src/extensions/remix/components/gallery/` (`TemplateCard`, `templateGalleryHref`, `gallery-query.ts`) |
+| Ad Library read (the ONE reader) | yobo `src/extensions/remix/library/ad-library.ts` → slides `GET /api/v1/content/items/{id}` (content.search key, Bearer) |
+| Ad Library video into a remix | yobo `src/extensions/remix/library/library-copy.ts` (`libraryVideoUrl` port in `native-source-start.ts`) |
 
 ## Traps
 
@@ -186,3 +191,23 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   read dev msg-api rows inside the container.
 - **A new caller → new route across repos ships the ROUTE side first.** A fail-open caller hides a wrong order (it 404s,
   falls back, and the old behaviour reaches a real merchant).
+- **Ad Library video = server-side copy into OUR bucket.** slides keeps the Ad Library and returns a short-lived
+  presigned `videoUrl` of its own copied mp4; yobo copies the bytes once (stable key per item, existing reference
+  size cap) and reads it as an `upload` source. Never store or return the slides / CDN url. A template made from that
+  copy is shared (org NULL) like a public link and carries the Ad Library item id from the copy key.
+- **A bare read writes no breakdown.** The deconstruct writes the ref + blueprint; `remix_source_breakdowns` (and the
+  draft template) are recorded by the analyze step inside a run. Anything that waits for a breakdown after a read alone
+  (e.g. a staff estimate) must not loop back to "read" — offer the run with "Estimate not available".
+- **Template fit is the category key** (`categoriesMatch`). p128 `product_type` is free text, often one ad's own
+  description: never use it alone as a filter or chip; group types only when several templates share one.
+- **Template runs keep `remix_runs.scenes` empty** (content lives in the template head): read scenes through
+  `templateView` + `viewRunScenes`, never the raw column.
+- **A saved template carries none of the merchant's data:** only the ad's own kept clips are reusable; product / brand
+  names become `{product}`, prices `{offer}`; storyboards, merchant clips, picked music and offers stay on the run.
+- **Staff template review stays open** (Sean 2026-11-06 "keep them open"): staff can approve any template; missing
+  delivery or rights show as warning chips, not server refusals. Keep only the staff check, the gallery's
+  conversation-to-org tie, and a separate press for any paid run.
+- **Staff ("house") runs use the existing YoboLabs org** through the `REMIX_HOUSE_ORG_ID` env, never a new org. Its id
+  differs per env — look it up read-only (by name and staff membership), never assume an id.
+- **yobo drizzle `_journal.json` merges:** keep develop's entries, order and `idx` exactly; append new tags with the
+  next `idx` and a `when` above the current max. Sorting by `when` or renumbering rewrites hundreds of lines.
