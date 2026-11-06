@@ -224,7 +224,8 @@ joins. This is the one named exception to switch parity, and it ends when the bu
 
 Sean: "I need to make sure we're always having ready to go ads on Dev and prod." Then, the same day: "We'll start by
 providing 1 or 2 universal templates for free. This will be either the 'egg drop' template or one other TBD."
-- A merchant's FIRST remix is offered 1-2 UNIVERSAL templates, free (no credits). A universal template fits every
+- A merchant's FIRST remix is offered 1-2 UNIVERSAL templates, free (no credits), for EVERY business, not only MQLs
+  (Sean 2026-11-06: "every business"). One free universal remix per org; an MQL org never gets two free remixes. A universal template fits every
   category and every product: its hook is kept as the ad's own clip, and only the product scenes are remade.
 - The universal shape (Sean 2026-11-06, the egg drop: "Reused beginning clip, then montage"): the ad's own opening clip
   is kept as is (a suspense hook with no product in it), then a montage of the merchant's product, held on the music's
