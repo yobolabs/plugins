@@ -120,3 +120,27 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   live signed tokens (7-day chat-entry sign-in). Select only safe columns (id, direction, kind, created_at, status, a
   text length or hash); never `content_rich`, `metadata` URLs or button payloads. A printed link = a leaked login:
   revoke the token and log it in ROTATION-LOG (2026-11-06: prod token 4795 printed from a cta_url row, revoked, #32).
+- **Tool results reach msg-api inside an envelope.** A Cadra REST tool's recorded result (completion `toolResults`) is
+  `{ success, data: { success, result: { … } } }`. Any msg-api reader of a tool flag must follow `data` / `result` a
+  few levels; a parser that looks one level down passes synthetic tests and misses every live run. Debug: cadra-api
+  records them in Redis DB 1, key `commerce:results:<executionId>`, 1 h TTL — read it from inside the cadra-api
+  container (node + ioredis on its `REDIS_URL`, db 1). Build test fixtures from a real recorded row.
+- **App-speaks-next.** A started `remix_start` carries `appSpeaksNext: { ref: remixId }`; msg-api drops the agent's
+  own text after it only when its holding line for that execution went out (`agent_text_suppressed`; else
+  `agent_text_kept_app_missing`). Refused / resumed starts carry no flag and keep the agent's words.
+- **Web chat agent = `COPILOT_TEAM_UUID` (yobo system_config).** Web-only Main Chat AND every side chat use it (via
+  msg-api WEBCHAT); a WhatsApp-linked Main Chat uses the WA conversation's agent. The copilot key and that agent must
+  sit in the SAME Cadra org: an agent in another org makes cadra-web's stream route answer `wrong_org` → SSE 404
+  "Agent run not found" on every web turn. Diff dev vs prod for this row (dev drifted to an agent with no remix tools).
+- **A web remix runs in a Side Chat** (Sean 2026-11-06; rule in `engineering.md`). Today `defaultWhatsAppChat`
+  (`remix-tools.ts`) returns null for a WEBCHAT conversation, taps are allowed only on Main Chat (webchat ingress), and
+  the remix history poll runs only on Main Chat — the side-chat stories close these.
+- **Only the run machine writes run state.** `run-machine-writers.test.ts` fails any other `remix_runs` writer. A
+  side writer (lease, web focus) is allow-listed with a guard test, writes ONE state key with `jsonb_set`, and never
+  bumps `version` (a bump makes the machine's version CAS lose mid-advance).
+- **Drizzle journal `when` must be strictly increasing.** Two entries with the same `when` make drizzle skip one; new
+  entry = `max(when) + 1000`, and recheck after any renumber.
+- **Main ports of develop work:** develop carries features main lacks; port only the net diff of the batch, drop hunks
+  for absent features, and fix main-only tests that still assert the old behaviour (baseline them on a clean main
+  worktree first). mini-run vitest needs a dummy `DATABASE_URL=postgres://u:p@127.0.0.1:1/x` for files that import db
+  clients; tsc needs `NODE_OPTIONS=--max-old-space-size=8192` and a grep on touched files.
