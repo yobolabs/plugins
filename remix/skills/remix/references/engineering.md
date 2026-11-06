@@ -190,7 +190,17 @@ at once, before the team has to take the chat over:
    merchant in one natural line that you have it and are working on it. No mention of private links, fetching, the
    team or an operator.
 3. The normal remix journey follows (breakdown, asks, storyboards, video), posted by the app.
-Never a server-side start with a made-up execution id: the run then has no chat, and the merchant hears nothing.
+Facts from the 2026-11-06 recovery (investor org 4115):
+- **Restricted Instagram reel:** both Apify scrapers (post, reel) return `restricted_page`, and analyze fails
+  `file_unavailable`. Check once, then get the mp4 another way (a logged-in session's IG media API
+  `/api/v1/media/<pk>/info/` → `video_versions[0].url`, downloaded server-side) → `publishOrgFile` → `remix_start
+  {fileUuid}`; or the agent asks for another link or the file.
+- **A server-side `remix_start` needs a LIVE chat.** msg-api maps an execution to a chat only while that run is live
+  (yobo `src/server/services/video/remix/chat.ts:4`). An ended or made-up execution id leaves the analyze job with
+  no `conversation_uuid`, so every line is lost (a "sent" notify that never arrives). Stamp the chat right after the
+  start (`recoverRemixChat`) and check `ad_video_jobs.conversation_uuid` on the analyze job; later jobs read the chat
+  from it (`remixChatOf`).
+- msg-api has no system-note → agent-turn route; the app path (breakdown first) is the working start.
 Never a human takeover reply for a pipeline failure. Harm if not: the merchant sees silence, then a person
 apologising, instead of a product that works.
 
