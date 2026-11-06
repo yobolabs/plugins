@@ -390,3 +390,14 @@ real, bounds-checked field. Details in `roles.md` → *Structured output*.
 **Harness settings** (`numbers`, `policy`, `texts`) have no REST route: tRPC `harnesses.get`, `harnesses.usage` (which agents share it, check before changing a shared harness) and `harnesses.update` (system user only). `update` with `numbers` **replaces the whole object**, so merge into the current value; unknown keys are refused by the harness guard.
 
 **Em/en dashes never reach the user (since 2026-10-15).** cadra-api rewrites every em dash and en dash in what any agent sends the user (reply, stream, status lines, paused reply) into plain punctuation; code and URLs are left alone. There is no switch. Write prompts and copy without them anyway, so stored text and what the user reads match.
+
+## Which org a REST key writes, and what REST cannot create (2026-11-06)
+
+- **A Cadra REST key acts in ONE org.** The dev Yobo key (vault route `cadra-dev-yobo`, field `api_key`) is org 4. REST
+  refuses ids that belong to another org (agent, tool, credential), so a cross-org link fails with not-found, not 403.
+  Read the key's org first (list its agents and check `orgId`) before planning writes.
+- **Schedules and credentials have no public REST create.** Create them through the internal/copilot routes or a
+  cadra-web service script (`SchedulesRepository`), run from an origin/develop worktree. That script needs
+  `INTERNAL_API_DATABASE_URL` as well as `DATABASE_URL` (privileged client); guard the DB host before writing.
+- A tool row inserted by raw SQL has no version until an UPDATE: see `cadra:agents` → `references/tools.md` →
+  *A tool UPDATE mints a version by trigger*.
