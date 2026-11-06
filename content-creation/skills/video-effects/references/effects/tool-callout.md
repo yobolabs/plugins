@@ -1,6 +1,10 @@
 # Effect: Tool Callout
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-De8SPjEAuV0-claude-edited.md` (10.0–12.0 s label · 12.3–13.7 s strike · 15.0–17.0 s repo card).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (10.0–12.0 s label · 12.3–13.7 s strike · 15.0–17.0 s repo card) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`
 
 **Look:** Three small pop-ons that name a tool the moment it is spoken. (a) Label: app logo + name pops near the face. (b) Repo card: a dark code-host card with "<owner>/<repo>", a Public pill, the one-line description and Star / Fork buttons. (c) Icon strike: app icons pop up, then a red line strikes them out ("not this").
 **Use when:** Naming tools, apps or libraries; contrasting "use this, not that".

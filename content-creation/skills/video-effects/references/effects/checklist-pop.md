@@ -1,6 +1,10 @@
 # Effect: Checklist Pop
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (10.60–12.50 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (10.60–12.50 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`
 
 **Look:** Small white pills pop in one under another at the side of the frame, one per spoken word. Each pill has a brand.primary tick circle and a short label.
 **Use when:** The speaker lists 2–5 short things ("<step>, <step>, <step>").

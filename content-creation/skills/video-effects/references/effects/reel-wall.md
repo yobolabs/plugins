@@ -1,6 +1,10 @@
 # Effect: Reel Wall
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-De8SPjEAuV0-claude-edited.md` (60.4–62.8 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (60.4–62.8 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** The main shot shrinks into the centre tile of a 3×3 grid. The other 8 tiles pop in around it, one per frame: other reels, or the same shot in different looks (B/W, warm, false colour, desaturated).
 **Use when:** "Everyone is doing this", "many versions", "one video, many outputs", social proof.

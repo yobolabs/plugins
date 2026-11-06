@@ -1,6 +1,10 @@
 # Effect: B-roll Overlay
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (21.00–23.50 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (21.00–23.50 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** The video shrinks into a video-editor window on a dark background: a preview panel on top, a timeline below. A brand.primary "<B-roll>" clip drops onto a track above a blue "<Talking head>" track, and a white playhead sweeps right across both.
 **Use when:** Explaining editing, layering, or "how this was made".

@@ -1,6 +1,10 @@
 # Effect: Snap Zoom
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (8.33–10.60 s, steps at 9.57 and 10.37).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (8.33–10.60 s, steps at 9.57 and 10.37) — evidence only, never rules
+- **tools:** FFmpeg
 
 **Look:** Hard punch-ins on the face with no easing. Each step jumps one size closer. Two or three steps on stressed words.
 **Use when:** Emphasis, a punchline, or rhythm on a list of words.

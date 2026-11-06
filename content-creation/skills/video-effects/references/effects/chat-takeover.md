@@ -1,6 +1,10 @@
 # Effect: Chat Takeover
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (4.50–6.77 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (4.50–6.77 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** The video shrinks into a chat-app window on a dark glowing background. The user's prompt bubble sits top right with the live video as its attachment. The assistant answers with a short line, then tick rows appear one by one under it.
 **Use when:** Showing that a task was "asked for" in an AI chat and then done.

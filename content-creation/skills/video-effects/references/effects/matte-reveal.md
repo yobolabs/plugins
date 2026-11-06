@@ -1,6 +1,10 @@
 # Effect: Matte Reveal
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-De8SPjEAuV0-claude-edited.md` (8.0–9.9 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (8.0–9.9 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg, person matte (SKILL.md § 2)
 
 **Look:** The room vanishes and is replaced by a transparency checkerboard (the grey-and-white pattern editors use for "no background"). Only the cut-out person remains.
 **Use when:** Explaining a cut-out, background removal or "text behind your head"; showing the raw matte before a background effect.

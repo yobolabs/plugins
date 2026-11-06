@@ -1,6 +1,10 @@
 # Effect: Zoom Portal
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (14.50–16.60 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (14.50–16.60 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** A small circle with a brand.primary ring appears at one side and shows a live mini copy of the speaker. The camera then zooms toward the circle with a blur, as if diving through a portal, and lands back on the normal shot.
 **Use when:** A transition into a new idea, "go deeper", or a picture-in-picture "here's me again" beat.

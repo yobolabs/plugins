@@ -1,6 +1,10 @@
 # Effect: Effect Tally
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (39.7–41.0 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (39.7–41.0 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`
 
 **Look:** A full-screen dark card with a big counter ("0 / <total> <items>.") and two columns listing every item the video covered. Ticks fill one by one and the counter climbs to the total.
 **Use when:** Closing a list video: "that's all <n> of them", recap before the CTA.

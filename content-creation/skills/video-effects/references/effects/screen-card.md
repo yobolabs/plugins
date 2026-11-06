@@ -1,6 +1,10 @@
 # Effect: Screen Card
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-De8SPjEAuV0-claude-edited.md` (4.0–5.0 price card, 37.6–42.0 editor screenshot, 15.0–17.0 and 63.0–65.0 repo cards, 74.1–82.8 doc behind subject).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (4.0–5.0 price card, 37.6–42.0 editor screenshot, 15.0–17.0 and 63.0–65.0 repo cards, 74.1–82.8 doc behind subject) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, person matte optional (SKILL.md § 2)
 
 **Look:** A real screenshot, document, repo page or a price tag floats over the shot as a rounded card with a soft shadow. Optional: the card sits behind the head (person matte on top).
 **Use when:** The voice names a real thing: a tool, a document, a price, a product page. The card is the proof.

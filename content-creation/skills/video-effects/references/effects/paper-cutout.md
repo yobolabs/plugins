@@ -1,6 +1,10 @@
 # Effect: Paper Cutout
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (23.5–25.4 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (23.5–25.4 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg, person matte (SKILL.md § 2)
 
 **Look:** The room behind the person is replaced by a flat graphic poster: solid colour field, a big circle, a star, dots and diagonal stripes. The person gets a thick white sticker outline, like a paper cut-out glued on top.
 **Use when:** The line is playful or names a style; a loud, flat "zine" beat between plain talking-head shots.

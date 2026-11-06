@@ -29,7 +29,7 @@ Before touching footage, write the whole video as a table and get it approved:
 | Input | How | Used by |
 |---|---|---|
 | **Word times** | Whisper with word timestamps: `uvx --from openai-whisper whisper in.mp4 --model small --word_timestamps True --output_format json --fp16 False`. Fix misheard names by hand | captions, every word-triggered effect |
-| **Person matte** | Per-frame alpha of the speaker from a free local segmentation model; save as a PNG sequence or ProRes 4444 with alpha at the source fps and size | text behind subject, cut-outs, background swaps, frame escape/break |
+| **Person matte** | Per-frame alpha of the speaker from a free local segmentation model (proven: `uvx --from "rembg[cli,cpu]" rembg p -m u2net_human_seg <frames> <out>`, ≈ 0.3 s/frame on CPU); save as a PNG sequence or ProRes 4444 with alpha at the source fps and size | text behind subject, cut-outs, background swaps, frame escape/break |
 | **Plate** | The source take, trimmed of pauses if asked, at its native fps (usually 30) and 1080x1920 | all |
 | **Clean background plate** | The room without the speaker: the matte's hole filled by a free local inpainting model, one still if the camera is locked | effects that move the background apart from the speaker (dolly zoom, frame break) |
 | **Assets** | Real screenshots, logos, downloaded reels (yt-dlp, no login), brand colours and fonts from props | cards, callouts, walls |
@@ -58,12 +58,19 @@ must get the same transform as the plate.
 - Hard cut in and out unless the effect file says otherwise. Entrances: spring or ease-out, 6–10 frames at 30 fps.
 - Elements in one effect arrive **one per beat or one per word**, never all at once.
 - One effect at a time. Persistent layers (captions, a header, a PiP card) stay on and never collide with it.
+- When an effect puts its own text in a band (cover lines, ticker strips, a card), move the caption band clear of
+  it or hide captions for that effect. Captions on top of effect text read as clutter.
 
 ## 5 · Build and check
 
 - **Remotion** for every graphic and composite (house stack: `content-creation:remotion-overlays` — animate only
   with `useCurrentFrame` + `interpolate`/`spring`; props carry brand colours and copy; transparent ProRes 4444).
 - **FFmpeg** for grades, blurs, keying, scaling and the final mux.
+- **Proven components** live in `content-creation:remotion-overlays` → `src/effects/` (`WordCaptions`, `PromptBar`,
+  `GradeSliderReveal`, `TextBehindSubject`, `MagazineCover`, `matte.tsx`). Proof entries `src/effects/root-proof1.tsx`
+  and `root-proof2.tsx` show the wiring: `npx remotion render src/effects/root-proof1.tsx <id> out.mp4 --public-dir <media dir> --props=<json>`.
+  Keep media (plate, matte frames) in a scratch `--public-dir`, never in the plugin repo.
+- First render on a fresh install downloads headless Chrome: run ONE render alone before any parallel renders.
 - Assemble in Remotion when an effect needs the plate and the matte together; overlay-only effects can render
   as transparent `.mov` for `content-creation:ad-engine` / CapCut.
 - **QC every row of the storyboard:** grab a frame strip around each trigger word
@@ -72,16 +79,24 @@ must get the same transform as the plate.
 
 ## 6 · Effect index
 
-Status: **stub** = written from the source videos, not yet proven in a run. Update to `proven <date> <clip>` with a
-frame strip after a real render.
+Every effect file opens with three fields:
+
+- `status:` `stub` (written from source videos, not yet rendered) or `proven <date> <clip>` with a proof strip.
+- `seen in:` links to the breakdown files where the effect appears — evidence only, never rules.
+- `tools:` the skill that builds it (`content-creation:remotion-overlays` components, FFmpeg, person matte).
+
+**Each effect is described in one place: its file here.** Tool skills (remotion-overlays, capcut,
+higgsfield-video) link to the effect file instead of describing the effect again. A new video's techniques go
+through `content-creation:analyze-video` → `references/breakdown-to-skill.md`: match an existing effect file or
+add one, and put only universal lessons in this SKILL.md.
 
 | Slug | Effect | Needs matte | Status |
 |---|---|---|---|
-| `word-captions` | Captions timed to each word (single word, or phrase with active word) | no | stub |
-| `text-behind-subject` | Big text placed behind the speaker's head | yes | stub |
+| `word-captions` | Captions timed to each word (single word, or phrase with active word) | no | proven 2026-11-07 |
+| `text-behind-subject` | Big text placed behind the speaker's head | yes | proven 2026-11-07 |
 | `matte-reveal` | Background drops to a transparency checkerboard, only the speaker stays | yes | stub |
-| `magazine-cover` | Frame becomes a magazine cover, masthead behind the head, cover lines per beat | yes | stub |
-| `prompt-bar` | A chat prompt bar types the instruction, then sends; also a comment bar CTA | no | stub |
+| `magazine-cover` | Frame becomes a magazine cover, masthead behind the head, cover lines per beat | yes | proven 2026-11-07 |
+| `prompt-bar` | A chat prompt bar types the instruction, then sends; also a comment bar CTA | no | proven 2026-11-07 |
 | `screen-card` | A real screenshot, document or price card floats in as a card | optional | stub |
 | `tool-callout` | Logo + name label, repo card, or struck-out app icon on the spoken word | no | stub |
 | `pip-reference-card` | Another video in a rounded card top-left, grows when discussed | no | stub |
@@ -108,7 +123,7 @@ frame strip after a real render.
 | `phone-mockup` | Video shrinks into a phone frame or a reels UI | no | stub |
 | `recursive-zoom` | Shot shrinks into a picture of itself N levels, then push through with spin + blur | no | stub |
 | `whip-pan` | Fast horizontal motion-blur slide between shots | no | stub |
-| `grade-slider-reveal` | Warm grade with a vertical before/after wipe line and handle | no | stub |
+| `grade-slider-reveal` | Warm grade with a vertical before/after wipe line and handle | no | proven 2026-11-07 |
 | `grade-panel` | Moody grade with an on-screen curves/sliders panel moving on each word | no | stub |
 | `reel-wall` | Shot shrinks to the centre of a 3×3 grid, 8 reels pop in one per frame | no | stub |
 

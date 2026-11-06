@@ -1,6 +1,10 @@
 # Effect: Growth Curve
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (16.60–18.90 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (16.60–18.90 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, person matte (SKILL.md § 2)
 
 **Look:** The background is replaced by a dark navy grid. A brand.primary line chart climbs from bottom left to top right behind the speaker, with a filled area under it. A brand.primary badge top right counts up (1× → 4× → 10×). A small "SAMPLE DATA" tag sits top left.
 **Use when:** Any growth, results or "this scales" claim.

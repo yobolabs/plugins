@@ -1,6 +1,10 @@
 # Effect: Liquid Glass
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (29.4–30.8 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (29.4–30.8 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** A clear glass blob slides across the frame. Under it the picture is magnified and bent, with a bright rim and a soft highlight, like a drop of water on the lens.
 **Use when:** A smooth, premium beat; naming a design or "glass" feature; a soft transition between two lines.

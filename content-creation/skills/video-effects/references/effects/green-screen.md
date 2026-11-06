@@ -1,6 +1,10 @@
 # Effect: Green Screen
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (33.3–35.3 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (33.3–35.3 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg, person matte (SKILL.md § 2)
 
 **Look:** The room behind the person turns flat chroma green, as if shot on a green screen. A beat later the green is swapped for a new scene (for example a city skyline at dusk).
 **Use when:** "Put yourself anywhere", location changes, or a joke about a fake set.
