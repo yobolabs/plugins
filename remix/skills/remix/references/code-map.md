@@ -91,3 +91,28 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   the journal, not the file number, before calling one missing or duplicated.
 - Merchant-facing pages (remix list, detail, review cards) never show model names, prompts, or the source ad's brand
   or product: the product named is always the merchant's own (P5).
+- **yobo-owned full run (p148), where each step runs:** front (`advance/steps/front.ts`: reading → needs) → brief half
+  (`advance/steps/brief.ts`: teardown, §8 brief rewrite, `beats` = the chat plan in `advance/plan-start.ts` +
+  `plan-pass.ts`) → plan ask (`plan-repost.ts` `postPlanAsk`) → the go press → storyboards. A step missing from
+  `brief-start.ts` `defaultBriefDeps.ported` refuses with `<step>:input_not_ported`. Before P148-1.17 no yobo run ever
+  got past brief (0 of 12 dev runs had `beats`): check `remix_runs.state->project->beats` before trusting a "stuck" run.
+- **A key-deduped start returns the SAME applied job.** `startRemixJob` with an unchanged start key hands back the job
+  that already landed, so `started:false` can mean "current", not "nothing to do". Check `jobs.applied` to tell them
+  apart (the brief rewrite re-asked forever because only `pending` was checked).
+- **Template runs keep scene content in the template.** `template/view.ts` `viewRunScenes` takes `text`/`kind`/`seconds`
+  from the template on every read, so words saved into `remix_runs.scenes` vanish. Write content as template vN+1
+  (`writeTemplateVersion`, same tx as the run state); `remix_runs.scenes` holds run state only.
+- **Asks on a yobo run are posted ask-row FIRST** (`fast-asks-wiring.ts` recordAsk + tokens, `postPlanAsk`). The
+  deliver paths that post raw button ids (e.g. `plan_ready`) write no ask row, so a press has nothing to consume.
+- **"The one open ask" is the newest live run's ask.** Typed yes / typed answers broke when old runs left asks open:
+  close a run's asks when it ends (posted / failed / cancelled) or is replaced, and scope every open-ask read to the
+  newest live run.
+- **Main Chat `/chat` runs on the merchant's WhatsApp conversation**, not a WEBCHAT one: history comes from msg-api
+  contact-thread, there is no live push (poll while the run is open and the tab visible), and a web tap is an
+  INTERACTIVE inbound via webchat ingress → `consumeRemixTap` → owner-inbound → `tap.ts`.
+- **Dev proofs:** dev has no ready ads, and the fit gate needs the same product type as the ad. Create a matching dev
+  product (catalog row + photo) before a dev run.
+- **Prod has what develop has only by CONTENT.** Selective prod cuts make git ancestry lie: check a commit with
+  `git diff <commit> origin/main -- <file>`, never `merge-base --is-ancestor`. A main port: `cherry-pick -x`; for
+  `drizzle/meta/_journal.json` keep main's and append the batch's entries after main's last idx; compare tsc errors
+  against a clean `origin/main` worktree (normalise the worktree path in the messages before diffing).
