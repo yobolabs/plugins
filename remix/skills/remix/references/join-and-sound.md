@@ -45,3 +45,7 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
 
 Music (Sean 2026-11-05): default = the source ad's own track; the merchant can search or pick a track we already have;
 similar-track matching only with a free source (no paid music vendor). From scratch, the same match and search, seeded by the script's mood.
+
+## Post
+
+After export the video posts through the Buffer / Hootsuite route; direct Instagram / Facebook posting waits on Meta app review.

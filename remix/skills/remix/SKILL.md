@@ -74,17 +74,17 @@ BLUEPRINT. Lower our thresholds.").
 
 ## The fixed pipeline (no step optional, none skippable)
 
-1. **Read the ad**: cuts, shots, still/moving, music bpm from pixels and audio (code, never the LLM), then one
+1. **Read the ad**: cuts, shots, still/moving, music bpm from pixels and audio (code, never the LLM: an LLM guesses cut times and the beats drift), then one
    reading (`video_blueprint`) fed the measured cut list. A script start skips this.
 2. **Brief** → `references/brief.md`. Rewritten when the merchant's answers come in.
 3. **Needs / questions**: ask everything missing ONCE, filled first from what the business already has.
-4. **Line drawings**: position and framing only, per shot, from its own source frame; never sent to a video model alone.
+4. **Line drawings**: position and framing only, per shot, from its own source frame; never sent to a video model alone (it copies the sketch look into the video).
 5. **Storyboard images** → `references/storyboard.md`: line drawing redrawn with new cast, set, product.
 6. **AI review + code checks** → `references/review.md`.
 7. **Human approval** of each storyboard. Only the merchant approves; the agent never does.
 8. **Video parts** (draft 480p first, final on request). Type decides how: `references/types/`.
 9. **Join** → `references/join-and-sound.md`: the ad's own music laid ONCE, cuts on its beats.
-10. **Final → approve / export → post** (Buffer / Hootsuite route; direct IG/FB waits on Meta review).
+10. **Final → approve / export → post**.
 Exception: "Just swap the product" (merchant's choice only) skips 2–7 → `references/fast-swap.md`.
 
 ## Pick the type
@@ -99,6 +99,7 @@ Decide from the reading, before the brief: people talking -> people-dialogue, el
 | video and stills mixed (keep/mine clips) | `references/types/mixed.md` |
 | a phone / app / website screen shown | `references/types/screens.md` (also applies inside any other type) |
 | the ad beside a static prompt panel (template post) | `references/types/template-reel.md` (also applies inside any other type) |
+| ingredients turning into the product (making-of) | `references/types/product-hero.md` "A making-of ad needs a real recipe" (any type) |
 
 ## References (load on demand)
 
