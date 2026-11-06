@@ -90,7 +90,10 @@ are the slots a new merchant fills: product (sheet, real size, type), cast, set 
 variables as named slots with defaults; a rerun fills slots only. The template is what the agent follows (Sean 2026-11-06: "the templates will be your
 prompt that the agent knows how to proceed. It will know what to set, it will know what to do"): the template
 reaches the agent as a tool result listing each variable with its question and default; code applies the fixed
-configuration, the agent only asks for and fills the variables. The agent fills each variable itself, using read tools for the catalog, Business DNA and earlier remixes (Sean
+configuration, the agent only asks for and fills the variables. Every template carries its own agent brief, a written prompt (Sean 2026-11-06: "the prompt related to the template
+… is provided to the agent and the agent is being asked to figure certain things out"): what this ad needs from
+the merchant's business and what to figure out. It is handed to the agent when the template is picked; staff edit
+it on the template page. The agent fills each variable itself, using read tools for the catalog, Business DNA and earlier remixes (Sean
 2026-11-06: "These are things that the agent does"); the tools only return real records with their source and refuse
 fixed fields or values with no source. Each variable is filled in this order (Sean 2026-11-06: "is this something I could go find
 myself … is there something I can suggest? Or is it something that I need approval or need an idea … from the
