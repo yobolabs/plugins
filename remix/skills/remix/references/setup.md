@@ -4,6 +4,9 @@ Users of this plugin have no local context files and install nothing locally (Se
 connecting Claude to the Remix knowledge base (one `claude mcp add`); everything else runs in the lab page. Run this
 the first time the skill is used (the Remix knowledge base tools are missing).
 
+A path named in this skill (`_context/…`, `yobo:ad-studio-video` `references/…`, `REVIEW.md` §…) is the document's
+source path in the KB: `search` for it and `read_document`, never try to open it as a file (users have no repo).
+
 ## 1. The Remix KB connection (read) — no key, sign in once
 
 Sean 2026-11-04: "no one needs keys … The MCP is authenticated through OAuth" · "Nobody uses terminal. Everyone's

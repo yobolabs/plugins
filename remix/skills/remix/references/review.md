@@ -1,6 +1,8 @@
 # Review (the gate before the merchant sees any storyboard)
 
 Back to [SKILL.md](../SKILL.md). Rule: **any block is redone before it is shown; good enough passes** (see below). Then the human approves each storyboard.
+The quality checks are the gate (Sean 2026-11-03): code checks plus AI review run on every set BEFORE the merchant sees
+it; a failed check is fixed and re-run, and the merchant never sees a failed set.
 The AI review and code checks run on every set; "Fix it" for the merchant is a button, never an automatic retry loop.
 
 ## How: one review sheet
