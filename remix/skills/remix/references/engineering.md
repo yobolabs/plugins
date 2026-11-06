@@ -167,3 +167,10 @@ remix first before WhatsApp". Every remix change is proven end to end in dev Yob
 the session's own browser tab (start → storyboards → parts → join → final). Web chat and WhatsApp share one run engine,
 so engine bugs show up there without a phone. Then the WhatsApp proof on a real handset, then prod.
 
+## Ship the called side first (2026-11-06)
+
+When a release adds a NEW caller → route pair across repos (msg-api calls a new yobo route), the ROUTE ships to prod
+first, the caller second. "msg-api first" is right only when msg-api is the side being called. A fail-open caller
+hides a wrong order: prod conv 2612 got sample ads at 06:34Z because msg-api went live 06:29Z and called a yobo route
+that only arrived ~06:39Z (404 → fail open → old behaviour). The release-request names the order.
+
