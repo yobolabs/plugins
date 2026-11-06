@@ -10,7 +10,10 @@ leaks into the new product).
 **One storyboard per shot, built from keyframes, decided** (Sean 2026-11-06: "keep per shot" … "It should be based
 on keyframes"). A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
 part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,
-last frame. It is redrawn with the merchant's cast and product. The 4 s floor merges only video parts (`groups.ts`
+last frame. It is redrawn with the merchant's cast and product. That is for PRODUCT ads. People and dialogue ads use
+one label-free picture per shot instead: a master per camera setup, and every other shot of that setup drawn from its
+own line drawing with the master as a reference (`HOW-REMIX-WORKS.md` §A rule 7, proven on the 10-29 dialogue run).
+A product sheet needs only one ticked moment, the same as the lab; there is no minimum of 3. The 4 s floor merges only video parts (`groups.ts`
 buildGroups), never storyboards. Do not re-raise this as a cost question.
 
 ## Per-card fields (what the card shows and stores)
