@@ -65,6 +65,12 @@ elements to generate the video."
   With no test line, mark every posted text "[TEST]" and tell whoever watches that chat first. One driver per chat:
   when the person is live, builders watch and do not tap.
 - **Dev passing is not prod passing.** Cadra prompts/skills/tools are per-env rows; diff dev vs prod before a promote.
+  Compare the WHOLE agent version, never one part (Sean 2026-11-06: "you should be comparing the entire agents and its
+  entire version, including harness skills, tools, knowledge base, everything"): pinned release/version id, root
+  systemInstruction, harness/role rules, every linked skill (version + text), every tool row (version, endpoints,
+  agentInstructions, response shaper), knowledge bases, model + provider, guardrails, channel bindings, and the yobo
+  side it reads (copy rows, system_config switches). A difference you did not diff is not "model variance". Harm if
+  not: dev 443 vs prod 362 sample-ads gap (2026-11-06) was blamed on one skill line; the cause stayed unverified.
   A proof is a real end-to-end run (link to delivered video) per ad type, not free steps on a synthetic inbound.
 - **Team alerts stay in their own env** (YMS-738, 2026-11-05: a dev alert in the prod channel linked to prod → "remix
   not found"). Links use the server's own host (`NEXT_PUBLIC_APP_URL`, else `NEXTAUTH_URL`), never a hard-coded prod
