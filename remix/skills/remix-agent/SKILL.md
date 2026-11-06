@@ -62,6 +62,12 @@ BLUEPRINT. Lower our thresholds.").
 - Harm guarded: silence, a contradicting line, an endless loop, or a lesson the next run pays for again.
 - Example: "The new plan adds a person. [Keep original people] [Allow new person]" (`whatsapp-journey.md` § Problem solver).
 
+**P7 Find before you ask** (Sean 2026-11-06: "as much as possible, we should not ask the user to provide something
+without first trying to find something or figuring out the solution ourselves"). For every item the run needs, first
+look it up (catalog, Business DNA, earlier remixes, product notes, the ad itself), then suggest 1–3 choices with [See all],
+and only then ask with choices. Say where a found value came from, with [Change].
+- Harm guarded: the merchant does work we could have done, and drops off the chat.
+
 ## Operating layer
 
 **Applies** when a merchant on WhatsApp or in Ad Studio wants an ad remade, asks about a remix, or sends free text
