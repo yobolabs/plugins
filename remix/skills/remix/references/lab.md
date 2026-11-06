@@ -93,9 +93,13 @@ or ask anyone to paste a key. Its defaults are the product defaults unless Sean 
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a BUG in the port: fix the
 port to match the lab, never a silent default (that is how the ad's own music, per-shot line drawings and the
 breakdown view all shipped off). **It is never a question to Sean** (Sean 2026-11-06, on a storyboard ask: "This is
-already all fully designed and understood when we did remix lab. Why is this a question?"). Before filing any remix
-design ask, or re-filing one you inherited, read the lab manual and the lab code. If the lab answers it, apply that.
-Ask Sean only when someone wants the product to differ from the lab. Lab manual: `remix-context` search "Remix lab — how it works"; team steps: search "Remix Lab — team how-to".
+already all fully designed and understood when we did remix lab. Why is this a question?"). **Nothing is decided by
+code** (Sean 2026-11-06: "Nothing is decided by code. Everything is based on our expertise"). What a remix does comes
+from our written expertise: the principles (`HOW-REMIX-WORKS.md` §A), this skill, the lab manual and Sean's quoted
+rules. Code, the lab page's code included, only carries that out. "The code does X" is never a reason for X. Where code
+differs from the expertise, the code is the bug. Before filing any remix design ask, or re-filing one you inherited,
+read the expertise. If it answers the question, apply it. Ask Sean only when the expertise is silent, or when someone
+wants to change it. Lab manual: `remix-context` search "Remix lab — how it works"; team steps: search "Remix Lab — team how-to".
 
 ## Lab traps seen 2026-11-06 (fast-cut food montage, KB note 2026-11-06-fast-cut-food-montage-lab-misses-8544)
 - **A storyboard grid sent to the video model carries no panel labels.** Captions like "1 · 0.1 s" on the grid were
