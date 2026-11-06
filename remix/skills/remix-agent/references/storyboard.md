@@ -7,8 +7,10 @@ source frame (position and framing only). A master picture or set picture is a r
 substitutes for the shot's own line drawing. Line drawings never go to a video model alone (the old subject's shape
 leaks into the new product).
 
-**One storyboard per shot, decided** (Sean 2026-11-06, "keep per shot"): a fast-cut ad gets one storyboard for every
-measured shot (20-37 on a fast ad), never one per video part. The 4 s floor merges only video parts (`groups.ts`
+**One storyboard per shot, built from keyframes, decided** (Sean 2026-11-06: "keep per shot" … "It should be based
+on keyframes"). A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
+part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,
+last frame. It is redrawn with the merchant's cast and product. The 4 s floor merges only video parts (`groups.ts`
 buildGroups), never storyboards. Do not re-raise this as a cost question.
 
 ## Per-card fields (what the card shows and stores)
