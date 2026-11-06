@@ -201,6 +201,9 @@ Facts from the 2026-11-06 recovery (investor org 4115):
   start (`recoverRemixChat`) and check `ad_video_jobs.conversation_uuid` on the analyze job; later jobs read the chat
   from it (`remixChatOf`).
 - msg-api has no system-note → agent-turn route; the app path (breakdown first) is the working start.
+- **Never emulate the merchant's taps** (Sean 2026-11-06: "don't emulate the taps"). A recovery moves the run
+  server-side (the same code path a tap calls, run as the system), never as a fake inbound from the merchant's
+  number. Where only a merchant press can move it, the merchant presses.
 Never a human takeover reply for a pipeline failure. Harm if not: the merchant sees silence, then a person
 apologising, instead of a product that works.
 
