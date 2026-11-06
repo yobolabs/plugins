@@ -290,6 +290,15 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   copy, not a switch. Every accepted SOCIAL link can fall back to the paid Apify fetch tool (`ads_gen.video_fetch_tools`
   is set on dev and prod); a direct https .mp4 has no Apify path, so use it for free fills.
 
+- **Finding ready-ad sources for free (2026-11-07, YMS-778).** A store's own product videos sit on its homepage or
+  collection page as CDN `.mp4` links (grep the page HTML for `.mp4`, unescape `\/`); check each with `ffprobe`
+  (duration) and an 8-frame strip (`ffmpeg -nostdin ... fps=8/duration,scale=-2:150,tile=8x1`), then keep or drop with
+  a one-line reason. Beauty, health and gadget stores carry them; pet, candle, toy, stationery, cleaning, detailing and
+  salon stores mostly do not, so services and "other" need another source. The slides Ad Library watchlist ingest is a
+  PAID Apify run (slides `content-library/services/apify-crawl.ts`): never start it to fill stock without an OK. Ad
+  Library stored copies (`content_assets.s3_key`) live in the yobo content-library bucket, not the slides env buckets;
+  the house read path reads them. Shell traps in such loops: pass `-nostdin` (ffmpeg eats a `while read` loop's
+  input), never name a zsh variable `path` (it is `PATH`), and split a zsh list with `${=VAR}`.
 ## A reel we cannot download: plain steps, no login (Sean 2026-11-06)
 
 Sean: "be clear to the user about what a public and private video is. They're not gonna know the difference."
@@ -444,6 +453,18 @@ Rulings by the remix lead; yobo `stages/video/part-edges.ts`, `part-starts.ts`, 
 - Lock order is org, then phone, on EVERY path. One free first remix per business: a used universal blocks a later MQL
   one and vice versa; "earlier remix charged" means net (debits − refunds) plus unsettled holds.
 - A cap like "one per org" is a limit: it gets a `LIMITS.md` row and a fire log.
+
+## Real provider cost per remix part (2026-11-07, SIZING.md section 4.1)
+
+A finished Higgsfield video status answer from Cadra carries the provider-rate cost as an OBJECT at
+`data.cadra_provider_cost` (`HiggsfieldJobCost`, USD in `.costUsd`, null when Cadra could not price it; also
+`metadata.providerCost`). yobo records it only when the answer reaches the finaliser: `pollVideoRequest` returns the
+parsed answer (`providerAnswer`), the worker passes it to `finaliseVideoJob`, and `remixJobCostColumns(row, answer)`
+writes `cost_usd` and `cost_source='provider_rate'`. A clipping run sums the parts priced in that pass; a resumed run
+stays `unknown` (never an under-count). Before this, no writer passed the answer, so prod remix rows had no cost.
+Join, storyboard-picture and AI-function jobs still have no cost source (YMS-784). Prove it with the next natural
+`remix_part` row (`cost_source = provider_rate`, non-zero), never a paid start. Size bands are XS/S/M/L; band edges,
+credits per size, redo factor and margin are rate-card config rows (blank = `not_set`).
 
 ## Worker and build traps (2026-11-07, m-remix-build-55)
 
