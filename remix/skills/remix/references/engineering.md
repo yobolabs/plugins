@@ -69,7 +69,10 @@ elements to generate the video."
   from dev to prod. That's how we do deployments of agents"). A release (p144) pins one version of every tool, skill,
   role lock, harness and delegate (`agent_version_pins`). Change dev 443 first, prove it, then promote that release to
   prod 362 as one new prod release: `cadra agent promote --from dev:443@<release> --to prod:362` (p151; dry run first,
-  agents-lead gate). Never hand-edit a prod tool/skill/prompt row. Comparing dev vs prod = diff the two pinned releases
+  agents-lead gate). Never hand-edit a prod tool/skill/prompt row. Before any promote, dry-run BOTH ways: anything prod
+  has that dev lacks (a fix made live on prod only) would be OVERWRITTEN by the promote, so port it to dev, prove it,
+  then promote (Sean 2026-11-06: "if anything changes … because it's live, but it was not done on dev, then will we be
+  overwriting"). Same as code: main never carries what develop lacks. Comparing dev vs prod = diff the two pinned releases
   in full (harness, skills, tools, KBs, model, guardrails, channel profile) plus the yobo copy rows and switches they
   read. A difference you did not diff is not "model variance" (dev 443 vs prod 362 sample-ads gap, 2026-11-06).
   A proof is a real end-to-end run (link to delivered video) per ad type, not free steps on a synthetic inbound.
