@@ -150,3 +150,13 @@ raw Ad Library ads.
 - **Default remix owner on prod is slides** unless a `system_config` row `ads_gen.remix_owner_at_start` (or the
   `.org.<id>` variant) exists; prod has no global row. The value is bare text (`config_value` is TEXT: write
   `yobo`, not `"yobo"`).
+
+## Default open: warn, don't refuse (Sean 2026-11-06)
+
+Sean: "server refuses to do something is something we see everywhere, and so I'd rather keep them open and then we'll
+add the rules as we see needed". A business rule (template not delivered yet, rights not set, QA said ask, tags
+missing) is a WARNING the user sees, never a server refusal or a hidden button. Refuse only for: security and tenant
+isolation (staff auth, another org's data), money spent without a press, and what is technically impossible (no
+breakdown, no source copy). Add a hard gate only after a real problem happened, and name that problem in the code
+comment. Harm if not: work stops on rules nobody needed (staff could not approve a template; dev remix path off).
+
