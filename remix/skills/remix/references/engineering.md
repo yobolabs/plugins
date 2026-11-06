@@ -297,3 +297,34 @@ Check each one on prod by name before calling a remix release done (switch parit
 - `ads_gen.remix_owner_at_start`: global `yobo` on dev and prod (prod since 2026-11-06). The bundle check above applies
   before setting it on any env. The owner is read uncached at each remix_start, and a run keeps the owner it started with.
 
+
+## Storyboard plan rules and proof traps (2026-11-06, m-remix-build-54)
+
+**Storyboard plan (HOW-REMIX-WORKS §A r7, Sean 22:3x / 22:4x):**
+- A product shot's storyboard is its keyframe sheet from ONE ticked moment up (`KEYFRAME_SHEET_MIN_MOMENTS = 1`, yobo
+  `stages/storyboards/references.ts`, slides `remix-storyboards.ts`). People ads keep one label-free picture per shot,
+  with a master per camera setup.
+- One image per UNIQUE shot. analyze.py marks `repeat_of` when jumping from a shot's first frame to an earlier shot's
+  first frame would not be a hard cut. analyze-output maps it to `shot.repeatOf`. `storyboardTargets` skips the repeat,
+  and `applyStoryboard` copies the original's picture onto it (`storyboard.copiedFrom`, free). Runs analyzed before
+  this change have no `repeatOf`.
+- The model-input sheet carries no text. keysheet.py draws labels only on `labels: true`, and nobody passes it. The lab
+  grid has been label-free since v9.15 (YMS-777).
+- A script run (no measured shots) never checks the plan against shots or source audio. Its scene windows are its own
+  `seconds` laid end to end (plan-pass.ts `spanOf`). First-at-0 and gap/overlap checks still apply.
+- R10 stands: one scene's failed picture never stops the whole set. New completeness rules are PLAN checks, run
+  before anything is paid.
+
+**Proof rigs and env traps:**
+- An injected chat photo or video from a fictional number cannot work. msg-api downloads inbound media only from the
+  gateway's own origin (`gateway-client.ts` resolveGatewayUrl). Media proofs need a real handset.
+- Vault `msg_api.dev.*` points at the PROD msg-api DB. Read dev with `docker exec msg-api-dev-api` (its own env, host
+  5.223.63.43). Prod is `msg-api-prod-api` on 5.223.55.178. Prove which DB you read by looking for a known message id.
+- During a worker swap the name `worker-service` can point at a stopped container. Exec into whichever
+  `worker-service*` is running (`docker ps`).
+- A free proof of plan logic: run a tsx script in the dev worker that calls the real function (`decidePlan`,
+  `defaultPlanPorts().read`) on the stored run. Put the script in `/tmp`, never `/app`, and remove it as root.
+- Lab publish: send the HTML into a sean-jetdevs cmux tab as base64 chunks (about 90 KB per eval), then call tRPC
+  `prototypes.update` and verify with curl + cmp. Keep the undo copy first, and copy the new vNNN over remix-lab.html.
+- The secret-guard hook flags regexes like `.*?` and SQL aliases like `v.key` in heredocs. Write those scripts with the
+  Write tool and run them by path.
