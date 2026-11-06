@@ -241,6 +241,20 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   A universal candidate MUST have a reusable product-free opening plus a montage. An ad that starts and ends on the
   product, is not a montage and has no reusable scene is never universal (Sean 2026-11-07, on the sky-drop ad:
   "this video starts and ends showing the product. It's not a montage, and it doesn't have reusable scenes").
+- A universal template's remade parts NEVER use the swap prompts (lead-6 2026-11-07, YMS-780 U5). The swap prompts
+  ("Recreate @Video1 exactly… the only change: the product" / "Replace the product in image 1… keep everything else")
+  keep the source's food, packs and actions and put the merchant's product into them: a polo in a noodle bowl. For a
+  universal row, @Video1 and image 1 give camera move, framing, timing and light only; the video shot is a plain hero
+  (the product rests on a plain surface, the camera follows @Video1's move, the product stays still, label to camera;
+  no hand, it breaks big products), and a still is a product photo in image 1's framing with its subject removed (the
+  product's own printed label stays). Code: `clip-request.ts` `universalVideoPrompt` / `universalStillPrompt`, chosen
+  by `remix_templates.universal`; normal templates keep the swap prompts. Check a new universal on its first paid run
+  with a product from a DIFFERENT category than the source (the hard case).
+- Making a universal template: houseRead the source on the house org (back office "Make template from an ad", Cadra
+  tokens only) → setRights own_ad + decide approve (staff tRPC) → SQL `universal=true` and `org_id` NULL on the
+  template AND its parts (a direct .mp4 read writes the house org, so merchants cannot see it). The read's own plan
+  can already be right (egg drop: keep 0–2.47, 4 stills, one 4 s video); check it before hand-editing `plan.parts`.
+  On prod, keep it hidden (house org, universal=false) until one paid dev video is checked.
 - Every remix video is kept (Sean 2026-11-06: "You need to have every video I make with remix in context stored
   somewhere"). The source ad, every paid output and the final are stored the moment each exists, not only on Save.
   They are listed in one index in context. A source that was only on someone's laptop is lost (the egg-drop original,
