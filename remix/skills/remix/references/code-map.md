@@ -151,3 +151,9 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   for absent features, and fix main-only tests that still assert the old behaviour (baseline them on a clean main
   worktree first). mini-run vitest needs a dummy `DATABASE_URL=postgres://u:p@127.0.0.1:1/x` for files that import db
   clients; tsc needs `NODE_OPTIONS=--max-old-space-size=8192` and a grep on touched files.
+- **"No ready ads for <category> yet" is an empty recommender, never a switch.** yobo `recommendFor`
+  (`extensions/remix/templates/recommend.ts`) posts that line when zero cards survive. Check in this order: reviewed
+  (`review_status='done'`) slides `content_items` with that `category` tag (`content_item_tags.item_id`); a saved
+  `video_url` asset (`status='ok'`, `s3_key` set); bytes ≤ yobo `ads_gen.video_ref_max_bytes` (slides filter); length ≤
+  `ads_gen.remix_max_source_seconds` (yobo filter, unknown length kept); an https thumb. Usual root cause: the Ad
+  Library review backlog (few `done` items per category), not code. Prod DB reads: vault items via `secret-run`, read-only txn.
