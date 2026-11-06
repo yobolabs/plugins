@@ -99,3 +99,25 @@ Sean: "every time Remix Lab is updated with skills, it should be ported, it shou
 because … the controls and pages UI of Remix Lab is different"): every lab control maps to a named prod control
 (WhatsApp button id, Ad Studio route, agent tool) or is a parity-gap row; a lab-click step is rewritten as that prod
 control, never copied. Harm if not: the lab makes good videos while merchants on WhatsApp get the old process (prod run 8d05707d: a different person in every scene because the cast step never got the lab's identity cards).
+
+## Web chat runs the same remix (Sean 2026-11-06)
+
+Sean: "a pure Yobo web chat experience … which will need to work with WhatsApp". Only merchants who use WhatsApp get
+it. `/chat` Main Chat already runs on the merchant's WhatsApp conversation (yobo `webchat/ingress/route.ts`), so the
+responder is the same Yobo agent: no responder swap, no second agent. A run started or driven from the web is
+`surface='web'`: step turns go to the web only (msg-api `webOnly`). WhatsApp then gets ONE line + [Continue in Yobo]
+per step only while the merchant is off the web, one status line if they write there mid-run, and the final video.
+Harm if not: every step lands twice, once in each place.
+
+## Offers the merchant types (Sean 2026-11-06)
+
+A typed offer is saved to the merchant's Yobo offers as INACTIVE (`isActive:false`, name de-duplicated): it is on the
+account, never redeemable until the merchant turns it on. Find-first reads active, in-date offers first. Harm if not:
+an ad line becomes a live discount nobody approved.
+
+## Template gallery (Sean 2026-11-06)
+
+Merchant gallery = 3 cards per row on phone, auto-fill grid on desktop (Sean: cards "too big"). Each card may carry
+the Ad Library proof (days the source ran) and one recommender "Why:" line; the gallery shows templates only, never
+raw Ad Library ads.
+

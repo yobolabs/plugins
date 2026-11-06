@@ -77,10 +77,12 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   (WhatsApp 131026), and a tap on an ask whose `remix_deliveries` row is `failed` is refused or re-posted. Before each
   test tap, flip that one row to `delivered` with an undo line logged first (the test org's undo file in the spec's
   `build/`), then inject the tap. Never on a real merchant's chat.
-- **A polled Cadra step (the teardown) has no job row and no callback: `next_wake_at` is its ONLY re-check.** Any code
-  that clears the wake while that step is out (a stall guard, a "nothing running" check that only looks at job rows)
-  strands the run silently after needs. Give each polled step its own start key (teardown vs teardown pull), and make a
-  FAILED / CANCELLED / not-found poll result stop the wake and post one retry line instead of polling forever.
+- **A polled Cadra step has no job and no callback: its wake is its only re-check.** The teardown is polled; never clear
+  `next_wake_at` while it runs (prod run 836e29c2 stalled when `advance/stall-guard.ts` cleared it; fix yobo 8944fb752).
+  A failed, cancelled or vanished (Cadra 404) teardown ends the poll: clear the wake, send the one refusal line.
+- **Close a run's open asks when the run ends or is replaced.** Stale asks win the match for a typed reply (35 stale
+  asks swallowed a merchant's typed "yes", T1c). A typed reply always resolves against the newest live run.
+
 - yobo's delivery code posts a QA-fix batch even when the fix came back `applied: false`; marking the slides store
   stale does not silence it. A reporter for a fix that did not apply must not call the "remix applied" path.
 - **Prod job and money facts beat the run narrative.** A second paid-looking job may be a free QA fix (start key ending
