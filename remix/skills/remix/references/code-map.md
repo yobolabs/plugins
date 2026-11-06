@@ -158,6 +158,11 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   bumps `version` (a bump makes the machine's version CAS lose mid-advance).
 - **Drizzle journal `when` must be strictly increasing.** Two entries with the same `when` make drizzle skip one; new
   entry = `max(when) + 1000`, and recheck after any renumber.
+  A new `when` must also **exceed the max `when` already in the file**: never type a made-up or round future value,
+  read the file's current max and add to it, or drizzle skips the entry silently.
+- **`ModelProfileSchema` is `.strict()`.** A data migration that adds a field to a stored model profile makes every
+  read of that profile fail until the code that declares the field is deployed. Ship the code first, then apply the
+  data migration.
 - **Main ports of develop work:** develop carries features main lacks; port only the net diff of the batch, drop hunks
   for absent features, and fix main-only tests that still assert the old behaviour (baseline them on a clean main
   worktree first). mini-run vitest needs a dummy `DATABASE_URL=postgres://u:p@127.0.0.1:1/x` for files that import db

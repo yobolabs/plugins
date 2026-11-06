@@ -169,6 +169,14 @@ problem, not a wiring problem.
   timestamp" is not reliably followed. Sort (and project to the fields agents use)
   in the tool response. Evidence: Apify instagram-scraper posts, YMS-760.
 
+- **cadra-web's `toolEndpointSchema` is a plain `z.object`: an endpoint key it does not declare is stripped on save.**
+  The PUT still answers 200, so a 200 proves nothing. After any tool PUT that adds an endpoint key, GET the tool and
+  confirm the key is in the read-back. A tool has no metadata column; the build-config step passes the stored
+  endpoints through unchanged, so what survives the save is what the runtime sees.
+- **Endpoint `speaksOwnLine`** (list of action names): for those actions the runtime sends no pre-tool narration,
+  because the tool's own reply is the line the user reads. Needs the cadra-api and cadra-web builds that know the
+  flag; on an older web build it is stripped on save (see the bullet above).
+
 ## Platform tools and safe tool edits (2026-11-06)
 
 - **A tool row with `org_id` null is a platform (global) tool.** It is shared by every org, so an org-scoped key gets
