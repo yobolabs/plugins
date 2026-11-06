@@ -88,3 +88,7 @@ elements to generate the video."
 - **Pricing is parked.** Never add or change a price or credit UX. The free first remix is the MQL waiver; every paid
   quote or start must name the remix so the waiver applies.
 - **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (SKILL.md P6, `whatsapp-journey.md` § Problem solver).
+
+## Pictures sent to people are compressed (Sean 2026-11-06)
+
+Sean: "we are not sending large files, right? We're going to compress them, of course, as our standard". Every picture a merchant's phone or browser loads (review page, WhatsApp album, gallery, back office) is a compressed rendition: WebP or JPEG, long side ~720 px, about 200 KB or less. The raw model output (2k PNG) stays only as the source for models and the final export. Harm if not: 5-6 MB PNGs stall in the WhatsApp in-app browser and show blank tiles (prod remix a524de0a, 2026-11-06).
