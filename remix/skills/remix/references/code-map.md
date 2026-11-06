@@ -77,3 +77,15 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   (WhatsApp 131026), and a tap on an ask whose `remix_deliveries` row is `failed` is refused or re-posted. Before each
   test tap, flip that one row to `delivered` with an undo line logged first (the test org's undo file in the spec's
   `build/`), then inject the tap. Never on a real merchant's chat.
+- **A polled Cadra step (the teardown) has no job row and no callback: `next_wake_at` is its ONLY re-check.** Any code
+  that clears the wake while that step is out (a stall guard, a "nothing running" check that only looks at job rows)
+  strands the run silently after needs. Give each polled step its own start key (teardown vs teardown pull), and make a
+  FAILED / CANCELLED / not-found poll result stop the wake and post one retry line instead of polling forever.
+- yobo's delivery code posts a QA-fix batch even when the fix came back `applied: false`; marking the slides store
+  stale does not silence it. A reporter for a fix that did not apply must not call the "remix applied" path.
+- **Prod job and money facts beat the run narrative.** A second paid-looking job may be a free QA fix (start key ending
+  `:qa-fix`, `redo_of` set), not a second final press. `credit_transactions` is the truth for what was charged.
+- yobo `develop` can carry two migrations with the same number; the drizzle journal `idx` keeps them in order. Check
+  the journal, not the file number, before calling one missing or duplicated.
+- Merchant-facing pages (remix list, detail, review cards) never show model names, prompts, or the source ad's brand
+  or product: the product named is always the merchant's own (P5).
