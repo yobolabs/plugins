@@ -79,7 +79,12 @@ timed out". The full pipeline stays the default; never pick the fast path for th
 **A template = the finished run's configuration + its variables** (Sean 2026-11-06: "what are the variables that can
 be changed from that configuration, and that's basically what the template is"). The configuration is everything the
 run settled: cut list and timings, beats, the ad's music, keep vs remake per scene, still vs moving per scene, the
-ad-area crop and overlay-text blur, the line drawings, the kept clips, and each remade part's prompt. The variables
+ad-area crop and overlay-text blur, the line drawings, the kept clips, and each remade part's prompt, plus every lab setting: use the ad's own audio, send the
+ad's own shot as the reference, each scene's type (still / motion / keep the ad's clip / merchant's own clip, with in
+and out), video and picture model, quality, shape, look, exact timings, on-screen text layers (Sean 2026-11-06:
+"using the ad's own audio, using the ad's own video for certain parts"). Full field list = the lab port list
+(`slides/_specs/p130-video-ux-cleanup/flow/remix-lab/ADSTUDIO-PORT.md` in the Remix KB): tag each field FIXED or
+VARIABLE, drop none. The variables
 are the slots a new merchant fills: product (sheet, real size, type), cast, set and look, text changes ("OLD" becomes
 "NEW"), offer, caption, language, and which scenes they choose to remake. Save the configuration frozen and the
 variables as named slots with defaults; a rerun fills slots only. Harm if not: every rerun re-reads the ad and re-asks
