@@ -29,6 +29,26 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - The guard treats any `GET` whose path contains `/releases` as a config write: it needs the gate tag in the
   command but does not spend the id.
 - A change that alters every reply (for example a style rule) is its own release, not a rider on another.
+- The guard reads the gate-log **verdict column**: it must say `APPROVED prod`. "Approved in a message" or
+  "APPROVED dev; prod same id after…" blocks the write — ask the architect to set the row.
+- **Agent-field writes (e.g. `state_mode`) and AI-function rows have no deploy step**, so the guard never spends
+  their id; the architect records the spend in `gate-used.txt` by hand.
+- A command that names the guard's own script path trips the guard (it reads the file and sees write patterns).
+
+## Building on the live head (prod)
+
+- **Prod agents carry unreleased foreign heads** (another lane's draft on a skill/tool). Before writing a row,
+  compare head vs the pinned version: if they differ, build your change on the **pinned** content, never on top
+  of the draft, report the head diff, and tell the draft's owner it must re-apply on your new version.
+- A cut that takes current heads ships every foreign draft blind: hold all other pins at the live release and
+  list them in the report.
+- **A tool row before its endpoint is live = a broken tool**; **an AI-function row ahead of the code that feeds
+  its new inputs = a worse reviewer**. Verify the code on prod by code read (not tag) first, or roll the row back
+  until the code cut and re-promote in the same window.
+- **Role promote alone does not reach spawned roles**: the agent version pins the role lock. A role change needs
+  role promote + agent publish + deploy.
+- `promoteGolden` NOT_FOUND on a role is usually a **stale browser org context**, not an ownerless role: switch org
+  (`userOrg.switchOrg(<org>)`) and use a fresh session before any data fix.
 
 ## Proof turns
 
@@ -40,6 +60,10 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Direct `/agents/<id>/execute` proofs lack org context**: tools that need an org (yobo tools with a global key)
   return 400 ("requires X-Execution-Context or X-Org-Id"). Prove through the real channel (for a WhatsApp agent,
   inject through the WhatsApp gateway), at least 3 runs, and record the execution ids for the review request.
+- **Proofs run on a TEST contact** (fictional sender, test org), never a real person's chat or the owner's own
+  dev conversation, and each lane on its own test conversation (shared test chats collide).
+- **Dev twin write route** when the dev org's API-key quota is full: session tRPC `tools.update` +
+  `agents.cutRelease` from a signed-in dev app tab (check `location.href` first).
 - Plain-chat and advice turns are part of the proof: a formatting change that fixes a draft can break ordinary
   replies, and a release that fails them is rolled back, not patched forward.
 
