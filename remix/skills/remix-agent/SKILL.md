@@ -52,6 +52,11 @@ BLUEPRINT. Lower our thresholds.").
   (not printed, on a screen or reflected); label exact; a product sheet from the merchant's own photos first; overlay
   text removed; captions and logos added in post.
 - Harm guarded: the old brand's words, products or art in the merchant's ad, or a tub drawn the size of a bag.
+- Text rule (Sean 2026-11-06: "Text should always be removed if it's able to be replaced with an overlay."): any
+  text an overlay can carry (captions, prices, logos, handles, timings, panel labels) is removed from every model
+  input (source frames, storyboard grids, reference pictures) and every video and picture prompt says no on-screen
+  text. That text comes back as an overlay at Finish. Only text that is part of the product or a prop the brief
+  keeps (the product's own label, a flyer's edited words) stays in the picture.
 - Example: a cross-type swap (beauty into food) goes to the storyboard pipeline. Detail: `references/fast-swap.md`.
 
 **P6 Never silent, never false** (Sean 2026-11-05: "It should be a problem solver").

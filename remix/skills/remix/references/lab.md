@@ -97,7 +97,7 @@ shipped off). Lab manual: `remix-context` search "Remix lab — how it works"; t
 ## Lab traps seen 2026-11-06 (fast-cut food montage, KB note 2026-11-06-fast-cut-food-montage-lab-misses-8544)
 - **A storyboard grid sent to the video model carries no panel labels.** Captions like "1 · 0.1 s" on the grid were
   drawn into the Seedance 2.5 video (top-left). Send the grid without labels, and the prompt says to ignore panel
-  layout.
+  layout and to put no text on screen (text rule: `../remix-agent/SKILL.md` P5).
 - **The cut detector misses fast warm-tone cuts:** about 20 hard cuts were read as 2 scenes. Check the scene count
   against the ad by eye before the plan; too few scenes = wrong plan.
 - **Keep the lab tab alive while it renders:** a hidden cmux tab reset the lab mid-render and lost the job ids. Use
