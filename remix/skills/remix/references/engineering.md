@@ -387,3 +387,47 @@ Rulings by the remix lead; yobo `stages/video/part-edges.ts`, `part-starts.ts`, 
   start writes no row, so the side chat behaves like plain chat (no buttons) until the owner is yobo.
 - **`remix_runs.source_breakdown_id` is never written (YMS-781).** A run cannot be joined to its stored original
   (`remix_source_copies`); match by org and date until it is fixed.
+
+## Starting a remix from a ready-ad template (2026-11-07, m-remix-build-55)
+
+- **A template card starts from the template, never from its link.** `remix_start {templateId}` makes a yobo run at
+  fast/product_pick from OUR stored copy + stored plan: no `startDeconstruct`, no fetch, no Cadra reading (remix rule
+  "template already read → no new reading"). A link start re-reads the ad per org (paid) and can fail on Instagram.
+- **Templates come in two plan modes: `clip` and `whole_ad`.** Both must start natively. On 2026-11-07 prod had 8 whole_ad
+  and 2 clip; a start that only took clip sent every whole_ad tap to a paid link reading. Every dev proof taps one
+  template of EACH mode; a pass on one mode proves nothing about the other.
+- **A link that IS an approved template is that template's start** (match on `remix_source_breakdowns.source_key`, canonical +
+  legacy key; `remix_templates.source_key` is our S3 key, not the link). If that start cannot be made (no stored copy,
+  plan unreadable, template gone) fall back to the link start and log why; never a dead end.
+- **The run pins its template** (`state.templateId`, `templatePlanVersion`, `templatePlanMode`) and seeds `state.qaPlan` from
+  the template's plan (whole_ad = the whole ad, from `length_ms`). A pinned run renders only that template; gone or
+  changed → refuse, never fall back to another template or to the whole-ad swap (that bills more).
+- **Run state a client can write is never a money input.** `remix.create` accepts free `state`: server-owned keys
+  (templateId, templatePlanVersion, templatePlanMode, qaPlan) are dropped from client state, and every waiver is bound to
+  the run's server-written source, never to a state key alone.
+- **The merchant picks the product, never the agent.** On a card tap the agent sometimes passes a catalog product; drop it
+  (keep it only if the merchant's own message names it) so the product ask is posted.
+- **A repeat "Make a video ad" re-posts fresh cards.** The "cards already in chat" guard is for a re-run of the same ask, a
+  system turn, or a card tap; a new ask gets the current set with a new picks version.
+- **Copy never states a count it does not send** ("Here are 3 ads" with 2 cards). Fill `{n}` from the cards posted.
+
+## Free first remix waivers (2026-11-07, m-remix-build-55)
+
+- Order everywhere (quote, start, assemble, balance, no-video price): staff retry → MQL → universal, through ONE helper so
+  quote and start agree. Quote = no lock, no write; start = locks held until the job row commits.
+- Lock order is org, then phone, on EVERY path. One free first remix per business: a used universal blocks a later MQL
+  one and vice versa; "earlier remix charged" means net (debits − refunds) plus unsettled holds.
+- A cap like "one per org" is a limit: it gets a `LIMITS.md` row and a fire log.
+
+## Worker and build traps (2026-11-07, m-remix-build-55)
+
+- **Never queue a one-off boot job on a shared BullMQ queue.** During a deploy the draining old container takes it and
+  runs OLD code (posters never filled on dev and prod). Run start-up work in the worker's own process (not awaited,
+  idempotent writes, log the result every run).
+- **A module a client component imports must not reach server wiring.** `gallery-query.ts` → `ready-ads.ts` →
+  recommend-wiring → storage-compat → sharp broke the web build (`node:child_process`). Put shared pure helpers in an
+  import-free module.
+- **Drizzle skips a migration whose `when` is ≤ the last applied one.** Take the number and `when` from the release
+  captain before pushing; renumber when another migration lands first.
+- **A prod port of a bundle onto a main that holds work out** cherry-picks only the bundle commits and checks file by
+  file that no held develop commit rides along (`git log <main>..origin/develop -- <file>` minus the bundle).
