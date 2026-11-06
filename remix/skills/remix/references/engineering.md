@@ -220,6 +220,14 @@ retry consumes its ask without re-billing parts (115607fe4 + d51b44674 + c897912
 `<pressRunId>:main`. Harm if not: every new prod remix waits at 'reading' forever, or re-bills parts, or never
 joins. This is the one named exception to switch parity, and it ends when the bundle ships.
 
+## A reel we cannot download: plain steps, no login (Sean 2026-11-06)
+
+Sean: "be clear to the user about what a public and private video is. They're not gonna know the difference."
+Then he decided "no login": the server never signs in to Instagram to fetch a reel. Many failed reels are not private.
+Instagram hides them from downloaders that are not logged in (yt-dlp "empty media response"). The chat line never
+says "private" or "public". It gives the steps: save the reel on the phone (⋯ → Save, or screen-record it) and send
+the file here, with [Send the video here] and [Pick a ready ad]. It never claims a second try that did not run.
+
 ## A proof number must be fresh (2026-11-06)
 
 Before a dev proof sends from a fictional or test number, check that the number has no open remix, conversation or
