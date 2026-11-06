@@ -374,6 +374,10 @@ Rulings by the remix lead; yobo `stages/video/part-edges.ts`, `part-starts.ts`, 
   plan waited for the 5-min stall wake (dev cb6da8a8, 6 min of silence). Never rely on the stall guard to continue.
 - **Proving a paid clip**: the job stores no provider body; rebuild it in the dev worker with `submitParameters`
   from the job's frozen `target` and the account row. Compare the video's first/last frames with the pictures by eye.
+- **Proof rigs**: a `tsx` script in `/tmp` inside a worker cannot import bare packages — use
+  `createRequire('/app/package.json')` + `import(req.resolve('<pkg>'))`; the mini has no `DATABASE_URL` (vitest needs a
+  dummy one) and no numpy (run analyze.py measurements in the dev worker). A prod port of work stacked on an unshipped
+  change: `git diff <its base>..<tip> | git apply -3` onto main, never a cherry-pick of the stack.
 
 ## Proving a port and finding a run's source (2026-11-06, m-remix-build-53)
 
