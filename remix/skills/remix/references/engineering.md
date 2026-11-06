@@ -222,9 +222,12 @@ joins. This is the one named exception to switch parity, and it ends when the bu
 
 ## Ready ads (approved templates): stock and quality (Sean 2026-11-06)
 
-Sean: "I need to make sure we're always having ready to go ads on Dev and prod."
-- Stock: every category gets at least 3 approved templates, on dev and on prod. A daily check logs
-  `remix_template_stock_low` and the back-office Overview shows a count per category (YMS-778).
+Sean: "I need to make sure we're always having ready to go ads on Dev and prod." Then, the same day: "We'll start by
+providing 1 or 2 universal templates for free. This will be either the 'egg drop' template or one other TBD."
+- Launch stock = 1-2 UNIVERSAL templates: offered to every merchant whatever the category, shown first, and free (no
+  credits for a remix started from one). They must work for any product: the hook is kept as the ad's own clip and only
+  the product scenes are remade. The per-category floor of 3 (YMS-778, daily `remix_template_stock_low` check) is
+  paused until Sean reopens it.
 - A business with no fit record for a template is offered that template only when it is in the business's own
   category. A known misfit is never offered ("only suggest a template the product fits", same product type).
 - A category with 0 templates gets one plain line plus [Send me a video] and [Paste a link], never a dead end. It is
