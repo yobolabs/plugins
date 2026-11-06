@@ -173,3 +173,16 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   into `approvals[].artifact` makes `state.project` unparseable and every reader returns null ('no_project').
 - **Proving on dev:** parse the run's `state.project` inside the worker (tsx, dynamic import of the schema) when a
   step says no_project; one-row fixes on `remix_runs` CAS on `version` with an undo file first.
+- **A slides chat remix that stops after its parts: read `jobs.failed` before calling it a lost join.** slides
+  `autoJoinDue` logs `remix_auto_join_wait why:parts_missing` when a part never started; a `start-failed:<run>:<part>`
+  entry with "needs a top-up" means the credits ran out mid-run (parts after it never start). Re-starting spends the
+  merchant's credits: only on the owner's OK, and size the credits first (each part bills at least the model minimum).
+- **Fast-cut ads blow up into one paid part per shot** when every scene is `per_scene` and no neighbours merge (a 57 s
+  ad with 35 cuts = 36 parts, each billed at the 4 s minimum). Check `plan.groups` strategies and seconds before a
+  video go on a long fast-cut source.
+- **Slides prod DB has no vault key:** `vercel env pull --environment=production <scratchpad>/.env --yes` (umask 077) from
+  the slides repo, read it only via `secret-run ENVF=file:<that> -- sh <script>` using `DATABASE_URL_UNPOOLED`, SELECTs
+  only, delete the file after. The vault `msg_api.dev` DB is not the DB the deployed dev msg-api container writes to:
+  read dev msg-api rows inside the container.
+- **A new caller → new route across repos ships the ROUTE side first.** A fail-open caller hides a wrong order (it 404s,
+  falls back, and the old behaviour reaches a real merchant).
