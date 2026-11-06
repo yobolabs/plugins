@@ -57,6 +57,33 @@ passed" updates, no captain or chief relays. Progress goes in your own task file
 and your §2. A code-only fix that does not change how an agent behaves needs no lead message.
 Dev agents are release-pinned too: an edit changes HEAD only; a proof counts only if its run logs the changed version (`harness <uuid> vN`, `agent_executions.agent_version_id`).
 
+## Promote a whole agent version, env → env (`cadra agent promote`, p151)
+
+An agent reaches another environment as ONE new release that carries the whole proven source
+release: its own config, harness, tools, skills, roles, delegates and channel profile. Never
+hand-copy objects one at a time.
+
+```bash
+export CADRA_DEV_API_URL=… CADRA_DEV_BUILDER_API_KEY=…    # one origin + key per side
+export CADRA_PROD_API_URL=… CADRA_PROD_BUILDER_API_KEY=…
+cadra agent promote --from dev:<agent>@<releaseId> --to prod:<agent> --link            # twins: which target object each source object is
+cadra agent promote --from dev:<agent>@<releaseId> --to prod:<agent> --link --apply --host <srcHost>=<dstHost>
+cadra agent promote --from dev:<agent>@<releaseId> --to prod:<agent>                   # dry run → plan file
+cadra agent promote --from dev:<agent>@<releaseId> --to prod:<agent> --apply [--deploy]
+```
+
+Rules:
+- `--from` names a **sealed release**, never a working copy. The target gets exactly those versions.
+- **The promote refuses rather than overwrite.** A target item changed since the last promote (or with no
+  promote history yet), a target-only item, or an object shared with an unpinned target agent each stops
+  it. Fix by porting that item to the source and proving it there; name an item in `--overwrite` /
+  `--drop` / `--shared-ok` (ONE `kind:id` per flag) only when that is the decided outcome.
+- Every run writes its plan file. A prod promote is a prod agent change: the plan file goes inside the
+  §2 review request, and the apply needs its gate id (section above).
+- Platform (org-null) objects are never written; a difference shows as `info`.
+- Not carried: secret values, channel bindings, triggers, schedules, app switches. The plan lists them.
+- Route missing (404 on `/promotions` or `/releases/{id}/bundle`) = origin predates p151.
+
 ## Setup
 
 | Env var | Purpose |
