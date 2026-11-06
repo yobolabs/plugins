@@ -21,7 +21,7 @@ string (an object whose keys contain ':' broke every "Use these").
 - Every failure is **ONE plain line** in the chat's language saying what happens next, with a button when there is a
   next step. Never silence, two lines, or a contradicting line.
 - The agent handles free text and questions only, with typed remix tools. It never presses Approve, never states a
-  price, never promises text/logos drawn by AI. Detail: `references/whatsapp-journey.md`.
+  price, never promises text/logos drawn by AI. Detail: below.
 
 ### Words the merchant sees
 

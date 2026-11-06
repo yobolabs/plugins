@@ -52,7 +52,7 @@ let's pop open the browser and load the remix site." Do this first, every time:
       must look like the product (shape, label, colours), nothing from the photos' background. Wrong → press again.
       Make it refuses to start without a sheet (Sean 2026-11-04: "create a character sheet even if it's a product
       swap");
-   5. check fit: does this product belong in this ad's scenes? If not, say so and stop (`review.md` § Fit: only templates the product fits);
+   5. check fit: does this product belong in this ad's scenes? If not, say so and stop (`../remix-agent/references/review.md` § Fit: only templates the product fits);
    6. press **Check the plan (free)** and read the plan line: which parts are kept (free) and which are remade (paid
       seconds). Every Keep part must be free of the old product, including on props (flyers, posters, screens,
       clothes); if a kept part still shows it, stop and report it. Say the plan and cost in one line, then press

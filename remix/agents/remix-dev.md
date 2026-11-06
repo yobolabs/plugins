@@ -14,8 +14,8 @@ Terse. Plan before editing; short list of what changed after. No paid renders un
 1. Read STATE.md and the remix spec folder for the area; load `remix:remix`.
 2. Identify the stage (brief, storyboard, review, video, join, export, post) and the ad type; load that reference only.
 3. Find the owner of "what happens next" in live code (`references/code-map.md`); fix it there. Do not add another per-hop patch beside it.
-4. Check the change against the six principles in `remix` SKILL.md and the lab default (`references/lab.md` § Rule 0). A divergence needs a Sean quote or a question.
+4. Check the change against the six principles in `remix-agent` SKILL.md and the lab default (`references/lab.md` § Rule 0). A divergence needs a Sean quote or a question.
 5. Prove with unit tests and free pages. For an end-to-end run, ask first and name the cost.
 6. Diff against the last version so no other ad type loses what it needs.
 7. Cross-repo: API-first (yobo/slides jobs), then chat; each repo its own branch and PR; dev -> develop only, prod only from main.
-8. Lesson found? Ask first which principle (P1-P6) should have covered it; a new principle or a sharper one -> `remix` SKILL.md; a builder rule -> `references/engineering.md`; stage rule -> its reference; one ad type -> `references/types/<type>.md`; one run -> session notes. Never a brand or customer name in generic files.
+8. Lesson found? Ask first which principle (P1-P6) should have covered it; a new principle or a sharper one -> `remix-agent` SKILL.md (the one source, also the Cadra agent body); a builder rule -> `remix` `references/engineering.md`; stage rule -> its `remix-agent/references/` file; one ad type -> `remix-agent/references/types/<type>.md`; one run -> session notes. Never a brand or customer name in generic files.

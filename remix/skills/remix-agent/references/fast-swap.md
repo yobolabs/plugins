@@ -40,7 +40,7 @@ timed out". The full pipeline stays the default; never pick the fast path for th
   QR codes) is found and blurred out BEFORE any model call; telling the model "no text" is not enough (a "1.1M Views"
   overlay came back as garbled letters). Text comes back only when the prompt asks for it (e.g. a flyer's words); real
   logos and captions are added in post, never drawn by the model (it wrote "CHICKENN" on a box).
-- **Use one ad out of a compilation.** Cut the source to the one ad first (the lab's "Use only from … to …"), never
+- **Use one ad out of a compilation.** Cut the source to the one ad first (set the source's in and out points), never
   run a compilation as a whole: it bills every product scene of every ad in it.
 - **Spell out every text change.** A long edited script in the prompt is not enough: compare it with the original and
   list each change as `"OLD" becomes "NEW"` in every video and picture prompt (a poster kept "SAVE THE DATE" when the
@@ -70,8 +70,8 @@ timed out". The full pipeline stays the default; never pick the fast path for th
 - **Swap only within the same product type** (Sean 2026-11-04: "where the product is not the same type, for example
   a beauty product versus food or a pet … it doesn't translate well"). Food/drink, beauty/personal care, pet, fashion,
   tech and home products are used, held and shown differently; a swap keeps the original's actions, so a cross-type
-  swap looks wrong. Different type → no swap: pick an ad of the same type, or use the storyboard pipeline. The lab
-  (v8.89+) blocks a clear mismatch; when it cannot tell, you decide from the reading and say which type each side is.
+  swap looks wrong. Different type → no swap: pick an ad of the same type, or use the storyboard pipeline. The swap-fit
+  check blocks a clear mismatch; when it cannot tell, you decide from the reading and say which type each side is.
 
 
 ## Templates, reuse and source download
@@ -79,7 +79,7 @@ timed out". The full pipeline stays the default; never pick the fast path for th
 **A template = the finished run's configuration + its variables** (Sean 2026-11-06: "what are the variables that can
 be changed from that configuration, and that's basically what the template is"). The configuration is everything the
 run settled: cut list and timings, beats, the ad's music, keep vs remake per scene, still vs moving per scene, the
-ad-area crop and overlay-text blur, the line drawings, the kept clips, and each remade part's prompt, plus every lab setting: use the ad's own audio, send the
+ad-area crop and overlay-text blur, the line drawings, the kept clips, and each remade part's prompt, plus every run setting: use the ad's own audio, send the
 ad's own shot as the reference, each scene's type (still / motion / keep the ad's clip / merchant's own clip, with in
 and out), video and picture model, quality, shape, look, exact timings, on-screen text layers (Sean 2026-11-06:
 "using the ad's own audio, using the ad's own video for certain parts"). Full field list = the lab port list
@@ -127,7 +127,7 @@ Referer with a 302 carrying no CORS header; a server request gets 200. The URL a
 the server, store our own copy, and never hand the CDN URL to a browser or keep it in a template.
 A server fetch can still be walled where a home IP is not (Facebook share links from the worker's IP): prove every
 fetch fix by running the shipped function inside the prod worker container, never by a fetch from your own machine
-(`code-map.md` → Traps).
+(builder map: `remix` skill `references/code-map.md` → Traps).
 
 Draft = 480p video, 1k pictures, until sign-off. Regenerate only what changed; reuse paid output; save every paid
 output the moment it lands. Text, captions, prices and logos are added in post, never drawn by a model; the product's
