@@ -167,7 +167,10 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   (`review_status='done'`) slides `content_items` with that `category` tag (`content_item_tags.item_id`); a saved
   `video_url` asset (`status='ok'`, `s3_key` set); bytes ≤ yobo `ads_gen.video_ref_max_bytes` (slides filter); length ≤
   `ads_gen.remix_max_source_seconds` (yobo filter, unknown length kept); an https thumb. Usual root cause: the Ad
-  Library review backlog (few `done` items per category), not code. Prod DB reads: vault items via `secret-run`, read-only txn.
+  Library review backlog (few `done` items per category), not code. The other root cause is code: yobo
+  `templates/ready-ads.ts` `readyAdsOf` hid an APPROVED template from any org with no `remix_source_fits` row
+  (the "No ready ads for fashion" bug, 2026-11-06). A missing fit row means "not yet judged": in the org's own
+  category it is offered, only a recorded misfit hides a template. Prod DB reads: vault items via `secret-run`, read-only txn.
 - **A yobo press job's `runId` is the PRESS run, never a `project.runs` entry.** Only slides' `freezeRun` writes
   `project.runs`; the slides apply rule (runId must be in `project.runs` with the same inputHash) sent every yobo
   sheet / board / review / part / fix / join / export job to `jobs.stale` 'input_changed'. Yobo jobs are current on
@@ -210,6 +213,11 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   `templateView` + `viewRunScenes`, never the raw column.
 - **A saved template carries none of the merchant's data:** only the ad's own kept clips are reusable; product / brand
   names become `{product}`, prices `{offer}`; storyboards, merchant clips, picked music and offers stay on the run.
+- **A staff move that bumps a run's generation must also queue the advance** (`advance/wake.ts`
+  `enqueueWakeAfterCommit`, after the commit). Without it the run sits `due` with nothing to wake it (2026-11-06).
+- **The staff Hold cannot hold an APPROVED template** (`repository/template-review-repository.ts:62`), and approve does
+  not warn on a source over 30 s: both open as YMS-779. Until it ships, do not promise staff a way to pull an approved
+  template from the UI.
 - **Staff template review stays open** (Sean 2026-11-06 "keep them open"): staff can approve any template; missing
   delivery or rights show as warning chips, not server refusals. Keep only the staff check, the gallery's
   conversation-to-org tie, and a separate press for any paid run.

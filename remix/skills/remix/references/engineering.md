@@ -39,7 +39,7 @@ elements to generate the video."
   out while its commits stay ancestors (2026-11-06: slides typed-product fix was "on main" by history, absent by content).
 - **No `as never` on a ledger, state or wait-reason value.** The cast hides a value the DB CHECK refuses (2026-11-06:
   wait_reason 'staff_retry' violated remix_run_steps_wait_ck; tsc passed, the staff retry threw on dev). Use the
-  real union type, and run a real-PG test on any new path that writes a row with a CHECK constraint.
+  real union type (`satisfies RemixWaitReason`), and run a real-PG test on any new path that writes a row with a CHECK constraint.
 - **Tests use the real data shape.** A fixture with an invented field passes while prod reads a field that does not
   exist (2026-11-06: `storyboard.jobUuid` vs the real `storyboard.ref.jobUuid` made every set-check tap silent). Back
   every reader change with a free read-only replay of real runs (old view vs new view, 0 diffs).
@@ -237,6 +237,11 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   The reason is "spend the fewest paid seconds": every merchant remix of a long template pays for its remade seconds
   (a 78 s ad cost about 70 paid seconds per remix). Staff fill gaps with free reads only. A link that would need the
   paid fetcher (Apify) is skipped; a direct public .mp4 is fine.
+- **Scheduled remix work (stock check, sweeps) runs as a worker scheduler job, never a `vercel.json` cron.** Vercel
+  crons never fire on yobo dev (custom env `dev`), so a cron-driven job is silently dead there (2026-11-06).
+- **The house picker lists only library items with a stored video copy** (dev had 3). An empty picker is a missing
+  copy, not a switch. Every accepted SOCIAL link can fall back to the paid Apify fetch tool (`ads_gen.video_fetch_tools`
+  is set on dev and prod); a direct https .mp4 has no Apify path, so use it for free fills.
 
 ## A reel we cannot download: plain steps, no login (Sean 2026-11-06)
 
