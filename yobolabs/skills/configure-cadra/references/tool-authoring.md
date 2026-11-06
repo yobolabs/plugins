@@ -168,3 +168,13 @@ problem, not a wiring problem.
   slice (`[:3]`) a list it assumes is newest-first. A prompt line "sort by
   timestamp" is not reliably followed. Sort (and project to the fields agents use)
   in the tool response. Evidence: Apify instagram-scraper posts, YMS-760.
+
+## Platform tools and safe tool edits (2026-11-06)
+
+- **A tool row with `org_id` null is a platform (global) tool.** It is shared by every org, so an org-scoped key gets
+  `404 NOT_FOUND "Tool with ID <uuid> not found"` on `GET/PUT /api/v1/tools/<uuid>`, even when the agent pins it. It is not
+  agent config: it changes by platform seed or migration, never by an agent edit or promote. In a dev-vs-prod diff, list it apart.
+- **Before a `PUT /api/v1/tools/<uuid>`, check that the tool's newest `tool_versions` row is the version your agent release pins.**
+  If it is newer, another session has an unreleased edit there and your PUT would overwrite it. Coordinate first.
+- To make a tool equal another environment's text, patch field by field: description, agentInstructions, schema, endpoint texts.
+  Map hosts back to this environment. Never pin an older version instead: the next working-copy cut picks up the newer head again.

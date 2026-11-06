@@ -101,3 +101,9 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   tab left on prod receives a "dev" write.
 - **Spawned roles inherit the parent's harness text** (log line `… (inherited)`) but get no State and no
   `state_update` tool: guard State instructions with "If you have state_update: …".
+
+## Read the live id, not the release note (2026-11-06)
+
+A release note can say "no deployment" while `agents.deployed_version_id` points at that very release (dev 443, rel 2255).
+Before any diff, parity check or cut, re-read `deployed_version_id` on both sides. Shared admin users write many sessions' releases,
+so `created_by` does not tell you which session made a release: only the note does. Always write a note.
