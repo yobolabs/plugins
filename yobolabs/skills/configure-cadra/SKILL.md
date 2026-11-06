@@ -49,11 +49,12 @@ gate-log row, so writes from scripts or the app UI are caught too. Standard the 
 
 Pinned-release cut, diff, deploy-pointer, spent-id handling, the ~5 min config cache and how to prove a turn: `references/prod-releases.md`. Spent id: ask the lead for a new one, never `AGENT_GATE_OVERRIDE`.
 
-**Message the agents lead only for (Sean 2026-11-06):** (a) a review — a plan before you build an agent change,
-or the §2 request for a prod id (dev proof ids go INSIDE that request); (b) a question about agent behaviour
-or troubleshooting. Nothing else: no FYIs, no "built / deployed / proof passed" updates, no captain or chief
-relays. Progress goes in your own task file; the lead reads the gate-log and your §2. Code-only fixes with no
-agent config change need no lead message unless the plan changes agent behaviour.
+**The agents lead owns Cadra/Yobo agents (Sean 2026-11-06):** improving and optimizing agents is the lead's
+work. Message the lead for: (a) a review — a plan before you build an agent change, or the §2 request for a
+prod id (dev proof ids go INSIDE that request); (b) a question about agent behaviour or troubleshooting;
+(c) an idea or finding to improve or optimize an agent. Nothing else: no FYIs, no "built / deployed / proof
+passed" updates, no captain or chief relays. Progress goes in your own task file; the lead reads the gate-log
+and your §2. A code-only fix that does not change how an agent behaves needs no lead message.
 Dev agents are release-pinned too: an edit changes HEAD only; a proof counts only if its run logs the changed version (`harness <uuid> vN`, `agent_executions.agent_version_id`).
 
 ## Setup
