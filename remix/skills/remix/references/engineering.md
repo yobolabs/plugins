@@ -457,3 +457,22 @@ Rulings by the remix lead; yobo `stages/video/part-edges.ts`, `part-starts.ts`, 
   captain before pushing; renumber when another migration lands first.
 - **A prod port of a bundle onto a main that holds work out** cherry-picks only the bundle commits and checks file by
   file that no held develop commit rides along (`git log <main>..origin/develop -- <file>` minus the bundle).
+
+## Card taps, open runs and cancels (2026-11-07, m-remix-build-58)
+- A "Use ad N" tap on the "ads like yours" cards is handled by CODE, never an agent turn. The button id carries its
+  target (`pick:N:t:<templateId>`; `pick:N:l:<libraryId>` stays agent-bound). msg-api forwards it like needs:/go: with
+  NO org field; yobo takes the org ONLY from its own `remix_action_tokens` row written when it posted that card (posting
+  org + chat + exact id), consumes it once, decides with local reads inside `remix_pick_tap_safe_ms` (3.5 s, below
+  msg-api's 5 s tap timeout), then starts after answering. Not handled (old `pick:N` card, library card, late, spent
+  card whose start died) → the agent path, never silence. Before this, every tap re-sent the whole card list: a tap is
+  a NEW agent turn that no longer holds the list, so it re-read (and re-posted) it.
+- Never send msg-api's own `connection.orgId` to yobo as an org: msg-api numbers orgs differently (cross-tenant start).
+- A finished run (exported, posted, failed, cancelled) is never the chat's current remix: a run found only through the
+  chat's old jobs is checked for phase, and `statusOf` reports no buttons on a finished run even with stale asks.
+- One open run per chat: a new ready-ad start cancels the chat's older UNPAID fast runs at `product_pick` (never
+  fast_video or later) and closes their asks. Any cancel (staff or supersede, fast or full machine) closes the run's
+  open asks in the same tx. Staff Cancel on a fast run must use the fast machine (the full machine refuses fast phases).
+- `plan.dropped` spans are CUT OUT of the output video (plan.ts §21), so a product inside a dropped span does not fail
+  a template's QC; only kept (`keep`) parts must be free of the old product.
+- Port onto a held-out `main`: develop has work main lacks (yobo `insertRun` ask-close, msg-api origin-web spec blocks).
+  Re-run the port's tests on main; a conflict hunk can drag develop-only tests in — drop them, never the fix.
