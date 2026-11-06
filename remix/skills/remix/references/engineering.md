@@ -247,3 +247,12 @@ The first yobo run past storyboard approval hit six gaps in a row. Each rule bel
   a `usable` verdict) feeds the video catalog, storyboard assets and chat-photo. A storyboard sheet with no photo asks
   in chat: ONE `photo` ask naming the item, with the sheet target on its item. A chat photo then binds to that ask
   (`sheet-photo-bind.ts`), consumes it as the `retry:sheet` press, and wakes the run.
+
+## Switches a remix prod release must carry (2026-11-06)
+
+Check each one on prod by name before calling a remix release done (switch parity):
+- yobo `SLIDES_API_URL` + `SLIDES_API_KEY` (slides PROD key): the one Ad Library adapter reads slides with them.
+  Missing → every staff read fails "That ad could not be read." (log `remix_adlib_read_failed …unset`).
+- yobo `REMIX_HOUSE_ORG_ID` = the prod YoboLabs org (211 on prod; 1 on dev). Prod org 1 is a merchant.
+- `ads_gen.remix_owner_at_start`: stays OFF on prod until the yobo-path bundle is on main (section above).
+
