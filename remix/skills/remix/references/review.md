@@ -30,6 +30,14 @@ remember the brief. The source reading is context only. Every finding has one ve
 A per-shot block gates the set in code; the set check alone never decides. A check that could not run is a fail, not a
 pass.
 
+## Fit: only templates the product fits
+
+**Only suggest a template the product fits** (Sean 2026-11-04: "[that product] doesn't make sense for this type
+of video … we should never offer this as a suggested ad template"). Before suggesting or running a template for a
+product, check the product belongs in that ad's scenes and actions (category, setting, how the product is used in
+the shot list). A snack tin in a fashion-bag laundry ad came out as nonsense even with size and crop right.
+No fit → say so in one line and offer the forward option (a fitting ready ad, the storyboard pipeline); never run it anyway.
+
 ## Per-storyboard AI checklist (what to look at, verdicts as above)
 
 - [ ] Right person per name vs the approved cast picture (look), nobody duplicated, no extra person (block)
