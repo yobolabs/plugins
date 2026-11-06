@@ -36,7 +36,7 @@ before it is written: root prompt, intent, model, harness / run rules, a role (c
 a skill (template, reference, link), a tool row, or a deploy-pointer promote. Dev needs no id.
 
 1. Prove on dev first (N >= 3 real channel runs, execution ids).
-2. Send ONE `agent-review:` request to `m-agent-architect` (SendMessage) in the format of
+2. Send ONE `agent-review:` request to the agents lead (`m-agents-lead-N`, check the chief-of-staff LEADS file; was m-agent-architect) (SendMessage) in the format of
    `_context/cadra/_specs/p152-agent-architecture/3-review-gate.md` §2: agent + live base release,
    one change, layer, dev proof ids, diff + undo file, root `+N/-M` chars, LIMITS row, lane approval.
 3. On `APPROVED prod gate-YYYYMMDD-N`, put `AGENT_GATE=gate-YYYYMMDD-N` in the write command and
