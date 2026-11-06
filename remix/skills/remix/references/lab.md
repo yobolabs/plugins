@@ -115,3 +115,24 @@ wants to change it. Lab manual: `remix-context` search "Remix lab — how it wor
 - **Keep the lab tab alive while it renders:** a hidden cmux tab reset the lab mid-render and lost the job ids. Use
   focus emulation (see Usage step 1), never reload during a run.
 
+
+## The lab keeps every video (v9.17–v9.18, Sean 2026-11-06)
+
+Sean: "You need to have every video I make with remix in context stored somewhere."
+- **The run record starts when the ad loads**, not at the first paid output (v9.12 "no empty runs" is replaced). The
+  ORIGINAL ad is copied to our S3 at load (`saveSource` → `remix-lab/<org>/<run>/source.mp4`, `source.key` on the run):
+  an uploaded file directly, a link through the same URL the preview plays (Instagram links expire). Paid outputs
+  (`saveAsset`) and the final (`saveFinal`, on join) were already saved as they land.
+- **A failed save is ONE line on the page, never a block** (default open).
+- **The prototype page on `*.pages.yobolabs.ai` saves nothing** and says so with a link to the team lab. Never answer
+  CORS with credentials for `*.pages.yobolabs.ai`: any author's prototype JS runs there, and the sessionless origin is
+  the tenant boundary.
+- **Own Cadra key on the team page:** optional field, held in a page variable only (never localStorage, the store, the
+  snapshot or logs). The page sends it as `X-Lab-Own-Key`; the Worker uses it instead of the team key for that call and
+  logs only `paid: own|team`. The snapshot records `paidBy`.
+- **Test runs:** mark them (`config.test: true`, status `failed`, title `test: …`) through the store PATCH. Never delete.
+- **Where every video is listed:** `_context/slides/_specs/p131-remix-in-ad-studio/videos/INDEX.md`, rebuilt daily by
+  `_devtools/remix-video-index/build.py` (read-only, prod + dev; keys not links; lost originals named by run id).
+  Get a file through the back-office page in the row, or presign the S3 key.
+- **Backfill a link-only original free first:** `yt-dlp` the post link, then store it through the lab store
+  (`upload-url` → PUT → PATCH `source.key`). Apify only after asking.

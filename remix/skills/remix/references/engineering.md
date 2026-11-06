@@ -328,3 +328,16 @@ Check each one on prod by name before calling a remix release done (switch parit
   `prototypes.update` and verify with curl + cmp. Keep the undo copy first, and copy the new vNNN over remix-lab.html.
 - The secret-guard hook flags regexes like `.*?` and SQL aliases like `v.key` in heredocs. Write those scripts with the
   Write tool and run them by path.
+
+## Proving a port and finding a run's source (2026-11-06, m-remix-build-53)
+
+- **A bundle that conflicts after a prod cut:** check whether the conflict is in the bundle's own commits or only in its
+  old base. If only the base, cherry-pick just the bundle's commits onto current `origin/main` as a new branch (no
+  "main" in the name); they usually apply clean.
+- **Tier 1 on the shared mini:** `remix-tools` / `remix-tap` tests time out at 5 s under load, and which ones fail changes
+  each run. Re-run the same files with `--testTimeout=60000` on BOTH base and port and diff failure identities.
+  `pnpm exec tsc` on the mini needs `NODE_OPTIONS=--max-old-space-size=12288` or it aborts (SIGABRT).
+- **Side-chat remix needs a yobo run row.** Binding, cards and taps all read `remix_runs.state.webChat`; a slides-owned
+  start writes no row, so the side chat behaves like plain chat (no buttons) until the owner is yobo.
+- **`remix_runs.source_breakdown_id` is never written (YMS-781).** A run cannot be joined to its stored original
+  (`remix_source_copies`); match by org and date until it is fixed.
