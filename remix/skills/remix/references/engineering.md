@@ -179,3 +179,18 @@ first, the caller second. "msg-api first" is right only when msg-api is the side
 hides a wrong order: prod conv 2612 got sample ads at 06:34Z because msg-api went live 06:29Z and called a yobo route
 that only arrived ~06:39Z (404 → fail open → old behaviour). The release-request names the order.
 
+## Recovering a merchant's failed remix: the agent carries on (Sean 2026-11-06)
+
+Sean: "We should have just acted like the YOBO agent figured it out and is now working on it and then the normal
+remix begins" · "I wanted a natural agent response, not a takeover response" · "This is why I wanted you to do this".
+When a live merchant's remix fails on our side (e.g. a login-walled Instagram reel), the lead session fixes it ITSELF
+at once, before the team has to take the chat over:
+1. Get the input another way (here: the reel's mp4 through a logged-in browser session's media API), into the org's Files.
+2. ONE agent turn on the merchant's real session with a system note: start the remix from the file, and tell the
+   merchant in one natural line that you have it and are working on it. No mention of private links, fetching, the
+   team or an operator.
+3. The normal remix journey follows (breakdown, asks, storyboards, video), posted by the app.
+Never a server-side start with a made-up execution id: the run then has no chat, and the merchant hears nothing.
+Never a human takeover reply for a pipeline failure. Harm if not: the merchant sees silence, then a person
+apologising, instead of a product that works.
+
