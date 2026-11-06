@@ -211,3 +211,28 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   differs per env — look it up read-only (by name and staff membership), never assume an id.
 - **yobo drizzle `_journal.json` merges:** keep develop's entries, order and `idx` exactly; append new tags with the
   next `idx` and a `when` above the current max. Sorting by `when` or renumbering rewrites hundreds of lines.
+- **A native SOURCE run starts its own analyze (yobo `steps/front.ts` autoAnalyze).** A yobo-owned run created at
+  `reading` with a source blueprint has no slides to start `remix_analyze`; the front pass starts it once the blueprint
+  is `done`/`failed` (failed → the one-line refusal + [Try again]) and waits while it is queued/running. Without it every
+  native run sits at `reading` forever (dev 2026-11-06). A journey test must go past "the run wakes" to "analyze starts".
+- **Web side chat = its own msg-api WEBCHAT conversation.** A side-chat run's HOME (`state.conversationUuid`) is the side
+  chat; the merchant's WhatsApp chat rides as `state.webChat.whatsApp` (nudge + final video only, `withWebSurface`).
+  `state.webChat.sessionUuid` binds the run to the side session; a web card tap off Main Chat is allowed only from that
+  session of the merchant's own OPEN run (`sideChatRunOf`), else 403. msg-api forwards WEBCHAT remix **button taps only**
+  (typed text / photos stay with the agent).
+- **A WEBCHAT turn carries NO customerRef.** The remix tools' actor (run creator, recorded WhatsApp chat) comes from the
+  owner of the chat session the trusted `X-Cadra-Session-Id` names (`findSessionOwner`); without it the run has no
+  creator and tap auth / deep link cannot match.
+- **msg-api `contact-thread` spans every chat of the contact.** A per-chat read (side chat history) uses
+  `GET /platform/conversations/:uuid/messages`.
+- **One Cadra key cannot reach two orgs.** When the web chat agent lives in another Cadra org than every other yobo uuid
+  (dev), the chat proxy + chat artifacts + reach checks of the chat's own uuids use `COPILOT_CADRA_API_KEY` (falls back to
+  `CADRA_API_KEY`; prod unset). A Cadra key with no `created_by` sees only default-workspace agents: set the creator to
+  the owner of the agent's workspace.
+- **Run-state side writers need an allow-list row + a state-only guard** (`run-machine-writers.test.ts`): `web-surface.ts`
+  writes only `surface` / `webSeenAt` / `webNudged`.
+- **Proof runs:** drive a hidden cmux tab with the page's own `fetch` (create the side chat via
+  `chatSessionTitles.createSide`, send via `/api/v1/copilot/webchat/ingress`), never blind UI typing — a blank background
+  tab sent a message into Main Chat. A background tab's `innerText` is empty; use `textContent`/aria-labels.
+- **Slicing a long suite on mini-run:** a detached runner script (setpgrp + background) gets reaped; run each
+  `--shard=N/4` as its own background tool call instead.
