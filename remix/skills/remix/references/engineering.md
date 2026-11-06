@@ -346,6 +346,35 @@ Check each one on prod by name before calling a remix release done (switch parit
 - The secret-guard hook flags regexes like `.*?` and SQL aliases like `v.key` in heredocs. Write those scripts with the
   Write tool and run them by path.
 
+## Start and end picture per clip, same-picture repeats (2026-11-07, m-remix-build-56)
+
+Sean 2026-11-06 22:4x: "Storyboard must have an image for every unique shot and for start and end shot of clips."
+Rulings by the remix lead; yobo `stages/video/part-edges.ts`, `part-starts.ts`, `advance/edge-scenes.ts`.
+- **One continuous shot → Seedance 2.0 i2v**: `image_url` = the clip's start picture, `end_image_url` = its end
+  picture, nothing else (cast and product are drawn into the pictures). The prompt writer gets the two pictures as
+  "first frame … start exactly on it" / "last frame … end exactly on it", never an empty reference list.
+- **Several shots → ref2v**: ordered `image_urls` = start picture, the scenes' storyboards, end picture, then the
+  sheets; the prompt says "@Image1 is the first frame, @ImageN the last frame". Never Kling; never mix the two modes.
+- **0 extra pictures where one exists**: a storyboard drawn over a line drawing (it has `guide`) is its clip's start;
+  a still shot's is also its end. A keyframe sheet is never an edge. Edge pictures are `<scene>@start|end` targets,
+  drawn like setup shots (line drawing of THEIR frame: the shot's first-frame still, or its LAST frame cut from the
+  stored source copy by the worker, `referenceKind: 'source_frame'`), with the scene's storyboard as look reference.
+  They live on `scene.edges`, are reviewed, set-checked and approved as their own cards ("Start of video N" /
+  "End of video N"; card titles never say "part").
+- **Plan check `part_has_start_end`** before anything is paid: a moving clip on a run read from an ad whose stored
+  copy is gone cannot get its end picture → one plain line. Runs made before G1 (no edges) render as before + log.
+- **A repeated shot is the SAME PICTURE, not "no hard cut"**: compare the two first frames at 64x64 colour, mean
+  difference < 8 AND grey layout correlation >= 0.92 (`scripts/remix/analyze.py` same_picture). The cut detector's
+  bar marked 17 different shots as repeats on 3 dev ads (dark products on one set; one presenter in different
+  hoodies measured 14 / 0.85). Prove a repeat change free: re-analyze stored dev sources + one A|B|A clip cut from
+  them; look at the first frames by eye.
+- **A client page must never import `advance/*.ts`** that pulls `node:crypto` (video-view.ts): the merchant page's
+  bundle broke on develop. Shared pure helpers go in `stages/` (`groupsOf` lives in `stages/video/groups.ts`).
+- **A phase move must run the next step in the same pass.** needs → brief returned without starting the brief, so the
+  plan waited for the 5-min stall wake (dev cb6da8a8, 6 min of silence). Never rely on the stall guard to continue.
+- **Proving a paid clip**: the job stores no provider body; rebuild it in the dev worker with `submitParameters`
+  from the job's frozen `target` and the account row. Compare the video's first/last frames with the pictures by eye.
+
 ## Proving a port and finding a run's source (2026-11-06, m-remix-build-53)
 
 - **A bundle that conflicts after a prod cut:** check whether the conflict is in the bundle's own commits or only in its
