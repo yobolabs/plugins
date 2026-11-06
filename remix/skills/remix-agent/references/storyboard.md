@@ -7,6 +7,11 @@ source frame (position and framing only). A master picture or set picture is a r
 substitutes for the shot's own line drawing. Line drawings never go to a video model alone (the old subject's shape
 leaks into the new product).
 
+**What a storyboard set must hold** (Sean 2026-11-06: "Storyboard must have an image for every unique shot and for
+start and end shot of clips"): one image for every UNIQUE shot (a shot that comes back, the same setup and framing,
+reuses its image rather than getting a new one), PLUS an image for the first and the last frame of every video part
+(clip) sent to the video model. The review fails a set that is missing any of these.
+
 **One storyboard per shot, built from keyframes, decided** (Sean 2026-11-06: "keep per shot" … "It should be based
 on keyframes"). A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
 part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,
