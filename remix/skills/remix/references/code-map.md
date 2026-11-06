@@ -17,7 +17,8 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 | Lab (reference implementation) | `remix-context` search "Remix lab — how it works" |
 | Templates: v2 schema (configuration FIXED + variables + brief) and capture from a run | yobo `src/extensions/remix/template/schema-v2.ts`, `capture-v2.ts` (v1 readers via `toV1View`) |
 | Back office (Overview, Remixes, Templates, Review, Save as template, New template) | yobo `src/app/backoffice/remix/**`, `src/extensions/remix/components/Remix*.tsx`, `SaveAsTemplate.tsx`, `NewTemplateDialog.tsx`, `monitor/*-router.ts` |
-| Merchant template gallery + card | yobo `src/app/(org)/remix/templates/page.tsx`, `src/extensions/remix/components/gallery/` (`TemplateCard`, `templateGalleryHref`, `gallery-query.ts`) |
+| Merchant template gallery + card | yobo `src/app/(org)/remix/templates/page.tsx`, `src/extensions/remix/components/gallery/` (`TemplateCard`, `templateGalleryHref`, `gallery-query.ts`, `gallery-pick.ts`, `side-chat-open.ts`) |
+| Web chat remix cards + side chat | yobo `src/app/(org)/chat/components/RemixTurnCard.tsx`, `ChatListColumn.tsx` (Remix entry), `hooks/useRemixHistoryPoll.ts`, `src/lib/copilot/webchat/conversation-thread.server.ts`, `src/extensions/remix/web-chat.ts`, `web-focus.ts`, `web-surface.ts`; msg-api `src/routes/internal/webchat-session-conversation.ts` |
 | Ad Library read (the ONE reader) | yobo `src/extensions/remix/library/ad-library.ts` → slides `GET /api/v1/content/items/{id}` (content.search key, Bearer) |
 | Ad Library video into a remix | yobo `src/extensions/remix/library/library-copy.ts` (`libraryVideoUrl` port in `native-source-start.ts`) |
 
@@ -150,9 +151,16 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   msg-api WEBCHAT); a WhatsApp-linked Main Chat uses the WA conversation's agent. The copilot key and that agent must
   sit in the SAME Cadra org: an agent in another org makes cadra-web's stream route answer `wrong_org` → SSE 404
   "Agent run not found" on every web turn. Diff dev vs prod for this row (dev drifted to an agent with no remix tools).
-- **A web remix runs in a Side Chat** (Sean 2026-11-06; rule in `engineering.md`). Today `defaultWhatsAppChat`
-  (`remix-tools.ts`) returns null for a WEBCHAT conversation, taps are allowed only on Main Chat (webchat ingress), and
-  the remix history poll runs only on Main Chat — the side-chat stories close these.
+- **A web remix runs in a Side Chat** (Sean 2026-11-06; rule in `engineering.md`). Shipped (prod 2026-11-07): a side
+  chat's WEBCHAT turn is accepted by the remix tools (`web-chat.ts runChatOf`), side taps and the side history poll work
+  (see "Web side chat" below). Entry points: `/chat` "Remix a video" → gallery, and the gallery pick (next bullet).
+- **Web template pick = a NEW side chat, never Main Chat.** `gallery-pick.ts` with no `?c=` (picked on the web) calls
+  `side-chat-open.ts openRemixSideChat`: title "Remix · <template name>" (`templateCardName`, never an id) → msg-api
+  `POST /api/v1/internal/channels/webchat/session-conversation` makes the side chat's conversation with NO turn and NO
+  agent (a side chat otherwise has no conversation until its first typed turn, and every ingress turn starts the agent)
+  → only then the `chat_session_titles` side row (a refusal leaves no empty side chat) → `startNativeTemplateRun` with
+  `webChat` + `surface: 'web'` (`sideChatState`, v1 AND clip paths) → client pushes `/chat?remix=<run>`, which opens that
+  side chat (`useRemixDeepLink` → `sideSessionUuid`). `?c=` (WhatsApp open-app link) keeps the WhatsApp path.
 - **Only the run machine writes run state.** `run-machine-writers.test.ts` fails any other `remix_runs` writer. A
   side writer (lease, web focus) is allow-listed with a guard test, writes ONE state key with `jsonb_set`, and never
   bumps `version` (a bump makes the machine's version CAS lose mid-advance).
@@ -244,6 +252,16 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   creator and tap auth / deep link cannot match.
 - **msg-api `contact-thread` spans every chat of the contact.** A per-chat read (side chat history) uses
   `GET /platform/conversations/:uuid/messages`.
+- **That per-conversation `/messages` answers `direction` in UPPER case** (`OUTBOUND`/`INBOUND`); the contact thread
+  answers lower case. `conversation-thread.server.ts mapThreadRow` lower-cases it. Without that, every side-chat row had
+  no direction → `classifyRemixTurns` (outbound rich rows only) dropped every card → the SDK showed the welcome screen
+  (it merges injected rows into messages, so 0 rows = welcome), and the merchant's own lines read as assistant.
+- **Remix panes poll only while the tab is visible** (`useVisible` in `useRemixHistoryPoll.ts`). A background cmux tab
+  never polls, so a proof sees no card: set `document.visibilityState` to `'visible'` and dispatch `visibilitychange`
+  first.
+- **On the product menu every catalog row starts the PAID product sheet** (`fast-asks.ts pickFastProduct → startSheet`);
+  "Add a new product" (`needs:pnew`, a photo ask) is the only free tap. The web list card always shows pinned free/exit
+  rows (`LIST_PINNED_ROW_IDS` in `RemixTurnCard.tsx`) and See all expands IN PLACE (never a link out of the chat).
 - **One Cadra key cannot reach two orgs.** When the web chat agent lives in another Cadra org than every other yobo uuid
   (dev), the chat proxy + chat artifacts + reach checks of the chat's own uuids use `COPILOT_CADRA_API_KEY` (falls back to
   `CADRA_API_KEY`; prod unset). A Cadra key with no `created_by` sees only default-workspace agents: set the creator to
