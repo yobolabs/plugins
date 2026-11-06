@@ -1,6 +1,10 @@
 # Effect: Frame Break
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (35.3–36.7 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (35.3–36.7 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg, person matte (SKILL.md § 2)
 
 **Look:** Crack lines spread across the picture as if the screen is glass. Then the background shatters into sharp shards that fly outward and spin, showing a new colour behind. The person stays whole in front.
 **Use when:** "Breaking" something: breaking a rule, breaking the feed, a hard pivot.

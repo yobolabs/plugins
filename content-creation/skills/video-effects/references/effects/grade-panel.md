@@ -1,6 +1,10 @@
 # Effect: Grade Panel
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-De8SPjEAuV0-claude-edited.md` (51.5–58.7 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (51.5–58.7 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** The picture goes moody: highlights down, blacks lifted, saturation −15%, soft vignette. A dark panel at the top shows a tone curve and sliders (Highlights, Blacks, Saturation, Vignette); each value moves on the word that names it, and the grade steps in with it.
 **Use when:** Explaining how a look is made, or a mood change ("now it gets serious").

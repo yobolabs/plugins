@@ -1,6 +1,10 @@
 # Effect: Dolly Zoom
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (25.4–27.3 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (25.4–27.3 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg, person matte (SKILL.md § 2)
 
 **Look:** Vertigo shot. The person stays the same size and position while the room behind them slides away, as if the camera dollied in and zoomed out at once.
 **Use when:** A reveal, a shock, a "wait, what?" beat. One per video at most.

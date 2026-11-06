@@ -1,6 +1,10 @@
 # Effect: Title Cloud
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (0.00–3.25 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (0.00–3.25 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`
 
 **Look:** A big two-line title pill sits at the top. Small dark tags fly in down both sides, one per item in a list. On a trigger word a group of tags turns brand.primary. Then the title shrinks and slides up into a small header that stays for the rest of the video.
 **Use when:** The hook announces a list ("N ways", "N tools") and the whole list should be visible in the first 3 s.

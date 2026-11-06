@@ -1,6 +1,10 @@
 # Effect: Headline Storm
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (12.50–14.50 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (12.50–14.50 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`
 
 **Look:** Tilted news-ticker strips slam onto the frame one after another, stacking and overlapping. Each strip is a white text bar with a small brand.primary tag at its left end (a "breaking news" style <tag>). After 2 s, 6–8 strips cover the upper and lower thirds; the face stays mostly clear.
 **Use when:** Hype, "everyone is talking about it", or a news-style claim.

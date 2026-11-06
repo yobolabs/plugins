@@ -1,6 +1,10 @@
 # Effect: Chapter Label
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (3.25–39.7 s, persistent).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (3.25–39.7 s, persistent) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`
 
 **Look:** Under a small header, a brand.primary square with a two-digit number (01, 02…) sits beside a white pill with the item name. A thin segmented progress line under it fills one segment per item. Number and name swap with a hard cut on each new item.
 **Use when:** A list video walks through N items and the viewer should always know which item it is and how many are left.

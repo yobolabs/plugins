@@ -1,6 +1,10 @@
 # Effect: Studio Reveal
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (18.90–21.00 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (18.90–21.00 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg, person matte (SKILL.md § 2)
 
 **Look:** The background goes black around the speaker. Then two big glowing softbox panels and a brand.primary "<on-air sign>" light up behind them, like a TV studio switching on.
 **Use when:** "Go pro", "level up your production", or a launch / going-live beat.

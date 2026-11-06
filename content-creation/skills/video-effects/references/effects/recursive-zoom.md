@@ -1,6 +1,10 @@
 # Effect: Recursive Zoom
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-De8SPjEAuV0-claude-edited.md` (43.7–48.2 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (43.7–48.2 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** The shot shrinks into a framed picture of itself, which holds a smaller picture of itself, N levels deep (Droste). Then the camera pushes through the frames with a spin and motion blur and lands back on full frame.
 **Use when:** A transition that says "deeper" or "inside": going from a summary into detail, or a self-referential "this video" beat.

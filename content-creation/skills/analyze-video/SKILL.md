@@ -1,6 +1,6 @@
 ---
 name: analyze-video
-description: "Use when breaking down a source video or ad before remixing or editing it: finding cuts, shot boundaries, still vs moving shots, music tempo and beats, whether cuts land on the beat, and suggesting how to structure and make each shot. Also use when the user mentions \"analyze this video\", \"break down the ad\", \"scenes are wrong\", \"cuts\", \"shots\", \"beats\", \"BPM\", \"slideshow\" or \"how should we structure this video\". Bare invocation: run the analysis script on the given video and report the shot table and the suggested structure."
+description: "Use when breaking down a source video or ad before remixing or editing it: finding cuts, shot boundaries, still vs moving shots, music tempo and beats, whether cuts land on the beat, and suggesting how to structure and make each shot. Also use when the user mentions \"analyze this video\", \"break down the ad\", \"scenes are wrong\", \"cuts\", \"shots\", \"beats\", \"BPM\", \"slideshow\" or \"how should we structure this video\", and when a video is sent to learn its effects or style (\"break down this reel\", \"make skills from this video\"). Bare invocation: run the analysis script on the given video and report the shot table and the suggested structure."
 ---
 
 # Analyze a video
@@ -46,6 +46,13 @@ Details, the three test ads and their expected shots: `references/cuts-and-shots
    like a director (`content-creation:higgsfield-video` → `references/remix-workflow.md`). With correct cuts
    the reading is reliable; with wrong cuts no model can fix it.
 3. **Plan** each shot from its type and length (`references/plan.md`).
+
+## Learning techniques from a video (not remixing it)
+
+When a video is sent to learn its effects, format or style, follow `references/breakdown-to-skill.md`: fetch free,
+store, measure, transcribe exactly, write the breakdown from `references/breakdown-template.md` into
+`_context/yobolabs/video-breakdowns/`, then map each technique to a type file in the owning skill
+(edit effects → `content-creation:video-effects`).
 
 ## Tests
 

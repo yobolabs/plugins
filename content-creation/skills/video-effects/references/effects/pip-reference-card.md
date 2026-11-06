@@ -1,6 +1,10 @@
 # Effect: PiP Reference Card
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-De8SPjEAuV0-claude-edited.md` (0–2.5 s big; small for most of the video).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (0–2.5 s big; small for most of the video) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** A rounded card in the top-left plays another video (the one being reacted to). It stays small most of the time and grows when the speaker talks about it, then shrinks back.
 **Use when:** Reacting to, reviewing or remaking another clip; "this guy did X, here's how".

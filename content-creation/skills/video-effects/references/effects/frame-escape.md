@@ -1,6 +1,10 @@
 # Effect: Frame Escape
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (6.77–8.33 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (6.77–8.33 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg, person matte (SKILL.md § 2)
 
 **Look:** The video becomes a tilted photo with a thick white border on a dark background. The photo then drops to the lower third, and the speaker's head and shoulders stick out above its top edge, as if climbing out of the picture.
 **Use when:** "Breaking out", "beyond the frame", or any beat about escaping limits.

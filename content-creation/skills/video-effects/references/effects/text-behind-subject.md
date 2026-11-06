@@ -1,6 +1,10 @@
 # Effect: Text Behind Subject
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-De8SPjEAuV0-claude-edited.md` (6.1–7.9 s, 10.0–12.0 s, 82.8–84.9 s outline CTA).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** proven 2026-11-07 (local talking-head test clip, Remotion + rembg u2net_human_seg) — proof strip `_context/yobolabs/video-breakdowns/proof/text-behind-subject-strip.png`
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (6.1–7.9 s, 10.0–12.0 s, 82.8–84.9 s outline CTA) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays` (src/effects/TextBehindSubject.tsx), person matte (SKILL.md § 2)
 
 **Look:** Huge words sit in the room behind the person: the head and shoulders cover part of the letters. Variants: solid fill, two-tone (first word accent, second white), or outline-only for a CTA keyword.
 **Use when:** Stating a topic, a name or a CTA keyword with weight, without covering the face.
@@ -19,8 +23,8 @@ Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** See
 
 ## Build
 - Remotion: `TextBehindSubject`. Props: `lines[]`, `style: "solid" | "twoTone" | "outline"`, `colors`, `y` (default 0.30), `startFrame`, `matteSrc`.
-- Size: fit width to 90% of frame; one line ≈ 12–18% of height. Bold condensed sans (900 weight), letter-spacing −0.02em.
-- Position: text vertical centre at head height (y ≈ 25–35%) so the head overlaps it.
+- Size: `min(18% of height, 90% of width ÷ (letters × 0.5))` — condensed caps are ≈ 0.5 em wide. Bold condensed sans (900 weight), letter-spacing −0.02em.
+- Position: text vertical centre on the **head top** (read it from the matte), so the head covers the lower half of the letters; for a seated talking head that is y ≈ 28–32%.
 - Outline: `WebkitTextStroke: 4px #FFFFFF`, `color: transparent`, font size ≈ 22% of height.
 - Two-tone: first word `brand.accent`, rest `#FFFFFF`.
 - Composite the matte frame on top: `<Img src={matteFrame(frame)} />` with straight alpha.
@@ -34,3 +38,4 @@ Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** See
 - Text must be large enough that most of it stays readable around the head; under ~60% coverage it reads as a mistake. Short words only (≤ 12 letters per line).
 - Dark text on a dark room disappears. Use white or the accent, or add a soft shadow `0 6px 24px rgba(0,0,0,0.4)`.
 - Captions drop to y ≈ 72% or hide while big text is up.
+- Person segmentation also cuts out **faces inside on-screen cards, phones or monitors**; those then sit in front of the text. Keep the text clear of such cards, or erase them from the matte.

@@ -1,6 +1,10 @@
 # Effect: Orbit
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (3.25–4.50 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (3.25–4.50 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, person matte optional (SKILL.md § 2)
 
 **Look:** Six small app-style icon chips circle the speaker's head on a thin dashed ellipse. Chips on the far side pass behind the head.
 **Use when:** Naming a set of tools or features "around" the person, or an "everything at your fingertips" beat.

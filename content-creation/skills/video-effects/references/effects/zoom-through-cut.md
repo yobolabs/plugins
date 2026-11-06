@@ -1,6 +1,10 @@
 # Effect: Zoom Through Cut
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (30.8–33.3 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (30.8–33.3 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** A fast push-in with motion blur into the face, then a cut to the next line, which lands on a slightly tighter or shifted framing and settles back.
 **Use when:** Joining two takes or two lines with energy; hiding a jump cut.

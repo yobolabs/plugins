@@ -1,6 +1,10 @@
 # Effect: Magazine Cover
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (27.3–29.4 s) and `breakdown-ig-De8SPjEAuV0-claude-edited.md` (31.5–37.6 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** proven 2026-11-07 (local talking-head test clip, Remotion + rembg u2net_human_seg) — proof strip `_context/yobolabs/video-breakdowns/proof/magazine-cover-strip.png`
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (27.3–29.4 s) and `_context/yobolabs/video-breakdowns/instagram-De8SPjEAuV0-claude-edited.md` (31.5–37.6 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays` (src/effects/MagazineCover.tsx), person matte (SKILL.md § 2)
 
 **Look:** The shot becomes a magazine cover. A big serif masthead sits **behind the head**; cover lines, issue line, a barcode and a round sticker arrive one per beat on top of the person.
 **Use when:** A "this is the big story" moment: a launch, a headline claim, a feature reveal.
@@ -21,7 +25,7 @@ Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** See
 
 ## Build
 - Remotion: `MagazineCover` component. Props: `masthead`, `issueLine`, `coverLines[]`, `stickerText`, `beats[]` (frame numbers), `brand` (accent, serif font).
-- Masthead: serif display (e.g. Playfair Display 900), width 92% of frame, top at y ≈ 6%, font size ≈ 15% of height, colour `brand.accent`.
+- Masthead: serif display (e.g. Didot / Playfair Display 900), top at y ≈ 6%, font size `min(15% of height, 92% of width ÷ (letters × 0.75))` — at a flat 15% a 6-letter serif masthead overflows a 1080 frame. Colour `brand.accent`.
 - Issue line: small caps 1.6% height, top y ≈ 4%, centred.
 - Cover lines: left column x 6–48%, y 55–75%, serif bold 3.5% height, white with shadow or black on cream.
 - Barcode: SVG bars 14% wide × 5% high, bottom-left at y ≈ 88%.
@@ -33,7 +37,9 @@ Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** See
 - Copy: masthead, issue line, 2–3 cover lines, sticker text.
 
 ## Traps
+- Captions over the cover lines read as clutter: move the caption band above or below the cover-line zone, or hide captions while the cover is up.
 - The masthead must be **behind** the head. Overlapping the head on top of the text is the whole effect; text over the face kills it.
-- Keep the head top within the masthead band. If the head sits low, scale the plate up 110% so the head overlaps the letters.
+- Keep the head top within the masthead band (head covers the lower ~half of the letters). A seated speaker sits low: scale plate + matte together from the bottom centre (`transform-origin: 50% 100%`), ≈ 1.25–1.3×, until the head top lands mid-masthead.
+- A masthead drawn inside the scaled plate group must be placed with the inverse transform (`top = oy + (y_out − oy) / s`, size ÷ s), or the scale pushes it off the top of the frame. Overlays (layer 4) stay outside the scaled group.
 - Do not show all elements at once. One per beat is what makes it feel edited.
 - Matte edge must be clean around hair; a 1 px feather (`blur(0.5px)` on the alpha) hides jaggies.

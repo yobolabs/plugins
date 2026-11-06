@@ -1,6 +1,10 @@
 # Effect: Phone Mockup
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (38.4–39.7 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (38.4–39.7 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`
 
 **Look:** The full-screen shot shrinks into a phone frame floating on a dark background. On the next beat a generic short-video app interface appears around the video inside the phone, so it looks like a posted reel.
 **Use when:** "This is what it looks like on your feed", posting, social proof, before-you-post.

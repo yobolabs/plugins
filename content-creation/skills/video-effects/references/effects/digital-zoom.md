@@ -1,6 +1,10 @@
 # Effect: Digital Zoom
 
-Back to [SKILL.md](../../SKILL.md). Status: **stub — not proven in runs.** Seen in: `_context/slides/_specs/p131-remix-in-ad-studio/videos/breakdown-ig-Det_44sBsPY-20-effects.md` (36.7–38.4 s).
+Back to [SKILL.md](../../SKILL.md).
+
+- **status:** stub (not proven in a run)
+- **seen in:** `_context/yobolabs/video-breakdowns/instagram-Det_44sBsPY-20-effects.md` (36.7–38.4 s) — evidence only, never rules
+- **tools:** `content-creation:remotion-overlays`, FFmpeg
 
 **Look:** A camera viewfinder sits over the shot: red REC dot, timecode, four corner brackets and a zoom pill. The picture jumps in zoom steps (1.0× → 1.6× → 2.6× → 1.0×), with a short focus-hunt blur at each step.
 **Use when:** "Look closer", "zoom in on this", or a camera / recording topic.
