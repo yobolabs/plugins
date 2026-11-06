@@ -39,6 +39,13 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   stops at an all-oversized page. The start-time copy check stays; unknown size is offered and re-checked at copy.
 - The chat picks message closes the agent's turn (picks intro `closesTurn: true`), so the agent's own reply after it is
   dropped. Any reason line ("that ad is too big, pick another") is posted by the tool BEFORE the cards.
+- **"I couldn't open that video" triage** (a link remix stopped at the start): `ad_video_jobs` row (mode
+  `remix_analyze`; the error is in `result.error`, there is no `error` column) → `ad_video_blueprints` by
+  `input.blueprintUuid` (`fail_reason`, `progress.steps`; FK is `ref_id`) → worker log events
+  `video_fetch_ytdlp_failed` / `video_deconstruct_failed`. yt-dlp "Instagram sent an empty media response" = the post
+  is hidden from logged-out fetchers: the merchant sends the file (button `needs:file`); re-sending the link fails the
+  same way. Check the week's fetch success rate before calling it an outage. The silent retry in `prepareVideo` runs
+  only on `file_unavailable`; non-video bytes (`unsupported`) get no retry although the copy says "second try" (YMS-771).
 - Develop carries held remix work that prod `main` lacks (e.g. the verified-entry start path). A fix in
   `remix-tools.ts` / `router.ts` / `deconstruct-source.ts` may not cherry-pick onto main: give the release captain a
   main-based port branch (off `origin/main`, tsc = base, same tests) alongside the develop branch.
