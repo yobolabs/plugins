@@ -54,6 +54,7 @@ CapCut must be **closed** when building (it overwrites drafts on open).
 |---|---|
 | `ad-engine` | the ad spec + `produce.py` (one spec → both outputs), `build_ad.py`, `variants.py` |
 | `remotion-overlays` | the Remotion render project — renders the mp4 + the motion-graphics overlays |
+| `video-effects` | edit effects on a real take (captions, text behind head, zooms, grades, cards) — storyboard first, one reference per effect |
 | `capcut` | low-level CapCut draft format + scripts (assembly, inspector, seed capture) |
 | agent `creator` | orchestrates the above; the persona that edits on the user's behalf |
 

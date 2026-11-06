@@ -71,8 +71,8 @@
     {
       "name": "content-creation",
       "source": "./content-creation",
-      "description": "Build short-form campaign ads by talking to Claude — one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation. Plus a Higgsfield video skill: prompts, references and review for Seedance and Kling, by video style",
-      "version": "1.7.17",
+      "description": "Build short-form campaign ads by talking to Claude — one ad spec produces both a finished mp4 (Remotion: clips, trims, captions, transitions, motion-graphic overlays, music) and an editable CapCut project. Includes ffmpeg media processing, silence detection, and fast variant generation. Plus a Higgsfield video skill: prompts, references and review for Seedance and Kling, by video style. Plus a video-effects skill: 34 edit effects (word captions, text behind head, zooms, grades, cards) on one real take",
+      "version": "1.8.0",
       "keywords": [
         "capcut",
         "video",
@@ -240,7 +240,7 @@
       "name": "remix",
       "source": "./remix",
       "description": "Ad Studio Remix: remake an existing video ad for a merchant's business. Fixed pipeline from reading the ad to a posted video, run mostly from WhatsApp. Skill = universal rules + per-type and per-stage references; agent = remix-dev.",
-      "version": "0.4.53",
+      "version": "0.4.54",
       "keywords": [
         "remix",
         "ad-studio",
