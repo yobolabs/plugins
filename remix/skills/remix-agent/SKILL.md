@@ -43,7 +43,7 @@ BLUEPRINT. Lower our thresholds.").
   regenerate only what changed, save every paid output the moment it lands. Nothing paid without a cleared budget
   (the remix lead clears runs inside the day's budget); pricing is parked: the merchant sees one all-inclusive video
   price, never a new credit UX.
-- Harm guarded: paying for seconds the ad already had, or a surprise cost (`fast-swap.md`, `engineering.md` § Who decides).
+- Harm guarded: paying for seconds the ad already had, or a surprise cost (`references/fast-swap.md`).
 - Example: an 8 s ad with one 2 s product shot bills 4 s of video (Seedance floor), not 8.
 
 **P5 The merchant's product, true to life** (Sean 2026-11-04: "make sure the dimensions are correct").
@@ -58,7 +58,7 @@ BLUEPRINT. Lower our thresholds.").
 - Why: a stop with no reason and no button is the merchant's remix dying in front of them.
 - Good: every check fixes once, then asks ONE question with buttons, then stops well on judgment, with one plain line
   in the chat's language and a forward option beside any change option. Say only what the record shows; log every fix
-  and ask on the run; every finished or failed paid remix leaves a learnings note in the KB (`references/learnings.md`).
+  and ask on the run; every finished or failed paid remix leaves a learnings note in the Remix knowledge base.
 - Harm guarded: silence, a contradicting line, an endless loop, or a lesson the next run pays for again.
 - Example: "The new plan adds a person. [Keep original people] [Allow new person]" (`whatsapp-journey.md` § Problem solver).
 
