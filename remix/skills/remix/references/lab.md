@@ -98,6 +98,10 @@ shipped off). Lab manual: `remix-context` search "Remix lab — how it works"; t
 - **A storyboard grid sent to the video model carries no panel labels.** Captions like "1 · 0.1 s" on the grid were
   drawn into the Seedance 2.5 video (top-left). Send the grid without labels, and the prompt says to ignore panel
   layout and to put no text on screen (text rule: `../remix-agent/SKILL.md` P5).
+- **Publish the lab only from the live page or the newest `remix-lab.vNNN.html`.** The working file `remix-lab.html` in
+  the p130 spec folder went stale (v8.76 while v9.14 was live). Publishing from it would drop every later fix (v9.15
+  label-free model grid, YMS-777). Copy the newest version over it before you edit, and keep an undo copy of the live
+  prototype (`undo/prod-proto-<id>-before-vNNN.html`).
 - **The cut detector misses fast warm-tone cuts:** about 20 hard cuts were read as 2 scenes. Check the scene count
   against the ad by eye before the plan; too few scenes = wrong plan.
 - **Keep the lab tab alive while it renders:** a hidden cmux tab reset the lab mid-render and lost the job ids. Use
