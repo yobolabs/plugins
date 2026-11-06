@@ -56,3 +56,8 @@ screen explaining it. Check `agent_task_subscriptions.send_time_hour` before deb
 
 The old gate answered "was a second, invisible switch also thrown?" — and creating a definition
 never threw it. Two live tasks were lost that way. Nothing to toggle now.
+
+**"The brief was wrong" may not be the fleet brief.** A merchant's morning message in a WhatsApp
+group can be the chat agent answering an interactive "open, morning" turn, not the fleet run.
+Find the execution by merchant name in Cadra `agent_executions.input` (last days) and check which
+agent produced it before debugging gates or the runner.
