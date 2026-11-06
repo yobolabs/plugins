@@ -220,6 +220,20 @@ retry consumes its ask without re-billing parts (115607fe4 + d51b44674 + c897912
 `<pressRunId>:main`. Harm if not: every new prod remix waits at 'reading' forever, or re-bills parts, or never
 joins. This is the one named exception to switch parity, and it ends when the bundle ships.
 
+## Ready ads (approved templates): stock and quality (Sean 2026-11-06)
+
+Sean: "I need to make sure we're always having ready to go ads on Dev and prod."
+- Stock: every category gets at least 3 approved templates, on dev and on prod. A daily check logs
+  `remix_template_stock_low` and the back-office Overview shows a count per category (YMS-778).
+- A business with no fit record for a template is offered that template only when it is in the business's own
+  category. A known misfit is never offered ("only suggest a template the product fits", same product type).
+- A category with 0 templates gets one plain line plus [Send me a video] and [Paste a link], never a dead end. It is
+  never offered other categories' templates (cross-type swaps are banned).
+- A ready ad is at most 30 s of source and shows one product as itself, with no captions, prices or logos burned in.
+  The reason is "spend the fewest paid seconds": every merchant remix of a long template pays for its remade seconds
+  (a 78 s ad cost about 70 paid seconds per remix). Staff fill gaps with free reads only. A link that would need the
+  paid fetcher (Apify) is skipped; a direct public .mp4 is fine.
+
 ## A reel we cannot download: plain steps, no login (Sean 2026-11-06)
 
 Sean: "be clear to the user about what a public and private video is. They're not gonna know the difference."
