@@ -48,6 +48,12 @@ class T(unittest.TestCase):
         self.assertEqual(json.loads(lines[1])["new"], 5)
         self.assertFalse(os.path.exists(st))                 # not queued -> nothing marked seen
 
+    def test_queued_task_carries_the_guard_line(self):
+        d = tempfile.mkdtemp()
+        ig.queue_task([ig.url("AAAAA11111")], NOON, d)
+        body = open(os.path.join(d, "m-ig-breakdown-1107-1200.md")).read()
+        self.assertIn("no paid generation; breakdown only, follow _runbooks/yobo-video-breakdown.md; 20 min budget", body)
+
 
 if __name__ == "__main__":
     unittest.main()
