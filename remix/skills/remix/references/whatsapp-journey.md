@@ -10,6 +10,26 @@ via typed remix tools (`remix_start/get/set/scene/make/approve/edit` + payment t
 for remix writes. Tool arguments: ids come only from a tool result or the merchant's message; `answers` is ONE JSON
 string (an object whose keys contain ':' broke every "Use these").
 
+### WhatsApp first (SKILL.md P3 + P6)
+
+- Every step is a **button tap** in the chat (msg-api reply buttons -> yobo `tap.ts`), never the agent, never typing,
+  never a required web page. A web link is an optional extra.
+- **Every line remix posts itself speaks in the agent's Instinct persona** (Sean 2026-11-05: "we're supposed to use the
+  instinct persona"; p126, Yobo KB `yobo-agent/_specs/p126-instinct-persona/skill/persona-rules.md`). Copy rows and code
+  fallbacks are written in that voice and scored with the Jev voice scorer (precedent YMS-490). Never a machine line
+  ("That button cannot do this now").
+- Every failure is **ONE plain line** in the chat's language saying what happens next, with a button when there is a
+  next step. Never silence, two lines, or a contradicting line.
+- The agent handles free text and questions only, with typed remix tools. It never presses Approve, never states a
+  price, never promises text/logos drawn by AI. Detail: `references/whatsapp-journey.md`.
+
+### Words the merchant sees
+
+- **Say "Remix", never "Remake"** (UI copy, routes, code names, docs).
+- **Never call the source ad "your ad"** (Sean 2026-11-05: "why would it tell me a person isn't in my ad — Yobo built
+  this ad"). The merchant's ad is the remix; the one being copied is "the original ad" (id "iklan aslinya", es "el
+  anuncio original") in every line, copy row and prompt the merchant sees.
+
 ## Tap ids
 
 | Prefix | Meaning | Examples |
@@ -134,9 +154,60 @@ answers; the matcher never swaps products.
 - **Several failed storyboards** redo on one ask (`make:redraw` + every failed scene). A failed video redoes one at a
   time (`make:remake` + that part); more than one failed video keeps a typed note.
 
+## Problem solver: fix → ask → stop well (SKILL.md P6)
+
+Sean 2026-11-05: "If the agent knows that, oh, okay, there's a problem, I found a problem … why don't they continue
+and ask and then deal with it instead of erroring out? … This should be part of the core principles of the agent. It
+should be a problem solver."
+
+**Every check fixes or asks. No check ever stops a remix as its first answer.** This holds for every gate in the
+pipeline (swap fit, product fit, drift, source length, QA, credits, needs) and for the agent's own turns:
+
+1. **Fix it yourself, once.** Feed what the check found back as a correction and re-run that step ("keep the same
+   people as the ad, add nobody"; "show it at 90 ml next to the hand"). Then run the check again.
+2. **Still failing → ask ONE specific question with buttons** naming the problem and the choices
+   ("The new plan adds a person. [Keep original people] [Allow new person]"). The answer carries the run on from
+   the same step. The merchant never retypes what they already gave.
+3. **Stop only when nothing is left to try**, and even then say why in one plain line with the next button.
+   "I couldn't…" / "I'm looking into it" with no reason and no button is a bug.
+4. **Log every fix and every ask on the run** (which check, what it found, what was tried), so a stall is never
+   a mystery.
+5. **Effort has an end (Sean 2026-11-05: "make sure that the agent will not go on indefinitely if the problem is
+   unsolvable … it really made an effort … then at some point it won't be able to continue and … let the team know
+   … in the meantime maybe try a different thing, maybe try a different video").** Per check: one self-fix, then one
+   ask, and keep going while each attempt changes something. Stop on JUDGMENT, not a count (Sean 2026-11-05: "the
+   signals for it's just not going to work appear … there must be some judgment"): the same refusal again with nothing
+   changed, a block the remix cannot fix (Higgsfield down, the nsfw filter refusing the theme, an unreadable source), or
+   a requirement only someone else can meet (no fitting product, no credits and no payment). The code records these
+   signals on the run; the agent judges from them. On stop: tell the merchant ONE line with the way forward
+   ("This video isn't working out. The team is looking at it. Meanwhile:" [Pick a ready ad] [Try another video]),
+   and alert the team once (the run lands in the back-office Remix monitor "needs help" queue + one team post with the
+   remix, the signal, and what was tried). Giving up at the first refusal is as wrong as looping. Never loop, never re-ask the same question, never spend more after the stop.
+
+A new check, gate or refusal is not done until it has its fix step and its question. Reviewers block a gate that
+only stops.
+
+**Every choice or stop has a forward option** (Sean 2026-11-05, agent standard R6): the merchant can always move the
+work on without fixing anything themselves: [Continue] / [Keep it] / [Use your best pick], with the change option
+BESIDE it, never instead. A message whose only button is [Change more], [Try again] or "tell me what to change" is a
+bug. When the run truly cannot continue, the forward option is another way: [Pick a ready ad], [Try another video], a
+simpler version, or "the team is on it". Passes: [Keep original people] [Allow new person]; [Keep it] [Remake it].
+
+**Where it lives in Cadra (Sean 2026-11-05: "this is where we set the intent … there must be a way for it to solve and
+troubleshoot problems … the tools must support this too … the tools need to be accommodating").** Three parts, per
+the Cadra standard (root prompt = routing, voice, hard rules only; feature behaviour in the role's skill + reference
+files):
+
+| Part | Holds |
+|---|---|
+| **Intent** (the remix role / skill template, first line) | The mission: this merchant gets a finished video they approve. Every turn is judged by whether it moves the run toward that. |
+| **Troubleshooting reference** (a reference file of the remix skill, read on demand) | One row per refusal code: what it means, the fix the agent tries, the question + buttons if the fix fails, which tool applies the answer. |
+| **Accommodating tools** | A refusal is never a bare error: it returns `{code, reason (plain), fix, ask: {question, buttons}}`. Anything a check can ask to change has a tool that changes it (cast, people kept, product, size, trim, scene, route), so the answer to a question always has a way to land. |
+
+
 ## Forward option on every stop (R6) — how it is built
 
-The rule is in SKILL.md ("Every choice or stop has a forward option"). How yobo enforces it:
+The rule is "Every choice or stop has a forward option" in § Problem solver above (SKILL.md P6). How yobo enforces it:
 
 - **ONE table.** `extensions/remix/advance/forward-options.ts` `STOP_FORWARD` maps every stop kind to its forward
   button; every sender builds its buttons with `withForward(kind, changeButtons, titles)`. The contract test

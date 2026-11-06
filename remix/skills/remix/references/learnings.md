@@ -4,6 +4,13 @@ Read after a remix delivers its final video, or after any paid run fails. The Re
 and their Claude sessions search it (`remix-context` MCP) before they start a remix, so a lesson that stays in one
 chat is a lesson the next run pays for again (Sean 2026-11-04).
 
+- **Every finished remix uploads its learnings to the Remix knowledge base** (Sean 2026-11-04: "because it's run by
+  internal users … after a remix completes a video, it needs to upload the learnings up to the remix knowledge base").
+  Finished = a final video delivered, or a paid run that failed. Same turn, before you report done: write one
+  learnings note and sync it (sections below: where, format, how to upload, what goes to the skill).
+  Never leave a paid run's lesson only in chat. Read the KB first (`remix-context` MCP: `search`, then `read_document`)
+  before any remix, so the team's past learnings are applied.
+
 ## 1. Write one learnings note
 
 Name: `<YYYY-MM-DD>-<ad-type>-<4-word-topic>.md`, unique per run (never reuse a name; never edit an earlier note).

@@ -1,6 +1,8 @@
 # Review (the gate before the merchant sees any storyboard)
 
 Back to [SKILL.md](../SKILL.md). Rule: **any block is redone before it is shown; good enough passes** (see below). Then the human approves each storyboard.
+The quality checks are the gate (Sean 2026-11-03): code checks plus AI review run on every set BEFORE the merchant sees
+it; a failed check is fixed and re-run, and the merchant never sees a failed set.
 The AI review and code checks run on every set; "Fix it" for the merchant is a button, never an automatic retry loop.
 
 ## How: one review sheet
@@ -10,6 +12,23 @@ name. Send that image to the vision call with the shot's brief slice, the identi
 that sees the storyboard alone against brief text passed pictures with the wrong hair, skin and seats.
 
 ## Good enough passes: the source ad is a benchmark, not a blueprint
+
+Sean: "Remix = take something that exists and make something NEW. It does not mean replicate scene by scene. The
+original ad is a BENCHMARK for quality, not the exact BLUEPRINT. Lower our thresholds." (agent-architect
+gate-20261105-12.)
+
+- **Every check that compares with the source ad judges the ad's job, not a match.** Drift, storyboard review, the QA
+  reviewer and set/scene checks ask: does the hook still hook, is the product the hero, does the call to action land,
+  are pacing, energy and quality at least as good as the original.
+- **Not failures:** different people, a different set, a different scene count or order, merged or dropped scenes,
+  wardrobe and prop details. Record them as info on the run; never stop on them.
+- **Still block (harms the merchant):** the wrong product or a mismatched product, another brand's logo or text,
+  off-brand or unsafe content, broken quality (garbled faces or text, a person who changes look inside OUR ad).
+  "Block" means: not shown to the merchant, fixed once automatically (regenerate that part with the cast reference),
+  then ask with buttons [Use it anyway] / [Try again]. Never a dead stop (R6, `whatsapp-journey.md` § Problem solver).
+- A product swap and a template still keep the ad's own clips by design (merchant's choice); the principle governs
+  what the checks treat as a failure, not which parts are kept.
+- Changing a check's threshold is a behaviour change. If a counted cap changes, it still needs its `LIMITS.md` row.
 
 Sean 2026-11-05 ~21:1x: "these remix videos are not blueprints … We need flexibility … think about what the end goal
 is … providing a video quality video to the user who has no idea how to do this. They are not gonna be that nitpicky.
@@ -29,6 +48,14 @@ remember the brief. The source reading is context only. Every finding has one ve
 
 A per-shot block gates the set in code; the set check alone never decides. A check that could not run is a fail, not a
 pass.
+
+## Fit: only templates the product fits
+
+**Only suggest a template the product fits** (Sean 2026-11-04: "[that product] doesn't make sense for this type
+of video … we should never offer this as a suggested ad template"). Before suggesting or running a template for a
+product, check the product belongs in that ad's scenes and actions (category, setting, how the product is used in
+the shot list). A snack tin in a fashion-bag laundry ad came out as nonsense even with size and crop right.
+No fit → say so in one line and offer the forward option (a fitting ready ad, the storyboard pipeline); never run it anyway.
 
 ## Per-storyboard AI checklist (what to look at, verdicts as above)
 

@@ -5,14 +5,23 @@ shows the prompt that made it (often with a small product photo and a "comment X
 
 ## What is different
 
-- **The panel prompt is the script.** Read it with the transcribe function (`panel_prompt_reader`, one call on the
-  full-height side strip, ≤420 px wide, ≈35 s). It pre-fills the lab's Prompt box; the team edits it there.
-- **The script decides the remade parts.** Every scene overlapping a timed line that names the product (@Image1,
-  product, logo, branding, label, packaging) is remade, even where the reading saw no product.
+- **Template reels carry their own prompt** (Sean 2026-11-04: "grab the prompt from the video because it's shown on
+  the left side … we should actually include that"). When the ad sits beside a static text panel, crop that panel
+  strip (full height, ≤420 px wide) and read it with a plain TRANSCRIBE function (`panel_prompt_reader`: "copy every
+  word exactly, never summarise"), ONE call on the whole strip (≈35 s); ≥200 characters = the prompt that made the ad.
+  A yes/no or describe function summarises long text ("a long paragraph of prompt text"), and a layout reader
+  (`ad_layout_reader`) runs past 90 s; slicing the strip did not help and repeated the overlap.
+  Give it to the model as the script ("follow it shot for shot; wherever it names the advertised product, use ours
+  and adapt how it is shown"). **The script also decides which parts are remade:** every scene overlapping a timed
+  line that names the product (@Image1, product, logo, branding, label, packaging) is remade, even if the reading
+  saw no product there (the product printed on flyers or a shirt pocket); a script with no time codes = remake the
+  whole ad. Text the script prints on props (a flyer's words) follows the script, edited for the merchant; no
+  captions or added text. Never send the panel as a reference IMAGE: the model copies images visually, and the
+  panel's own product photo won. The read prompt pre-fills the lab's Prompt box; the team edits it there.
 - **Clip to the ad area.** Kept clips, remade parts and held pictures are all cut to the ad area (pixels that change
   across frames) and resized to a standard shape. Never send the panel as an image: its product photo wins.
 - **Check how the product appears.** Template reels often print the product on props (flyers, posters, a shirt
-  pocket). That is an indirect appearance: no swap, use the storyboard pipeline (SKILL.md → "Swap only when the
+  pocket). That is an indirect appearance: no swap, use the storyboard pipeline (`../fast-swap.md` → "Swap only when the
   product is shown as itself").
 
 ## Worked example (2026-11-04)
