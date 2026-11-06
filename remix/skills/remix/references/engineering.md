@@ -227,10 +227,17 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
 - A merchant's FIRST remix is offered 1-2 UNIVERSAL templates, free (no credits), for EVERY business, not only MQLs
   (Sean 2026-11-06: "every business"). One free universal remix per org; an MQL org never gets two free remixes. A universal template fits every
   category and every product: its hook is kept as the ad's own clip, and only the product scenes are remade.
-- The universal shape (Sean 2026-11-06, the egg drop: "Reused beginning clip, then montage"): the ad's own opening clip
-  is kept as is (a suspense hook with no product in it), then a montage of the merchant's product, held on the music's
-  beats. Because the hook has no product and the montage is all product, it fits any category, so the same-type swap
-  rule does not apply to a universal template.
+- The universal template recipe (Sean 2026-11-06: "Reuse the first clip of the egg rolling (or other suspense clip),
+  then use merchant products to generate stills, then generate a montage. Then generate 2 short clips. Use same
+  audio. That's the template"):
+  1. Keep the ad's first clip as is: the suspense hook (egg rolling, or another suspense clip) with no product in it.
+  2. Make stills (pictures) from the merchant's products.
+  3. Cut those stills into a montage, held on the music's beats in the source's own slots.
+  4. Make 2 short video clips of the merchant's product (Seedance; the 4 s minimum is trimmed to the slot in the join).
+  5. Lay the ad's own audio once over the whole video.
+  The hook has no product and everything after it is the merchant's, so it fits any category; the same-type swap rule
+  does not apply to a universal template. Source: Sean's egg drop, yobo prod S3
+  `remix-lab/211/sean-egg-drop-indomie-20261106/source.mp4`.
 - Every remix video is kept (Sean 2026-11-06: "You need to have every video I make with remix in context stored
   somewhere"). The source ad, every paid output and the final are stored the moment each exists, not only on Save.
   They are listed in one index in context. A source that was only on someone's laptop is lost (the egg-drop original,
