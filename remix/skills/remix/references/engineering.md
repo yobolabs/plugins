@@ -121,3 +121,21 @@ Merchant gallery = 3 cards per row on phone, auto-fill grid on desktop (Sean: ca
 the Ad Library proof (days the source ran) and one recommender "Why:" line; the gallery shows templates only, never
 raw Ad Library ads.
 
+## Entry link, gate, handoff and sample ads (verified 2026-11-06)
+
+- **Entry link call:** `POST /api/public/whatsapp-links/<code>/resolve?entry=remix` (yobo). The body must be JSON
+  `{"referrer": null | string}` (strict zod; `{}` answers 400 `INVALID_CODE`). A curl user agent counts as a bot and
+  answers 503 by design (`isBotRequest` in the route); send a browser UA. The route rate-limits after about 4 calls.
+- **The r2 entry gate** needs all of: link market `us` or `id`, a non-Kahi target, and an ARMED
+  `chat_onboarding_connections` row for the inbound connection. `system_config` `chat.remix.entry_links` is only a
+  legacy fallback (`src/extensions/chat-identity/remix-entry.ts` in yobo).
+- **No agent text is needed to move the chain.** The remix tools return `handoffContext` (`remix-handoff.ts`):
+  `complete_onboarding`, then `recommend_templates`, then `remix_get view=recommended`.
+- **Stale docs:** the r1 photo-collector release notes were retired by migration 0602; do not follow them.
+- **Sample ads auto-start from the DNA reply.** When the agent's DNA reply ends with `[[continue_onboarding_ads]]`,
+  msg-api (`src/services/onboarding-ads.ts`, `onboarding-ads-continue.ts`) injects the copy row
+  `chat.onboarding_ads.continue_turn` as a system inbound. There is no env switch. When dev and prod differ in this
+  step, diff the onboarding root skill text between the two, not env.
+- **Default remix owner on prod is slides** unless a `system_config` row `ads_gen.remix_owner_at_start` (or the
+  `.org.<id>` variant) exists; prod has no global row. The value is bare text (`config_value` is TEXT: write
+  `yobo`, not `"yobo"`).
