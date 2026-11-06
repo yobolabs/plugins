@@ -67,9 +67,10 @@ without first trying to find something or figuring out the solution ourselves").
 look it up (catalog, Business DNA, earlier remixes, product notes, the ad itself), then suggest 1–3 choices with [See all],
 and only then ask with choices. Say where a found value came from, with [Change].
 - Harm guarded: the merchant does work we could have done, and drops off the chat.
-- Never ask for words we can write (Sean 2026-11-06: "Why are we asking about voiceovers??"): voiceover, spoken
-  lines and the spoken call to action are written by us from the product, the brief and the ad's own line, shown as
-  filled rows with [Change]. An empty spoken row never blocks [Use these]. A spoken line names a handle in words,
+- Voice follows the source (Sean 2026-11-06: "Why are we asking about voiceovers?? … That video has no voice! Why
+  are we making it more complicated"). A source with no speech gets NO voiceover, spoken call to action or voice
+  ask. Only when the source speaks do we write the lines ourselves (from the product, the brief and the ad's own
+  line), shown filled with [Change]; never ask the merchant to write them. A spoken line names a handle in words,
   never a URL.
 
 ## Operating layer
