@@ -368,6 +368,22 @@ files):
 
 ## Standing rules
 
+- **"On prod" is checked by content, never by git ancestry.** Grep the changed line on `main`. A release can hold code
+  out while its commits stay ancestors (2026-11-06: slides typed-product fix was "on main" by history, absent by content).
+- **Tests use the real data shape.** A fixture with an invented field passes while prod reads a field that does not
+  exist (2026-11-06: `storyboard.jobUuid` vs the real `storyboard.ref.jobUuid` made every set-check tap silent). Back
+  every reader change with a free read-only replay of real runs (old view vs new view, 0 diffs).
+- **Worker code never imports web-only modules** (`server-only`, `lib/cadra/client.ts`); use the `*.shared` variants.
+  The import throws only in the worker and the step quietly falls back (2026-11-06: the post caption writer always fell
+  back to the product name). The worker import-graph test guards it; the prod worker has no deploy workflow (hand
+  deploy + grep inside the container).
+- **Every chat line and button exists in en / id / es as data.** Missing copy rows fall back to English silently, and
+  every job after needs must carry the chat's `reply_language`. The source-reading copy test checks every chat-line key.
+- **Code ends the agent's turn; a "say nothing" instruction alone does not.** After a start the app posts one line with
+  `closesTurn`; a duplicate send that posted nothing never closes a turn (msg-api, YMS-750).
+- **Never hold a run-row lock while another connection writes a row that references it** (2026-11-06 deadlock: FOR
+  UPDATE on `remix_runs` + a second-connection `remix_asks` insert).
+
 - **Proof replays never post into a chat a person uses** (a dev chat may be someone's phone: a replayed stop was read
   as a real failure). Use a test conversation, or put "[TEST]" in the text.
 - **The remix lead decides; never ask Sean for sign-off on video work** (Sean 2026-11-05: "Stop asking me about
