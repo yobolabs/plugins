@@ -116,3 +116,7 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   `git diff <commit> origin/main -- <file>`, never `merge-base --is-ancestor`. A main port: `cherry-pick -x`; for
   `drizzle/meta/_journal.json` keep main's and append the batch's entries after main's last idx; compare tsc errors
   against a clean `origin/main` worktree (normalise the worktree path in the messages before diffing).
+- **Reading prod chats: never print sign-in links.** A `cta_url` / open-app message's `content_rich` and button URLs carry
+  live signed tokens (7-day chat-entry sign-in). Select only safe columns (id, direction, kind, created_at, status, a
+  text length or hash); never `content_rich`, `metadata` URLs or button payloads. A printed link = a leaked login:
+  revoke the token and log it in ROTATION-LOG (2026-11-06: prod token 4795 printed from a cta_url row, revoked, #32).
