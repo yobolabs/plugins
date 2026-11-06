@@ -255,6 +255,14 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   template AND its parts (a direct .mp4 read writes the house org, so merchants cannot see it). The read's own plan
   can already be right (egg drop: keep 0–2.47, 4 stills, one 4 s video); check it before hand-editing `plan.parts`.
   On prod, keep it hidden (house org, universal=false) until one paid dev video is checked.
+- Template SOURCES and rights (lead-6 2026-11-07). The target is 3 approved templates per category per env; a universal
+  template does not count toward the 3. Ad Library items carry rightsClass `third_party_reference` and keep today's
+  rules. A brand-WEBSITE product video (a store's own CDN clip) is also `third_party_reference`, but ONLY as a
+  `whole_ad` plan: every part is remade, no brand footage is ever kept in a merchant's ad. Copy every source to our S3
+  first (never keep a brand or social CDN link) and write the original URL in the notes/undo file. Drop a source with
+  printed health or product claims (claims must never come back in a merchant's ad), several products, or a talking
+  head as its core. A source longer than 30 s is read from our own ≤30 s cut by link (houseRead has no time window).
+  There is no prod→dev template copy: read the same S3 file on each env's house org.
 - Every remix video is kept (Sean 2026-11-06: "You need to have every video I make with remix in context stored
   somewhere"). The source ad, every paid output and the final are stored the moment each exists, not only on Save.
   They are listed in one index in context. A source that was only on someone's laptop is lost (the egg-drop original,
