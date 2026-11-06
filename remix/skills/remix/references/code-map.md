@@ -157,3 +157,19 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   `video_url` asset (`status='ok'`, `s3_key` set); bytes ≤ yobo `ads_gen.video_ref_max_bytes` (slides filter); length ≤
   `ads_gen.remix_max_source_seconds` (yobo filter, unknown length kept); an https thumb. Usual root cause: the Ad
   Library review backlog (few `done` items per category), not code. Prod DB reads: vault items via `secret-run`, read-only txn.
+- **A yobo press job's `runId` is the PRESS run, never a `project.runs` entry.** Only slides' `freezeRun` writes
+  `project.runs`; the slides apply rule (runId must be in `project.runs` with the same inputHash) sent every yobo
+  sheet / board / review / part / fix / join / export job to `jobs.stale` 'input_changed'. Yobo jobs are current on
+  their own pending row (`apply-job.ts` pressRun). A start that gets an ended (stale / failed) job back refuses
+  `<step>:job_dead` — re-pending it is a wait nothing wakes.
+- **On WhatsApp the go approves the sheets** (slides `approveSheetsOnGo`, journey row 9): yobo's storyboards step does
+  it under the consumed go press (approver = the tap message on that ask). Without it boards wait on `to_approve`.
+- **Read a run's scenes only through the template view** (`template/run-scenes.ts` runScenesOf / readRunWithTemplate):
+  a template run's `remix_runs.scenes` holds run state only (often `[]`), and `apply-port` isScene needs `sceneIndex`.
+  A raw read drops landed boards and erases state rows; a guard test fails on new raw reads under `advance/`.
+- **Every move INTO a paid phase needs a consumed press**, retries included: [Try again] on a refused part / join /
+  board consumes its own ask (press-port consumeFullKeyPress `retry:<step>`) and restarts under that press run.
+- **Approval artifacts are strict `{attachmentId, contentHash}`.** Copying a whole storyboard ref (+asset, jobUuid)
+  into `approvals[].artifact` makes `state.project` unparseable and every reader returns null ('no_project').
+- **Proving on dev:** parse the run's `state.project` inside the worker (tsx, dynamic import of the schema) when a
+  step says no_project; one-row fixes on `remix_runs` CAS on `version` with an undo file first.
