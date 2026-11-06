@@ -160,3 +160,10 @@ isolation (staff auth, another org's data), money spent without a press, and wha
 breakdown, no source copy). Add a hard gate only after a real problem happened, and name that problem in the code
 comment. Harm if not: work stops on rules nobody needed (staff could not approve a template; dev remix path off).
 
+## Prove in Yobo web chat first (Sean 2026-11-06)
+
+Sean: "a major thing that we should've done first was to make sure that our Yobo web chat could do this and create a
+remix first before WhatsApp". Every remix change is proven end to end in dev Yobo web chat (`/chat`) first, driven in
+the session's own browser tab (start → storyboards → parts → join → final). Web chat and WhatsApp share one run engine,
+so engine bugs show up there without a phone. Then the WhatsApp proof on a real handset, then prod.
+
