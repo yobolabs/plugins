@@ -18,7 +18,7 @@
  * Environments: each side needs its own origin + key, never shared:
  *   CADRA_<ENV>_API_URL           e.g. CADRA_DEV_API_URL=https://app-dev.cadraos.com
  *   CADRA_<ENV>_BUILDER_API_KEY   key of the agent's org in that env (agents:read on the source;
- *                                 agents:read for a dry run, + agents:update + agents:publish to apply,
+ *                                 agents:read for a dry run, + agents:update to apply,
  *                                 + agents:deploy with --deploy, on the target)
  * The bundle travels through this CLI (p151 D1): the target never holds a source key.
  *
@@ -101,12 +101,32 @@ function fail(env, r) {
   die(`HTTP ${r.status} (${env}) ${err.code || ""}: ${err.message || JSON.stringify(r.json)}${err.details ? `\n  details: ${JSON.stringify(err.details, null, 2)}` : ""}`);
 }
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** The v1 item route takes a uuid; a numeric id is found by paging the org's agent list. */
+async function uuidOf(call, env, ref) {
+  if (UUID.test(ref)) return ref;
+  if (!/^\d+$/.test(ref)) die(`(${env}) agent "${ref}": give a numeric id or a uuid`);
+  for (let offset = 0; ; offset += 100) {
+    const r = await call("GET", `/agents?limit=100&offset=${offset}`);
+    if (!r.ok) fail(env, r);
+    const rows = Array.isArray(r.data) ? r.data : r.data?.items ?? r.data?.agents ?? r.data?.data ?? [];
+    const hit = rows.find((x) => String(x.id) === ref);
+    if (hit?.uuid) return hit.uuid;
+    if (rows.length < 100) die(`(${env}) agent ${ref} not found in this key's org`);
+  }
+}
+
 async function resolveAgent(call, env, ref) {
-  const r = await call("GET", `/agents/${encodeURIComponent(ref)}`);
+  const uuid = await uuidOf(call, env, ref);
+  const r = await call("GET", `/agents/${uuid}?includeRelations=false`);
   if (!r.ok) fail(env, r);
   const a = r.data?.agent ?? r.data;
   if (!a?.uuid) die(`(${env}) agent ${ref}: no uuid in the response`);
-  return { id: a.id, uuid: a.uuid, name: a.name, deployedVersionId: a.deployedVersionId ?? a.deployed_version_id ?? null };
+  // A deploy must name the pointer it read (server refuses without it). Never guess it.
+  const ptr = "deployedVersionId" in a ? a.deployedVersionId : "deployed_version_id" in a ? a.deployed_version_id : undefined;
+  if (ptr === undefined) die(`(${env}) agent ${ref}: the response has no deployedVersionId; cannot name the live pointer`);
+  return { id: a.id, uuid: a.uuid, name: a.name, deployedVersionId: ptr };
 }
 
 function summarise(plan) {
