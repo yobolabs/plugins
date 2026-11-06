@@ -238,6 +238,9 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   The hook has no product and everything after it is the merchant's, so it fits any category; the same-type swap rule
   does not apply to a universal template. Source: Sean's egg drop, yobo prod S3
   `remix-lab/211/sean-egg-drop-indomie-20261106/source.mp4`.
+  A universal candidate MUST have a reusable product-free opening plus a montage. An ad that starts and ends on the
+  product, is not a montage and has no reusable scene is never universal (Sean 2026-11-07, on the sky-drop ad:
+  "this video starts and ends showing the product. It's not a montage, and it doesn't have reusable scenes").
 - Every remix video is kept (Sean 2026-11-06: "You need to have every video I make with remix in context stored
   somewhere"). The source ad, every paid output and the final are stored the moment each exists, not only on Save.
   They are listed in one index in context. A source that was only on someone's laptop is lost (the egg-drop original,
