@@ -45,6 +45,14 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **A tool row before its endpoint is live = a broken tool**; **an AI-function row ahead of the code that feeds
   its new inputs = a worse reviewer**. Verify the code on prod by code read (not tag) first, or roll the row back
   until the code cut and re-promote in the same window.
+- **`RELEASE_MOVED: deployed release moved (x != y)`** on a cut = another lane deployed after you read the live id
+  (sometimes with no DEPLOY-LOCK row). Read `GET …/releases/<old>/diff/<new>`, then cut again **from the current live
+  release** with only your override; never roll their release back. Report it to the agents lead.
+- **A tool PUT does not return the new tool version id.** Read it with a probe cut from the working copy (no `base`,
+  `deploy:false`): the response pins show the tool's head `versionId`. Then cut
+  `{ "base": { "fromVersionId": <live> }, "pinOverrides": [{ "kind": "tool", "subjectId": <tool id>, "versionId": <head> }],
+  "deploy": true, "expectedFromId": <live> }` and check the diff shows only that pin. Name the never-deployed probe
+  release in the lock row.
 - **Role promote alone does not reach spawned roles**: the agent version pins the role lock. A role change needs
   role promote + agent publish + deploy.
 - `promoteGolden` NOT_FOUND on a role is usually a **stale browser org context**, not an ownerless role: switch org
