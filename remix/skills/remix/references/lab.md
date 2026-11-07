@@ -85,9 +85,13 @@ If a step seems to need something from the right-hand column, the lab is missing
 and report it (Sean / the lab owner). Never work around it on the user's machine. SKILL.md's pipeline and the stage references describe
 what the lab and Ad Studio do inside; they are for builders, not steps for a user's session to run.
 
-## The lab twin is a gate, not a report
+## The lab twin is a gate for our tests (temporary)
 
-Every yobo attempt runs with its lab twin, step by step. A yobo step is not passed, and the next paid step does not start, until its lab twin step exists and is compared on output, skill rule, KB and screen. A twin that stops is a blocker, reported the same turn.
+Sean, 2026-11-08 (verbatim): "The lab is a gate only now for testing".
+
+Scope, and only for now: our own test attempts (team or agent proof runs on dev). Every such attempt runs with its lab twin, step by step. A test step is not passed, and the next paid test step does not start, until its lab twin step exists and is compared on output, skill rule, KB and screen. A twin that stops is a blocker, reported the same turn.
+
+It never gates a merchant's run or any product code path.
 
 ## Rule 0: lab defaults are the product
 
