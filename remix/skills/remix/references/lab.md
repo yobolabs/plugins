@@ -34,7 +34,7 @@ let's pop open the browser and load the remix site." Do this first, every time:
       paused its media. Turn on focus emulation (CDP `Emulation.setFocusEmulationEnabled`) and reload the video;
       never bring the user's window to the front. Short checks (a few seconds each), never long wait loops;
       A CDN link that sends no CORS header (e.g. an Ad Library `fbcdn` mp4) fails "Couldn't read the video's frames":
-      save the video file, reload the lab WITHOUT `?ad=` and upload the file (the old link stays bound otherwise).
+      save the video file, reload the lab WITHOUT `?ad=` and upload the file (the old link stays bound otherwise). Results the page shows (sheets, videos) load through the lab Worker, never a direct browser fetch of a vendor CDN: without a CORS header the fetch fails with no error shown.
    2. type the product name and its **real size**. **Never ask the user for anything you can look up** (Sean
       2026-11-04: "You are supposed to search for that information. Stop asking me questions"; "It's fine to look
       for local, but it should also look and search online if needed"). Size, in this order: the label in the photo

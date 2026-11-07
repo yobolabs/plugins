@@ -101,14 +101,14 @@ elements to generate the video."
 ## Taps on yobo-owned runs
 
 - **Yobo answers run before the slides read.** `tap.ts` reads the remix from slides (`remix_get`) before most branches, and slides answers `not_found` for native yobo runs. Every yobo-owned answer runs before that read.
-- **An unknown yobo tap goes to the advance loop** as a press on the open ask that posted the button (`events/yobo-press.ts`). The loop needs a handler for every button an ask posts.
+- **An unknown yobo tap goes to the advance loop** as a press on the open ask that posted the button (`events/yobo-press.ts`). The loop needs a handler for every button an ask posts, on both routes: the tap route and the action-token route.
 - **Tests cover yobo-owned taps with `remix_get` answering `not_found`.** A happy slides mock hides this class of failure.
 
 ## Source copies and signed links
 
 - **Remix source copies are private.** Anonymous reads are denied on the bucket, so a bare `remix-sources` URL fails. Hand out only a signed GET (`signRemixInput`, `_context/LIMITS.md` row).
 - **A signed GET handed to a queued provider must outlive the queue.** Inputs for providers use the two-hour signature from `signRemixInput`. The SDK default of 900 s can expire while a job waits.
-- **Signing never depends on one public-base env var.** A worker without that var signs nothing, and the GET fails under the private bucket. The signer matches every bucket origin and the `remix-sources/` prefix, and every refusal logs. Set the worker env in the host env file, not in code.
+- **Signing never depends on one public-base env var.** A worker without that var signs nothing, and the GET fails under the private bucket. The signer matches every own-bucket URL shape by its key, and every unsigned fetch logs. Set the worker env in the host env file, not in code.
 
 ## Who decides, budget, pricing (`../remix-agent/SKILL.md` P4)
 
@@ -403,6 +403,8 @@ Check each one on prod by name before calling a remix release done (switch parit
   Write tool and run them by path.
 
 ## Start and end picture per clip, same-picture repeats (2026-11-07, m-remix-build-56)
+
+- **`toFrame` is exclusive.** A shot's last frame is `toFrame - 1`. Using `toFrame` as the last frame draws the next shot's first frame on every end picture, and the last shot asks for a frame that does not exist. Use one helper, `shotWindow(shot, fps)`, for every window; clamp frame grabs to the copy's last frame.
 
 Sean 2026-11-06 22:4x: "Storyboard must have an image for every unique shot and for start and end shot of clips."
 Rulings by the remix lead; yobo `stages/video/part-edges.ts`, `part-starts.ts`, `advance/edge-scenes.ts`.
