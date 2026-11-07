@@ -300,4 +300,5 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 ## Scene indices and template copies
 
 - Every job apply drops scenes that lack a scene index, and writes the result back. Any new seed of the run's scenes must set the index, or the first job apply wipes them.
+- A template run's `project.source.url` is the donor org's own copy, not the ad link. A lookup by that URL finds nothing. Find the source copy through the run's own breakdown (`findSourceCopy` falls back to it). Never treat a copy URL as a source key.
 - Template copies are private uploads. The deconstruct step reads upload sources by plain HTTP, so use the stable unsigned own-bucket URL as the reference key and sign the GET at fetch time. A public URL is refused; a presigned URL as the key breaks blueprint dedupe.

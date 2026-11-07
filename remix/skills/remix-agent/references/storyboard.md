@@ -37,7 +37,7 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 | Type | `still` / `moving` / `keep` (merchant's clip as is) / `mine` (merchant's clip, mined) |
 | Cast / set / product | named people, set picture, product refs for this shot |
 | Lines | spoken lines that fit the window (speaker, ON/OFF screen) |
-| Brief slice | the shot's slice (see brief.md) |
+| Brief slice | the shot's own brief row first (`- **S<n> (a–b s):** …`, where `S<n>` is scene `s<n-1>`); the source reading line only for action and framing. The shared brief carries no per-shot rows (see brief.md) |
 | Check + approval | AI/code check result; the merchant's approval (never the agent's) |
 
 ## Rules

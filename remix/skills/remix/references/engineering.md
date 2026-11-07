@@ -43,6 +43,7 @@ elements to generate the video."
 - **Tests use the real data shape.** A fixture with an invented field passes while prod reads a field that does not
   exist (2026-11-06: `storyboard.jobUuid` vs the real `storyboard.ref.jobUuid` made every set-check tap silent). Back
   every reader change with a free read-only replay of real runs (old view vs new view, 0 diffs).
+- **A posted remix ask is stored as `items: [postedAskItem]`.** The caller's items sit at `items[0].items`. Read them through `askItemsOf` (`advance/approve-all.ts`) and build test asks with the real `postedAskItem`, never flat fixtures. A flat fixture passes while [Approve all] approves nothing.
 - **Worker code never imports web-only modules** (`server-only`, `lib/cadra/client.ts`); use the `*.shared` variants.
   The import throws only in the worker and the step quietly falls back (2026-11-06: the post caption writer always fell
   back to the product name). The worker import-graph test guards it; the prod worker has no deploy workflow (hand
@@ -96,6 +97,8 @@ elements to generate the video."
 - **Worker container logs reset on every redeploy.** Read or save a run's log lines before the next deploy lands, or wake the run for a fresh decision line. A deploy that drains a remix job can drop that run's wake; see the yobo runbook's Worker section.
 - **Vercel runtime logs keep no history.** To see a web-path error, run the real code in the dev worker container: write a script under `/tmp`, run `npx tsx --tsconfig /app/tsconfig.json <script>`, import from `/app/src/...`, and write inside a transaction that throws at the end so it rolls back.
 - **Review to storyboards is a paid run-machine move.** It needs a merchant press, so a wake never takes it. A redraw from review starts in place and the phase stays `review`. A refused move is never silent: it logs and sets a retry wake (`REVIEW_RETRY_MS` row in `_context/LIMITS.md`).
+- **An approval-only press calls `approve_item` without `askId`.** With an `askId`, `approve_item` takes the paid edge (review to parts) on the last approval (`approve-item-command.ts`). The loop's `approve-go.ts` then posts the one paid video go. An approval is never a go.
+- **Every chat send goes through the delivery record** (`sendRemixDelivery`). A send that bypasses it is invisible to the retry and give-up path: a send accepted and then failed is never retried. The advance loop sends through `advance/loop-send.ts`.
 - **An open merchant grant skips the wait for "set already passed".** Otherwise [Try again] after the album writes a grant nobody reads, and the chat reports a redraw that is not running.
 
 ## Taps on yobo-owned runs
