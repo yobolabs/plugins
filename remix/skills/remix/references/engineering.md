@@ -522,3 +522,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - A busy answer is retryable: account queue full, admission control unavailable, or a concurrent-request limit. These carry no redo credit and no self-score exists.
 - Failed, timed-out and NSFW jobs are refunded.
 - The Higgsfield tool in a session may be a personal free account, not the team account. Check which one before relying on credits.
+
+## Tool messages are not merchant copy
+
+- A tool's message is written for the agent. Never render it in a merchant UI; map errors to that UI's own merchant copy.

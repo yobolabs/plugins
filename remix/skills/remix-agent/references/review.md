@@ -135,3 +135,8 @@ Sean: "We don't show errors … We let the user be the one to decide if there's 
 - The final join review runs on every run, including template and fast joins. Those joins have no blueprint, so a check keyed on a blueprint skips them and a wrong product can ship.
 - A review failure holds the run. An error in the review retries once, then delivers and raises a team alert; the merchant is never left stuck.
 - The editor only trims, holds and snaps to beats. The remix keeps the ad's structure.
+
+## A check that cannot start
+
+- A storyboard check that cannot start is not a pass and does not message the merchant. Re-run it once silently; if it still cannot start, record it as not run (no pass, no failures) and raise a team alert.
+- The video gate needs only the merchant's approval, or the recorded just-swap choice.

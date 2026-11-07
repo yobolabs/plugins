@@ -32,3 +32,7 @@ the flyers kept the original cup art and words even with the edited script and a
 "SAVE THE DATE". Best swap plan the lab found: video 0–6.8 s (7 s billed) + 1 picture for 6.8–8.9 s. Outcome: this
 reel goes to the storyboard pipeline (Sean). Learnings: Remix KB `…template-reel-remix-failed-panel-prompt-9fd8.md`,
 `…seedance-copies-2704.md`.
+
+## The full path needs the real reading
+
+- The template full path needs the real storyboard reading: every shot gets its own line drawing from its own source frame, and nothing is stubbed.
