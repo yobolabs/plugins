@@ -99,6 +99,7 @@ elements to generate the video."
   need to ask me if the budget is still there"). No budget given → ask Sean for that run. Prove with unit tests and
   free pages first; name the cost (scenes x seconds x model) before an end-to-end run. Every subagent brief says "no
   paid renders" unless the lead cleared that run.
+- **Photo-bind proofs show handling under the msg-api tap timeout on a slow store.** A rig that copies an object already stored nearby hides real fetch latency; prove the real fetch path.
 - **Pricing is parked.** Never add or change a price or credit UX. The free first remix is the MQL waiver; every paid
   quote or start must name the remix so the waiver applies.
 - **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (`../remix-agent/SKILL.md` P6, `../remix-agent/references/whatsapp-journey.md` § Problem solver).
