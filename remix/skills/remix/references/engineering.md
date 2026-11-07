@@ -96,7 +96,7 @@ elements to generate the video."
 - **No paid render without a cleared budget** (pictures, draft clips, finals all bill the platform key, dev too).
   When Sean has given a budget for the day, the ledger owner (the remix lead) clears each run inside it and logs it in
   the day's paid-budget ledger; never ask Sean again per run (Sean 2026-11-05: "I already gave a budget today so no
-  need to ask me if the budget is still there"). No budget given → ask Sean for that run. Prove with unit tests and
+  need to ask me if the budget is still there"). A small paid DEV proof inside the standing dev budget runs without an ask; name the cost (pictures/seconds) in the proof line; prod spend, customer sends and above-budget still ask. Prove with unit tests and
   free pages first; name the cost (scenes x seconds x model) before an end-to-end run. Every subagent brief says "no
   paid renders" unless the lead cleared that run.
 - **Photo-bind proofs show handling under the msg-api tap timeout on a slow store.** A rig that copies an object already stored nearby hides real fetch latency; prove the real fetch path.
