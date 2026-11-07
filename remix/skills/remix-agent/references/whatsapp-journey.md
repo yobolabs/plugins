@@ -273,3 +273,7 @@ behind Meta review; no TikTok through Buffer/Hootsuite.
 ## Go record on a photo answer
 
 - A chat photo that answers a paid-step ask leaves a go record. Without it the sheet approval stalls, because the go approver needs an ask-tap event.
+
+## Long render ETA
+
+- A long render (a 15-second draft part can take about 17 minutes) says so in the making line: it carries an estimate in minutes (fast_video_eta). A silent wait is not allowed.

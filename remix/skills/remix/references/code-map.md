@@ -282,3 +282,8 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 
 - Owner-inbound takes a chat's org from the action-token and ask rows (by conversation), not only from ad video jobs: a fast or template run has no job until its first paid step. Helper: `remixOrgIdsOfChat` in `tap.ts`.
 - A merchant-RLS read of source breakdowns for a template run returns nothing. Use the guarded privileged read (`sharedTemplateCopyOf`): an approved template on that breakdown, org null, universal or own; the copy's org is the merchant.
+
+## Job to run match
+
+- A submitted remix part's `input` is the provider request. Its remix id lives in `target.remixInput`.
+- Any query that matches jobs to a run uses `remixField('remixId')` (job-fields.ts), never `input->>'remixId'`. The latest run video lookup (steps/review-video.ts) depends on this; a wrong match sends a fast approve ask without the video.
