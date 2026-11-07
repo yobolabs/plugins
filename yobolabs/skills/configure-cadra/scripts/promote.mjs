@@ -18,7 +18,8 @@
  * Environments: each side needs its own origin + key, never shared:
  *   CADRA_<ENV>_API_URL           e.g. CADRA_DEV_API_URL=https://app-dev.cadraos.com
  *   CADRA_<ENV>_BUILDER_API_KEY   key of the agent's org in that env (agents:read on the source;
- *                                 agents:read for a dry run, + agents:update to apply,
+ *                                 agents:read for a dry run (--link also needs tools:read,
+ *                                 skills:read, roles:read), + agents:update to apply,
  *                                 + agents:deploy with --deploy, on the target)
  * The bundle travels through this CLI (p151 D1): the target never holds a source key.
  *
@@ -226,7 +227,10 @@ async function link({ o, to, dst, dstAgent, bundle }) {
       continue;
     }
     const r = await dst("GET", `${path}?search=${encodeURIComponent(w.name)}&limit=50`);
-    const rows = r.ok ? (Array.isArray(r.data) ? r.data : r.data?.items ?? r.data?.data ?? Object.values(r.data ?? {}).find(Array.isArray) ?? []) : [];
+    // A failed list (403 without tools:read / skills:read) must stop the run: read as "no
+    // same-name row" it proposes creating a duplicate of every prod tool and skill.
+    if (!r.ok) fail(to.env, r);
+    const rows = Array.isArray(r.data) ? r.data : r.data?.items ?? r.data?.data ?? Object.values(r.data ?? {}).find(Array.isArray) ?? [];
     const exact = rows.filter((x) => (x.name ?? x.title) === w.name);
     if (exact.length === 1) proposals.push({ kind: w.kind, sourceKey: w.sourceKey, targetId: exact[0].id, name: w.name, how: "exact name" });
     else if (exact.length === 0 && CREATABLE.has(w.kind)) created.push(w);
