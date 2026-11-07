@@ -47,10 +47,11 @@ BLUEPRINT. Lower our thresholds.").
 - Example: an 8 s ad with one 2 s product shot bills 4 s of video (Seedance floor), not 8.
 
 **P5 The merchant's product, true to life** (Sean 2026-11-04: "make sure the dimensions are correct").
-- Why: a merchant who sees their product at the wrong size, the wrong kind or with the old brand stops trusting it.
+- Why: a merchant who sees their product at the wrong size, the wrong kind or with the old brand stops trusting it. Picture models follow the words, so a wrong word becomes a wrong picture.
 - Good: real size and proportions next to hands and people; same product type as the one replaced; shown as itself
   (not printed, on a screen or reflected); label exact; a product sheet from the merchant's own photos first; overlay
   text removed; captions and logos added in post.
+- Words and pictures: every word or picture of the product comes from its approved sheet. No step describes the product as anything the sheet does not show.
 - Harm guarded: the old brand's words, products or art in the merchant's ad, or a tub drawn the size of a bag.
 - Text rule (Sean 2026-11-06: "Text should always be removed if it's able to be replaced with an overlay."): any
   text an overlay can carry (captions, prices, logos, handles, timings, panel labels) is removed from every model

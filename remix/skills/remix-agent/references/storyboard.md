@@ -42,7 +42,7 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 
 ## Rules
 
-- **The product words in every storyboard prompt are the shape sentence**, never the brief writer's own words for the product. An attached sheet image does not override a prompt that names another vessel; the picture model follows the text.
+- **Product words in every storyboard prompt come from the approved sheet**, as principle P5 in `../SKILL.md` requires.
 - No text, captions, logos or numbers drawn (panel labels only on keyframe-sequence frame sheets: `types/product-hero.md`).
 - A scene is one continuous shot between hard cuts; a short scene keeps its own timing (a model may render longer than
   the window; the player stops at the window).
