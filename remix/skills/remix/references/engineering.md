@@ -97,9 +97,18 @@ elements to generate the video."
 - **Worker container logs reset on every redeploy.** Read or save a run's log lines before the next deploy lands, or wake the run for a fresh decision line. A deploy that drains a remix job can drop that run's wake; see the yobo runbook's Worker section.
 - **Vercel runtime logs keep no history.** To see a web-path error, run the real code in the dev worker container: write a script under `/tmp`, run `npx tsx --tsconfig /app/tsconfig.json <script>`, import from `/app/src/...`, and write inside a transaction that throws at the end so it rolls back.
 - **Review to storyboards is a paid run-machine move.** It needs a merchant press, so a wake never takes it. A redraw from review starts in place and the phase stays `review`. A refused move is never silent: it logs and sets a retry wake (`REVIEW_RETRY_MS` row in `_context/LIMITS.md`).
+- **Every phase move outside a job landing wakes its run.** The generation bump and the enqueue happen together, with the enqueue after commit. A move that returns "started" with no job leaves the run idle forever.
+- **A deploy can kill a pass mid-way,** leaving the run marked processed with its starts never made. The due sweep must also pick runs idle in a work phase longer than `REMIX_STALL_GUARD_MS` (`_context/LIMITS.md` row).
+- **A wake set by hand is cleared after its pass.** A past wake keeps the run due on every sweep and re-runs its owed starts.
 - **An approval-only press calls `approve_item` without `askId`.** With an `askId`, `approve_item` takes the paid edge (review to parts) on the last approval (`approve-item-command.ts`). The loop's `approve-go.ts` then posts the one paid video go. An approval is never a go.
 - **Every chat send goes through the delivery record** (`sendRemixDelivery`). A send that bypasses it is invisible to the retry and give-up path: a send accepted and then failed is never retried. The advance loop sends through `advance/loop-send.ts`.
 - **An open merchant grant skips the wait for "set already passed".** Otherwise [Try again] after the album writes a grant nobody reads, and the chat reports a redraw that is not running.
+
+## Staff actions on dev
+
+- Retry and cancel a step from the back office in a staff profile: tRPC `remixMonitor.staffRetryStep` and `staffCancel`. A merchant profile gets 403.
+- Dev credits: tRPC `credits.grantCredits` (admin).
+- New AI function variables must land in the function version before any caller sends them, and prod function creation goes through an admin session (`prompt.create`). See cadra `ai-functions.md` § Templates and variables.
 
 ## Taps on yobo-owned runs
 

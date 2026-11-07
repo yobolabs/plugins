@@ -281,3 +281,4 @@ behind Meta review; no TikTok through Buffer/Hootsuite.
 ## Known gaps (not built)
 
 - **Typed messages during a change request.** While `state.awaitingChange` is open, every typed message counts as the change, including "Stop this remix". `runChange` ignores the run's phase, so an ended run still takes messages. Approved fix, not built: classify typed messages first (stop, new ad, change) with Jev and act at 0.60 or above; stop takes the stop path; ended runs are ignored.
+- **Video go reserves funds for the whole video.** Today a go can start some parts and then refuse the rest (`credits_short`). Proposed, not built: reserve for the whole video, and a `credits_short` refusal offers the payment path, not [Try again].
