@@ -18,6 +18,7 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 
 ## Rules
 
+- **The teardown works from the measured shot-list text, never the video.** The teardown agent does not open the source video. A failed fetch of the source link never shows in the brief, so judge a brief by its content, not by its source link.
 - **Per-shot slice** = that shot's row + the brief's tone, set, colours, light, people and never list. The slice, not the
   whole brief, feeds (1) the storyboard prompt, (2) the video prompt, (3) the AI review of that shot. A brief that
   reaches only text steps steers nothing.

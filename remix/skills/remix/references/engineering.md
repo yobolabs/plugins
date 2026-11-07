@@ -54,6 +54,8 @@ elements to generate the video."
 - **Never hold a run-row lock while another connection writes a row that references it** (2026-11-06 deadlock: FOR
   UPDATE on `remix_runs` + a second-connection `remix_asks` insert).
 
+- **A model swap checks input modalities first.** Stages that read the source video (the video blueprint, the teardown agent) need a model with video input. A text-or-image model fails them: a function returns `FUNCTION_CONFIG_INVALID`, an agent asks the user for keyframes. Swap text and image stages separately from video stages.
+- **LIMITS row before the release request.** Every timer or count a release request names gets its `_context/LIMITS.md` row written and pushed first. The captain checks each one against the file.
 - **Before porting a held-out chain to main, look for its owner's port** (`git branch -r | grep <ticket>`, the lane's
   session file). Refresh that port (new branch, merge main) instead of building a second one.
 - **When main deliberately held out a sibling feature, a port merge keeps only your ticket's half.** Trace each
@@ -85,6 +87,13 @@ elements to generate the video."
   fallback; the env label comes from `NEXT_PUBLIC_ENVIRONMENT`, never `NODE_ENV` (it is `production` on the dev
   worker); dev reads only `YOBO_REMIX_ALERTS_DEV_CHANNEL_ID`. Never join a dev bot into a prod channel or put a prod
   channel id in a dev proof to make it pass.
+
+## Advance loop and failure reading
+
+- **A pass that made progress is never a stall outcome.** Any advance step that changed state returns a non-stall outcome. A refused `needs_help` move sets a retry wake, or nothing wakes the run.
+- **"AI provider returned an error" is a label, not a cause.** It is the default text for any image-run throw. Read the job row's `result.error.message` first, then the Cadra `ai_function_runs` row or the Vercel log. A fast failure (seconds) points to our input or ffmpeg; a slow one points to the provider.
+- **ffmpeg JPEG frame grabs need `-strict unofficial`.** Without it, mjpeg refuses tv-range frames.
+- **Worker container logs reset on every redeploy.** Read or save a run's log lines before the next deploy lands, or wake the run for a fresh decision line.
 
 ## Who decides, budget, pricing (`../remix-agent/SKILL.md` P4)
 

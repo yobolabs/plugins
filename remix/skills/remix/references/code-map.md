@@ -115,6 +115,7 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 - **Template runs keep scene content in the template.** `template/view.ts` `viewRunScenes` takes `text`/`kind`/`seconds`
   from the template on every read, so words saved into `remix_runs.scenes` vanish. Write content as template vN+1
   (`writeTemplateVersion`, same tx as the run state); `remix_runs.scenes` holds run state only.
+- **A template run reads its org's own copy row.** `writeCopy` returns the existing row when the org already holds a copy of the breakdown. Build the source URL from that row's key, never from the donor's.
 - **Asks on a yobo run are posted ask-row FIRST** (`fast-asks-wiring.ts` recordAsk + tokens, `postPlanAsk`). The
   deliver paths that post raw button ids (e.g. `plan_ready`) write no ask row, so a press has nothing to consume.
 - **"The one open ask" is the newest live run's ask.** Typed yes / typed answers broke when old runs left asks open:

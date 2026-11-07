@@ -49,6 +49,10 @@ remember the brief. The source reading is context only. Every finding has one ve
 A per-shot block gates the set in code; the set check alone never decides. A check that could not run is a fail, not a
 pass.
 
+The remake counter is one per scene, shared by every step that redraws it (storyboard, setup, start and end pictures).
+Each redraw counts once under the same key. A review that asks for a remake the run machine refuses leaves that scene
+silently unfilled, so every redraw must count against the same key.
+
 ## Fit: only templates the product fits
 
 **Only suggest a template the product fits** (Sean 2026-11-04: "[that product] doesn't make sense for this type
