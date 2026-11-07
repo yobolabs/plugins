@@ -85,6 +85,10 @@ If a step seems to need something from the right-hand column, the lab is missing
 and report it (Sean / the lab owner). Never work around it on the user's machine. SKILL.md's pipeline and the stage references describe
 what the lab and Ad Studio do inside; they are for builders, not steps for a user's session to run.
 
+## The lab twin is a gate, not a report
+
+Every yobo attempt runs with its lab twin, step by step. A yobo step is not passed, and the next paid step does not start, until its lab twin step exists and is compared on output, skill rule, KB and screen. A twin that stops is a blocker, reported the same turn.
+
 ## Rule 0: lab defaults are the product
 
 The remix lab (v9.00) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect

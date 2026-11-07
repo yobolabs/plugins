@@ -18,6 +18,8 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 
 ## Rules
 
+- **The Product line's shape sentence comes from the approved product sheet, read once at sheet approval.** It holds pack type, material, colour, label text, what is inside, and real size if known. The brief carries it word for word, and so does every storyboard and video prompt. A brief written from the product's name alone guesses the vessel.
+- **No step names a container the sheet does not show.** A jar, bottle, can, tub or "container" that the sheet does not show is a brief fault, caught before any paid picture.
 - **The teardown works from the measured shot-list text, never the video.** The teardown agent does not open the source video. A failed fetch of the source link never shows in the brief, so judge a brief by its content, not by its source link.
 - **Per-shot slice** = that shot's row + the brief's tone, set, colours, light, people and never list. The slice, not the
   whole brief, feeds (1) the storyboard prompt, (2) the video prompt, (3) the AI review of that shot. A brief that
