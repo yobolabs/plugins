@@ -33,7 +33,7 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
   count (`-frames:v`, read with 0.5 s spare), never output `-t`.
 - Each picture and clip window once; fewer assets than slots -> hold shots for 2 beats; never the same product in two
   shots in a row; payoff of each clip lands on a beat with at least one beat after it; end card lands on the music's last hit.
-- A slot under about 1 s is merged into its neighbour (default; a number needs a LIMITS row).
+- A slot under 250 ms is merged into its neighbour (default; the value is the remix join minimum-slot row in `_context/LIMITS.md`).
 - Measure the export: re-run the analysis; cut count and times must equal the plan.
 - End card: org brand logo, fall back to the yobo brand profile when the slides brand kit has none. Captions and on-screen
   text come from a word-timed transcript in post (Finish); shown to the merchant before export.

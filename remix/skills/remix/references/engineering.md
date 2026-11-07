@@ -92,8 +92,13 @@ elements to generate the video."
 
 - **A pass that made progress is never a stall outcome.** Any advance step that changed state returns a non-stall outcome. A refused `needs_help` move sets a retry wake, or nothing wakes the run.
 - **"AI provider returned an error" is a label, not a cause.** It is the default text for any image-run throw. Read the job row's `result.error.message` first, then the Cadra `ai_function_runs` row or the Vercel log. A fast failure (seconds) points to our input or ffmpeg; a slow one points to the provider.
-- **ffmpeg JPEG frame grabs need `-strict unofficial`.** Without it, mjpeg refuses tv-range frames.
+- **ffmpeg JPEG frame grabs need `-pix_fmt yuvj420p -strict unofficial`.** Without them, mjpeg refuses limited-range (tv-range) input frames.
 - **Worker container logs reset on every redeploy.** Read or save a run's log lines before the next deploy lands, or wake the run for a fresh decision line.
+
+## Source copies and signed links
+
+- **Remix source copies are private.** Anonymous reads are denied on the bucket, so a bare `remix-sources` URL fails. Hand out only a signed GET (`signRemixInput`, `_context/LIMITS.md` row).
+- **A signed GET handed to a queued provider must outlive the queue.** Inputs for providers use the two-hour signature from `signRemixInput`. The SDK default of 900 s can expire while a job waits.
 
 ## Who decides, budget, pricing (`../remix-agent/SKILL.md` P4)
 
