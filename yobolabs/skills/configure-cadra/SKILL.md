@@ -80,6 +80,11 @@ Rules:
   `--drop` / `--shared-ok` (ONE `kind:id` per flag) only when that is the decided outcome.
 - Every run writes its plan file. A prod promote is a prod agent change: the plan file goes inside the
   §2 review request, and the apply needs its gate id (section above).
+- **Env values keep the target's.** Ids, hosts, provider and credential names, role-lock providers and
+  `keywordHandoff.messagingOrgUuid` come from the target; twinned role/skill/harness names stay the
+  target's and every source-name reference is rewritten. A target binding the source lacks (a tool's
+  `connectorId`) refuses `TARGET_BINDING_DROPPED`: bind it in the source and twin it, or remove it on
+  purpose with `--unbind kind:id.field` (one binding per flag, e.g. `tool:524.connectorId`).
 - Platform (org-null) objects are never written; a difference shows as `info`.
 - Not carried: secret values, channel bindings, triggers, schedules, app switches. The plan lists them.
 - Route missing (404 on `/promotions` or `/releases/{id}/bundle`) = origin predates p151.

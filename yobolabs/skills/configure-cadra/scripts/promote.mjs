@@ -13,6 +13,7 @@
  *   --overwrite kind:id   the target item changed since the last promote (or has no promote history)
  *   --drop kind:id        the target release pins an item the source does not have
  *   --shared-ok agent:id  another target agent not on pinned releases reads an object this writes
+ *   --unbind kind:id.field  TARGET_BINDING_DROPPED: remove ONE target binding on purpose (e.g. tool:524.connectorId)
  * Flags repeat: --overwrite tool:511 --overwrite skill:371
  *
  * Environments: each side needs its own origin + key, never shared:
@@ -35,8 +36,10 @@ function die(msg, code = 1) {
   process.exit(code);
 }
 
+const UNBIND_RE = /^[a-z_]+:\d+\.[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)*$/;
+
 export function parsePromoteArgs(argv) {
-  const res = { overwrite: [], drop: [], sharedOk: [], hosts: [], apply: false, deploy: false, link: false };
+  const res = { overwrite: [], drop: [], sharedOk: [], unbind: [], hosts: [], apply: false, deploy: false, link: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const val = () => {
@@ -53,6 +56,7 @@ export function parsePromoteArgs(argv) {
     else if (a === "--overwrite") res.overwrite.push(val());
     else if (a === "--drop") res.drop.push(val());
     else if (a === "--shared-ok") res.sharedOk.push(val());
+    else if (a === "--unbind") res.unbind.push(val());
     else if (a === "--host") {
       const [fromHost, toHost, extra] = val().split("=");
       if (!fromHost || !toHost || extra !== undefined) die("--host takes <sourceHost>=<targetHost>, e.g. app-dev.yobolabs.ai=app.yobolabs.ai");
@@ -62,6 +66,8 @@ export function parsePromoteArgs(argv) {
   }
   for (const k of [...res.overwrite, ...res.drop, ...res.sharedOk])
     if (!KIND_ID_RE.test(k)) die(`flag value "${k}" must name ONE item as kind:id (e.g. tool:511); no wildcards or lists`);
+  for (const k of res.unbind)
+    if (!UNBIND_RE.test(k)) die(`--unbind value "${k}" must name ONE binding as kind:id.field (e.g. tool:524.connectorId); no wildcards or lists`);
   if (res.deploy && !res.apply) die("--deploy needs --apply");
   return res;
 }
@@ -161,7 +167,7 @@ export async function runPromote(argv) {
   // move by anyone in between is refused (409 RELEASE_MOVED), never overwritten.
   let expectedFromId;
   if (o.apply) {
-    const pre = await dst("POST", `/agents/${dstAgent.uuid}/promotions`, { bundle, dryRun: true, deploy: false, overwrite: o.overwrite, drop: o.drop, sharedOk: o.sharedOk });
+    const pre = await dst("POST", `/agents/${dstAgent.uuid}/promotions`, { bundle, dryRun: true, deploy: false, overwrite: o.overwrite, drop: o.drop, sharedOk: o.sharedOk, unbind: o.unbind });
     if (!pre.ok) fail(to.env, pre);
     const t = pre.data?.plan?.target ?? pre.data?.target;
     if (!t || !("deployedVersionId" in t)) die(`(${to.env}) the dry run did not return the target's deployed pointer; not applying`);
@@ -175,6 +181,7 @@ export async function runPromote(argv) {
     overwrite: o.overwrite,
     drop: o.drop,
     sharedOk: o.sharedOk,
+    unbind: o.unbind,
   };
   const r = await dst("POST", `/agents/${dstAgent.uuid}/promotions`, body);
   const plan = r.ok ? r.data?.plan ?? r.data ?? null : r.json?.error?.details ?? null;
@@ -188,7 +195,7 @@ export async function runPromote(argv) {
   console.log(`plan → ${file}`);
   if (!r.ok) {
     if (r.json?.error?.code === "PROMOTION_BLOCKED")
-      die("refused: port each item to the source first, or name it with --overwrite / --drop / --shared-ok (one kind:id each).", 2);
+      die("refused: port each item to the source first, or name it with --overwrite / --drop / --shared-ok (one kind:id each) / --unbind (one kind:id.field).", 2);
     fail(to.env, r);
   }
   if (o.apply && r.data?.release) console.log(`release ${r.data.release.id} (v${r.data.release.version})${o.deploy ? " deployed" : " — not deployed; move the pointer with deploy-pointer"}`);
