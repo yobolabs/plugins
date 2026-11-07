@@ -49,9 +49,11 @@ remember the brief. The source reading is context only. Every finding has one ve
 A per-shot block gates the set in code; the set check alone never decides. A check that could not run is a fail, not a
 pass.
 
-The remake counter is one per scene, shared by every step that redraws it (storyboard, setup, start and end pictures).
-Each redraw counts once under the same key. A review that asks for a remake the run machine refuses leaves that scene
-silently unfilled, so every redraw must count against the same key.
+Redraw keys and budget. One remake counter per scene, read by every step that redraws it: the storyboard key
+(`storyboard:<scene>`) and the setup and edge keys (`setup:<scene>`, `<scene>@start|end`). A picture is never spent
+under one key and counted under another. Automatic redraws per failed picture are capped by the
+`STORYBOARD_AUTO_REDRAWS` row in `_context/LIMITS.md`. A merchant [Try again] is always one more redraw and is never
+blocked. A failed edge picture is its scene's missing picture: the line and [Drop scene n] name that scene.
 
 ## Fit: only templates the product fits
 

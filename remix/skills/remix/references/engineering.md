@@ -94,11 +94,21 @@ elements to generate the video."
 - **"AI provider returned an error" is a label, not a cause.** It is the default text for any image-run throw. Read the job row's `result.error.message` first, then the Cadra `ai_function_runs` row or the Vercel log. A fast failure (seconds) points to our input or ffmpeg; a slow one points to the provider.
 - **ffmpeg JPEG frame grabs need `-pix_fmt yuvj420p -strict unofficial`.** Without them, mjpeg refuses limited-range (tv-range) input frames.
 - **Worker container logs reset on every redeploy.** Read or save a run's log lines before the next deploy lands, or wake the run for a fresh decision line.
+- **Vercel runtime logs keep no history.** To see a web-path error, run the real code in the dev worker container: write a script under `/tmp`, run `npx tsx --tsconfig /app/tsconfig.json <script>`, import from `/app/src/...`, and write inside a transaction that throws at the end so it rolls back.
+- **Review to storyboards is a paid run-machine move.** It needs a merchant press, so a wake never takes it. A redraw from review starts in place and the phase stays `review`. A refused move is never silent: it logs and sets a retry wake (`REVIEW_RETRY_MS` row in `_context/LIMITS.md`).
+- **An open merchant grant skips the wait for "set already passed".** Otherwise [Try again] after the album writes a grant nobody reads, and the chat reports a redraw that is not running.
+
+## Taps on yobo-owned runs
+
+- **Yobo answers run before the slides read.** `tap.ts` reads the remix from slides (`remix_get`) before most branches, and slides answers `not_found` for native yobo runs. Every yobo-owned answer runs before that read.
+- **An unknown yobo tap goes to the advance loop** as a press on the open ask that posted the button (`events/yobo-press.ts`). The loop needs a handler for every button an ask posts.
+- **Tests cover yobo-owned taps with `remix_get` answering `not_found`.** A happy slides mock hides this class of failure.
 
 ## Source copies and signed links
 
 - **Remix source copies are private.** Anonymous reads are denied on the bucket, so a bare `remix-sources` URL fails. Hand out only a signed GET (`signRemixInput`, `_context/LIMITS.md` row).
 - **A signed GET handed to a queued provider must outlive the queue.** Inputs for providers use the two-hour signature from `signRemixInput`. The SDK default of 900 s can expire while a job waits.
+- **Signing never depends on one public-base env var.** A worker without that var signs nothing, and the GET fails under the private bucket. The signer matches every bucket origin and the `remix-sources/` prefix, and every refusal logs. Set the worker env in the host env file, not in code.
 
 ## Who decides, budget, pricing (`../remix-agent/SKILL.md` P4)
 
@@ -519,6 +529,8 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - The side chat renders only cards. Plain status lines are not in the re-read.
 
 ## Storyboard gate
+
+- **The storyboard-first gate reads the same part groups as the planner.** Template runs store `plan.groups = []`. A gate that reads only the stored plan refuses every part as `unknown_part`. Read groups through the planner's helper (`groupsOf`: stored groups, else built from scenes).
 
 - Every paid video part passes the storyboard gate before it starts. Each remade scene needs an approved storyboard of that exact picture and a passed AI set review.
 - The one exception is a fast swap the merchant chose (the just-swap-product tap, which carries the needs-swap ask). The run's mode never grants it.
