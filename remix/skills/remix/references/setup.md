@@ -35,5 +35,5 @@ If it says your email is not a team email, sign in with your company account.
 
 ## 4. Dev test rigs
 
-- The dev gateway refuses foreign media URLs. Prove photo paths with a stored-attachment rig: copy a stored dev JPEG and forward the remix tap. Name the rig in the proof line.
+- The dev gateway refuses foreign media URLs. Prove photo paths with a stored-attachment rig: copy a stored dev JPEG and forward the remix tap. Name the rig in the proof line. Copy the object under the new attachment uuid, not the source URL.
 - A re-tapped consumed go token cannot re-post the go ask. A fresh go needs a new sheet.

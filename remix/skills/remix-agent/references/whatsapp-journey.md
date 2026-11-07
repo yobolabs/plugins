@@ -269,3 +269,7 @@ behind Meta review; no TikTok through Buffer/Hootsuite.
 
 - msg-api waits about 5 s for yobo on a chat inbound. A yobo handler acks inside that window and does slow work (store, provider calls) in `after()`; otherwise msg-api also hands the turn to the agent and the chat gets two lines.
 - A tapped ask closes on every posted outcome, including the photo-asked outcome. Otherwise the advance loop replays it each tick and later steps (fast sheet, go ask) never run.
+
+## Go record on a photo answer
+
+- A chat photo that answers a paid-step ask leaves a go record. Without it the sheet approval stalls, because the go approver needs an ask-tap event.

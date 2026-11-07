@@ -498,3 +498,8 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
   a template's QC; only kept (`keep`) parts must be free of the old product.
 - Port onto a held-out `main`: develop has work main lacks (yobo `insertRun` ask-close, msg-api origin-web spec blocks).
   Re-run the port's tests on main; a conflict hunk can drag develop-only tests in — drop them, never the fix.
+
+## Web side chat in a hidden tab
+
+- A remix web side chat makes no history read while its tab is hidden, including the first read on open. A hidden test tab shows no run cards and looks like a render bug. Before reading it, force the tab visible and wait about 15 s. Verify cards against the msg-api rows before calling a render gap.
+- The side chat renders only cards. Plain status lines are not in the re-read.
