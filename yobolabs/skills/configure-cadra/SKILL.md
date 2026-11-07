@@ -40,7 +40,8 @@ a skill (template, reference, link), a tool row, or a deploy-pointer promote. De
    `_context/cadra/_specs/p152-agent-architecture/3-review-gate.md` §2: agent + live base release,
    one change, layer, dev proof ids, diff + undo file, root `+N/-M` chars, LIMITS row, lane approval.
 3. On `APPROVED prod gate-YYYYMMDD-N`, put `AGENT_GATE=gate-YYYYMMDD-N` in the write command and
-   `gate: gate-…` in your DEPLOY-LOCK row and release note. One id = one change, used once.
+   `gate: gate-…` in your DEPLOY-LOCK row and release note. The id must be approved for prod in
+   `_context/cadra/_specs/p152-agent-architecture/gate-log.md`. One id = one change, used once.
 
 The monorepo hook `agent-gate-guard.py` denies a prod write without a valid id. A rollback through
 the deploy-pointer (`action: rollback`) needs no id. A daily audit matches every prod release to a
@@ -56,6 +57,20 @@ prod id (dev proof ids go INSIDE that request); (b) a question about agent behav
 passed" updates, no captain or chief relays. Progress goes in your own task file; the lead reads the gate-log
 and your §2. A code-only fix that does not change how an agent behaves needs no lead message.
 Dev agents are release-pinned too: an edit changes HEAD only; a proof counts only if its run logs the changed version (`harness <uuid> vN`, `agent_executions.agent_version_id`).
+
+## Agent config is applied by you, not the release captain
+
+- Agent config changes (roles, skills, tool rows, agent settings, prompts) are not a deploy. Your own session
+  applies them: undo file before, read-back after, dev first, then prod under your task's approval rules and
+  the gate above. Route them through the release captain only when they ship bundled with code or system
+  changes in the same release.
+- **Before touching a live prod agent:**
+  1. Add a root `STATE.md` DEPLOY-LOCK row `cadra · prod agent <id>`. One session per agent at a time.
+  2. Save the current version/pin and an undo file.
+  3. Change one thing. Save it as a NEW version; never edit the pinned live version in place.
+  4. Run one real prod proof turn (`references/prod-releases.md` § Proof turns).
+  5. Keep the old version for one-step rollback. Report the old and new version ids.
+- Dev agent first, always.
 
 ## Promote a whole agent version, env → env (`cadra agent promote`, p151)
 
