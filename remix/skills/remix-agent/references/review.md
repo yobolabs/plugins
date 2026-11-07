@@ -42,7 +42,7 @@ remember the brief. The source reading is context only. Every finding has one ve
 
 | Verdict | Only for | Effect |
 |---|---|---|
-| **block** | wrong product (or its label/shape/real size clearly wrong) · another brand's logo, mascot or sign · garbled or invented text, captions or logos · an extra person the brief does not have · broken anatomy (extra limbs, melted faces, a giant or tiny person) · unsafe or off-brand · a screen that is not a flat green phone screen when the scene shows one | the set is held: fixed once automatically, still blocked → shown with the shot, the reason and a way forward |
+| **block** | wrong product (or its shape/real size clearly wrong, or its own logo clearly unreadable or another brand's mark; small drawing differences in a script logo pass) · another brand's logo, mascot or sign · garbled or invented text, captions or logos · an extra person the brief does not have · broken anatomy (extra limbs, melted faces, a giant or tiny person) · unsafe or off-brand · a screen that is not a flat green phone screen when the scene shows one | the set is held: fixed once automatically, still blocked → shown with the shot, the reason and a way forward |
 | **look** | a scene clearly shows a DIFFERENT person from the approved cast (not hair, light or angle) | waivable: fixed once, then [Keep it] |
 | **pass** (info at most) | the cast differs from the source ad (that is the remix) · framing, zoom or crop differ from the source or line drawing · pose, beat or moment differ from the one source frame · seats, room details or colours differ slightly from the brief | never shown to the merchant as a problem |
 
@@ -64,7 +64,7 @@ No fit → say so in one line and offer the forward option (a fitting ready ad, 
 ## Per-storyboard AI checklist (what to look at, verdicts as above)
 
 - [ ] Right person per name vs the approved cast picture (look), nobody duplicated, no extra person (block)
-- [ ] Product is the product, label exact, real size (block when clearly wrong)
+- [ ] Product is the product, shape and real size right (block when clearly wrong); its own logo clearly unreadable or another brand's mark = block; small drawing differences in a script logo pass
 - [ ] No drawn text, captions, logos; no old-brand logos, mascots or signs (block)
 - [ ] Anatomy and scale believable (block when broken)
 - [ ] Screens are a phone held by a character with a flat green screen (block)
