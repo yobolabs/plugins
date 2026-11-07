@@ -503,3 +503,14 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 
 - A remix web side chat makes no history read while its tab is hidden, including the first read on open. A hidden test tab shows no run cards and looks like a render bug. Before reading it, force the tab visible and wait about 15 s. Verify cards against the msg-api rows before calling a render gap.
 - The side chat renders only cards. Plain status lines are not in the re-read.
+
+## Storyboard gate
+
+- Every paid video part passes the storyboard gate before it starts. Each remade scene needs an approved storyboard of that exact picture and a passed AI set review.
+- The one exception is a fast swap the merchant chose (the just-swap-product tap, which carries the needs-swap ask). The run's mode never grants it.
+- A ready-ad or card template start goes through the full storyboard path, behind its feature switch.
+
+## Web side chat: sends, media and new surfaces
+
+- A web side chat run sends nothing to WhatsApp: no final video, no timed nudge.
+- A new chat surface must be checked for media, plain status lines and inbound files. Earlier surfaces lost media (conversation notify dropped image and video parts), lost plain lines (the side chat showed only card rows) and had no photo upload.

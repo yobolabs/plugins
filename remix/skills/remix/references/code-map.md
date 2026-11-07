@@ -287,3 +287,7 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 
 - A submitted remix part's `input` is the provider request. Its remix id lives in `target.remixInput`.
 - Any query that matches jobs to a run uses `remixField('remixId')` (job-fields.ts), never `input->>'remixId'`. The latest run video lookup (steps/review-video.ts) depends on this; a wrong match sends a fast approve ask without the video.
+
+## Join and keep scenes
+
+- Keep scenes are kept clips. A path that relies on keep scenes must check that the join actually plays them: keep slots were skipped in the full path until a generation fix.
