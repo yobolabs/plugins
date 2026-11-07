@@ -37,3 +37,8 @@ If it says your email is not a team email, sign in with your company account.
 
 - The dev gateway refuses foreign media URLs. Prove photo paths with a stored-attachment rig: copy a stored dev JPEG and forward the remix tap. Name the rig in the proof line. Copy the object under the new attachment uuid, not the source URL.
 - A re-tapped consumed go token cannot re-post the go ask. A fresh go needs a new sheet.
+
+## 5. Test logins
+
+- A test login must not be linked to a real phone number. Check the linked identity before any remix run; a run from a linked login can message a real merchant.
+- Dev public registration is disabled, so a test login needs an admin to create it.

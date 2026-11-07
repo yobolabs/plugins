@@ -509,8 +509,16 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Every paid video part passes the storyboard gate before it starts. Each remade scene needs an approved storyboard of that exact picture and a passed AI set review.
 - The one exception is a fast swap the merchant chose (the just-swap-product tap, which carries the needs-swap ask). The run's mode never grants it.
 - A ready-ad or card template start goes through the full storyboard path, behind its feature switch.
+- A set check that cannot start never counts as a pass.
+- Lead check before any template or card data or rule change: confirm the universal, free-first template still reaches new merchants.
 
 ## Web side chat: sends, media and new surfaces
 
 - A web side chat run sends nothing to WhatsApp: no final video, no timed nudge.
 - A new chat surface must be checked for media, plain status lines and inbound files. Earlier surfaces lost media (conversation notify dropped image and video parts), lost plain lines (the side chat showed only card rows) and had no photo upload.
+
+## Higgsfield busy answers
+
+- A busy answer is retryable: account queue full, admission control unavailable, or a concurrent-request limit. These carry no redo credit and no self-score exists.
+- Failed, timed-out and NSFW jobs are refunded.
+- The Higgsfield tool in a session may be a personal free account, not the team account. Check which one before relying on credits.

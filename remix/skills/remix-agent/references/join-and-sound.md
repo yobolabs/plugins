@@ -49,3 +49,7 @@ similar-track matching only with a free source (no paid music vendor). From scra
 ## Post
 
 After export the video posts through the Buffer / Hootsuite route; direct Instagram / Facebook posting waits on Meta app review.
+
+## Keep scenes in the full-run join
+
+- In the full-run join, keep scenes enter as source slots, cut from the stored copy by the scene's measured shot frames. Earlier they were dropped from the join.

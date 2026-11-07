@@ -291,3 +291,7 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 ## Join and keep scenes
 
 - Keep scenes are kept clips. A path that relies on keep scenes must check that the join actually plays them: keep slots were skipped in the full path until a generation fix.
+
+## Clip runs: the product sheet
+
+- Clip runs (templates/clip-run.ts) send the paid product sheet (input fast sheet) as the second image, not the raw catalog or research photo. The raw photo changed the product from shot to shot.
