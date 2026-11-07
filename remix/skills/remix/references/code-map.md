@@ -277,3 +277,8 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 ## Stop path
 
 - Stop: yobo `services/video/remix/stop.ts` (stopRemixAndChat, then stopRemix, then cancelRemixRunTx via executeRemixCommand cancel). Phases in FINISHED_VIDEO_PHASES are never cancelled.
+
+## Org lookup and shared templates
+
+- Owner-inbound takes a chat's org from the action-token and ask rows (by conversation), not only from ad video jobs: a fast or template run has no job until its first paid step. Helper: `remixOrgIdsOfChat` in `tap.ts`.
+- A merchant-RLS read of source breakdowns for a template run returns nothing. Use the guarded privileged read (`sharedTemplateCopyOf`): an approved template on that breakdown, org null, universal or own; the copy's org is the merchant.

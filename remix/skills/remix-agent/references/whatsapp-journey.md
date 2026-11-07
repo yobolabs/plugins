@@ -264,3 +264,8 @@ with `{}` silently falls back to English. Read the raw row (`getAdsText`) and fi
 Social post: reuses the existing yobo social publish path through Buffer / Hootsuite (`yobo:social` → dev.md "Other
 callers of the publish path"); connect = the p130 connect-menu Buffer/Hootsuite rows (signed-in link); direct IG/FB
 behind Meta review; no TikTok through Buffer/Hootsuite.
+
+## Ack timing and ask closing
+
+- msg-api waits about 5 s for yobo on a chat inbound. A yobo handler acks inside that window and does slow work (store, provider calls) in `after()`; otherwise msg-api also hands the turn to the agent and the chat gets two lines.
+- A tapped ask closes on every posted outcome, including the photo-asked outcome. Otherwise the advance loop replays it each tick and later steps (fast sheet, go ask) never run.

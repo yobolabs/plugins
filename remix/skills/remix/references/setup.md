@@ -32,3 +32,8 @@ If it says your email is not a team email, sign in with your company account.
 
 - A signup that starts from a reel link goes straight to remix and runs no onboarding research (no brand snapshot, no product save).
 - To test onboarding product saving, sign up with the merchant's own business handle for a shop that sells physical products. A software brand saves no products.
+
+## 4. Dev test rigs
+
+- The dev gateway refuses foreign media URLs. Prove photo paths with a stored-attachment rig: copy a stored dev JPEG and forward the remix tap. Name the rig in the proof line.
+- A re-tapped consumed go token cannot re-post the go ask. A fresh go needs a new sheet.
