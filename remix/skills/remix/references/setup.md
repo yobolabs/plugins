@@ -27,3 +27,8 @@ Claude Code in a terminal (rare): `claude mcp add -s user --transport http --cli
 
 Nothing to install. https://remix-lab.yobolabs.ai signs you in with Yobo Connect (team email domains only).
 If it says your email is not a team email, sign in with your company account.
+
+## 3. End-to-end signup entries
+
+- A signup that starts from a reel link goes straight to remix and runs no onboarding research (no brand snapshot, no product save).
+- To test onboarding product saving, sign up with the merchant's own business handle for a shop that sells physical products. A software brand saves no products.

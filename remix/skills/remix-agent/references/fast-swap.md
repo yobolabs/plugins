@@ -48,8 +48,8 @@ timed out". The full pipeline stays the default; never pick the fast path for th
 - **Product sheet views follow the shape.** A round product (cup, tub, can, bottle, jar) has no front or back: ask for
   top-down, high three-quarter, side and base, every view different. Boxy products: front, three-quarter, side, back.
   A faulty sheet is fixed by EDITING the last try with notes ("Image 1 = last try … change only: <notes>"), never a
-  blind redo. Photos go in as flattened JPEGs (long side 1024–2048 px): a tiny transparent PNG made Higgsfield fail
-  "We could not prepare the media for generation". A plated dish has no packaging: name it as plated food ("<dish> on a
+  blind redo. Every picture sent as a reference goes in as a flattened JPEG (long side 1024–2048 px), including our own storyboards and sheets: a big or transparent PNG makes Higgsfield fail at random, unbilled, with a prepare-the-media error. Check reference sizes first. A tiny transparent PNG once made Higgsfield fail
+  A plated dish has no packaging: name it as plated food ("<dish> on a
   round white plate, food on a plate, no box") and ask for plate views; a menu-item name alone drew a branded takeout
   box. A defect that survives one edit → "Don't use it", fix the name or notes, fresh draw (an edit keeps its input).
 

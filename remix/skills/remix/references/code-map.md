@@ -273,3 +273,7 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
   tab sent a message into Main Chat. A background tab's `innerText` is empty; use `textContent`/aria-labels.
 - **Slicing a long suite on mini-run:** a detached runner script (setpgrp + background) gets reaped; run each
   `--shard=N/4` as its own background tool call instead.
+
+## Stop path
+
+- Stop: yobo `services/video/remix/stop.ts` (stopRemixAndChat, then stopRemix, then cancelRemixRunTx via executeRemixCommand cancel). Phases in FINISHED_VIDEO_PHASES are never cancelled.
