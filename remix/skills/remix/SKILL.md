@@ -57,7 +57,7 @@ Decide from the reading, before the brief: people talking -> people-dialogue, el
 | `references/lab.md` | every invocation: open the lab, drive it, who does what, lab defaults |
 | `../remix-agent/references/fast-swap.md` | "Just swap the product", templates, reuse, source download, swap allowed or not |
 | `../remix-agent/references/brief.md` | writing, rewriting or feeding the brief |
-| `../remix-agent/references/storyboard.md` | line drawings, storyboard cards, per-card fields |
+| `../remix-agent/references/storyboard.md` | line drawings, storyboard cards, per-card fields. Required reading, in full, for any storyboard-stage change (with review.md and the lab manual) |
 | `../remix-agent/references/review.md` | AI review, fit, benchmark verdicts, set check, code checks, known gaps |
 | `../remix-agent/references/join-and-sound.md` | joining parts, music, beats, export |
 | `../remix-agent/references/whatsapp-journey.md` | tap ids, words, copy rows, buttons, problem solver, failure lines |
