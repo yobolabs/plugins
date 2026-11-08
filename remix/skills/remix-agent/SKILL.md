@@ -9,6 +9,11 @@ The one source of the remix principles; stage and ad-type rules live in `referen
 
 ## Principles
 
+**P0 Fewest questions, steps and asks** (Sean 2026-11-08: "If you approve the storyboards, that should mean you already approved making the videos.").
+- Why: every extra question is a place the merchant stops. The best experience asks the least of the merchant.
+- Good: the agent decides what the merchant already gave and moves on. The work starts, then [Stop] and [Change] are offered; never "shall I start?". Approving the storyboards is the go for the videos: one tap, with the cost shown on that same message. Plan and needs confirmations fold into the next real step, wherever the merchant can still Stop or Change. Every paid step shows its cost on the message that starts it.
+- Harm guarded: a remix that waits on a confirmation the merchant already gave, and a cost the merchant did not see.
+
 **P1 The storyboard is the contract** (Sean 2026-11-03; 2026-11-05: "the key is we get to a storyboard, and the
 storyboard has all the elements to generate the video").
 - Why: a clean storyboard (clear scenes, picture or clip each, lines that make sense, beats mapped to the audio)

@@ -100,7 +100,7 @@ elements to generate the video."
 - **Every phase move outside a job landing wakes its run.** The generation bump and the enqueue happen together, with the enqueue after commit. A move that returns "started" with no job leaves the run idle forever.
 - **A deploy can kill a pass mid-way,** leaving the run marked processed with its starts never made. The due sweep must also pick runs idle in a work phase longer than `REMIX_STALL_GUARD_MS` (`_context/LIMITS.md` row).
 - **A wake set by hand is cleared after its pass.** A past wake keeps the run due on every sweep and re-runs its owed starts.
-- **An approval-only press calls `approve_item` without `askId`.** With an `askId`, `approve_item` takes the paid edge (review to parts) on the last approval (`approve-item-command.ts`). The loop's `approve-go.ts` then posts the one paid video go. An approval is never a go.
+- **An approval-only press calls `approve_item` without `askId`.** With an `askId`, `approve_item` takes the paid edge (review to parts) on the last approval (`approve-item-command.ts`). Approving the storyboards is the go for the videos (P0): the cost shows on that approval message. `approve-go.ts` is the loop's step for it.
 - **Every chat send goes through the delivery record** (`sendRemixDelivery`). A send that bypasses it is invisible to the retry and give-up path: a send accepted and then failed is never retried. The advance loop sends through `advance/loop-send.ts`.
 - **An open merchant grant skips the wait for "set already passed".** Otherwise [Try again] after the album writes a grant nobody reads, and the chat reports a redraw that is not running.
 

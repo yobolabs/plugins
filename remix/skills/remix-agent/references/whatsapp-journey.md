@@ -78,6 +78,8 @@ answers; the matcher never swaps products.
   LIMITS row). Duplicate rows/questions are dropped.
 - **Logo is optional, asked once** when the writer's logo row is missing or the org has no logo anywhere
   (`needs-facts.hasLogo`).
+- **Ask a need only for what the agent cannot find or decide itself (P0).** A needs or plan confirmation folds into the
+  next real step, which the merchant can still Stop or Change; it is not a separate "shall I" message.
 - **Chat language is stamped at the start, never looked up later.** msg-api `by-execution` maps a run to its chat only
   WHILE the run is live; a needs list lands minutes later and read null → English in non-English chats.
   `stampRemixChat` stamps `reply_language` on the analyze job with the chat; delivery, the tap and the needs writer
@@ -143,9 +145,9 @@ answers; the matcher never swaps products.
   (`not_blocked`, a ready re-send that did not go out) logs on the run (`remix_tap_posted_nothing`) and posts ONE plain
   line with the next button. A re-send through `remixApplied` must name its own post key (`resend`), or deliver
   refuses it for having no message key.
-- **The last storyboard approved on the web asks the video go in chat** (`sb_approved_go` [Yes, go ahead][Not yet],
-  once per storyboard set, key `<remixId>:sb_approved_go:<set>`). The web review page is the path the ready line's link
-  offers; without this the merchant approves and hears nothing. An approval is never a go for paid work.
+- **The last storyboard approval starts the videos (P0).** Its message shows the video cost and [Stop]; no separate
+  video-go ask follows. The web review page is the path the ready line's link offers. Until the code follows P0, the chat
+  ask `sb_approved_go` ([Yes, go ahead][Not yet], once per storyboard set) is what runs.
 - **A stale or already-used button re-posts the live ask.** Under "That button is old" / "already used", post the
   remix's newest OPEN ask again with fresh tokens; nothing open: the line carries [Pick a ready ad]. "Open" = the
   remix's newest post with stored buttons (`remix_deliveries.payload_ref.repost`) with no tap on this remix after it
