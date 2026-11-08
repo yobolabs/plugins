@@ -57,6 +57,8 @@ elements to generate the video."
 
 - **A model swap checks input modalities first.** Stages that read the source video (the video blueprint, the teardown agent) need a model with video input. A text-or-image model fails them: a function returns `FUNCTION_CONFIG_INVALID`, an agent asks the user for keyframes. Swap text and image stages separately from video stages.
 - **LIMITS row before the release request.** Every timer or count a release request names gets its `_context/LIMITS.md` row written and pushed first. The captain checks each one against the file.
+- **A stored reading is reused only when its analysis version is the current one.** Otherwise measure again.
+- **Testing uses a merchant-only tester with a goal.** The tester plays the merchant and reports what it sees. It never reads code, run tables or internals.
 - **Before porting a held-out chain to main, look for its owner's port** (`git branch -r | grep <ticket>`, the lane's
   session file). Refresh that port (new branch, merge main) instead of building a second one.
 - **When main deliberately held out a sibling feature, a port merge keeps only your ticket's half.** Trace each

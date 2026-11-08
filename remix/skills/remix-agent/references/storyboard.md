@@ -21,7 +21,7 @@ reuses its image rather than getting a new one), PLUS an image for the first and
 **One storyboard per shot, built from keyframes, decided** (Sean 2026-11-06: "keep per shot" … "It should be based
 on keyframes"). A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
 part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,
-last frame. It is redrawn with the merchant's cast and product. That is for PRODUCT ads. People and dialogue ads use
+last frame. It is redrawn with the merchant's cast and product. That is for any source with no speech, even when people appear in it. People-dialogue ads (people who SPEAK) use
 one label-free picture per shot instead: a master per camera setup, and every other shot of that setup drawn from its
 own line drawing with the master as a reference (`HOW-REMIX-WORKS.md` §A rule 7, proven on the 10-29 dialogue run).
 A product sheet needs only one ticked moment, the same as the lab; there is no minimum of 3. The 4 s floor merges only video parts (`groups.ts`
@@ -42,6 +42,7 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 
 ## Rules
 
+- Picture request order, for every picture or video request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". A line drawing is never the first or only image. A request with no colour reference is refused before the paid call.
 - A line drawing is an internal framing input to the picture model only. The merchant never sees one: not in chat, the review page, the album, the cards or the video. The merchant sees the source frame and the new storyboard picture. The Remix Lab is a team tool and may show line drawings.
 
 - **Product words in every storyboard prompt come from the approved sheet**, as principle P5 in `../SKILL.md` requires.

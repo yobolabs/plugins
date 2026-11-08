@@ -63,7 +63,7 @@ BLUEPRINT. Lower our thresholds.").
   input (source frames, storyboard grids, reference pictures) and every video and picture prompt says no on-screen
   text. That text comes back as an overlay at Finish. Only text that is part of the product or a prop the brief
   keeps (the product's own label, a flyer's edited words) stays in the picture. The text is blurred once on the stored
-  source copy; kept slots, remade parts and templates read that clean copy, never the original.
+  source copy; kept slots, remade parts and templates read that clean copy, never the original. Source text beats become overlay lines that do the same job in the merchant's words; the join draws them in code. Text is never left for the merchant to add later, and a model never draws it.
 - Example: a cross-type swap (beauty into food) goes to the storyboard pipeline. Detail: `references/fast-swap.md`.
 
 **P6 Never silent, never false** (Sean 2026-11-05: "It should be a problem solver").

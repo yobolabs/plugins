@@ -2,6 +2,7 @@
 
 Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, exporting.
 
+- **Clip length: render at the model minimum, then trim to the scene's measured length.** Never ship a clip longer than its scene.
 - **The join runs by itself as soon as every part has landed** (Sean 2026-11-05 ~21:5x: "I expect the final assembled
   video."). There is no parts approval and no join ask: the merchant sees ONE joined video with [Looks good] / [Change a
   part]. Parts shown only on request.

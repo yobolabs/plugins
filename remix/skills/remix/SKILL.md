@@ -38,7 +38,7 @@ Exception: "Just swap the product" (merchant's choice only) skips 2–7 → `../
 
 ## Pick the type
 
-Decide from the reading, before the brief: people talking -> people-dialogue, else product-hero; the merchant's pick wins.
+Decide from the reading, before the brief: people who SPEAK -> people-dialogue; a source with no speech uses product-hero keyframe sheets, even when people appear; the merchant's pick wins.
 
 | Source ad is | Load |
 |---|---|
