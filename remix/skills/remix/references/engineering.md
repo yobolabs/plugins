@@ -59,6 +59,7 @@ elements to generate the video."
 - **LIMITS row before the release request.** Every timer or count a release request names gets its `_context/LIMITS.md` row written and pushed first. The captain checks each one against the file.
 - **A stored reading is reused only when its analysis version is the current one.** Otherwise measure again.
 - **Testing uses a merchant-only tester with a goal.** The tester plays the merchant and reports what it sees. It never reads code, run tables or internals.
+- **Local first on the lead-owned remix loop; dev is the integration test.** Every release-request carries a `local:` proof line. Simple fixes go to the lead's sub-agents; structural changes go to the builder. The only dev Cadra org is Yobo. Never use a copy org.
 - **Before porting a held-out chain to main, look for its owner's port** (`git branch -r | grep <ticket>`, the lane's
   session file). Refresh that port (new branch, merge main) instead of building a second one.
 - **When main deliberately held out a sibling feature, a port merge keeps only your ticket's half.** Trace each
