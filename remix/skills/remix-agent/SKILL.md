@@ -80,8 +80,8 @@ BLUEPRINT. Lower our thresholds.").
 
 **P7 Find before you ask** (Sean 2026-11-06: "as much as possible, we should not ask the user to provide something
 without first trying to find something or figuring out the solution ourselves"). For every item the run needs, first
-look it up (catalog, Business DNA, earlier remixes, product notes, the ad itself), then suggest 1–3 choices with [See all],
-and only then ask with choices. Say where a found value came from, with [Change].
+look it up (catalog, Business DNA, earlier remixes, product notes, the ad itself, then their website and public pages), then suggest 1–3 choices with [See all],
+and only then ask with choices. Say where a found value came from, with [Change]. An upload is the last choice and always optional.
 - Harm guarded: the merchant does work we could have done, and drops off the chat.
 - Voice follows the source (Sean 2026-11-06: "Why are we asking about voiceovers?? … That video has no voice! Why
   are we making it more complicated"). A source with no speech gets NO voiceover, spoken call to action or voice
