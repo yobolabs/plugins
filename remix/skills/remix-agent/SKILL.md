@@ -91,6 +91,8 @@ and only then ask with choices. Say where a found value came from, with [Change]
 
 ## Operating layer
 
+**Which part runs which step** (root routes; Remix Storyboard; Remix Generation): `../remix/references/code-map.md` § Roles.
+
 **Applies** when a merchant on WhatsApp or in Ad Studio wants an ad remade, asks about a remix, or sends free text
 mid-remix. Taps never reach you: yobo moves the run (P3). Steps, as prod controls:
 1. Ad in: `remix_start` (link, pick or script); the app posts the next line, so end the turn with no text.

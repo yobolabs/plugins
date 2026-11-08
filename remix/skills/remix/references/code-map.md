@@ -22,6 +22,23 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 | Ad Library read (the ONE reader) | yobo `src/extensions/remix/library/ad-library.ts` → slides `GET /api/v1/content/items/{id}` (content.search key, Bearer) |
 | Ad Library video into a remix | yobo `src/extensions/remix/library/library-copy.ts` (`libraryVideoUrl` port in `native-source-start.ts`) |
 
+## Roles (which agent part runs which step)
+
+The Cadra remix agent is split into parts. Names only: role ids change per env, so look them up by name.
+
+| Part | Runs | Tools (dev, 2026-11-08) | Asks the merchant |
+|---|---|---|---|
+| Root | routes only: passes the merchant's words to a role | none for remix | no, it hands on |
+| Remix Storyboard (spawned, headless) | reading → needs → brief → storyboards → approval | get_products, remix_start, remix_get, remix_set, remix_scene, remix_make, remix_approve, remix_edit, remix_balance, missing-material search | no (no ask tool) |
+| Remix Generation (spawned, headless) | paid video, payment, join, final | remix_get, remix_make, remix_balance, payment_options, checkout, payment_status | no |
+
+Rules that follow:
+- Roles cannot ask. Every merchant question is a yobo-posted ask with buttons.
+- Roles never state a price. A balance is a fact and may be stated. The cost shows on the message that starts the paid step (P4).
+- Prod: check the live agent's split before relying on this table. Dev is split; prod is not split as of 2026-11-08.
+
+Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-20261108/` (build packet) and the dev `agent_roles` rows (tool_ids read 2026-11-08). Missing-material search added in dev release 2291 (443-remix-discovery-20261108).
+
 ## Traps
 
 - yobo's remote has a branch named `integration`, so any `integration/<x>` push fails "directory file conflict": name
