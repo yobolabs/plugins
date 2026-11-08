@@ -43,7 +43,7 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 ## Rules
 
 - **Product words in every storyboard prompt come from the approved sheet**, as principle P5 in `../SKILL.md` requires.
-- No text, captions, logos or numbers drawn (panel labels only on keyframe-sequence frame sheets: `types/product-hero.md`).
+- Add no text, captions, logos, labels, numbers or watermarks (panel labels only on keyframe-sequence frame sheets: `types/product-hero.md`). Keep the real product's own printed design exactly as the selected or approved reference shows it. Do not infer hidden packaging surfaces or physical dimensions from generated images. A merchant instruction that excludes overlays also excludes a CTA overlay.
 - A scene is one continuous shot between hard cuts; a short scene keeps its own timing (a model may render longer than
   the window; the player stops at the window).
 - **The global prompt reaches every storyboard picture.** It holds brand, product, cast and look only; scene beats go

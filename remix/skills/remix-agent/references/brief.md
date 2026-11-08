@@ -14,7 +14,7 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 | Dialogue track | each line: start-end time, speaker, ON or OFF screen. A line may start before its speaker appears and cross a cut. Never one line per shot |
 | Per-shot rows | what happens, **keep / change / never**, size (shot size, angle, lens), tone/feeling, lines in its window |
 | Voice parts | the teardown marks which source parts carry a voice (measured speech, set by code). A REMADE voice part gets its source clip, with its audio, as a voice reference, so the new clip speaks the brief's line in that voice (Sean 2026-11-05). No separate voiceover, TTS or sound-effect track |
-| Never list | old brand logos, mascots, signs; text, captions, logos drawn by a model |
+| Never list | content the merchant excluded; no added text, captions, logos, labels, numbers or watermarks; the product keeps its own printed design (see P5 and storyboard.md Rules) |
 
 ## Rules
 
