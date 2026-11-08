@@ -31,7 +31,7 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 
 | Field | Rule |
 |---|---|
-| Source frame / line drawing / storyboard | shown side by side; tap to compare big (WhatsApp review page first) |
+| Source frame / storyboard | shown side by side; tap to compare big (WhatsApp review page first). The line drawing is not shown (see Rules) |
 | Window | frame-exact start-end, **on the music's beat** |
 | Windows tile the audio | no gaps, no overlaps, total = audio length |
 | Type | `still` / `moving` / `keep` (merchant's clip as is) / `mine` (merchant's clip, mined) |
@@ -41,6 +41,8 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 | Check + approval | AI/code check result; the merchant's approval (never the agent's) |
 
 ## Rules
+
+- A line drawing is an internal framing input to the picture model only. The merchant never sees one: not in chat, the review page, the album, the cards or the video. The merchant sees the source frame and the new storyboard picture. The Remix Lab is a team tool and may show line drawings.
 
 - **Product words in every storyboard prompt come from the approved sheet**, as principle P5 in `../SKILL.md` requires.
 - Add no text, captions, logos, labels, numbers or watermarks (panel labels only on keyframe-sequence frame sheets: `types/product-hero.md`). Keep the real product's own printed design exactly as the selected or approved reference shows it. Do not infer hidden packaging surfaces or physical dimensions from generated images. A merchant instruction that excludes overlays also excludes a CTA overlay.
