@@ -10,6 +10,7 @@ chat is a lesson the next run pays for again (Sean 2026-11-04).
   learnings note and sync it (sections below: where, format, how to upload, what goes to the skill).
   Never leave a paid run's lesson only in chat. Read the KB first (`remix-context` MCP: `search`, then `read_document`)
   before any remix, so the team's past learnings are applied.
+- **Every FAILED or BUGS item becomes owned work in the same step.** A finding written down reads as handled, and an unowned finding is never fixed. Each item gets a row in the gap register (`slides/_specs/p131-remix-in-ad-studio/gaps-<date>.md`, columns `# | Gap | Evidence | Owner | Status`) with an owner and a status. The note links the rows (§ 1 `## Gaps`). An item with no row is not finished. Before testing a template or ad, read its learnings notes first (`remix-context` `search`, then `read_document`).
 
 ## 1. Write one learnings note
 
@@ -33,6 +34,10 @@ verdict: <shipped | usable draft | failed>
 ## Rule candidates
 - GENERAL: <a rule true for every remix, no brand or product names>
 - TYPE <type>: <true only for this ad type>
+## Gaps
+| # | Gap | Evidence | Owner | Status |
+|---|---|---|---|---|
+(one row per FAILED or BUGS item; `#` is the register row id)
 ## Verdict from the person who asked (quote)
 ```
 
@@ -42,6 +47,7 @@ Rules for the note:
 - Put the verdict of the person who asked in their words, especially when it is "failed".
 - Name the cost: seconds billed and pictures made, so the KB shows which modes are cheap.
 - No secrets, keys, customer data or personal phone numbers (the sync skips files that hold them).
+- Every FAILED or BUGS item has a `## Gaps` row, written in the same step as the note. Owner is a named lane owner (the team roster) or `unowned: lead assigns`; status starts at `open`.
 
 ## 2. Upload it to the Remix KB
 
@@ -55,6 +61,8 @@ Check it landed: `remix-context` `search` for the note's title.
 `_context/slides/_specs/p131-remix-in-ad-studio/learnings/` and run the chief-of-staff `kb-sync.py run --kb remix
 --since-hours 3` instead (the sanctioned writer there; upsert, never delete).
 Any other working directory (an Obsidian vault, a home folder, a teammate's machine) → use the lab's Share learnings box, even on Sean's Mac.
+
+**Gap rows follow the note.** The register file is written on Sean's machines, in the same step as the note (`_context/…/gaps-<date>.md`). Teammates and the lab box cannot write it: send the `## Gaps` rows to the remix lead in the same message, and the lead writes them into the register. Until a row exists the note's `## Gaps` table is the record.
 
 Never write to the KB any other way, and never put a key, customer data or a personal number in a note.
 
