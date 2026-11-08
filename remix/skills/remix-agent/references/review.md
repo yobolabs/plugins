@@ -133,9 +133,14 @@ Rules that cost a prod incident to learn:
   slides' own `RemixJobResultSchema` and `applyRemixJob`, or watch one real run reach the chat.
 - **Turn the switch off first when the chat goes quiet.** `''` restores the old checks at once; fix, prove, then on again.
 
-## Storyboard review: the merchant decides, we never block (Sean 2026-11-06)
+## Storyboard review: fix first, then the merchant decides (Sean 2026-11-08)
 
-Sean: "We don't show errors … We let the user be the one to decide if there's a problem at this point. At the point of the storyboard review, we are not the blocker." Storyboard-stage checks (set check, consistency, AI review) run silently and log on the run only: no chat line, no ask, no "problem" text on the page, no holding the album. The review page is one vertical scroll on a phone: per scene their frame and the new picture side by side, per scene [Approve], [Redo] (with what is wrong) or [Don't approve]; one [Approve all]. Harm if not: our checks stop runs the merchant would have approved and fill the page with errors they cannot act on.
+Sean: "For storyboard, always try to fix first autonomously before delivering storyboard."
+
+- A failed storyboard check is fixed silently before anything is shown: the set is redone automatically, once. Only sets that pass are shown.
+- A failure we could not fix is shown with its own forward option. A fixed failure never shows a chat line, an ask or "problem" text on the page.
+- The review page is one vertical scroll on a phone: per scene their frame and the new picture side by side, per scene [Approve], [Redo] (with what is wrong) or [Don't approve]; one [Approve all].
+- Harm guarded: a merchant shown a set we could have fixed, and a board that failed a check and was delivered anyway.
 
 ## Final review and editor on every join
 

@@ -46,8 +46,10 @@ BLUEPRINT. Lower our thresholds.").
 - Why: every paid second bills the platform key; most of a source ad has no product in it.
 - Good: keep every part with no product, remake the fewest seconds (stills as one picture, neighbours merged),
   regenerate only what changed, save every paid output the moment it lands. Nothing paid without a cleared budget
-  (the remix lead clears runs inside the day's budget); pricing is parked: the merchant sees one all-inclusive video
-  price, never a new credit UX.
+  (the remix lead clears runs inside the day's budget). Pricing is by size (Sean 2026-11-08, "sizing" approach): a code
+  estimate over the breakdown gives a size band (Light, Standard, Full), and the band sets the remix's credits. Every
+  scene is kept. The price is not per second and not capped; the merchant sees it on the approval message. Rates, redo
+  factor, margin and band limits are config rows, values pending Sean.
 - Harm guarded: paying for seconds the ad already had, or a surprise cost (`references/fast-swap.md`).
 - Example: an 8 s ad with one 2 s product shot bills 4 s of video (Seedance floor), not 8.
 
