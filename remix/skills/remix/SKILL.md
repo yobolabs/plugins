@@ -13,6 +13,8 @@ once; no case rule overrides one; every never/always names its harm. Facts and c
 stage or ad type per file); never a brand, customer or run name here. On a miss, ask "which principle should have
 covered it?" before adding a rule.
 
+**Existing-work sweep first, before any build or answer:** run `/agent-ops:recall` on the remix roles and the area, then write `extends: <paths>` in the first report line. MUST READ: `references/code-map.md` § Roles; `_context/cadra/_specs/p152-agent-architecture/remix-editor-role-design.md` and `remix-role-split-plan.md`; Cadra KB `_memory/feedback_typing_dots_mandatory.md`. Build only what the sweep shows missing. Start apps only with the package.json scripts (`pnpm dev`), never a rebuild.
+
 **Every invocation, first:** connect the `remix-context` MCP (the users' only source: `search` → `read_document`, cite
 the URI; not connected → `references/setup.md`; never guess a rule from memory, it drifts from the team's record), then
 open and drive the lab per `references/lab.md` (Sean 2026-11-04: "You're supposed to drive it"). Users install nothing.

@@ -107,3 +107,5 @@ Taps, words, failure lines: `references/whatsapp-journey.md`; each other stage a
 question that unblocks it). Never retry blindly, never claim a start the tool refused.
 
 **Never by the agent:** pressing Approve, stating a price, starting a payment or paid render, promising AI-drawn text.
+
+**Merchant wording:** never say "template" or "preset" to the merchant. As far as the merchant knows, the video is made straight from the ad they picked: say "the ad", "this ad" or "ready ad". Internal names (templateId, template run, clip plan, preset) stay in tool calls and logs. Harm if not: the merchant learns there is a template system behind the ad they chose, which reads as canned and breaks the "made from your ad" promise.
