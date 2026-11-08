@@ -272,7 +272,9 @@ behind Meta review; no TikTok through Buffer/Hootsuite.
 
 ## Go record on a photo answer
 
-- A chat photo that answers a paid-step ask leaves a go record. Without it the sheet approval stalls, because the go approver needs an ask-tap event.
+- A photo that answers a paid-step ask records consent to the requested generation. Consent to generate does not approve its future result.
+- Show the generated merchant-photo or product reference before its first downstream use. Bind approval to the exact shown artifact (its id and content hash), never to the go.
+- Offer the original-photo path and the plan-change path next to it. A replacement artifact needs its own approval.
 
 ## Long render ETA
 
