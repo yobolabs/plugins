@@ -111,7 +111,7 @@ Rules:
 | `CADRA_BUILDER_API_KEY` | API key with the entity's `*:read/create/update/delete` (+ `publish`/`deploy`) permissions |
 | `CADRA_API_URL` | cadra-web origin, no trailing slash — local `http://localhost:3000`, otherwise `https://<cadra-web-host>` (deployed origins are in `_ai/server/server-inventory.yaml`) |
 
-**Get a key:** in CadraOS → profile menu → **API Keys** → create (shown once).
+**Get a key:** in CadraOS → profile menu → **API Keys** → create (shown once). A 401 `INVALID_API_KEY` on a key copied from the dialog usually means the copied text is not the secret: check that the sha256 of the copied value equals the stored key hash before anything else.
 Keys are **org-scoped** — every call only sees and edits that key's organization.
 The key inherits its **role's** permission set, so pick a role that has the verbs
 you need — deploying an agent needs `agents:publish` *and* `agents:deploy`.
