@@ -69,4 +69,4 @@ Decide from the reading, before the brief: people who SPEAK -> people-dialogue; 
 | `references/setup.md` | first use on a machine: connect the Remix KB MCP (nothing else) |
 | `../remix-agent/references/types/*.md` | one per ad type |
 
-Related: `yobo:ad-studio-video`, `yobo:whatsapp`, `yobo:social`, `yobo:messaging`; KB search "p131", "remix lab", "higgsfield gotchas".
+Related: `remix:ready-ads` (team: make a ready ad, QC saved ones), `yobo:ad-studio-video`, `yobo:whatsapp`, `yobo:social`, `yobo:messaging`; KB search "p131", "remix lab", "higgsfield gotchas".
