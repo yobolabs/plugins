@@ -15,7 +15,7 @@
  *
  * What is fetched (nothing is written, on either side):
  *   - each side's release bundle (GET /agents/{id}/releases/{id}/bundle, the route promote uses)
- *   - AI functions: every function key a bundle names (any string in a skill, tool, role or the agent),
+ *   - AI functions: (prompt:read) every function key a bundle names (any string in a skill, tool, role or the agent),
  *     every `remix_*` function, and every --function KEY, as the golden version (content, system
  *     prompt, variables, output schema, model, params) via GET /prompts and /prompts/{id}/versions
  *   - skill files: the bundle's skill version carries a manifest (path, sha256); each file is a row
@@ -110,6 +110,13 @@ export const TWIN_KIND = { tool: "tool", skill: "skill", role_lock: "role", harn
 
 const PV_REF = /pv_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g;
 
+/** Remove the named keys at any depth (role-lock version labels are counters per env, not content). */
+function dropKeys(value, keys) {
+  if (Array.isArray(value)) return value.map((v) => dropKeys(v, keys));
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).filter(([k]) => !keys.includes(k)).map(([k, v]) => [k, dropKeys(v, keys)]));
+  return value;
+}
+
 /**
  * Flatten a bundle (and its delegates') into comparable objects:
  * { kind, name, ref ("id@version"), keys (uuid / id strings), anchor, scope, content (raw, un-normalised) }.
@@ -145,7 +152,7 @@ export function extractObjects(bundle) {
       if (pin.kind === "role_lock") {
         const prompts = content.prompts ?? {};
         const titleOf = (ref) => prompts[ref]?.title ?? ref;
-        const lock = JSON.parse(JSON.stringify(content.lock ?? {}).replace(PV_REF, (ref) => `pv:${titleOf(ref)}`));
+        const lock = dropKeys(JSON.parse(JSON.stringify(content.lock ?? {}).replace(PV_REF, (ref) => `pv:${titleOf(ref)}`)), ["version"]);
         add({ ...base, kind: "role_lock", content: { ...content, lock, prompts: undefined } });
         for (const [ref, pv] of Object.entries(prompts)) {
           add({
@@ -166,6 +173,23 @@ export function extractObjects(bundle) {
   };
   walk(bundle, true);
   return out;
+}
+
+const UUID_ANYWHERE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+
+/**
+ * Per-side text rule: a uuid that names an object of THIS bundle (a tool, skill, role, agent) is replaced by
+ * `{kind:name}`, so a role lock's tool list and "role=<uuid>" lines compare across environments.
+ */
+export function uuidNameRule(bundle) {
+  const names = new Map();
+  const walk = (b) => {
+    if (b.agent?.uuid) names.set(b.agent.uuid.toLowerCase(), `agent:${b.agent.name}`);
+    for (const p of b.pins ?? []) if (p.subjectUuid) names.set(p.subjectUuid.toLowerCase(), `${p.kind === "role_lock" ? "role" : p.kind}:${p.name}`);
+    for (const d of b.delegates ?? []) walk(d);
+  };
+  walk(bundle);
+  return (s) => s.replace(UUID_ANYWHERE, (u) => (names.has(u.toLowerCase()) ? `{${names.get(u.toLowerCase())}}` : u));
 }
 
 /** Every string anywhere in a bundle's agent fields and pin contents, newline-joined (for function-key scanning). */
@@ -263,10 +287,10 @@ export function mapObjects(aObjs, bObjs, { ab = [], ba = [] } = {}) {
 // Rows
 // ---------------------------------------------------------------------------
 
-export function buildRows(pairs, { rules = [] } = {}) {
+export function buildRows(pairs, { rules = [], rulesA = rules, rulesB = rules } = {}) {
   const rows = pairs.map(({ a, b, via }) => {
-    const na = a ? normalise(a.content, rules) : null;
-    const nb = b ? normalise(b.content, rules) : null;
+    const na = a ? normalise(a.content, rulesA) : null;
+    const nb = b ? normalise(b.content, rulesB) : null;
     const shaA = a ? sha256(na) : null;
     const shaB = b ? sha256(nb) : null;
     const status = !a ? "missing-A" : !b ? "missing-B" : shaA === shaB ? "same" : "differs";
@@ -292,6 +316,18 @@ export function buildRows(pairs, { rules = [] } = {}) {
 /** Leaf-level differences between two normalised values: [{ path, a, b }] (a / b undefined = absent). */
 export function fieldDiff(a, b, path = "") {
   const plain = (v) => v !== null && typeof v === "object";
+  if (Array.isArray(a) && Array.isArray(b) && a.length !== b.length) {
+    // An item added or removed: list the items only on one side instead of shifting every index.
+    const ca = a.map(canonical);
+    const cb = b.map(canonical);
+    const left = (from, other) => { const rest = [...other]; return from.filter((c) => { const i = rest.indexOf(c); if (i >= 0) { rest.splice(i, 1); return false; } return true; }); };
+    const onlyA = new Set(left(ca, cb));
+    const onlyB = new Set(left(cb, ca));
+    return [
+      ...a.filter((_, i) => onlyA.has(ca[i])).map((v) => ({ path: `${path}[-]`, a: v, b: undefined })),
+      ...b.filter((_, i) => onlyB.has(cb[i])).map((v) => ({ path: `${path}[+]`, a: undefined, b: v })),
+    ];
+  }
   if (plain(a) && plain(b) && Array.isArray(a) === Array.isArray(b)) {
     const keys = Array.isArray(a) ? [...Array(Math.max(a.length, b.length)).keys()] : [...new Set([...Object.keys(a), ...Object.keys(b)])].sort();
     return keys.flatMap((k) => fieldDiff(a[k], b[k], Array.isArray(a) ? `${path}[${k}]` : path ? `${path}.${k}` : String(k)));
@@ -320,16 +356,19 @@ function die(msg, code = 2) {
   process.exit(code);
 }
 
-export const DIFF_HELP = `cadra agent diff <envA>:<agent>[@release] <envB>:<agent>[@release] [--json] [--fields] [--function KEY]... [--no-functions] [--host a=b]...
+export const DIFF_HELP = `cadra agent diff <envA>:<agent>[@release] <envB>:<agent>[@release] [--json] [--fields] [--changes] [--function KEY]... [--no-functions] [--host a=b]...
 
 Read-only. Compares the release bundles of two agents (any two environments), their AI functions and skill files.
   <agent>      numeric id or uuid in that environment's org
   @release     the sealed release id; omitted = the side's deploy-pointer release
   --fields     field-level diff under every differing row
+  --changes    hide the rows that are the same (the summary line still counts them)
   --json       one JSON document (rows, summary, warnings) instead of the table
   --function   also compare this AI function key (repeat). Compared by default: every key a skill, tool, role or the
                agent names, and every remix_* function
-  --no-functions   skip AI functions (needs prompt:read otherwise)
+  --no-functions   skip AI functions. A full function compare (prompt text, system prompt, model, params) needs prompt:read;
+               without it the public descriptor is compared on both sides (title, description, output kind, parameters,
+               output schema) and the run exits 2 with a warning naming what was not compared
   --host a=b   treat host a as host b in text (repeat). Built in: x-dev.yobolabs.ai / x-dev.cadraos.com read as the
                prod host, and each side's own CADRA_<ENV>_API_URL host is one token
 Env: CADRA_<ENV>_API_URL and CADRA_<ENV>_BUILDER_API_KEY per side (same as promote).
@@ -345,7 +384,7 @@ Ignored fields (they differ per environment by design; never compared):
   text      hosts (see --host)`;
 
 export function parseDiffArgs(argv) {
-  const res = { sides: [], json: false, fields: false, functions: [], noFunctions: false, hosts: [], help: false };
+  const res = { sides: [], json: false, fields: false, changes: false, functions: [], noFunctions: false, hosts: [], help: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const val = () => {
@@ -355,6 +394,7 @@ export function parseDiffArgs(argv) {
     };
     if (a === "--json") res.json = true;
     else if (a === "--fields") res.fields = true;
+    else if (a === "--changes") res.changes = true;
     else if (a === "--no-functions") res.noFunctions = true;
     else if (a === "--help" || a === "-h") res.help = true;
     else if (a === "--function") res.functions.push(val());
@@ -405,15 +445,27 @@ async function loadTwins(call, uuid, sourceEnv, warnings, label) {
 
 const pagesOf = (r) => (Array.isArray(r.data) ? r.data : r.data?.items ?? r.data?.data ?? []);
 
+/** The discovery index (`ai_function:read`): descriptors only (parameters, output kind, live version, output schema), never prompt text. */
+async function listDescriptors(call, env) {
+  const r = await call("GET", "/ai-functions");
+  if (!r.ok) return null;
+  return r.data?.functions ?? [];
+}
+
+/** A function compared from its public descriptor alone (when a key cannot read prompts). */
+export function descriptorObject(d) {
+  return {
+    kind: "ai_function", name: d.functionKey, ref: `fn@v${d.liveVersion}`, keys: [], anchor: false, scope: "org",
+    content: { title: d.title, description: d.description, outputKind: d.outputKind, parameters: d.parameters, outputSchema: d.outputSchema ?? null, descriptorOnly: true },
+  };
+}
+
 /** All of an env's AI-function prompts: [{ id, uuid, functionKey, goldenVersionId, title }]; null when unreadable. */
-async function listFunctions(call, env, warnings) {
+async function listFunctions(call, env) {
   const items = [];
   for (let page = 1; ; page++) {
     const r = await call("GET", `/prompts?page=${page}&pageSize=100`);
-    if (!r.ok) {
-      warnings.push({ message: `AI functions not compared on ${env}: GET /prompts answered HTTP ${r.status} (the key needs prompt:read)`, incomplete: true });
-      return null;
-    }
+    if (!r.ok) return null;
     const rows = pagesOf(r);
     items.push(...rows.filter((x) => x.functionKey));
     if (rows.length < 100) break;
@@ -452,8 +504,9 @@ function lineDiff(a, b, max = 6) {
   return out;
 }
 
-function printTable(head, rows, fields, warnings, summary) {
+function printTable(head, rows, fields, warnings, summary, changesOnly) {
   console.log(head);
+  if (changesOnly) rows = rows.filter((r) => r.status !== "same");
   const w = (k, min) => Math.max(min, ...rows.map((r) => String(k(r)).length));
   const cols = [
     ["kind", (r) => r.kind], ["name", (r) => r.name], ["A id@ver", (r) => r.a?.ref ?? "-"], ["B id@ver", (r) => r.b?.ref ?? "-"],
@@ -506,19 +559,39 @@ export async function runDiff(argv) {
   const objsB = extractObjects(sb.bundle);
 
   if (!o.noFunctions) {
-    const [fa, fb] = await Promise.all([listFunctions(callA, A.env, warnings), listFunctions(callB, B.env, warnings)]);
-    const known = new Set([...(fa ?? []), ...(fb ?? [])].map((x) => x.functionKey));
-    const wanted = new Set([...functionKeysNamed(`${bundleText(sa.bundle)}\n${bundleText(sb.bundle)}`, known), ...o.functions]);
-    for (const [items, call, env, objs] of [[fa, callA, A.env, objsA], [fb, callB, B.env, objsB]]) {
-      if (!items) continue;
-      for (const key of [...wanted].sort()) {
-        const item = items.find((x) => x.functionKey === key);
-        if (item) objs.push(functionObject(item, await goldenVersion(call, env, item, warnings)));
+    const [fa, fb] = await Promise.all([listFunctions(callA, A.env), listFunctions(callB, B.env)]);
+    const text = `${bundleText(sa.bundle)}\n${bundleText(sb.bundle)}`;
+    if (fa && fb) {
+      const known = new Set([...fa, ...fb].map((x) => x.functionKey));
+      const wanted = new Set([...functionKeysNamed(text, known), ...o.functions]);
+      for (const [items, call, env, objs] of [[fa, callA, A.env, objsA], [fb, callB, B.env, objsB]]) {
+        for (const key of [...wanted].sort()) {
+          const item = items.find((x) => x.functionKey === key);
+          if (item) objs.push(functionObject(item, await goldenVersion(call, env, item, warnings)));
+        }
+      }
+    } else {
+      // A key without prompt:read cannot read prompt text. Compare what the public descriptor shows, on BOTH sides.
+      const [da, db] = await Promise.all([listDescriptors(callA, A.env), listDescriptors(callB, B.env)]);
+      if (!da || !db) {
+        warnings.push({ message: "AI functions not compared: neither GET /prompts (prompt:read) nor GET /ai-functions (ai_function:read) is readable on both sides", incomplete: true });
+      } else {
+        const known = new Set([...da, ...db].map((x) => x.functionKey));
+        const wanted = new Set([...functionKeysNamed(text, known), ...o.functions]);
+        for (const [list, objs] of [[da, objsA], [db, objsB]])
+          for (const key of [...wanted].sort()) {
+            const d = list.find((x) => x.functionKey === key);
+            if (d) objs.push(descriptorObject(d));
+          }
+        warnings.push({
+          message: `AI functions compared by public descriptor only (title, description, output kind, parameters, output schema, live version number): the key lacks prompt:read, so prompt text, system prompt, model and params are NOT compared. Mint a key that can read prompts for a full compare.`,
+          incomplete: true,
+        });
       }
     }
   }
 
-  const rows = buildRows(mapObjects(objsA, objsB, { ab: twinsAB, ba: twinsBA }), { rules });
+  const rows = buildRows(mapObjects(objsA, objsB, { ab: twinsAB, ba: twinsBA }), { rulesA: [...rules, uuidNameRule(sa.bundle)], rulesB: [...rules, uuidNameRule(sb.bundle)] });
   for (const r of rows) if (r.status === "differs") r.fields = fieldDiff(r._na, r._nb);
   const summary = summarise(rows);
   const clean = rows.map(({ _na, _nb, ...r }) => (o.fields || o.json ? r : { ...r, fields: undefined }));
@@ -528,11 +601,11 @@ export async function runDiff(argv) {
     console.log(JSON.stringify({
       a: { env: A.env, agent: sa.bundle.agent.name, release: sa.release, bundleHash: sa.bundle.bundleHash },
       b: { env: B.env, agent: sb.bundle.agent.name, release: sb.release, bundleHash: sb.bundle.bundleHash },
-      rows: clean.map((r) => (o.fields ? r : { ...r, fields: undefined })), summary, warnings, exitCode: code,
+      rows: clean.filter((r) => !o.changes || r.status !== "same").map((r) => (o.fields ? r : { ...r, fields: undefined })), summary, warnings, exitCode: code,
       ignored: { names: IGNORED_FIELD_NAMES, patterns: IGNORED_FIELD_PATTERNS.map(String), topLevel: IGNORED_TOP_LEVEL },
     }, null, 2));
   } else {
-    printTable(head, clean, o.fields, warnings, summary);
+    printTable(head, clean, o.fields, warnings, summary, o.changes);
   }
   return code;
 }

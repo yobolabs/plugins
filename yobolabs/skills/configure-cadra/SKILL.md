@@ -85,7 +85,7 @@ cadra agent diff --help                                 # usage and the full lis
 
 - **Same env vars as promote:** `CADRA_<ENV>_API_URL` + `CADRA_<ENV>_BUILDER_API_KEY` per side; `agents:read`, plus `prompt:read` for the AI functions.
 - **Release:** `@<releaseId>` per side. Omitted = the deploy pointer, which only works where `GET /agents/{id}` returns it; otherwise the CLI stops and asks for `@<releaseId>`.
-- **One row per object:** agent, channel profile, harness, role lock, the role's prompt versions, skill, each skill file (manifest sha), tool, and AI function (golden version: content, system prompt, variables, output schema, model, params). AI functions compared: every key a bundle names, every `remix_*`, and any `--function KEY`.
+- **One row per object:** agent, channel profile, harness, role lock, the role's prompt versions, skill, each skill file (manifest sha), tool, and AI function (golden version: content, system prompt, variables, output schema, model, params). AI functions compared: every key a bundle names, every `remix_*`, and any `--function KEY`. Prompt text, system prompt, model and params need a key with `prompt:read`; a UI-minted key lacks it, so the CLI compares the public descriptor (title, description, output kind, parameters, output schema), warns what was not compared and exits 2 when nothing else differs.
 - **Mapping:** same uuid, then the twin map, then exact name. Hash = sha256 of the canonical JSON after ignored fields (ids, org ids, credential/provider/connector ids, timestamps, version counters, per-env hosts) are removed; the list is in `--help`.
 - A `differs` row with no `--fields` names only the object. Read the diff before calling two sides "the same".
 

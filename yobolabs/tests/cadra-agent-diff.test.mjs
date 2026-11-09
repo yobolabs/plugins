@@ -8,7 +8,7 @@ import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import {
   buildRows, bundleText, canonical, exitCodeOf, extractObjects, fieldDiff, functionKeysNamed, functionObject,
-  hostRules, mapObjects, normalise, parseDiffArgs, parseDiffSide, sha256, summarise,
+  descriptorObject, hostRules, mapObjects, normalise, uuidNameRule, parseDiffArgs, parseDiffSide, sha256, summarise,
 } from "../skills/configure-cadra/scripts/diff.mjs";
 
 const CLI = fileURLToPath(new URL("../skills/configure-cadra/scripts/cadra.mjs", import.meta.url));
@@ -161,6 +161,33 @@ test("exit code: 0 same, 1 any differ, 2 incomplete compare with no difference",
   assert.equal(exitCodeOf(same, [{ message: "twin", incomplete: false }]), 0);
 });
 
+test("array diff: an item removed lists that item, it does not shift every index", () => {
+  const d = fieldDiff({ tools: ["a", "b", "c", "d"] }, { tools: ["a", "c", "d"] });
+  assert.deepEqual(d, [{ path: "tools[-]", a: "b", b: undefined }]);
+  const e = fieldDiff({ t: [{ x: 1 }] }, { t: [{ x: 1 }, { x: 2 }] });
+  assert.deepEqual(e, [{ path: "t[+]", a: undefined, b: { x: 2 } }]);
+  assert.deepEqual(fieldDiff({ t: [{ x: 1 }] }, { t: [{ x: 2 }] }).map((x) => x.path), ["t[0].x"]);
+});
+
+test("a uuid naming a tool, skill, role or agent of the bundle reads as its name; role-lock version labels are not compared", () => {
+  const mkB = (toolUuid, rolePv) => {
+    const b = bundle();
+    b.pins[0].subjectUuid = toolUuid;
+    const lock = b.pins.find((p) => p.kind === "role_lock");
+    lock.content.lock = { toolSlugs: [toolUuid], version: `v${rolePv}`, skills: [{ version: `v${rolePv}` }], note: `hand off (role=${U(12)})` };
+    lock.content.prompts = {};
+    return b;
+  };
+  const a = mkB(U(41), 1);
+  const b = mkB(U(42), 9);
+  const rows = buildRows(mapObjects(extractObjects(a), extractObjects(b)), { rulesA: [uuidNameRule(a)], rulesB: [uuidNameRule(b)] });
+  assert.equal(rows.find((r) => r.kind === "role_lock").status, "same");
+  const c = mkB(U(43), 1);
+  c.pins[0].name = "other_tool";
+  const rows2 = buildRows(mapObjects(extractObjects(a), extractObjects(c)), { rulesA: [uuidNameRule(a)], rulesB: [uuidNameRule(c)] });
+  assert.equal(rows2.find((r) => r.kind === "role_lock").status, "differs"); // a different tool in the lock is seen
+});
+
 // ---- AI functions -----------------------------------------------------------------------------
 
 test("function keys: whole-token mentions plus every remix_* key", () => {
@@ -199,7 +226,7 @@ test("args: sides with and without @release, flags", () => {
 const stubs = [];
 const origins = {};
 
-function stub({ agentId, orgId, env, releaseId, pointer, bundleOver, functions }) {
+function stub({ agentId, orgId, env, releaseId, pointer, bundleOver, functions, noPrompts }) {
   const b = bundle({ env, orgId, agentId, releaseId, ...bundleOver });
   const server = createServer((req, res) => {
     const url = new URL(req.url, "http://stub");
@@ -214,6 +241,8 @@ function stub({ agentId, orgId, env, releaseId, pointer, bundleOver, functions }
     if (p === `/api/v1/agents/${U(1)}`) return json({ id: agentId, uuid: U(1), name: "Remix root", ...(pointer ? { deployedVersionId: pointer } : {}) });
     if (p === `/api/v1/agents/${U(1)}/releases/${releaseId}/bundle`) return json(b);
     if (p === `/api/v1/agents/${U(1)}/twins`) return json({ twins: [] });
+    if (p === "/api/v1/ai-functions") return json({ functions: (functions ?? []).map((f) => ({ functionKey: f.key, title: f.key, description: null, outputKind: "json", liveVersion: f.live ?? 4, parameters: [{ name: "x", type: "text", required: true }], outputSchema: {} })) });
+    if (p === "/api/v1/prompts" && noPrompts) return json(null, 403);
     if (p === "/api/v1/prompts") return json({ items: functions.map((f) => ({ id: f.id, uuid: U(f.id), functionKey: f.key, goldenVersionId: f.id * 10 })), total: functions.length });
     const m = /^\/api\/v1\/prompts\/(.+)\/versions$/.exec(p);
     if (m) {
@@ -232,6 +261,8 @@ before(async () => {
   origins.a = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, functions: [{ id: 3, key: "remix_editor", version: 3031, content: "rule" }] });
   origins.b = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, functions: [{ id: 5, key: "remix_editor", version: 3023, content: "rule" }] });
   origins.c = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { instruction: "changed" }, functions: [{ id: 5, key: "remix_editor", version: 3023, content: "rule\nsplit" }] });
+  origins.e = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, noPrompts: true, functions: [{ id: 3, key: "remix_editor", version: 3031, live: 4, content: "x" }] });
+  origins.f = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, noPrompts: true, functions: [{ id: 5, key: "remix_editor", version: 3023, live: 4, content: "y" }] });
   origins.d = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: null, functions: [] });
 });
 after(() => stubs.forEach((s) => s.close()));
@@ -285,6 +316,28 @@ test("CLI: the table prints one row per object (visual check of the columns)", a
   const r = await cli(["aaa:443@2315", "bbb:362@2311", "--fields"], envs("a", "c"));
   if (process.env.SHOW_TABLE) console.log(r.stdout);
   assert.match(r.stdout, /^kind\s+name\s+A id@ver\s+B id@ver\s+sha A\s+sha B\s+status$/m);
+});
+
+test("CLI: a key without prompt:read falls back to the public descriptor on both sides and says what was not compared (exit 2 when nothing else differs)", async () => {
+  const r = await cli(["aaa:443@2315", "bbb:362@2311"], envs("e", "f"));
+  assert.equal(r.code, 2, r.stdout + r.stderr);
+  assert.match(r.stdout, /ai_function\s+remix_editor\s+fn@v4\s+fn@v4\s+\S+\s+\S+\s+same/);
+  assert.match(r.stdout, /warning: AI functions compared by public descriptor only/);
+  assert.equal((r.stdout.match(/warning: AI functions/g) ?? []).length, 1);
+});
+
+test("descriptor object: parameters and output schema are what is hashed", () => {
+  const d = { functionKey: "k", title: "T", description: null, outputKind: "json", liveVersion: 4, parameters: [{ name: "x" }], outputSchema: { type: "object" } };
+  assert.equal(sha256(descriptorObject(d).content), sha256(descriptorObject({ ...d, liveVersion: 9 }).content)); // version number is shown, not hashed
+  assert.notEqual(sha256(descriptorObject(d).content), sha256(descriptorObject({ ...d, outputSchema: { type: "array" } }).content));
+});
+
+test("CLI: --changes hides the same rows but the summary still counts them", async () => {
+  const r = await cli(["aaa:443@2315", "bbb:362@2311", "--changes"], envs("a", "c"));
+  assert.equal(r.code, 1);
+  assert.doesNotMatch(r.stdout, /channel_profile/);
+  assert.match(r.stdout, /agent\s+Remix root.*differs/);
+  assert.match(r.stdout, /6 same, 2 differ/);
 });
 
 test("CLI: --help lists the ignored fields", async () => {
