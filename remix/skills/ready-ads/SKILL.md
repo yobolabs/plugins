@@ -61,6 +61,8 @@ Read it in full before the first QC of a session.
    - **All pass and it was waiting for review** → list it for the remix lead to approve; say so.
    - **Approved and failing** → Hold does not work on approved ones yet: list it for the remix lead, never try to Hold.
    - A warning (⚠) alone never holds anything; list it in the report.
+   - **A recorded exception** (the Remix KB search for this ad's link or name finds a decision by Sean to keep it as is)
+     → write "kept by Sean <date>: <what>" in its row, never a fail to act on.
 5. Fixing an outdated one is the same as making a new one from its Instagram post (Make, steps 1–5). A fixed reading
    needs a fresh read: old readings are reused per ad.
 
