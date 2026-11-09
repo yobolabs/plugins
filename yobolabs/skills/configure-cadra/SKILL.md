@@ -103,6 +103,12 @@ Rules:
 - Platform (org-null) objects are never written; a difference shows as `info`.
 - Not carried: secret values, channel bindings, triggers, schedules, app switches. The plan lists them.
 - Route missing (404 on `/promotions` or `/releases/{id}/bundle`) = origin predates p151.
+- **A clean dry run is not a clean apply.** The dry run skips role-lock closure, role-only skills and platform objects. A clean dry run can still fail at apply with `409 ROLE_WRITE_REFUSED` or `ROLE_LOCK_MISMATCH`. Before `--apply`, list every role lock the apply writes (overwrite and create), check each tool/skill ref has a twin or a create, and save missing twins by name (prefer the id the prod twin role already uses).
+- **Role-only skills** (referenced only by a role lock, not by the agent) are not carried. Create them on the target as copies of the pinned skill version, then twin them.
+- **Platform (org-null) objects** (for example higgsfield tools) cannot be twinned (`TARGET_NOT_IN_ORG`) and break closure when their uuids differ. Use `--keep role:<id>` for that role.
+- **Target roles whose skills differ from source:** `--overwrite` re-freezes the lock and fails `ROLE_LOCK_MISMATCH`. Use `--keep role:<id>` (p151 keep flag) for every role not meant to change.
+- **Dev labels ride into the target.** The persona name and description, the core role name and any dev email binding are copied. Rename the dev source to the prod labels and cut a new release before promoting. Snapshot `channelBindings` are audit-only: prove the change with `channel_connections` and `agent_channel_bindings` row counts before and after.
+- Roles with a deployed-release pin: a role promote does not reach an agent pinned to a release. Cut a new release after promoting a role (`cadra:agents` → `agent-releases.md` § *A role promote does NOT reach an agent pinned to a release*).
 
 ## Setup
 
@@ -113,6 +119,8 @@ Rules:
 
 **Get a key:** in CadraOS → profile menu → **API Keys** → create (shown once).
 - **Dev test keys (agents lead decision):** minted only through the CadraOS API Keys page (the key-create route in cadra-web `src/server/api/root.ts`, `apiKeysRouterConfig`, hashed and audited). Never by direct DB write. The worker mints from its own cmux browser login, with the smallest role that has the verbs it needs. It revokes the key on the same page when the step ends. The key name carries the worker, the purpose and the date. No scripted mint route exists; revisit only if a scripted mint is needed three times, which then needs its own card.
+  **Check the host exactly:** `location.host === 'app-dev.cadraos.com'`, never a prefix or `startsWith` (a prefix check minted a Yobo dev key on `app-dev.yobolabs.ai`). Revoke a stray key on that app's API Keys page (audit trail), never by DB.
+- **Keys are full org admin.** The Cadra API Keys page offers no smaller role, so a minted key can do everything in its org. Mint, use and revoke it in one step.
 - A 401 `INVALID_API_KEY` on a key copied from the dialog usually means the copied text is not the secret: check that the sha256 of the copied value equals the stored key hash before anything else.
 Keys are **org-scoped** — every call only sees and edits that key's organization.
 The key inherits its **role's** permission set, so pick a role that has the verbs

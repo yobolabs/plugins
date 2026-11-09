@@ -240,6 +240,8 @@ listings; do not try to reuse or reassign one.
 
 ## Gotchas
 
+- **Tool text is frozen in each role lock.** `toolDescriptions` carry a `contentHash`. A tool text change reaches spawned roles only after `promoteGolden` on each role that has the tool; the cut must pin the new role locks.
+- **After moving an agent to another org, re-freeze every pinned role** (`promoteGolden`). A role lock's sealed scope keeps the org id from freeze time; otherwise every spawn fails `ROLE_LOCK_SCOPE_MISMATCH`. Detail and fix: `cadra:agents` → `references/run-forensics.md` § *Org move and ROLE_LOCK_SCOPE_MISMATCH*.
 - `agentType: "SPECIALIST"` on something you intended to be spawnable → it never
   appears in the spawn menu. This is the single most common role bug.
 - Platform roles are read-only to org keys — a 403 on update usually means you
