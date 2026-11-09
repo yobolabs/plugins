@@ -285,13 +285,18 @@ test("a field diff prints the STORED hosts and uuids of each side, while the com
   assert.equal(tool.status, "same");
 });
 
-test("CLI: --fields prints the real host on each side (dev host is not shown as the prod host)", async () => {
-  const r = await cli(["aaa:443@2315", "bbb:362@2311", "--fields", "--no-functions"], envs("a", "c"));
-  assert.equal(r.code, 1);
-  assert.doesNotMatch(r.stdout, /Call app\./);
-  const j = JSON.parse((await cli(["aaa:443@2315", "bbb:362@2311", "--json", "--fields", "--no-functions"], envs("a", "c"))).stdout);
+test("CLI: the dev side's app-dev host is printed as app-dev, never as app (table lines and --json)", async () => {
+  const r = await cli(["aaa:443@2315", "bbb:362@2311", "--fields", "--no-functions"], envs("i", "j"));
+  assert.equal(r.code, 1, r.stdout + r.stderr);
+  // A is the dev side, B the prod side: the A-only line keeps the dev host, the B-only line the prod host
+  assert.match(r.stdout, /A-only: Open https:\/\/app-dev\.yobolabs\.ai\/a/);
+  assert.match(r.stdout, /B-only: Open https:\/\/app\.yobolabs\.ai\/b/);
+  assert.doesNotMatch(r.stdout, /A-only: .*https:\/\/app\.yobolabs\.ai/);
+  const j = JSON.parse((await cli(["aaa:443@2315", "bbb:362@2311", "--json", "--fields", "--no-functions"], envs("i", "j"))).stdout);
   const agent = j.rows.find((x) => x.kind === "agent");
   assert.deepEqual(Object.keys(agent.fields[0]).sort(), ["a", "b", "path"]);
+  assert.match(agent.fields[0].a, /app-dev\.yobolabs\.ai/);
+  assert.doesNotMatch(JSON.stringify(agent.fields.map((f) => f.a)), /https:\/\/app\.yobolabs\.ai/);
 });
 
 // ---- AI functions -----------------------------------------------------------------------------
@@ -371,6 +376,8 @@ before(async () => {
   origins.f = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, noPrompts: true, functions: [{ id: 5, key: "remix_editor", version: 3023, live: 4, content: "y" }] });
   origins.g = await stub({ agentId: 443, orgId: 4, env: "dev", releaseId: 2315, pointer: 2315, bundleOver: { host: "http://127.0.0.1:3100" }, functions: [] });
   origins.h = await stub({ agentId: 362, orgId: 36, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { host: "https://app-dev.yobolabs.ai" }, functions: [] });
+  origins.i = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, bundleOver: { instruction: "Same first line.\nOpen https://app-dev.yobolabs.ai/a" }, functions: [] });
+  origins.j = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { instruction: "Same first line.\nOpen https://app.yobolabs.ai/b" }, functions: [] });
   origins.d = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: null, functions: [] });
 });
 after(() => stubs.forEach((s) => s.close()));
