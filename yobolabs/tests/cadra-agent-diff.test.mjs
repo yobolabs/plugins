@@ -163,9 +163,9 @@ test("exit code: 0 same, 1 any differ, 2 incomplete compare with no difference",
 
 test("array diff: an item removed lists that item, it does not shift every index", () => {
   const d = fieldDiff({ tools: ["a", "b", "c", "d"] }, { tools: ["a", "c", "d"] });
-  assert.deepEqual(d, [{ path: "tools[-]", a: "b", b: undefined }]);
+  assert.deepEqual(d.map(({ path, a, b }) => ({ path, a, b })), [{ path: "tools[-]", a: "b", b: undefined }]);
   const e = fieldDiff({ t: [{ x: 1 }] }, { t: [{ x: 1 }, { x: 2 }] });
-  assert.deepEqual(e, [{ path: "t[+]", a: undefined, b: { x: 2 } }]);
+  assert.deepEqual(e.map(({ path, a, b }) => ({ path, a, b })), [{ path: "t[+]", a: undefined, b: { x: 2 } }]);
   assert.deepEqual(fieldDiff({ t: [{ x: 1 }] }, { t: [{ x: 2 }] }).map((x) => x.path), ["t[0].x"]);
 });
 
@@ -265,6 +265,33 @@ test("explicit --host wins over the learned alias", () => {
   const dev = bundle({ host: "https://app-dev.yobolabs.ai" });
   const pairs = mapObjects(extractObjects(local), extractObjects(dev));
   assert.deepEqual(deriveHostAliases(pairs, "a", ["127.0.0.1:3100"]), []);
+});
+
+// ---- output shows stored values, never a normalised host or id ---------------------------------------
+
+test("a field diff prints the STORED hosts and uuids of each side, while the compare used the normalised ones", () => {
+  const a = bundle({ host: "https://app-dev.yobolabs.ai", instruction: "Call https://app-dev.yobolabs.ai/x then role=" + U(12) });
+  const b = bundle({ host: "https://app.yobolabs.ai", instruction: "Call https://app.yobolabs.ai/x then role=" + U(12) + " and more" });
+  const rows = buildRows(mapObjects(extractObjects(a), extractObjects(b)), { rulesA: [...hostRules(), uuidNameRule(a)], rulesB: [...hostRules(), uuidNameRule(b)] });
+  const agent = rows.find((r) => r.kind === "agent");
+  assert.equal(agent.status, "differs");
+  const d = fieldDiff(agent._na, agent._nb, agent._ra, agent._rb);
+  assert.deepEqual(d.map((x) => x.path), ["systemInstruction"]);
+  assert.equal(d[0].a, "Call https://app-dev.yobolabs.ai/x then role=" + U(12)); // stored dev host, stored uuid
+  assert.equal(d[0].b, "Call https://app.yobolabs.ai/x then role=" + U(12) + " and more");
+  assert.match(d[0].na, /app\.yobolabs\.ai/); // compared value was normalised
+  // a host-only difference is not a difference (compared normalised), and shows no field rows
+  const tool = rows.find((r) => r.kind === "tool");
+  assert.equal(tool.status, "same");
+});
+
+test("CLI: --fields prints the real host on each side (dev host is not shown as the prod host)", async () => {
+  const r = await cli(["aaa:443@2315", "bbb:362@2311", "--fields", "--no-functions"], envs("a", "c"));
+  assert.equal(r.code, 1);
+  assert.doesNotMatch(r.stdout, /Call app\./);
+  const j = JSON.parse((await cli(["aaa:443@2315", "bbb:362@2311", "--json", "--fields", "--no-functions"], envs("a", "c"))).stdout);
+  const agent = j.rows.find((x) => x.kind === "agent");
+  assert.deepEqual(Object.keys(agent.fields[0]).sort(), ["a", "b", "path"]);
 });
 
 // ---- AI functions -----------------------------------------------------------------------------

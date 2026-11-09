@@ -376,6 +376,8 @@ export function buildRows(pairs, { rules = [], rulesA = rules, rulesB = rules } 
       scope: (a ?? b).scope,
       _na: na,
       _nb: nb,
+      _ra: a ? normalise(a.content, []) : null,
+      _rb: b ? normalise(b.content, []) : null,
     };
   });
   rows.sort((x, y) => {
@@ -385,26 +387,30 @@ export function buildRows(pairs, { rules = [], rulesA = rules, rulesB = rules } 
   return rows;
 }
 
-/** Leaf-level differences between two normalised values: [{ path, a, b }] (a / b undefined = absent). */
-export function fieldDiff(a, b, path = "") {
+/**
+ * Leaf-level differences. What differs is decided on the NORMALISED trees (na, nb: ignored fields removed, hosts and env
+ * uuids read as tokens); the values reported are the STORED ones from the raw trees (ra, rb), so a printed host or id is
+ * always the real one on that side. Each entry: { path, a, b (stored), na, nb (compared) }; absent = undefined.
+ */
+export function fieldDiff(na, nb, ra = na, rb = nb, path = "") {
   const plain = (v) => v !== null && typeof v === "object";
-  if (Array.isArray(a) && Array.isArray(b) && a.length !== b.length) {
+  if (Array.isArray(na) && Array.isArray(nb) && na.length !== nb.length) {
     // An item added or removed: list the items only on one side instead of shifting every index.
-    const ca = a.map(canonical);
-    const cb = b.map(canonical);
+    const ca = na.map(canonical);
+    const cb = nb.map(canonical);
     const left = (from, other) => { const rest = [...other]; return from.filter((c) => { const i = rest.indexOf(c); if (i >= 0) { rest.splice(i, 1); return false; } return true; }); };
     const onlyA = new Set(left(ca, cb));
     const onlyB = new Set(left(cb, ca));
     return [
-      ...a.filter((_, i) => onlyA.has(ca[i])).map((v) => ({ path: `${path}[-]`, a: v, b: undefined })),
-      ...b.filter((_, i) => onlyB.has(cb[i])).map((v) => ({ path: `${path}[+]`, a: undefined, b: v })),
+      ...na.map((v, i) => ({ v, i })).filter(({ i }) => onlyA.has(ca[i])).map(({ v, i }) => ({ path: `${path}[-]`, a: ra?.[i] ?? v, b: undefined, na: v, nb: undefined })),
+      ...nb.map((v, i) => ({ v, i })).filter(({ i }) => onlyB.has(cb[i])).map(({ v, i }) => ({ path: `${path}[+]`, a: undefined, b: rb?.[i] ?? v, na: undefined, nb: v })),
     ];
   }
-  if (plain(a) && plain(b) && Array.isArray(a) === Array.isArray(b)) {
-    const keys = Array.isArray(a) ? [...Array(Math.max(a.length, b.length)).keys()] : [...new Set([...Object.keys(a), ...Object.keys(b)])].sort();
-    return keys.flatMap((k) => fieldDiff(a[k], b[k], Array.isArray(a) ? `${path}[${k}]` : path ? `${path}.${k}` : String(k)));
+  if (plain(na) && plain(nb) && Array.isArray(na) === Array.isArray(nb)) {
+    const keys = Array.isArray(na) ? [...Array(Math.max(na.length, nb.length)).keys()] : [...new Set([...Object.keys(na), ...Object.keys(nb)])].sort();
+    return keys.flatMap((k) => fieldDiff(na[k], nb[k], ra?.[k], rb?.[k], Array.isArray(na) ? `${path}[${k}]` : path ? `${path}.${k}` : String(k)));
   }
-  return canonical(a) === canonical(b) ? [] : [{ path: path || "(value)", a, b }];
+  return canonical(na) === canonical(nb) ? [] : [{ path: path || "(value)", a: ra, b: rb, na, nb }];
 }
 
 export function summarise(rows) {
@@ -567,19 +573,22 @@ function clip(v, n = 110) {
   return s.length > n ? `${s.slice(0, n)}… (${s.length} chars)` : s;
 }
 
-function lineDiff(a, b, max = 6) {
+/** Which lines differ is decided on the normalised text (na, nb); the lines printed are the stored ones (a, b). */
+function lineDiff(a, b, na = a, nb = b, max = 6) {
   const la = String(a).split("\n");
   const lb = String(b).split("\n");
-  const sa = new Set(la);
-  const sb = new Set(lb);
+  const nla = String(na).split("\n");
+  const nlb = String(nb).split("\n");
+  const sa = new Set(nla);
+  const sb = new Set(nlb);
   const out = [];
-  const only = (lines, other, sign) => {
-    const mine = lines.filter((l) => !other.has(l) && l.trim());
+  const only = (stored, norm, other, sign) => {
+    const mine = stored.filter((_, i) => !other.has(norm[i] ?? stored[i]) && (norm[i] ?? stored[i]).trim());
     for (const l of mine.slice(0, max)) out.push(`      ${sign} ${l.length > 140 ? `${l.slice(0, 140)}…` : l}`);
     if (mine.length > max) out.push(`      ${sign} … ${mine.length - max} more line(s)`);
   };
-  only(la, sb, "A-only:");
-  only(lb, sa, "B-only:");
+  only(la, nla, sb, "A-only:");
+  only(lb, nlb, sa, "B-only:");
   return out;
 }
 
@@ -601,7 +610,7 @@ function printTable(head, rows, fields, warnings, summary, changesOnly, aliases 
         console.log(`    ${d.path}`);
         if (typeof d.a === "string" && typeof d.b === "string" && (d.a.includes("\n") || d.b.includes("\n"))) {
           console.log(`      (${d.a.length} chars vs ${d.b.length} chars)`);
-          for (const l of lineDiff(d.a, d.b)) console.log(l);
+          for (const l of lineDiff(d.a, d.b, d.na, d.nb)) console.log(l);
         } else {
           console.log(`      A: ${clip(d.a)}`);
           console.log(`      B: ${clip(d.b)}`);
@@ -681,9 +690,9 @@ export async function runDiff(argv) {
   const aliasRules = aliases.length ? [aliasRule(aliases)] : [];
   const sideRules = (own, bundleOf, isLocal) => [...rules.slice(0, o.hosts.length), ...(isLocal ? aliasRules : []), ...rules.slice(o.hosts.length), uuidNameRule(bundleOf)];
   const rows = buildRows(pairs, { rulesA: sideRules(rules, sa.bundle, localSide === "a"), rulesB: sideRules(rules, sb.bundle, localSide === "b") });
-  for (const r of rows) if (r.status === "differs") r.fields = fieldDiff(r._na, r._nb);
+  for (const r of rows) if (r.status === "differs") r.fields = fieldDiff(r._na, r._nb, r._ra, r._rb);
   const summary = summarise(rows);
-  const clean = rows.map(({ _na, _nb, ...r }) => (o.fields || o.json ? r : { ...r, fields: undefined }));
+  const clean = rows.map(({ _na, _nb, _ra, _rb, ...r }) => (o.fields || o.json ? r : { ...r, fields: undefined }));
   const head = `DIFF  ${A.env}:${sa.bundle.agent.name}@${sa.release}  vs  ${B.env}:${sb.bundle.agent.name}@${sb.release}  (bundles ${String(sa.bundle.bundleHash).slice(0, 10)} / ${String(sb.bundle.bundleHash).slice(0, 10)})`;
   const code = exitCodeOf(rows, warnings);
   if (o.json) {
@@ -691,7 +700,7 @@ export async function runDiff(argv) {
       a: { env: A.env, agent: sa.bundle.agent.name, release: sa.release, bundleHash: sa.bundle.bundleHash },
       b: { env: B.env, agent: sb.bundle.agent.name, release: sb.release, bundleHash: sb.bundle.bundleHash },
       hostAliases: aliases,
-      rows: clean.filter((r) => !o.changes || r.status !== "same").map((r) => (o.fields ? r : { ...r, fields: undefined })), summary, warnings, exitCode: code,
+      rows: clean.filter((r) => !o.changes || r.status !== "same").map((r) => (o.fields ? { ...r, fields: r.fields?.map(({ path, a, b }) => ({ path, a, b })) } : { ...r, fields: undefined })), summary, warnings, exitCode: code,
       ignored: { names: IGNORED_FIELD_NAMES, patterns: IGNORED_FIELD_PATTERNS.map(String), topLevel: IGNORED_TOP_LEVEL },
     }, null, 2));
   } else {
