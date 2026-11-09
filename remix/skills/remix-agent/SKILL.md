@@ -89,6 +89,10 @@ and only then ask with choices. Say where a found value came from, with [Change]
   line), shown filled with [Change]; never ask the merchant to write them. A spoken line names a handle in words,
   never a URL.
 
+**P8 A template is its preset** (Sean 2026-11-08: "That's the whole point of the template: is the preset!!!!!!!!!" and "The template is the original image or video, with the preset and an understanding of what is needed to complete the video.").
+A template holds three things: the original (the ad's own file), the preset (the clip plan: each part kept, held as a still, or made as new motion), and the needs list (what the merchant supplies for this preset, filled first from business data, asked once). A run from a template follows all three: it never re-plans the ad, never adds paid parts, and asks only what the template needs.
+- Harm guarded: a re-plan spends money the preset avoided, makes a different ad, and asks questions the ad does not need. Detail and checks: `references/fast-swap.md` § *Templates, reuse and source download*.
+
 ## Operating layer
 
 **Which part runs which step** (root routes; Remix Storyboard; Remix Generation): `../remix/references/code-map.md` § Roles.

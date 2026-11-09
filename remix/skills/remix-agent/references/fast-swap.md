@@ -76,6 +76,8 @@ timed out". The full pipeline stays the default; never pick the fast path for th
 
 ## Templates, reuse and source download
 
+**Template preset check per run** (principle P8 in `remix-agent/SKILL.md`). The run's scenes keep or remake exactly as the template's parts; paid part jobs and billed seconds equal the plan's; the questions asked equal the template's needs list minus what business data filled. A run or lab that plans differently from the template is a defect, not a choice. Preset match was proven on dev 2026-11-08 (keep, still, still, paid part).
+
 **A template = the finished run's configuration + its variables** (Sean 2026-11-06: "what are the variables that can
 be changed from that configuration, and that's basically what the template is"). The configuration is everything the
 run settled: cut list and timings, beats, the ad's music, keep vs remake per scene, still vs moving per scene, the

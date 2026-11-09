@@ -92,6 +92,12 @@ elements to generate the video."
   worker); dev reads only `YOBO_REMIX_ALERTS_DEV_CHANNEL_ID`. Never join a dev bot into a prod channel or put a prod
   channel id in a dev proof to make it pass.
 
+## A delivery row never proves a video was or was not sent (2026-11-09)
+
+- The delivery row's repost payload holds text and buttons only. Media are never re-posted, so the row cannot show a video. The expected-parts and parts counts count message-api messages, not videos. Never conclude "no video in the send" from that row.
+- Truth for a QA ask: the prod worker log line `remix_qa_hold {jobUuid, status, videoShown, videoLost}`, read with `docker logs --since/--until` on the worker-service container. Delivery runs in worker-service, not Vercel. Evidence: a prod join showed `videoShown: true` while its delivery row showed one part.
+- message-api drops videos on any non-WhatsApp lane, or on a connection without the `video` capability, and reports it in `videosDropped`. Every yobo send that carries videos reads that field.
+
 ## Advance loop and failure reading
 
 - **A pass that made progress is never a stall outcome.** Any advance step that changed state returns a non-stall outcome. A refused `needs_help` move sets a retry wake, or nothing wakes the run.
