@@ -1,6 +1,6 @@
 # Ready-ad QC checklist
 
-Back to [SKILL.md](../SKILL.md). One ready ad passes only when **every** check passes. The checks come from the team's
+Back to [SKILL.md](../SKILL.md). One ready ad passes only when **every** check passes. **Q3 comes first**: a ready ad that is not complete fails, whatever else passes. The checks come from the team's
 rules (Remix KB "product-rules" R22–R28) and the readiness check the developers run. Write each finding in plain
 words; the check number goes in the Hold reason.
 
@@ -34,7 +34,7 @@ save → look at it. The Original is the first video on the page. A small origin
 |---|---|---|---|---|
 | Q1 | **Instagram link** | "open the ad" goes to an Instagram reel or post, and that post's video is the same ad as the Original: same opening shot **and** the same product in the product shots | open the link. `/reels/<code>/` → the first video in the feed is the post. Compare its first shot and a product shot near the end with the Original (Instagram shows no length: skip length). Only a login wall → "link ok, cut not compared" (pass). Cannot tell → ⚠ "needs a human look" | no link → Hold "Q1 no Instagram post". Same idea but another product or cut → Hold "Q1 Instagram post is a different cut" (approved → list for the remix lead). Fix = Make from the right post |
 | Q2 | **Length** | the Source line says 30 s or less | Configuration → Source | Hold: "Q2 longer than 30 s" |
-| Q3 | **Current plan** | Assets lists at least one part, and the readiness report has no `old_plan_version` | "No stored parts" → fail. "Not captured yet" under Settings is **not** a fail (older save, settings not recorded). Everything else needs the readiness report | Hold: "Q3 made with an old plan". Fix = Make again |
+| Q3 | **Template is complete** | the page shows the full template: Configuration has its Settings (Sound, Make, Look), "What the agent asks the merchant" lists its questions, and Assets lists the parts. A merchant run follows this template and never re-plans, so anything missing breaks the video | "Not captured yet" under Settings or under the questions → **FAIL**. "No stored parts" → FAIL. Plan version needs the readiness report | Hold: "Q3 template not complete: <what is missing>". Approved → list for the remix lead. Fix = remake it so the full template is saved |
 | Q4 | **Plan covers the ad** | every part edge sits on one of the **Cuts** (within 0.05 s), parts do not overlap, and the last part ends at or before the ad's length. Time before Part 1, between parts or after the last part is kept footage: fine when the header shows a "kept" chip | Assets vs Cuts vs Source length. A gap with no "kept" chip, or a hidden gap the page cannot show → readiness report | Hold: "Q4 part N cuts mid-shot at N s" or "Q4 parts overlap" |
 | Q5 | **Video parts can be made** | every "Remade · video" part has 4–15 s of new video; its own length is 30 s or less | Assets lines | Hold: "Q5 part N too short / too long for the video model" |
 | Q6 | **Stored clips match the plan** | readiness report has no `stored_parts_mismatch` | readiness report | Hold: "Q6 stored clips do not match the plan" |
