@@ -48,20 +48,6 @@ const ignoredKey = (key, depth) =>
   (depth === 0 && IGNORED_TOP_LEVEL.includes(key)) ||
   (!KEEP_FIELD.test(key) && IGNORED_FIELD_PATTERNS.some((re) => re.test(key)));
 
-/** Hosts that differ per env: `x-dev.yobolabs.ai` / `x-dev.cadraos.com` read as the prod host; each side's own origin is one token. */
-const DEV_HOST_RE = /\b([a-z][a-z0-9]*)-dev\.(yobolabs\.ai|cadraos\.com)\b/gi;
-
-export function hostRules({ originA, originB, hosts = [] } = {}) {
-  const rules = [];
-  for (const { fromHost, toHost } of hosts) rules.push((s) => s.split(fromHost).join(toHost));
-  for (const o of [originA, originB]) {
-    const host = hostOf(o);
-    if (host) rules.push((s) => s.split(host).join("<origin>"));
-  }
-  rules.push((s) => s.replace(DEV_HOST_RE, "$1.$2"));
-  return rules;
-}
-
 function hostOf(origin) {
   if (!origin) return null;
   if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(origin)) return String(origin).replace(/\/.*$/, "") || null;
@@ -101,11 +87,14 @@ export function normalise(value, rules = [], depth = 0) {
 }
 
 // ---------------------------------------------------------------------------
-// Local-from-dev host aliasing
+// Env hosts: normalise a CONSISTENT env pair, flag every other host that is in the wrong env
 // ---------------------------------------------------------------------------
 
 const LOOPBACK = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i;
 const URL_VALUE = /^(https?:\/\/[^\/\s?#]+)([\s\S]*)$/;
+const ORIGIN_RE = /https?:\/\/[^\/\s"'<>)\]\\]+/gi;
+const hostPart = (origin) => String(origin).replace(/^https?:\/\//i, "");
+const hostsIn = (str) => [...str.matchAll(ORIGIN_RE)].map((m) => hostPart(m[0]));
 
 /** Is this origin (or bare host) a loopback address? */
 export const isLoopbackOrigin = (origin) => {
@@ -120,38 +109,103 @@ function leaves(value, path = "", out = new Map()) {
   return out;
 }
 
-/**
- * Local-from-dev: a tool on the local side calls http://127.0.0.1:<port>, its twin on the other side calls the deployed host.
- * Learn the pairing from the mapped pairs themselves: at the same field path, a url value on each side with the same rest
- * after the origin votes `localOrigin -> otherOrigin`. A local origin with exactly one such partner becomes an alias;
- * one with two (or none) is left alone, so a tool that really points somewhere else still shows as differs.
- * `localSide` is "a" or "b". `skipHosts` (explicit --host) always win.
- */
-export function deriveHostAliases(pairs, localSide, skipHosts = []) {
-  const votes = new Map();
-  for (const { a, b } of pairs) {
-    if (!a || !b) continue;
-    const [local, other] = localSide === "a" ? [a, b] : [b, a];
-    const lo = leaves(local.content);
-    const ot = leaves(other.content);
-    for (const [path, lv] of lo) {
-      const ov = ot.get(path);
-      if (ov === undefined || ov === lv) continue;
-      const lm = URL_VALUE.exec(lv);
-      const om = URL_VALUE.exec(ov);
-      if (!lm || !om || lm[2] !== om[2] || lm[1] === om[1] || !isLoopbackOrigin(lm[1])) continue;
-      if (skipHosts.some((h) => lm[1].includes(h))) continue;
-      const m = votes.get(lm[1]) ?? new Map();
-      m.set(om[1], (m.get(om[1]) ?? 0) + 1);
-      votes.set(lm[1], m);
-    }
-  }
-  const aliases = [];
-  for (const [from, m] of votes) if (m.size === 1) aliases.push({ from, to: [...m.keys()][0], count: [...m.values()][0] });
-  return aliases;
+/** Entry with the strictly highest count, or null when empty or tied. */
+function strictBest(m) {
+  const e = [...(m ?? [])].sort((p, q) => q[1] - p[1]);
+  return e.length && (e.length === 1 || e[0][1] > e[1][1]) ? { key: e[0][0], n: e[0][1] } : null;
 }
 
-export const aliasRule = (aliases) => (str) => aliases.reduce((acc, { from, to }) => acc.split(from).join(to), str);
+/**
+ * Learn which host on side A is the same service as which host on side B (an env pair, e.g. app-dev.yobolabs.ai on A
+ * and app.yobolabs.ai on B, or 127.0.0.1:3100 on a local A and the dev host on B). At the same field path of two mapped
+ * objects, a url value on each side with the same rest after the host votes `hostA -> hostB`. A pair is accepted when
+ * each host's strict majority partner is the other (and it has at least `minCount` votes, so one lone divergence is never
+ * explained away). `--host a=b` (explicit: a is A's host, b is B's) overrides; each side's own CADRA_<ENV>_API_URL host is
+ * a pair of its own. Returns [{ a, b, count, how }].
+ */
+export function learnEnvHosts(pairs, { explicit = [], originA, originB, minCount = 2 } = {}) {
+  const ab = new Map();
+  const ba = new Map();
+  const vote = (m, k, v) => {
+    const x = m.get(k) ?? new Map();
+    x.set(v, (x.get(v) ?? 0) + 1);
+    m.set(k, x);
+  };
+  for (const { a, b } of pairs) {
+    if (!a || !b) continue;
+    const la = leaves(a.content);
+    const lb = leaves(b.content);
+    for (const [path, va] of la) {
+      const vb = lb.get(path);
+      if (vb === undefined || vb === va) continue;
+      const ma = URL_VALUE.exec(va);
+      const mb = URL_VALUE.exec(vb);
+      if (!ma || !mb || ma[2] !== mb[2] || ma[1] === mb[1]) continue;
+      vote(ab, hostPart(ma[1]), hostPart(mb[1]));
+      vote(ba, hostPart(mb[1]), hostPart(ma[1]));
+    }
+  }
+  const out = [];
+  for (const { fromHost, toHost } of explicit) out.push({ a: fromHost, b: toHost, count: 0, how: "--host" });
+  for (const [x, m] of ab) {
+    const y = strictBest(m);
+    if (!y || y.n < minCount || strictBest(ba.get(y.key))?.key !== x) continue;
+    if (!out.some((p) => p.a === x || p.b === y.key)) out.push({ a: x, b: y.key, count: y.n, how: "learned" });
+  }
+  const oa = hostOf(originA);
+  const ob = hostOf(originB);
+  if (oa && ob && oa !== ob && !out.some((p) => p.a === oa || p.b === ob)) out.push({ a: oa, b: ob, count: 0, how: "cadra-web origin" });
+  return out;
+}
+
+/** Comparison-only rule: this side's env host of each accepted pair reads as one token, so a consistent pair is "same". */
+export const envHostRule = (side, envPairs) => {
+  const esc = (h) => h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // The scheme travels with the host: http://127.0.0.1:3100 locally and https://app-dev... deployed are one pair.
+  const list = envPairs
+    .map((p, i) => ({ re: new RegExp(`(?:https?://)?${esc(side === "a" ? p.a : p.b)}`, "g"), len: (side === "a" ? p.a : p.b).length, token: `{env-host:${i}}` }))
+    .sort((x, y) => y.len - x.len);
+  return (str) => list.reduce((acc, { re, token }) => acc.replace(re, token), str);
+};
+
+/**
+ * Host problems of one mapped pair, on the STORED values: a value on a side that holds the OTHER side's env host,
+ * a value whose host differs from its pair partner's (the majority pairing), and a loopback host on a side that is not
+ * local. Each: { side: "A"|"B", path, value, host, reason }.
+ */
+export function findHostProblems(a, b, envPairs, { localA = false, localB = false } = {}) {
+  const byA = new Map(envPairs.map((p) => [p.a, p]));
+  const byB = new Map(envPairs.map((p) => [p.b, p]));
+  const la = leaves(a.content);
+  const lb = leaves(b.content);
+  const found = new Map();
+  const add = (side, path, value, host, reason) => {
+    const k = `${side}|${path}|${host}`;
+    if (!found.has(k)) found.set(k, { side, path, value, host, reason });
+  };
+  for (const [path, v] of la)
+    for (const h of hostsIn(v)) {
+      if (byB.has(h) && !byA.has(h)) add("A", path, v, h, `${h} is side B's env host`);
+      else if (!localA && LOOPBACK.test(h)) add("A", path, v, h, `loopback host on a side that is not local`);
+    }
+  for (const [path, v] of lb)
+    for (const h of hostsIn(v)) {
+      if (byA.has(h) && !byB.has(h)) add("B", path, v, h, `${h} is side A's env host`);
+      else if (!localB && LOOPBACK.test(h)) add("B", path, v, h, `loopback host on a side that is not local`);
+    }
+  for (const [path, va] of la) {
+    const vb = lb.get(path);
+    const ma = URL_VALUE.exec(va ?? "");
+    const mb = URL_VALUE.exec(vb ?? "");
+    if (!ma || !mb || ma[2] !== mb[2]) continue;
+    const ha = hostPart(ma[1]);
+    const hb = hostPart(mb[1]);
+    if (ha === hb) continue;
+    if (byA.has(ha) && byA.get(ha).b !== hb) add("B", path, vb, hb, `side B's env host for ${ha} is ${byA.get(ha).b}`);
+    if (byB.has(hb) && byB.get(hb).a !== ha) add("A", path, va, ha, `side A's env host for ${hb} is ${byB.get(hb).a}`);
+  }
+  return [...found.values()];
+}
 
 // ---------------------------------------------------------------------------
 // Bundle -> comparable objects
@@ -359,13 +413,15 @@ export function mapObjects(aObjs, bObjs, { ab = [], ba = [] } = {}) {
 // Rows
 // ---------------------------------------------------------------------------
 
-export function buildRows(pairs, { rules = [], rulesA = rules, rulesB = rules } = {}) {
+export function buildRows(pairs, { rules = [], rulesA = rules, rulesB = rules, hostCheck = null } = {}) {
   const rows = pairs.map(({ a, b, via }) => {
     const na = a ? normalise(a.content, rulesA) : null;
     const nb = b ? normalise(b.content, rulesB) : null;
     const shaA = a ? sha256(na) : null;
     const shaB = b ? sha256(nb) : null;
-    const status = !a ? "missing-A" : !b ? "missing-B" : shaA === shaB ? "same" : "differs";
+    const hostFindings = a && b && hostCheck ? hostCheck(a, b) : [];
+    // A host in the wrong env is its own finding, and it is a difference whatever the hashes say.
+    const status = !a ? "missing-A" : !b ? "missing-B" : hostFindings.length ? "wrong-env-host" : shaA === shaB ? "same" : "differs";
     return {
       kind: (a ?? b).kind,
       name: (a ?? b).name,
@@ -373,6 +429,7 @@ export function buildRows(pairs, { rules = [], rulesA = rules, rulesB = rules } 
       b: b ? { ref: b.ref, sha256: shaB } : null,
       status,
       via,
+      hostFindings,
       scope: (a ?? b).scope,
       _na: na,
       _nb: nb,
@@ -414,8 +471,8 @@ export function fieldDiff(na, nb, ra = na, rb = nb, path = "") {
 }
 
 export function summarise(rows) {
-  const n = { same: 0, differs: 0, missingA: 0, missingB: 0 };
-  for (const r of rows) n[r.status === "missing-A" ? "missingA" : r.status === "missing-B" ? "missingB" : r.status]++;
+  const n = { same: 0, differs: 0, wrongEnvHost: 0, missingA: 0, missingB: 0 };
+  for (const r of rows) n[{ "missing-A": "missingA", "missing-B": "missingB", "wrong-env-host": "wrongEnvHost" }[r.status] ?? r.status]++;
   return n;
 }
 
@@ -447,18 +504,20 @@ Read-only. Compares the release bundles of two agents (any two environments), th
   --no-functions   skip AI functions. A full function compare (prompt text, system prompt, model, params) needs prompt:read;
                without it the public descriptor is compared on both sides (title, description, output kind, parameters,
                output schema) and the run exits 2 with a warning naming what was not compared
-  --host a=b   treat host a as host b in text (repeat); explicit --host always wins. Built in:
-               - x-dev.yobolabs.ai / x-dev.cadraos.com read as the prod host
-               - each side's own CADRA_<ENV>_API_URL host is one token
-               - local-from-dev: when one side is "local" (env name local, or a loopback origin against a deployed one), a
-                 tool url on http://127.0.0.1:<port> or localhost:<port> equals the other side's host. The pairing is learned
-                 from the mapped objects (same field, same path after the host); a local host that pairs with two different
-                 hosts is left alone and shows as differs. Each alias used is printed ("host alias: ...")
-               - uuids inside role locks and text read as the object's name (tool, skill, role, agent; a role-only skill
-                 or tool reads as the title of its prompt version), so env uuids do not differ
+  --host a=b   a is side A's env host, b is side B's (repeat); overrides what is learned
+Hosts: an env pair (side A host X is the same service as side B host Y, e.g. app-dev.yobolabs.ai on dev and
+  app.yobolabs.ai on prod, or 127.0.0.1:3100 on a local side and the dev host) is learned from the mapped objects:
+  the same field path, a url with the same rest after the host, strict majority both ways, at least 2 values; each
+  side's own CADRA_<ENV>_API_URL host is a pair too. A consistent pair reads as the same host when comparing. Printed
+  values are always the stored ones. The pairs are listed at the top ("env hosts: ...").
+  wrong-env-host (a difference, exit 1): a value on one side that holds the OTHER side's env host (a dev url in
+  prod), a value whose host is not its pair's host, or a loopback host on a side that is not local. The row lists
+  field path and stored value. "local" = env named local, or a loopback origin against a deployed one.
+Uuids inside role locks and text read as the object's name (tool, skill, role, agent; a role-only skill or tool
+  reads as the title of its prompt version), so env uuids do not differ.
 Env: CADRA_<ENV>_API_URL and CADRA_<ENV>_BUILDER_API_KEY per side (same as promote).
 Mapping, per kind: same uuid, then the twin map, then exact name.
-Row: kind, name, A id@version, B id@version, sha256 A, sha256 B, same | differs | missing-A | missing-B.
+Row: kind, name, A id@version, B id@version, sha256 A, sha256 B, same | differs | wrong-env-host | missing-A | missing-B.
 Exit: 0 all same, 1 any differ or missing, 2 compare incomplete or error.
 
 Ignored fields (they differ per environment by design; never compared):
@@ -466,7 +525,7 @@ Ignored fields (they differ per environment by design; never compared):
   patterns  any name ending in Id / Ids / Uuid / Uuids / _id / _uuid (credential, provider, connector, harness,
             guardrail, tool ids), any name ending in At / _at (timestamps); modelId (a model name) IS compared
   top level ${IGNORED_TOP_LEVEL.join(", ")} (version counters; shown in the id@version columns)
-  text      hosts (see --host)`;
+  text      a host that is half of a consistent env pair reads as the pair's token (see Hosts); no other host is ignored`;
 
 export function parseDiffArgs(argv) {
   const res = { sides: [], json: false, fields: false, changes: false, functions: [], noFunctions: false, hosts: [], help: false };
@@ -592,8 +651,9 @@ function lineDiff(a, b, na = a, nb = b, max = 6) {
   return out;
 }
 
-function printTable(head, rows, fields, warnings, summary, changesOnly, aliases = []) {
+function printTable(head, rows, fields, warnings, summary, changesOnly, envLines = []) {
   console.log(head);
+  for (const l of envLines) console.log(l);
   if (changesOnly) rows = rows.filter((r) => r.status !== "same");
   const w = (k, min) => Math.max(min, ...rows.map((r) => String(k(r)).length));
   const cols = [
@@ -605,7 +665,12 @@ function printTable(head, rows, fields, warnings, summary, changesOnly, aliases 
   console.log(fmt(cols.map(([h]) => h)));
   for (const r of rows) {
     console.log(fmt(cols.map(([, k]) => k(r))));
-    if (fields && r.status === "differs")
+    for (const f of r.hostFindings ?? []) {
+      console.log(`    wrong-env-host  ${f.side}  ${f.path}`);
+      console.log(`      ${f.side}: ${clip(f.value)}`);
+      console.log(`      ${f.reason}`);
+    }
+    if (fields && (r.status === "differs" || r.status === "wrong-env-host"))
       for (const d of r.fields ?? []) {
         console.log(`    ${d.path}`);
         if (typeof d.a === "string" && typeof d.b === "string" && (d.a.includes("\n") || d.b.includes("\n"))) {
@@ -617,9 +682,8 @@ function printTable(head, rows, fields, warnings, summary, changesOnly, aliases 
         }
       }
   }
-  for (const al of aliases) console.log(`host alias: ${al.from} = ${al.to}  (${al.count} value${al.count === 1 ? "" : "s"})`);
   for (const m of warnings) console.log(`warning: ${m.message}`);
-  console.log(`${summary.same} same, ${summary.differs} differ, ${summary.missingA} only in B, ${summary.missingB} only in A`);
+  console.log(`${summary.same} same, ${summary.differs} differ, ${summary.wrongEnvHost} wrong-env-host, ${summary.missingA} only in B, ${summary.missingB} only in A`);
 }
 
 export async function runDiff(argv) {
@@ -637,7 +701,6 @@ export async function runDiff(argv) {
   const [sa, sb] = await Promise.all([loadSide(A, callA), loadSide(B, callB)]);
 
   const originOf = (env) => process.env[`CADRA_${env.toUpperCase().replace(/-/g, "_")}_API_URL`];
-  const rules = hostRules({ originA: originOf(A.env), originB: originOf(B.env), hosts: o.hosts });
 
   const [twinsAB, twinsBA] = await Promise.all([
     loadTwins(callB, sb.uuid, sa.bundle.sourceEnv, warnings, B.env),
@@ -685,12 +748,13 @@ export async function runDiff(argv) {
   const oB = originOf(B.env);
   const localA = A.env === "local" || (isLoopbackOrigin(oA) && !isLoopbackOrigin(oB));
   const localB = B.env === "local" || (isLoopbackOrigin(oB) && !isLoopbackOrigin(oA));
-  const localSide = localA !== localB ? (localA ? "a" : "b") : null;
-  const aliases = localSide ? deriveHostAliases(pairs, localSide, o.hosts.map((h) => h.fromHost)) : [];
-  const aliasRules = aliases.length ? [aliasRule(aliases)] : [];
-  const sideRules = (own, bundleOf, isLocal) => [...rules.slice(0, o.hosts.length), ...(isLocal ? aliasRules : []), ...rules.slice(o.hosts.length), uuidNameRule(bundleOf)];
-  const rows = buildRows(pairs, { rulesA: sideRules(rules, sa.bundle, localSide === "a"), rulesB: sideRules(rules, sb.bundle, localSide === "b") });
-  for (const r of rows) if (r.status === "differs") r.fields = fieldDiff(r._na, r._nb, r._ra, r._rb);
+  const envPairs = learnEnvHosts(pairs, { explicit: o.hosts, originA: oA, originB: oB });
+  const rows = buildRows(pairs, {
+    rulesA: [envHostRule("a", envPairs), uuidNameRule(sa.bundle)],
+    rulesB: [envHostRule("b", envPairs), uuidNameRule(sb.bundle)],
+    hostCheck: (a, b) => findHostProblems(a, b, envPairs, { localA, localB }),
+  });
+  for (const r of rows) if (r.status === "differs" || r.status === "wrong-env-host") r.fields = fieldDiff(r._na, r._nb, r._ra, r._rb);
   const summary = summarise(rows);
   const clean = rows.map(({ _na, _nb, _ra, _rb, ...r }) => (o.fields || o.json ? r : { ...r, fields: undefined }));
   const head = `DIFF  ${A.env}:${sa.bundle.agent.name}@${sa.release}  vs  ${B.env}:${sb.bundle.agent.name}@${sb.release}  (bundles ${String(sa.bundle.bundleHash).slice(0, 10)} / ${String(sb.bundle.bundleHash).slice(0, 10)})`;
@@ -699,12 +763,12 @@ export async function runDiff(argv) {
     console.log(JSON.stringify({
       a: { env: A.env, agent: sa.bundle.agent.name, release: sa.release, bundleHash: sa.bundle.bundleHash },
       b: { env: B.env, agent: sb.bundle.agent.name, release: sb.release, bundleHash: sb.bundle.bundleHash },
-      hostAliases: aliases,
+      envHosts: envPairs.map((p) => ({ [A.env]: p.a, [B.env]: p.b, count: p.count, how: p.how })),
       rows: clean.filter((r) => !o.changes || r.status !== "same").map((r) => (o.fields ? { ...r, fields: r.fields?.map(({ path, a, b }) => ({ path, a, b })) } : { ...r, fields: undefined })), summary, warnings, exitCode: code,
       ignored: { names: IGNORED_FIELD_NAMES, patterns: IGNORED_FIELD_PATTERNS.map(String), topLevel: IGNORED_TOP_LEVEL },
     }, null, 2));
   } else {
-    printTable(head, clean, o.fields, warnings, summary, o.changes, aliases);
+    printTable(head, clean, o.fields, warnings, summary, o.changes, envPairs.map((p) => `env hosts: ${A.env} ${p.a} ↔ ${B.env} ${p.b}  (${p.how}${p.count ? `, ${p.count} values` : ""})`));
   }
   return code;
 }

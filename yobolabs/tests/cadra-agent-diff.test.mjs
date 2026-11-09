@@ -8,7 +8,7 @@ import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import {
   buildRows, bundleText, canonical, exitCodeOf, extractObjects, fieldDiff, functionKeysNamed, functionObject,
-  aliasRule, deriveHostAliases, descriptorObject, hostRules, isLoopbackOrigin, mapObjects, normalise, uuidNameRule, parseDiffArgs, parseDiffSide, sha256, summarise,
+  descriptorObject, envHostRule, findHostProblems, isLoopbackOrigin, learnEnvHosts, mapObjects, normalise, uuidNameRule, parseDiffArgs, parseDiffSide, sha256, summarise,
 } from "../skills/configure-cadra/scripts/diff.mjs";
 
 const CLI = fileURLToPath(new URL("../skills/configure-cadra/scripts/cadra.mjs", import.meta.url));
@@ -16,7 +16,11 @@ const U = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 
 // ---- fixture bundles ------------------------------------------------------------------------------
 
-function bundle({ host, env = "dev", orgId = 36, agentId = 443, releaseId = 2311, version = 77, instruction = "You are the Remix root.", extra = {} } = {}) {
+function bundle({ host, endpointPatch = {}, env = "dev", orgId = 36, agentId = 443, releaseId = 2311, version = 77, instruction = "You are the Remix root.", extra = {} } = {}) {
+  const h1 = host ?? (env === "dev" ? "https://app-dev.yobolabs.ai" : "https://app.yobolabs.ai");
+  const h2 = host ?? (env === "dev" ? "https://msgapi-dev.cadraos.com" : "https://msgapi.cadraos.com");
+  const endpoints = [`${h1}/api/remix`, `${h1}/api/a`, `${h1}/api/b`, `${h2}/send`, `${h2}/status`].map((url) => ({ url, method: "POST" }));
+  for (const [i, url] of Object.entries(endpointPatch)) endpoints[i].url = url;
   return {
     format: "cadra.agent-bundle/v1", sourceEnv: env, sourceOrgId: orgId,
     agent: {
@@ -28,7 +32,7 @@ function bundle({ host, env = "dev", orgId = 36, agentId = 443, releaseId = 2311
     pins: [
       {
         kind: "tool", source: "native", subjectId: 500 + orgId, subjectUuid: U(10), name: "remix_tool", versionId: 900 + orgId, scope: "org",
-        contentHash: `h${orgId}`, envRefs: [], content: { name: "remix_tool", description: "Remix tool", connectorId: orgId, endpoints: [{ url: `${host ?? `https://app-${env === "dev" ? "dev." : ""}yobolabs.ai`}/api/remix`, method: "POST" }, { url: `${host ?? "https://msgapi-dev.cadraos.com"}/send`, method: "POST" }], credentialRef: { $ref: "secret", name: "remix key" } },
+        contentHash: `h${orgId}`, envRefs: [], content: { name: "remix_tool", description: "Remix tool", connectorId: orgId, endpoints, credentialRef: { $ref: "secret", name: "remix key" } },
       },
       {
         kind: "skill", source: "native", subjectId: 600 + orgId, subjectUuid: U(11), name: "Remix skill", versionId: 700 + orgId, scope: "org", contentHash: "x", envRefs: [],
@@ -48,7 +52,18 @@ function bundle({ host, env = "dev", orgId = 36, agentId = 443, releaseId = 2311
   };
 }
 
-const rowsOf = (a, b, opts = {}) => buildRows(mapObjects(extractObjects(a), extractObjects(b), opts.twins), { rules: opts.rules ?? hostRules() });
+/** The same steps runDiff takes: map, learn env host pairs, compare normalised, then check hosts on the stored values. */
+function compare(a, b, { explicit = [], originA, originB, localA = false, localB = false, twins } = {}) {
+  const pairs = mapObjects(extractObjects(a), extractObjects(b), twins);
+  const envPairs = learnEnvHosts(pairs, { explicit, originA, originB });
+  const rows = buildRows(pairs, {
+    rulesA: [envHostRule("a", envPairs), uuidNameRule(a)],
+    rulesB: [envHostRule("b", envPairs), uuidNameRule(b)],
+    hostCheck: (x, y) => findHostProblems(x, y, envPairs, { localA, localB }),
+  });
+  return { rows, envPairs };
+}
+const rowsOf = (a, b, opts = {}) => compare(a, b, opts).rows;
 
 // ---- hashing + ignored fields -----------------------------------------------------------------
 
@@ -65,13 +80,11 @@ test("ids, uuids, timestamps, credential/provider ids are dropped; modelId is ke
   assert.deepEqual(n, { modelId: "gpt", fallbackModelId: "g2", nested: { version: "v1", keep: "x" } });
 });
 
-test("hosts: x-dev hosts read as prod, own origins are one token, --host pairs map", () => {
-  const rules = hostRules({ originA: "http://localhost:3000", originB: "https://app-dev.cadraos.com", hosts: [{ fromHost: "old.example", toHost: "new.example" }] });
-  const n = normalise({ u: "https://app-dev.yobolabs.ai/x and http://localhost:3000/y and https://app-dev.cadraos.com/z old.example" }, rules);
-  assert.equal(n.u, "https://app.yobolabs.ai/x and http://<origin>/y and https://<origin>/z new.example");
+test("env host rule: this side's host of each pair reads as one token, the other side's host is left as stored", () => {
+  const pairs = [{ a: "app-dev.yobolabs.ai", b: "app.yobolabs.ai" }];
+  assert.equal(envHostRule("a", pairs)("https://app-dev.yobolabs.ai/x and https://app.yobolabs.ai/y"), "{env-host:0}/x and https://app.yobolabs.ai/y");
+  assert.equal(envHostRule("b", pairs)("https://app-dev.yobolabs.ai/x and https://app.yobolabs.ai/y"), "https://app-dev.yobolabs.ai/x and {env-host:0}/y");
 });
-
-// ---- extraction -------------------------------------------------------------------------------
 
 test("a bundle becomes agent, channel profile, tool, skill, skill file, role lock and prompt rows (delegate pins are not rows)", () => {
   const objs = extractObjects(bundle());
@@ -150,7 +163,7 @@ test("an object only on one side is missing-A / missing-B; local-only prompts do
   assert.deepEqual(rows.filter((r) => r.status === "missing-B").map((r) => r.name).sort(), ["extra", "remix_tool"]);
   const only = rowsOf(b, a);
   assert.deepEqual(only.filter((r) => r.status === "missing-A").map((r) => r.name).sort(), ["extra", "remix_tool"]);
-  assert.deepEqual(summarise(rows), { same: rows.length - 2, differs: 0, missingA: 0, missingB: 2 });
+  assert.deepEqual(summarise(rows), { same: rows.length - 2, differs: 0, wrongEnvHost: 0, missingA: 0, missingB: 2 });
 });
 
 test("exit code: 0 same, 1 any differ, 2 incomplete compare with no difference", () => {
@@ -217,72 +230,115 @@ test("a role lock's skill and tool-description uuids read as their prompt-versio
   assert.equal(rows2.find((r) => r.kind === "role_lock").status, "differs");
 });
 
-// ---- local-from-dev host aliasing -------------------------------------------------------------------
+// ---- env hosts: consistent pairs are same, anything else in the wrong env is wrong-env-host ---------------
 
 test("loopback origins are recognised", () => {
   assert.ok(isLoopbackOrigin("http://127.0.0.1:3100") && isLoopbackOrigin("http://localhost:3000/x") && isLoopbackOrigin("localhost:3100"));
   assert.ok(!isLoopbackOrigin("https://app-dev.yobolabs.ai") && !isLoopbackOrigin(undefined));
 });
 
-test("local-from-dev: a loopback tool host is equal to the other side's host, learned from the mapped pairs", () => {
-  const local = bundle({ host: "http://127.0.0.1:3100", orgId: 4 });
-  const dev = bundle({ host: "https://app-dev.yobolabs.ai", orgId: 36 });
-  const pairs = mapObjects(extractObjects(local), extractObjects(dev));
-  const before = buildRows(pairs, { rules: hostRules() });
-  assert.equal(before.find((r) => r.kind === "tool").status, "differs"); // without the alias the hosts differ
-  const aliases = deriveHostAliases(pairs, "a");
-  assert.deepEqual(aliases, [{ from: "http://127.0.0.1:3100", to: "https://app-dev.yobolabs.ai", count: 2 }]);
-  const rows = buildRows(pairs, { rulesA: [aliasRule(aliases), ...hostRules()], rulesB: hostRules() });
-  assert.equal(rows.find((r) => r.kind === "tool").status, "same");
+const prodWith = (patch) => bundle({ env: "prod", orgId: 4, agentId: 362, releaseId: 2290, endpointPatch: patch });
+
+test("a consistent dev/prod host pair is 'same', and the learned pairs are listed", () => {
+  const { rows, envPairs } = compare(bundle({ env: "dev" }), prodWith({}));
+  assert.deepEqual(rows.map((r) => r.status), rows.map(() => "same"));
+  assert.deepEqual(envPairs.map((p) => [p.a, p.b, p.count, p.how]).sort(), [
+    ["app-dev.yobolabs.ai", "app.yobolabs.ai", 3, "learned"],
+    ["msgapi-dev.cadraos.com", "msgapi.cadraos.com", 2, "learned"],
+  ]);
+  assert.equal(exitCodeOf(rows, []), 0);
 });
 
-test("local-from-dev: a local host that pairs with two different hosts is NOT aliased and still differs", () => {
-  const local = bundle({ host: "http://127.0.0.1:3100" });
-  const dev = bundle({ host: "https://app-dev.yobolabs.ai" });
-  dev.pins[0].content.endpoints[1].url = "https://other-dev.example.com/send"; // the same local host pairs with another host here
-  const pairs = mapObjects(extractObjects(local), extractObjects(dev));
-  assert.deepEqual(deriveHostAliases(pairs, "a"), []);
+test("a prod tool that holds the dev host (app-dev) is wrong-env-host, with the path and the stored value, and exit 1", () => {
+  const { rows } = compare(bundle({ env: "dev" }), prodWith({ 1: "https://app-dev.yobolabs.ai/api/a" }));
+  const tool = rows.find((r) => r.kind === "tool");
+  assert.equal(tool.status, "wrong-env-host");
+  assert.deepEqual(tool.hostFindings.map((f) => [f.side, f.path, f.value, f.host]), [["B", "endpoints[1].url", "https://app-dev.yobolabs.ai/api/a", "app-dev.yobolabs.ai"]]);
+  assert.match(tool.hostFindings[0].reason, /side A's env host/);
+  assert.deepEqual(rows.filter((r) => r.status !== "same").map((r) => r.kind), ["tool"]); // nothing else is touched
+  assert.equal(exitCodeOf(rows, []), 1);
 });
 
-test("local-from-dev: only a loopback host is aliased; a real host that differs from the other side stays a difference", () => {
-  const a = bundle({ host: "https://app-dev.yobolabs.ai" });
-  const b = bundle({ host: "https://other.example.com" });
-  assert.deepEqual(deriveHostAliases(mapObjects(extractObjects(a), extractObjects(b)), "a"), []);
+test("a prod tool on 127.0.0.1 is wrong-env-host (a loopback host on a side that is not local, and not its pair's host)", () => {
+  const { rows } = compare(bundle({ env: "dev" }), prodWith({ 2: "http://127.0.0.1:3100/api/b" }));
+  const tool = rows.find((r) => r.kind === "tool");
+  assert.equal(tool.status, "wrong-env-host");
+  const f = tool.hostFindings.find((x) => x.host === "127.0.0.1:3100");
+  assert.equal(f.side, "B");
+  assert.equal(f.value, "http://127.0.0.1:3100/api/b");
 });
 
-test("local-from-dev: a different path after the host is a real difference, not an alias", () => {
-  const local = bundle({ host: "http://127.0.0.1:3100" });
-  const dev = bundle({ host: "https://app-dev.yobolabs.ai" });
-  dev.pins[0].content.endpoints[0].url = "https://app-dev.yobolabs.ai/api/other";
-  const pairs = mapObjects(extractObjects(local), extractObjects(dev));
-  const aliases = deriveHostAliases(pairs, "a"); // the /send endpoint still pairs
-  const rows = buildRows(pairs, { rulesA: [aliasRule(aliases), ...hostRules()], rulesB: hostRules() });
+test("a dev tool that holds the prod host is wrong-env-host on side A", () => {
+  const { rows } = compare(bundle({ env: "dev", endpointPatch: { 0: "https://app.yobolabs.ai/api/remix" } }), prodWith({}));
+  const tool = rows.find((r) => r.kind === "tool");
+  assert.equal(tool.status, "wrong-env-host");
+  assert.equal(tool.hostFindings[0].side, "A");
+  assert.equal(tool.hostFindings[0].path, "endpoints[0].url");
+});
+
+test("a host inside free text is checked too: the dev host in a prod system instruction is wrong-env-host", () => {
+  const { rows } = compare(bundle({ env: "dev", instruction: "Open https://app-dev.yobolabs.ai/start" }), bundle({ env: "prod", orgId: 4, instruction: "Open https://app-dev.yobolabs.ai/start" }));
+  const agent = rows.find((r) => r.kind === "agent");
+  assert.equal(agent.status, "wrong-env-host");
+  assert.equal(agent.hostFindings[0].side, "B");
+  assert.equal(agent.hostFindings[0].path, "systemInstruction");
+});
+
+test("local loopback <-> dev pair is 'same' (the local side may hold 127.0.0.1)", () => {
+  const { rows, envPairs } = compare(bundle({ host: "http://127.0.0.1:3100", orgId: 4 }), bundle({ env: "dev", host: "https://app-dev.yobolabs.ai" }), { localA: true });
+  assert.deepEqual(rows.map((r) => r.status), rows.map(() => "same"));
+  assert.deepEqual(envPairs.map((p) => [p.a, p.b, p.count]), [["127.0.0.1:3100", "app-dev.yobolabs.ai", 5]]);
+});
+
+test("local-from-dev: a dev tool that still holds the local host (12 dev tools on localhost) is wrong-env-host", () => {
+  const dev = bundle({ env: "dev", host: "https://app-dev.yobolabs.ai", endpointPatch: { 1: "http://127.0.0.1:3100/api/a" } });
+  const { rows } = compare(bundle({ host: "http://127.0.0.1:3100", orgId: 4 }), dev, { localA: true });
+  const tool = rows.find((r) => r.kind === "tool");
+  assert.equal(tool.status, "wrong-env-host");
+  assert.deepEqual(tool.hostFindings.map((f) => [f.side, f.path, f.host]), [["B", "endpoints[1].url", "127.0.0.1:3100"]]);
+});
+
+test("one lone divergence is never explained away as an env pair: it stays 'differs'", () => {
+  const a = bundle({ env: "dev", host: "https://app-dev.yobolabs.ai", endpointPatch: { 0: "https://sandbox.example.com/api/remix" } });
+  const b = bundle({ env: "prod", orgId: 4, host: "https://app.yobolabs.ai", endpointPatch: { 0: "https://api.example.com/api/remix" } });
+  const { rows, envPairs } = compare(a, b);
+  assert.ok(!envPairs.some((p) => p.a === "sandbox.example.com"));
   assert.equal(rows.find((r) => r.kind === "tool").status, "differs");
 });
 
-test("explicit --host wins over the learned alias", () => {
-  const local = bundle({ host: "http://127.0.0.1:3100" });
-  const dev = bundle({ host: "https://app-dev.yobolabs.ai" });
-  const pairs = mapObjects(extractObjects(local), extractObjects(dev));
-  assert.deepEqual(deriveHostAliases(pairs, "a", ["127.0.0.1:3100"]), []);
+test("a host with two equally common partners is not a pair: the rows differ", () => {
+  const a = bundle({ host: "http://127.0.0.1:3100", orgId: 4 });
+  const b = bundle({ env: "dev", host: "https://app-dev.yobolabs.ai", endpointPatch: { 2: "https://msgapi-dev.cadraos.com/api/b", 3: "https://msgapi-dev.cadraos.com/send", 4: "https://other.example.com/status" } });
+  const { envPairs, rows } = compare(a, b, { localA: true }); // 127.0.0.1:3100 -> app-dev x2, msgapi-dev x2, other x1
+  assert.ok(!envPairs.some((p) => p.a === "127.0.0.1:3100"));
+  assert.equal(rows.find((r) => r.kind === "tool").status, "differs");
 });
 
-// ---- output shows stored values, never a normalised host or id ---------------------------------------
+test("an explicit --host pair is accepted even with one value, and wins over what is learned", () => {
+  const a = bundle({ env: "dev", host: "https://app-dev.yobolabs.ai", endpointPatch: { 0: "https://sandbox.example.com/api/remix" } });
+  const b = bundle({ env: "prod", orgId: 4, host: "https://app.yobolabs.ai", endpointPatch: { 0: "https://api.example.com/api/remix" } });
+  const { rows, envPairs } = compare(a, b, { explicit: [{ fromHost: "sandbox.example.com", toHost: "api.example.com" }] });
+  assert.equal(envPairs[0].how, "--host");
+  assert.equal(rows.find((r) => r.kind === "tool").status, "same");
+});
+
+test("each side's own cadra-web origin is a pair of its own", () => {
+  const { envPairs } = compare(bundle(), bundle(), { originA: "http://localhost:3000", originB: "https://app-dev.cadraos.com" });
+  assert.deepEqual(envPairs.map((p) => [p.a, p.b, p.how]), [["localhost:3000", "app-dev.cadraos.com", "cadra-web origin"]]);
+});
 
 test("a field diff prints the STORED hosts and uuids of each side, while the compare used the normalised ones", () => {
-  const a = bundle({ host: "https://app-dev.yobolabs.ai", instruction: "Call https://app-dev.yobolabs.ai/x then role=" + U(12) });
-  const b = bundle({ host: "https://app.yobolabs.ai", instruction: "Call https://app.yobolabs.ai/x then role=" + U(12) + " and more" });
-  const rows = buildRows(mapObjects(extractObjects(a), extractObjects(b)), { rulesA: [...hostRules(), uuidNameRule(a)], rulesB: [...hostRules(), uuidNameRule(b)] });
+  const a = bundle({ env: "dev", instruction: "Call https://app-dev.yobolabs.ai/x then role=" + U(12) });
+  const b = bundle({ env: "prod", orgId: 4, instruction: "Call https://app.yobolabs.ai/x then role=" + U(12) + " and more" });
+  const { rows } = compare(a, b);
   const agent = rows.find((r) => r.kind === "agent");
-  assert.equal(agent.status, "differs");
+  assert.equal(agent.status, "differs"); // the host pair is consistent; "and more" is the real difference
   const d = fieldDiff(agent._na, agent._nb, agent._ra, agent._rb);
   assert.deepEqual(d.map((x) => x.path), ["systemInstruction"]);
   assert.equal(d[0].a, "Call https://app-dev.yobolabs.ai/x then role=" + U(12)); // stored dev host, stored uuid
   assert.equal(d[0].b, "Call https://app.yobolabs.ai/x then role=" + U(12) + " and more");
-  assert.match(d[0].na, /app\.yobolabs\.ai/); // compared value was normalised
-  // a host-only difference is not a difference (compared normalised), and shows no field rows
-  const tool = rows.find((r) => r.kind === "tool");
-  assert.equal(tool.status, "same");
+  assert.match(d[0].na, /\{env-host:0\}/); // compared value was normalised
+  assert.equal(rows.find((r) => r.kind === "tool").status, "same");
 });
 
 test("CLI: the dev side's app-dev host is printed as app-dev, never as app (table lines and --json)", async () => {
@@ -297,6 +353,7 @@ test("CLI: the dev side's app-dev host is printed as app-dev, never as app (tabl
   assert.deepEqual(Object.keys(agent.fields[0]).sort(), ["a", "b", "path"]);
   assert.match(agent.fields[0].a, /app-dev\.yobolabs\.ai/);
   assert.doesNotMatch(JSON.stringify(agent.fields.map((f) => f.a)), /https:\/\/app\.yobolabs\.ai/);
+  assert.ok(j.envHosts.some((p) => p.aaa === "app-dev.yobolabs.ai" && p.bbb === "app.yobolabs.ai"));
 });
 
 // ---- AI functions -----------------------------------------------------------------------------
@@ -313,7 +370,7 @@ test("a function row hashes the golden version content, system prompt, variables
   const a = functionObject(item(2156), version(3031));
   const same = functionObject(item(3000), version(3023));
   const split = functionObject(item(3000), version(3023, { content: "text\nsplit rule" }));
-  const rules = hostRules();
+  const rules = [];
   assert.equal(sha256(normalise(a.content, rules)), sha256(normalise(same.content, rules)));
   assert.notEqual(sha256(normalise(a.content, rules)), sha256(normalise(split.content, rules)));
   assert.equal(a.ref, "2156@v3031");
@@ -377,7 +434,9 @@ before(async () => {
   origins.g = await stub({ agentId: 443, orgId: 4, env: "dev", releaseId: 2315, pointer: 2315, bundleOver: { host: "http://127.0.0.1:3100" }, functions: [] });
   origins.h = await stub({ agentId: 362, orgId: 36, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { host: "https://app-dev.yobolabs.ai" }, functions: [] });
   origins.i = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, bundleOver: { instruction: "Same first line.\nOpen https://app-dev.yobolabs.ai/a" }, functions: [] });
-  origins.j = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { instruction: "Same first line.\nOpen https://app.yobolabs.ai/b" }, functions: [] });
+  origins.j = await stub({ agentId: 362, orgId: 4, env: "prod", releaseId: 2311, pointer: 2311, bundleOver: { instruction: "Same first line.\nOpen https://app.yobolabs.ai/b" }, functions: [] });
+  origins.k = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, functions: [] });
+  origins.l = await stub({ agentId: 362, orgId: 4, env: "prod", releaseId: 2311, pointer: 2311, bundleOver: { endpointPatch: { 1: "https://app-dev.yobolabs.ai/api/a" } }, functions: [] });
   origins.d = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: null, functions: [] });
 });
 after(() => stubs.forEach((s) => s.close()));
@@ -395,7 +454,7 @@ test("CLI: identical content across two origins, default release = pointer, exit
   assert.match(r.stdout, /DIFF  aaa:Remix root@2315  vs  bbb:Remix root@2311/);
   assert.match(r.stdout, /ai_function\s+remix_editor\s+3@v3031\s+5@v3023/);
   assert.doesNotMatch(r.stdout, /differs\s*$/m);
-  assert.match(r.stdout, /0 differ, 0 only in B, 0 only in A/);
+  assert.match(r.stdout, /0 differ, 0 wrong-env-host, 0 only in B, 0 only in A/);
 });
 
 test("CLI: a changed instruction and function text exit 1; --fields shows the field; --json is parseable", async () => {
@@ -447,13 +506,29 @@ test("descriptor object: parameters and output schema are what is hashed", () =>
   assert.notEqual(sha256(descriptorObject(d).content), sha256(descriptorObject({ ...d, outputSchema: { type: "array" } }).content));
 });
 
-test("CLI: env 'local' with a loopback tool host reads as equal to the deployed host, and the alias is printed", async () => {
+test("CLI: env 'local' with a loopback tool host pairs with the deployed host; the pair is printed at the top; a prod-side dev host is wrong-env-host", async () => {
   const run = await cli(["local:443@2315", "bbb:362@2311", "--no-functions"], { CADRA_LOCAL_API_URL: origins.g, CADRA_LOCAL_BUILDER_API_KEY: "k", CADRA_BBB_API_URL: origins.h, CADRA_BBB_BUILDER_API_KEY: "k" });
   assert.equal(run.code, 0, run.stdout + run.stderr);
-  assert.match(run.stdout, /host alias: http:\/\/127\.0\.0\.1:3100 = https:\/\/app-dev\.yobolabs\.ai\s+\(2 values\)/);
-  const off = await cli(["aaa:443@2315", "bbb:362@2311", "--no-functions"], { ...envs("g", "h") }); // neither named local, both loopback origins: no aliasing
+  assert.match(run.stdout, /^env hosts: local 127\.0\.0\.1:3100 ↔ bbb app-dev\.yobolabs\.ai {2}\(learned, 5 values\)$/m);
+  const off = await cli(["aaa:443@2315", "bbb:362@2311", "--no-functions"], envs("g", "h")); // neither named local: loopback on a deployed side is wrong
   assert.equal(off.code, 1);
-  assert.doesNotMatch(off.stdout, /host alias/);
+  assert.match(off.stdout, /tool\s+remix_tool.*wrong-env-host/);
+  assert.match(off.stdout, /wrong-env-host {2}A {2}endpoints\[0\]\.url/);
+  assert.match(off.stdout, /A: "http:\/\/127\.0\.0\.1:3100\/api\/remix"/);
+  assert.match(off.stdout, /1 wrong-env-host/);
+});
+
+test("CLI: a prod tool that holds the dev host is wrong-env-host (exit 1) and --json carries the findings", async () => {
+  const r = await cli(["aaa:443@2315", "bbb:362@2311", "--no-functions", "--changes"], envs("k", "l"));
+  assert.equal(r.code, 1, r.stdout + r.stderr);
+  assert.match(r.stdout, /tool\s+remix_tool.*wrong-env-host/);
+  assert.match(r.stdout, /wrong-env-host {2}B {2}endpoints\[1\]\.url/);
+  assert.match(r.stdout, /B: "https:\/\/app-dev\.yobolabs\.ai\/api\/a"/);
+  const j = JSON.parse((await cli(["aaa:443@2315", "bbb:362@2311", "--no-functions", "--json"], envs("k", "l"))).stdout);
+  const tool = j.rows.find((x) => x.kind === "tool");
+  assert.equal(tool.status, "wrong-env-host");
+  assert.deepEqual(tool.hostFindings.map((f) => [f.side, f.path, f.value]), [["B", "endpoints[1].url", "https://app-dev.yobolabs.ai/api/a"]]);
+  assert.equal(j.summary.wrongEnvHost, 1);
 });
 
 test("CLI: --changes hides the same rows but the summary still counts them", async () => {
