@@ -72,6 +72,23 @@ Dev agents are release-pinned too: an edit changes HEAD only; a proof counts onl
   5. Keep the old version for one-step rollback. Report the old and new version ids.
 - Dev agent first, always.
 
+## Compare an agent between two environments (`cadra agent diff`, read-only)
+
+Use it before a promote, to gate a release ("does dev run what local proved?"), or to find drift. It writes nothing.
+
+```bash
+cadra agent diff local:443@2315 dev:443@2311            # table; exit 0 all same, 1 any differ, 2 incomplete
+cadra agent diff dev:443@2311 prod:362@2290 --fields    # + the field-level diff under every differing row
+cadra agent diff dev:443 prod:362 --json                # machine form for a gate (rows, summary, warnings)
+cadra agent diff --help                                 # usage and the full list of ignored fields
+```
+
+- **Same env vars as promote:** `CADRA_<ENV>_API_URL` + `CADRA_<ENV>_BUILDER_API_KEY` per side; `agents:read`, plus `prompt:read` for the AI functions.
+- **Release:** `@<releaseId>` per side. Omitted = the deploy pointer, which only works where `GET /agents/{id}` returns it; otherwise the CLI stops and asks for `@<releaseId>`.
+- **One row per object:** agent, channel profile, harness, role lock, the role's prompt versions, skill, each skill file (manifest sha), tool, and AI function (golden version: content, system prompt, variables, output schema, model, params). AI functions compared: every key a bundle names, every `remix_*`, and any `--function KEY`.
+- **Mapping:** same uuid, then the twin map, then exact name. Hash = sha256 of the canonical JSON after ignored fields (ids, org ids, credential/provider/connector ids, timestamps, version counters, per-env hosts) are removed; the list is in `--help`.
+- A `differs` row with no `--fields` names only the object. Read the diff before calling two sides "the same".
+
 ## Promote a whole agent version, env → env (`cadra agent promote`, p151)
 
 An agent reaches another environment as ONE new release that carries the whole proven source

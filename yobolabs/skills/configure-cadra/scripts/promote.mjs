@@ -81,7 +81,7 @@ export function parseSide(raw, { needRelease }) {
   return { env: m[1].toLowerCase(), agent: m[2], release: m[3] ? Number(m[3]) : null };
 }
 
-function client(env) {
+export function client(env) {
   const E = env.toUpperCase().replace(/-/g, "_");
   const base = (process.env[`CADRA_${E}_API_URL`] || "").replace(/\/$/, "");
   const key = process.env[`CADRA_${E}_BUILDER_API_KEY`];
@@ -103,7 +103,7 @@ function client(env) {
   };
 }
 
-function fail(env, r) {
+export function fail(env, r) {
   const err = r.json?.error || {};
   die(`HTTP ${r.status} (${env}) ${err.code || ""}: ${err.message || JSON.stringify(r.json)}${err.details ? `\n  details: ${JSON.stringify(err.details, null, 2)}` : ""}`);
 }
@@ -111,7 +111,7 @@ function fail(env, r) {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** The v1 item route takes a uuid; a numeric id is found by paging the org's agent list. */
-async function uuidOf(call, env, ref) {
+export async function uuidOf(call, env, ref) {
   if (UUID.test(ref)) return ref;
   if (!/^\d+$/.test(ref)) die(`(${env}) agent "${ref}": give a numeric id or a uuid`);
   for (let offset = 0; ; offset += 100) {

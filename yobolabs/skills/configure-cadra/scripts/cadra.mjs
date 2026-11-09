@@ -99,6 +99,11 @@
  *   cadra agent promote ... --link [--apply] [--host <srcHost>=<dstHost>]
  *     needs CADRA_<ENV>_API_URL + CADRA_<ENV>_BUILDER_API_KEY per side; see promote.mjs
  *
+ * Diff (read-only - one agent release against its twin in another env, object by object):
+ *   cadra agent diff <envA>:<agent>[@release] <envB>:<agent>[@release] [--json] [--fields]
+ *     rows: kind, name, A id@ver, B id@ver, sha256 A/B, same | differs | missing-A | missing-B.
+ *     exit 0 all same, 1 any differ, 2 incomplete. `cadra agent diff --help` lists the ignored fields.
+ *
  * Exit code is non-zero on any HTTP or validation error.
  */
 import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
@@ -546,6 +551,12 @@ if (first === "agent" && second === "promote") {
   const { runPromote } = await import("./promote.mjs");
   await runPromote(rest);
   process.exit(0);
+}
+
+// --- agent diff: one release against its twin in another env, read-only ---
+if (first === "agent" && second === "diff") {
+  const { runDiff } = await import("./diff.mjs");
+  process.exit(await runDiff(rest));
 }
 
 // --- entity commands ---------------------------------------------------------
