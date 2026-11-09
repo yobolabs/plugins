@@ -64,6 +64,7 @@ export function hostRules({ originA, originB, hosts = [] } = {}) {
 
 function hostOf(origin) {
   if (!origin) return null;
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(origin)) return String(origin).replace(/\/.*$/, "") || null;
   try {
     return new URL(origin).host;
   } catch {
@@ -98,6 +99,59 @@ export function normalise(value, rules = [], depth = 0) {
   }
   return value;
 }
+
+// ---------------------------------------------------------------------------
+// Local-from-dev host aliasing
+// ---------------------------------------------------------------------------
+
+const LOOPBACK = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i;
+const URL_VALUE = /^(https?:\/\/[^\/\s?#]+)([\s\S]*)$/;
+
+/** Is this origin (or bare host) a loopback address? */
+export const isLoopbackOrigin = (origin) => {
+  const host = hostOf(origin);
+  return !!host && LOOPBACK.test(host);
+};
+
+function leaves(value, path = "", out = new Map()) {
+  if (typeof value === "string") out.set(path, value);
+  else if (Array.isArray(value)) value.forEach((v, i) => leaves(v, `${path}[${i}]`, out));
+  else if (value && typeof value === "object") for (const [k, v] of Object.entries(value)) leaves(v, path ? `${path}.${k}` : k, out);
+  return out;
+}
+
+/**
+ * Local-from-dev: a tool on the local side calls http://127.0.0.1:<port>, its twin on the other side calls the deployed host.
+ * Learn the pairing from the mapped pairs themselves: at the same field path, a url value on each side with the same rest
+ * after the origin votes `localOrigin -> otherOrigin`. A local origin with exactly one such partner becomes an alias;
+ * one with two (or none) is left alone, so a tool that really points somewhere else still shows as differs.
+ * `localSide` is "a" or "b". `skipHosts` (explicit --host) always win.
+ */
+export function deriveHostAliases(pairs, localSide, skipHosts = []) {
+  const votes = new Map();
+  for (const { a, b } of pairs) {
+    if (!a || !b) continue;
+    const [local, other] = localSide === "a" ? [a, b] : [b, a];
+    const lo = leaves(local.content);
+    const ot = leaves(other.content);
+    for (const [path, lv] of lo) {
+      const ov = ot.get(path);
+      if (ov === undefined || ov === lv) continue;
+      const lm = URL_VALUE.exec(lv);
+      const om = URL_VALUE.exec(ov);
+      if (!lm || !om || lm[2] !== om[2] || lm[1] === om[1] || !isLoopbackOrigin(lm[1])) continue;
+      if (skipHosts.some((h) => lm[1].includes(h))) continue;
+      const m = votes.get(lm[1]) ?? new Map();
+      m.set(om[1], (m.get(om[1]) ?? 0) + 1);
+      votes.set(lm[1], m);
+    }
+  }
+  const aliases = [];
+  for (const [from, m] of votes) if (m.size === 1) aliases.push({ from, to: [...m.keys()][0], count: [...m.values()][0] });
+  return aliases;
+}
+
+export const aliasRule = (aliases) => (str) => aliases.reduce((acc, { from, to }) => acc.split(from).join(to), str);
 
 // ---------------------------------------------------------------------------
 // Bundle -> comparable objects
@@ -183,12 +237,30 @@ const UUID_ANYWHERE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
  */
 export function uuidNameRule(bundle) {
   const names = new Map();
+  const BARE_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const walk = (b) => {
     if (b.agent?.uuid) names.set(b.agent.uuid.toLowerCase(), `agent:${b.agent.name}`);
     for (const p of b.pins ?? []) if (p.subjectUuid) names.set(p.subjectUuid.toLowerCase(), `${p.kind === "role_lock" ? "role" : p.kind}:${p.name}`);
     for (const d of b.delegates ?? []) walk(d);
   };
   walk(bundle);
+  // Role-only skills and tools are not pins, but a role lock names each one twice: by uuid (`slug`) and by the
+  // prompt version that holds its text (`promptVersionRef`, whose title is the same in every env). The uuid reads as that title.
+  const lockRefs = (b) => {
+    for (const p of b.pins ?? []) {
+      if (p.kind !== "role_lock") continue;
+      const lock = p.content?.lock ?? {};
+      const prompts = p.content?.prompts ?? {};
+      for (const entry of [...(lock.skills ?? []), ...(lock.toolDescriptions ?? [])]) {
+        const ref = entry?.promptVersionRef;
+        if (typeof entry?.slug !== "string" || !BARE_UUID.test(entry.slug) || typeof ref !== "string") continue;
+        const label = prompts[ref]?.title ?? ref;
+        if (!names.has(entry.slug.toLowerCase())) names.set(entry.slug.toLowerCase(), `ref:${label}`);
+      }
+    }
+    for (const d of b.delegates ?? []) lockRefs(d);
+  };
+  lockRefs(bundle);
   return (s) => s.replace(UUID_ANYWHERE, (u) => (names.has(u.toLowerCase()) ? `{${names.get(u.toLowerCase())}}` : u));
 }
 
@@ -369,8 +441,15 @@ Read-only. Compares the release bundles of two agents (any two environments), th
   --no-functions   skip AI functions. A full function compare (prompt text, system prompt, model, params) needs prompt:read;
                without it the public descriptor is compared on both sides (title, description, output kind, parameters,
                output schema) and the run exits 2 with a warning naming what was not compared
-  --host a=b   treat host a as host b in text (repeat). Built in: x-dev.yobolabs.ai / x-dev.cadraos.com read as the
-               prod host, and each side's own CADRA_<ENV>_API_URL host is one token
+  --host a=b   treat host a as host b in text (repeat); explicit --host always wins. Built in:
+               - x-dev.yobolabs.ai / x-dev.cadraos.com read as the prod host
+               - each side's own CADRA_<ENV>_API_URL host is one token
+               - local-from-dev: when one side is "local" (env name local, or a loopback origin against a deployed one), a
+                 tool url on http://127.0.0.1:<port> or localhost:<port> equals the other side's host. The pairing is learned
+                 from the mapped objects (same field, same path after the host); a local host that pairs with two different
+                 hosts is left alone and shows as differs. Each alias used is printed ("host alias: ...")
+               - uuids inside role locks and text read as the object's name (tool, skill, role, agent; a role-only skill
+                 or tool reads as the title of its prompt version), so env uuids do not differ
 Env: CADRA_<ENV>_API_URL and CADRA_<ENV>_BUILDER_API_KEY per side (same as promote).
 Mapping, per kind: same uuid, then the twin map, then exact name.
 Row: kind, name, A id@version, B id@version, sha256 A, sha256 B, same | differs | missing-A | missing-B.
@@ -504,7 +583,7 @@ function lineDiff(a, b, max = 6) {
   return out;
 }
 
-function printTable(head, rows, fields, warnings, summary, changesOnly) {
+function printTable(head, rows, fields, warnings, summary, changesOnly, aliases = []) {
   console.log(head);
   if (changesOnly) rows = rows.filter((r) => r.status !== "same");
   const w = (k, min) => Math.max(min, ...rows.map((r) => String(k(r)).length));
@@ -529,6 +608,7 @@ function printTable(head, rows, fields, warnings, summary, changesOnly) {
         }
       }
   }
+  for (const al of aliases) console.log(`host alias: ${al.from} = ${al.to}  (${al.count} value${al.count === 1 ? "" : "s"})`);
   for (const m of warnings) console.log(`warning: ${m.message}`);
   console.log(`${summary.same} same, ${summary.differs} differ, ${summary.missingA} only in B, ${summary.missingB} only in A`);
 }
@@ -591,7 +671,16 @@ export async function runDiff(argv) {
     }
   }
 
-  const rows = buildRows(mapObjects(objsA, objsB, { ab: twinsAB, ba: twinsBA }), { rulesA: [...rules, uuidNameRule(sa.bundle)], rulesB: [...rules, uuidNameRule(sb.bundle)] });
+  const pairs = mapObjects(objsA, objsB, { ab: twinsAB, ba: twinsBA });
+  const oA = originOf(A.env);
+  const oB = originOf(B.env);
+  const localA = A.env === "local" || (isLoopbackOrigin(oA) && !isLoopbackOrigin(oB));
+  const localB = B.env === "local" || (isLoopbackOrigin(oB) && !isLoopbackOrigin(oA));
+  const localSide = localA !== localB ? (localA ? "a" : "b") : null;
+  const aliases = localSide ? deriveHostAliases(pairs, localSide, o.hosts.map((h) => h.fromHost)) : [];
+  const aliasRules = aliases.length ? [aliasRule(aliases)] : [];
+  const sideRules = (own, bundleOf, isLocal) => [...rules.slice(0, o.hosts.length), ...(isLocal ? aliasRules : []), ...rules.slice(o.hosts.length), uuidNameRule(bundleOf)];
+  const rows = buildRows(pairs, { rulesA: sideRules(rules, sa.bundle, localSide === "a"), rulesB: sideRules(rules, sb.bundle, localSide === "b") });
   for (const r of rows) if (r.status === "differs") r.fields = fieldDiff(r._na, r._nb);
   const summary = summarise(rows);
   const clean = rows.map(({ _na, _nb, ...r }) => (o.fields || o.json ? r : { ...r, fields: undefined }));
@@ -601,11 +690,12 @@ export async function runDiff(argv) {
     console.log(JSON.stringify({
       a: { env: A.env, agent: sa.bundle.agent.name, release: sa.release, bundleHash: sa.bundle.bundleHash },
       b: { env: B.env, agent: sb.bundle.agent.name, release: sb.release, bundleHash: sb.bundle.bundleHash },
+      hostAliases: aliases,
       rows: clean.filter((r) => !o.changes || r.status !== "same").map((r) => (o.fields ? r : { ...r, fields: undefined })), summary, warnings, exitCode: code,
       ignored: { names: IGNORED_FIELD_NAMES, patterns: IGNORED_FIELD_PATTERNS.map(String), topLevel: IGNORED_TOP_LEVEL },
     }, null, 2));
   } else {
-    printTable(head, clean, o.fields, warnings, summary, o.changes);
+    printTable(head, clean, o.fields, warnings, summary, o.changes, aliases);
   }
   return code;
 }

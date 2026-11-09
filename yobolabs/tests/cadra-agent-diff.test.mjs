@@ -8,7 +8,7 @@ import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import {
   buildRows, bundleText, canonical, exitCodeOf, extractObjects, fieldDiff, functionKeysNamed, functionObject,
-  descriptorObject, hostRules, mapObjects, normalise, uuidNameRule, parseDiffArgs, parseDiffSide, sha256, summarise,
+  aliasRule, deriveHostAliases, descriptorObject, hostRules, isLoopbackOrigin, mapObjects, normalise, uuidNameRule, parseDiffArgs, parseDiffSide, sha256, summarise,
 } from "../skills/configure-cadra/scripts/diff.mjs";
 
 const CLI = fileURLToPath(new URL("../skills/configure-cadra/scripts/cadra.mjs", import.meta.url));
@@ -16,7 +16,7 @@ const U = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 
 // ---- fixture bundles ------------------------------------------------------------------------------
 
-function bundle({ env = "dev", orgId = 36, agentId = 443, releaseId = 2311, version = 77, instruction = "You are the Remix root.", extra = {} } = {}) {
+function bundle({ host, env = "dev", orgId = 36, agentId = 443, releaseId = 2311, version = 77, instruction = "You are the Remix root.", extra = {} } = {}) {
   return {
     format: "cadra.agent-bundle/v1", sourceEnv: env, sourceOrgId: orgId,
     agent: {
@@ -28,7 +28,7 @@ function bundle({ env = "dev", orgId = 36, agentId = 443, releaseId = 2311, vers
     pins: [
       {
         kind: "tool", source: "native", subjectId: 500 + orgId, subjectUuid: U(10), name: "remix_tool", versionId: 900 + orgId, scope: "org",
-        contentHash: `h${orgId}`, envRefs: [], content: { name: "remix_tool", description: "Remix tool", connectorId: orgId, endpoints: [{ url: `https://app-${env === "dev" ? "dev." : ""}yobolabs.ai/api/remix`, method: "POST" }], credentialRef: { $ref: "secret", name: "remix key" } },
+        contentHash: `h${orgId}`, envRefs: [], content: { name: "remix_tool", description: "Remix tool", connectorId: orgId, endpoints: [{ url: `${host ?? `https://app-${env === "dev" ? "dev." : ""}yobolabs.ai`}/api/remix`, method: "POST" }, { url: `${host ?? "https://msgapi-dev.cadraos.com"}/send`, method: "POST" }], credentialRef: { $ref: "secret", name: "remix key" } },
       },
       {
         kind: "skill", source: "native", subjectId: 600 + orgId, subjectUuid: U(11), name: "Remix skill", versionId: 700 + orgId, scope: "org", contentHash: "x", envRefs: [],
@@ -188,6 +188,85 @@ test("a uuid naming a tool, skill, role or agent of the bundle reads as its name
   assert.equal(rows2.find((r) => r.kind === "role_lock").status, "differs"); // a different tool in the lock is seen
 });
 
+// ---- uuids inside locks (role-only skills / tools are not pins) ---------------------------------------
+
+test("a role lock's skill and tool-description uuids read as their prompt-version title, so env uuids do not differ", () => {
+  const mk = (skillUuid, toolDescUuid) => {
+    const b = bundle();
+    const lock = b.pins.find((p) => p.kind === "role_lock");
+    const ref = Object.keys(lock.content.prompts)[0];
+    lock.content.prompts[`pv_${U(81)}`] = { title: "Role skill - remix-editor", content: "skill text", systemPrompt: null, variables: [] };
+    lock.content.prompts[`pv_${U(82)}`] = { title: "Role tool description - remix_get", content: "tool text", systemPrompt: null, variables: [] };
+    lock.content.lock = {
+      method: { promptVersionRef: ref },
+      skills: [{ slug: skillUuid, version: "v1", promptVersionRef: `pv_${U(81)}` }],
+      toolDescriptions: [{ slug: toolDescUuid, promptVersionRef: `pv_${U(82)}` }],
+      toolSlugs: [toolDescUuid],
+    };
+    return b;
+  };
+  const a = mk("86c0cf7c-0000-4000-8000-000000000604", "aaaaaaaa-0000-4000-8000-000000000001");
+  const b = mk("988c14fc-0000-4000-8000-000000000604", "bbbbbbbb-0000-4000-8000-000000000002");
+  const rows = buildRows(mapObjects(extractObjects(a), extractObjects(b)), { rulesA: [uuidNameRule(a)], rulesB: [uuidNameRule(b)] });
+  assert.equal(rows.find((r) => r.kind === "role_lock").status, "same");
+  // a different skill in the lock (another prompt-version title) is still seen
+  const c = mk("988c14fc-0000-4000-8000-000000000604", "bbbbbbbb-0000-4000-8000-000000000002");
+  const lock = c.pins.find((p) => p.kind === "role_lock");
+  lock.content.prompts[`pv_${U(81)}`].title = "Role skill - something-else";
+  const rows2 = buildRows(mapObjects(extractObjects(a), extractObjects(c)), { rulesA: [uuidNameRule(a)], rulesB: [uuidNameRule(c)] });
+  assert.equal(rows2.find((r) => r.kind === "role_lock").status, "differs");
+});
+
+// ---- local-from-dev host aliasing -------------------------------------------------------------------
+
+test("loopback origins are recognised", () => {
+  assert.ok(isLoopbackOrigin("http://127.0.0.1:3100") && isLoopbackOrigin("http://localhost:3000/x") && isLoopbackOrigin("localhost:3100"));
+  assert.ok(!isLoopbackOrigin("https://app-dev.yobolabs.ai") && !isLoopbackOrigin(undefined));
+});
+
+test("local-from-dev: a loopback tool host is equal to the other side's host, learned from the mapped pairs", () => {
+  const local = bundle({ host: "http://127.0.0.1:3100", orgId: 4 });
+  const dev = bundle({ host: "https://app-dev.yobolabs.ai", orgId: 36 });
+  const pairs = mapObjects(extractObjects(local), extractObjects(dev));
+  const before = buildRows(pairs, { rules: hostRules() });
+  assert.equal(before.find((r) => r.kind === "tool").status, "differs"); // without the alias the hosts differ
+  const aliases = deriveHostAliases(pairs, "a");
+  assert.deepEqual(aliases, [{ from: "http://127.0.0.1:3100", to: "https://app-dev.yobolabs.ai", count: 2 }]);
+  const rows = buildRows(pairs, { rulesA: [aliasRule(aliases), ...hostRules()], rulesB: hostRules() });
+  assert.equal(rows.find((r) => r.kind === "tool").status, "same");
+});
+
+test("local-from-dev: a local host that pairs with two different hosts is NOT aliased and still differs", () => {
+  const local = bundle({ host: "http://127.0.0.1:3100" });
+  const dev = bundle({ host: "https://app-dev.yobolabs.ai" });
+  dev.pins[0].content.endpoints[1].url = "https://other-dev.example.com/send"; // the same local host pairs with another host here
+  const pairs = mapObjects(extractObjects(local), extractObjects(dev));
+  assert.deepEqual(deriveHostAliases(pairs, "a"), []);
+});
+
+test("local-from-dev: only a loopback host is aliased; a real host that differs from the other side stays a difference", () => {
+  const a = bundle({ host: "https://app-dev.yobolabs.ai" });
+  const b = bundle({ host: "https://other.example.com" });
+  assert.deepEqual(deriveHostAliases(mapObjects(extractObjects(a), extractObjects(b)), "a"), []);
+});
+
+test("local-from-dev: a different path after the host is a real difference, not an alias", () => {
+  const local = bundle({ host: "http://127.0.0.1:3100" });
+  const dev = bundle({ host: "https://app-dev.yobolabs.ai" });
+  dev.pins[0].content.endpoints[0].url = "https://app-dev.yobolabs.ai/api/other";
+  const pairs = mapObjects(extractObjects(local), extractObjects(dev));
+  const aliases = deriveHostAliases(pairs, "a"); // the /send endpoint still pairs
+  const rows = buildRows(pairs, { rulesA: [aliasRule(aliases), ...hostRules()], rulesB: hostRules() });
+  assert.equal(rows.find((r) => r.kind === "tool").status, "differs");
+});
+
+test("explicit --host wins over the learned alias", () => {
+  const local = bundle({ host: "http://127.0.0.1:3100" });
+  const dev = bundle({ host: "https://app-dev.yobolabs.ai" });
+  const pairs = mapObjects(extractObjects(local), extractObjects(dev));
+  assert.deepEqual(deriveHostAliases(pairs, "a", ["127.0.0.1:3100"]), []);
+});
+
 // ---- AI functions -----------------------------------------------------------------------------
 
 test("function keys: whole-token mentions plus every remix_* key", () => {
@@ -263,6 +342,8 @@ before(async () => {
   origins.c = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { instruction: "changed" }, functions: [{ id: 5, key: "remix_editor", version: 3023, content: "rule\nsplit" }] });
   origins.e = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, noPrompts: true, functions: [{ id: 3, key: "remix_editor", version: 3031, live: 4, content: "x" }] });
   origins.f = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, noPrompts: true, functions: [{ id: 5, key: "remix_editor", version: 3023, live: 4, content: "y" }] });
+  origins.g = await stub({ agentId: 443, orgId: 4, env: "dev", releaseId: 2315, pointer: 2315, bundleOver: { host: "http://127.0.0.1:3100" }, functions: [] });
+  origins.h = await stub({ agentId: 362, orgId: 36, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { host: "https://app-dev.yobolabs.ai" }, functions: [] });
   origins.d = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: null, functions: [] });
 });
 after(() => stubs.forEach((s) => s.close()));
@@ -330,6 +411,15 @@ test("descriptor object: parameters and output schema are what is hashed", () =>
   const d = { functionKey: "k", title: "T", description: null, outputKind: "json", liveVersion: 4, parameters: [{ name: "x" }], outputSchema: { type: "object" } };
   assert.equal(sha256(descriptorObject(d).content), sha256(descriptorObject({ ...d, liveVersion: 9 }).content)); // version number is shown, not hashed
   assert.notEqual(sha256(descriptorObject(d).content), sha256(descriptorObject({ ...d, outputSchema: { type: "array" } }).content));
+});
+
+test("CLI: env 'local' with a loopback tool host reads as equal to the deployed host, and the alias is printed", async () => {
+  const run = await cli(["local:443@2315", "bbb:362@2311", "--no-functions"], { CADRA_LOCAL_API_URL: origins.g, CADRA_LOCAL_BUILDER_API_KEY: "k", CADRA_BBB_API_URL: origins.h, CADRA_BBB_BUILDER_API_KEY: "k" });
+  assert.equal(run.code, 0, run.stdout + run.stderr);
+  assert.match(run.stdout, /host alias: http:\/\/127\.0\.0\.1:3100 = https:\/\/app-dev\.yobolabs\.ai\s+\(2 values\)/);
+  const off = await cli(["aaa:443@2315", "bbb:362@2311", "--no-functions"], { ...envs("g", "h") }); // neither named local, both loopback origins: no aliasing
+  assert.equal(off.code, 1);
+  assert.doesNotMatch(off.stdout, /host alias/);
 });
 
 test("CLI: --changes hides the same rows but the summary still counts them", async () => {
