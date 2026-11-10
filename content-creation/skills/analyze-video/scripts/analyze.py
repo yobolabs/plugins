@@ -38,6 +38,8 @@ def frames(src):
 def native_fps(src):
     out = subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=r_frame_rate',
                                    '-of', 'csv=p=0', src]).decode().strip()
+    # A stream with side data (e.g. a phone's display matrix) prints '30/1,': keep the first field of the first line.
+    out = (out.splitlines() or [''])[0].split(',')[0].strip()
     n, _, d = out.partition('/')
     return float(n) / float(d or 1)
 
