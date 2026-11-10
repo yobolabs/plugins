@@ -36,3 +36,5 @@ Back to [SKILL.md](../../SKILL.md).
 - Mute every outer tile; only the main audio plays.
 - At 31% scale, captions on the centre tile are unreadable; keep the main caption layer full-size on top.
 - Popping slower than 1 tile per 2 frames loses the "burst" feel.
+
+**See also:** no-footage version (tilted wall of cards, camera dolly) → `content-creation:motion-graphics` → `references/moves/card-wall-dolly.md`.

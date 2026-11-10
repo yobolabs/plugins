@@ -31,3 +31,5 @@ Back to [SKILL.md](../../SKILL.md).
 - Do not copy a real platform's logo, wordmark or exact UI. Generic icons only.
 - Captions placed over the phone get unreadable at this size. Keep captions outside the phone frame.
 - The scaled plate looks letterboxed if the screen aspect is not 9:19.5. Use `cover`, centred on the face.
+
+**See also:** no-footage version (phone with real UI, no filmed take) → `content-creation:motion-graphics` → `references/moves/device-land.md`.

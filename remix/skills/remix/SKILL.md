@@ -51,6 +51,7 @@ Decide from the reading, before the brief: people who SPEAK -> people-dialogue; 
 | a phone / app / website screen shown | `../remix-agent/references/types/screens.md` (also applies inside any other type) |
 | the ad beside a static prompt panel (template post) | `../remix-agent/references/types/template-reel.md` (also applies inside any other type) |
 | ingredients turning into the product (making-of) | `../remix-agent/references/types/product-hero.md` "A making-of ad needs a real recipe" (any type) |
+| a no-footage motion ad (shapes, UI cards, text and logos morphing into each other) | see also `content-creation:motion-graphics` (built in code, no generation); this pipeline is unchanged |
 
 ## References (load on demand)
 

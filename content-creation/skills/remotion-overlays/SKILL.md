@@ -25,7 +25,7 @@ A Remotion (React/TypeScript) project that renders **transparent-background moti
 Components for edit effects on a real take (`WordCaptions`, `PromptBar`, `GradeSliderReveal`, `TextBehindSubject`,
 `MagazineCover`, `matte.tsx`). What each effect looks like, its timing and its traps are described ONLY in
 `content-creation:video-effects` → `references/effects/<slug>.md`; read that file before using or changing a component.
-Proof entries: `src/effects/root-proof1.tsx`, `root-proof2.tsx`.
+Proof entries: `src/effects/root-proof1.tsx`, `root-proof2.tsx`. Full-frame no-footage moves (`ShapeMorph`, `WordSlideUp`) live in `src/motion/` for `content-creation:motion-graphics`; proof entry `src/motion/root-motion-proof.tsx`.
 
 ## Prop contract (zod — `src/schema.ts`)
 
