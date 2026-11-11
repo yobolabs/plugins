@@ -192,6 +192,8 @@ Defaults live in Back Office `system_config` (category `mcp`), not in code.
 
 Tool errors come back as `isError: true` with `{error, message}`. Relay the message; act on the code.
 
+A known code also carries `catalog {code, ref, kind, forward, fix, retry, said}`. The field is additive and stable: read it when present, never require it. `said` is always false on MCP, so the calling agent must speak the message itself. An unknown code carries no `catalog`.
+
 | code | meaning → do |
 |---|---|
 | `account_not_linked` | Connect sign-in not linked to a Yobo account → sign in once at the Yobo app with "Sign in with Yobo", then reconnect |

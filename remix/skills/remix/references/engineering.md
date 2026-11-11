@@ -575,3 +575,13 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 ## Tool messages are not merchant copy
 
 - A tool's message is written for the agent. Never render it in a merchant UI; map errors to that UI's own merchant copy.
+
+## Proof and tooling traps for builders
+
+- Compare typecheck counts by the same method on both sides: a stale linked core-sdk adds about 20 TS2307 (`@jetdevs/core/errors`) that are not defects. Diff the error lists (file + message, no line numbers). A silent exit 134 or 144 means killed (OOM or load), not zero errors: rerun with `NODE_OPTIONS=--max-old-space-size=10240`.
+- A typed-yes or needs-test run needs core pinned: `node scripts/vercel-prebuild.mjs` and `git update-index --skip-worktree package.json pnpm-lock.yaml`; revert both after. Run local vitest with `--pool=threads --maxWorkers=2` when the Mac is loaded.
+- The cmux Agent Chrome test browser does not play remote mp4 (a control clip fails). A "video won't play" report is unproven until checked in a browser that plays H.264 (the cmux WebKit tab does).
+- The Homebrew aws CLI is broken on the Mac (`_cffi_backend`). Use `@aws-sdk/client-s3` through `createRequire('<yobo-repo>/package.json')` under `secret-run`.
+- `secret-run ENVF=file:<path>` puts the whole file into `$ENVF`; it does not export the variables. Parse the file in the child process.
+- Payment tools (`remix_payment_options`, `remix_checkout`) work only inside a live WhatsApp turn. A direct call cannot prove them. Never put them in a cut without that proof.
+- Dev test credits are unlimited through the dev-only `ads_gen.credits_unlimited` switch (dev seed script). Never set it on prod.
