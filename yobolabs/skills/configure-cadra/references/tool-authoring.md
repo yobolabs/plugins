@@ -150,6 +150,23 @@ Then run the agent against a real case and read the execution. A tool that
 "doesn't get called" is almost always a thin `description`/`agentInstructions`
 problem, not a wiring problem.
 
+## Save evidence — what the stop check counts
+
+A tool that writes data must return evidence the cadra-api stop check reads (`resultSaveEvidence`,
+`src/services/agent-runtime/stop-check-judge.ts:243`). A result counts as a save when ONE of these holds:
+
+- a `saved`, `created` or `edited` flag is `true` beside `id`, `version` or `url`; or
+- a `saved`, `created` or `edited` list whose items carry `uuid` or `id` (the name shown); or
+- `updatedFields` is non-empty.
+
+A per-item status alone (`results: [{status: 'saved'}]`, counts) reads as unverified. The judge then forces
+a re-check, which can overwrite a correct reply.
+
+A save by a child role counts when its tool result has one of those shapes: it rides `_childSaves` to the
+root judge (`stop-check-judge.ts:264`, `:289`). A child's bare text ("saved") counts for nothing; only its
+tool result does. If root must state the outcome, root's own tool or the delegate's tool result must carry
+the shape.
+
 ## Gotchas
 
 - **`endpoint` is effectively frozen once agents depend on it.** Repointing a
