@@ -102,6 +102,12 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Spawned roles inherit the parent's harness text** (log line `… (inherited)`) but get no State and no
   `state_update` tool: guard State instructions with "If you have state_update: …".
 
+## Tool pins and billing class before a release
+
+- Check that the tool is pinned on the agent at all. A tool can be pinned on neither prod nor dev.
+- When pinning a dev twin, compare `billing_class` with prod. Dev 199 (generative) against prod 128 (read) made entitlement refuse the call.
+- A prod cut from the live release can change existing pins only. Adding a pin to a prod agent needs CAD-590.
+
 ## Read the live id, not the release note (2026-11-06)
 
 A release note can say "no deployment" while `agents.deployed_version_id` points at that very release (dev 443, rel 2255).

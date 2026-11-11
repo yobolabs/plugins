@@ -18,6 +18,7 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 
 ## Rules
 
+- **Templates ask only their prompt's bindings** (`@Image1 is <product>`): product only. Narrow both the run state and the needs job result, because the chat list is built from the job result.
 - **Each scene carries timed lines ("a–b s: what happens"), editable by the merchant.** They feed the storyboard sheet and the video prompt; a line is never written only into the video prompt.
 - **The Product line's shape sentence comes from the approved product sheet, read once at sheet approval.** It holds pack type, material, colour, label text, what is inside, and real size if known. The brief carries it word for word, and so does every storyboard and video prompt. A brief written from the product's name alone guesses the vessel.
 - **The product is described only as its approved sheet shows it** (principle P5 in `../SKILL.md`).

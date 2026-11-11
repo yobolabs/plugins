@@ -56,6 +56,21 @@ similar-track matching only with a free source (no paid music vendor). From scra
 
 After export the video posts through the Buffer / Hootsuite route; direct Instagram / Facebook posting waits on Meta app review.
 
+## Sound and cuts (Sean HARD rule, 2026-11-09)
+
+- "Anytime we use the audio from the ad, the edit MUST match."
+- With the ad's own audio, every cut sits on the source cut frame (`analysis.hardCuts`), frame-exact. The original editor already cut to that audio.
+- Never move cuts to a computed beat grid. Beat snapping is only for a new track, from beats found by Cadra and stored in the template.
+- Export check: cut times equal the source's cut times within ±1 frame.
+
+## A generated part that covers several ad shots
+
+- A video part made in one generation call can hold two or more ad shots. The clip then has its own cut or cuts inside.
+- Yobo measures the clip's inner cut or cuts and passes the clip as ONE SLOT PER AD SHOT. Each slot plays a window of the same clip. The boundary at the clip's own cut is fixed: piece A ends exactly at the cut, piece B starts there.
+- Trim only each piece's outer end to its ad shot's length. Hold the end frame (`holdMs`) when a piece is short.
+- Every ad cut then sits on a join, never inside a clip.
+- Never ask for a second render to fix timing. Only a clip whose inner cut is missing or too far from the ad's shot change goes to `unfixable` (one split remake, then the finding).
+
 ## Keep scenes in the full-run join
 
 - In the full-run join, keep scenes enter as source slots, cut from the stored copy by the scene's measured shot frames. Earlier they were dropped from the join.

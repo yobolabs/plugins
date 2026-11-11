@@ -87,7 +87,7 @@ what the lab and Ad Studio do inside; they are for builders, not steps for a use
 
 ## The lab twin is a gate for our tests (temporary)
 
-- Every test run (dev or prod) has a lab twin: the same source video file, product, photo and size, started at the same moment as the chat run. Only the tester runs tests and their twins; builders and the lead do not. Notes go live in `twins/<run>/compare.md` (lab | chat | same? | what the chat missed). Proof lines cite the lab run id and its compare row. Rig setup: `references/tester-rigs.md`.
+- Every test run (dev or prod) has a lab twin: the same source video file, product, photo and size, started at the same moment as the chat run. Tests are run by the prover session and the lead's subagents, not by builders. Some shifts ran no twins: check `twins/` before a proof line claims one. Notes go live in `twins/<run>/compare.md` (lab | chat | same? | what the chat missed). Proof lines cite the lab run id and its compare row. Rig setup: `references/tester-rigs.md`.
 
 Sean, 2026-11-08 (verbatim): "The lab is a gate only now for testing".
 

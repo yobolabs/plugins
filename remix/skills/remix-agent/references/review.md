@@ -133,6 +133,11 @@ Rules that cost a prod incident to learn:
   slides' own `RemixJobResultSchema` and `applyRemixJob`, or watch one real run reach the chat.
 - **Turn the switch off first when the chat goes quiet.** `''` restores the old checks at once; fix, prove, then on again.
 
+## Sheets are never picked by the merchant
+
+- Once the product is chosen, Yobo makes the product sheet and one character sheet per person. The chat shows ONE confirm card, "Is it right?", with [Yes] and [Fix one…].
+- Post one sheet pick at a time. Never two sheet picks at once.
+
 ## Storyboard review: fix first, then the merchant decides (Sean 2026-11-08)
 
 Sean: "For storyboard, always try to fix first autonomously before delivering storyboard."

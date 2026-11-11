@@ -585,3 +585,13 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - `secret-run ENVF=file:<path>` puts the whole file into `$ENVF`; it does not export the variables. Parse the file in the child process.
 - Payment tools (`remix_payment_options`, `remix_checkout`) work only inside a live WhatsApp turn. A direct call cannot prove them. Never put them in a cut without that proof.
 - Dev test credits are unlimited through the dev-only `ads_gen.credits_unlimited` switch (dev seed script). Never set it on prod.
+- Local loop: saving a tsx-watch worker file restarts it and kills in-flight renders (BullMQ marks them completed). Check that no run is in `rendering` or `queued` before saving.
+- Local loop: `next dev` under memory pressure gets SIGKILLed by the system guardian. Use a built `next start` with the rebuild script.
+- Local loop: Cadra image URLs must be https on a public host (cadra-api `stored-url.ts`, cadra-web `attachments-s3.ts`). yobo's download refuses http.
+- Local loop: when the tester's browser is flaky, drive the run with headless Chrome and a curl next-auth cookie jar. Never print a credential file.
+
+## Merchant lines follow the agent contract (R11)
+
+- Every merchant message reports finished work or carries the live button that moves the work on. Never send the merchant elsewhere, never "tell me to …", never a second confirm after a choice, never ask for a tap that already happened, never an internal word ("assembly", "pipeline"). Money is solved in place: [Add credits] on that message; the run resumes by itself when credits land.
+- A stale button: when the live ask is the newest message, reply with one line ("Your question is just above."). When newer messages sit below, re-post the live ask with its buttons.
+- Enforced in code: `ask-has-buttons.test.ts` (no buttonless ask unless allow-listed with a reason) and `copy-lint.test.ts` (banned phrases in fallbacks and copy rows). Any merchant-line change passes the G12 gate.

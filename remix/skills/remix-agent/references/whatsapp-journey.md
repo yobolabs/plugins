@@ -252,6 +252,12 @@ English text only), so the rules live there, once:
 - WhatsApp gives the business no event when the merchant taps Done. The page sees only `visibilitychange` (hidden) and `pagehide`. Any "after Done" WhatsApp line goes through yobo `web-surface.ts` `webAway` with the nudge-once claim.
 - A typed or tapped pick in web chat is the answer. The card shows the pick and the thread posts no echo bubble.
 
+## No bare links to a merchant (Sean HARD rule)
+
+- A merchant never sees a raw URL: not in web chat, WhatsApp, or anywhere else. Links go behind a button or a short link text.
+- Media is sent as media, never as a message holding a presigned URL.
+- Fallback text for a channel without buttons uses words, not URLs.
+
 ## Owner files and copy
 
 | What | Where |
