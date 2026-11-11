@@ -35,6 +35,15 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   their id; the architect records the spend in `gate-used.txt` by hand.
 - A command that names the guard's own script path trips the guard (it reads the file and sees write patterns).
 
+## Prod cut: from the sealed live release only
+
+- **Never cut prod from `base: "working_copy"`.** A prod working copy can drift far from its releases. A working-copy cut ships that drift and also sweeps newer tool versions into the release.
+- Cut from the live release: `base: {fromVersionId: <live>}` with `expectedFromId: <live>`. Hold every other pin at its live version with `pinOverrides`.
+- Change the prompt with `snapshotPatch: {persona: {systemInstruction}}`. It is allowed only with a `fromVersionId` base. Every base pin is kept, and the working copy is never read or written.
+- Add a tool with `snapshotPatch: {coreRole: {addTools: [{toolId, versionId}]}}` (CAD-604). It becomes a native pin at `versionId`. Skills cannot be added this way.
+- **Diff before moving the pointer.** Compare the new release with the live one (`getReleaseDiff`). The diff must hold exactly the intended change: pins compared on kind, subject and version (not ids), and the snapshot minus the pins. Refuse the cut otherwise.
+- The release note records the snapshot patch and the pin overrides. That line is the audit trail.
+
 ## Building on the live head (prod)
 
 - **Prod agents carry unreleased foreign heads** (another lane's draft on a skill/tool). Before writing a row,
