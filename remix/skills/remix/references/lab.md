@@ -87,6 +87,8 @@ what the lab and Ad Studio do inside; they are for builders, not steps for a use
 
 ## The lab twin is a gate for our tests (temporary)
 
+- Every test run (dev or prod) has a lab twin: the same source video file, product, photo and size, started at the same moment as the chat run. Only the tester runs tests and their twins; builders and the lead do not. Notes go live in `twins/<run>/compare.md` (lab | chat | same? | what the chat missed). Proof lines cite the lab run id and its compare row. Rig setup: `references/tester-rigs.md`.
+
 Sean, 2026-11-08 (verbatim): "The lab is a gate only now for testing".
 
 Scope, and only for now: our own test attempts (team or agent proof runs on dev). Every such attempt runs with its lab twin, step by step. A test step is not passed, and the next paid test step does not start, until its lab twin step exists and is compared on output, skill rule, KB and screen. A twin that stops is a blocker, reported the same turn.
@@ -109,6 +111,12 @@ rules. Code, the lab page's code included, only carries that out. "The code does
 differs from the expertise, the code is the bug. Before filing any remix design ask, or re-filing one you inherited,
 read the expertise. If it answers the question, apply it. Ask Sean only when the expertise is silent, or when someone
 wants to change it. Lab manual: `remix-context` search "Remix lab — how it works"; team steps: search "Remix Lab — team how-to".
+
+## Driving a web remix in a cmux pane
+
+- A deep link lands on Main Chat. Open the newest side chat from the list.
+- Enter in the textarea does not send. Click "Send message".
+- A cold `next dev` routes take 20–120 s. Auth can time out and taps fail: retry the tap.
 
 ## Lab traps seen 2026-11-06 (fast-cut food montage, KB note 2026-11-06-fast-cut-food-montage-lab-misses-8544)
 - **A storyboard grid sent to the video model carries no panel labels.** Captions like "1 · 0.1 s" on the grid were

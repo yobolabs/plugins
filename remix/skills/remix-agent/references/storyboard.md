@@ -42,6 +42,9 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 
 ## Rules
 
+- A still is drawn from its ONE source frame, never from a keyframe sheet. Any reference that names a sheet, even one with a single panel, makes the model draw grids or split panels. Edge frames (single frame) render clean. Video scenes keep their sheet of every moment.
+- The AI storyboard review must include the check "one picture, no panels, grid or split". Without it, split frames pass review.
+- Seedance renders clips of at least 4 s. A short scene keeps the ad's cut through the preset clip recipe (render window, play the scene).
 - Picture request order, for every picture or video request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". A line drawing is never the first or only image. A request with no colour reference is refused before the paid call.
 - A line drawing is an internal framing input to the picture model only. The merchant never sees one: not in chat, the review page, the album, the cards or the video. The merchant sees the source frame and the new storyboard picture. The Remix Lab is a team tool and may show line drawings.
 

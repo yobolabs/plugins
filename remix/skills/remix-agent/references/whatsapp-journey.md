@@ -127,6 +127,8 @@ answers; the matcher never swaps products.
 
 ## Go-ask rules (back chain)
 
+- Typing a visible forward button's exact title (`go:*`) taps that button on the newest card. A typed go never reaches the paid step (`go:yes`). A typed "Change" still goes to the agent.
+
 - **Who records the ask:** the delivery that shows the step records it, as that event's own run (`joined:<job>`,
   `failed:<job>`, `redo:<job>`, `exportfail:<msg>`), so the merchant's tap (run `tap:<msg>`) can answer it. Which ask
   a join records depends on the parts it joined: all final → `make:cut`, else `make:final` (yobo reads the part jobs'
@@ -243,6 +245,12 @@ English text only), so the rules live there, once:
   consumed with the term. The added prefix / told line come from copy rows in the chat's language.
 - A provider render failure is not a merchant stop (it retries) — that is decided at the source (slides set gate),
   because yobo receives no typed reason.
+
+## Web side chat on a phone
+
+- A remix started on WhatsApp moves to the Yobo web side chat after the link ("Set up your remix in Yobo chat.", [Continue in Yobo]). The merchant sees it inside WhatsApp's in-app browser: a top bar with Done, the domain and a menu, plus a bottom toolbar (about 114 pt + 80 pt). That page is the main remix chat surface. Design and audit it at 390 px inside that frame, not in the desktop app.
+- WhatsApp gives the business no event when the merchant taps Done. The page sees only `visibilitychange` (hidden) and `pagehide`. Any "after Done" WhatsApp line goes through yobo `web-surface.ts` `webAway` with the nudge-once claim.
+- A typed or tapped pick in web chat is the answer. The card shows the pick and the thread posts no echo bubble.
 
 ## Owner files and copy
 
