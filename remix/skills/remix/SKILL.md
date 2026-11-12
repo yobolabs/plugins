@@ -21,6 +21,8 @@ open and drive the lab per `references/lab.md` (Sean 2026-11-04: "You're suppose
 
 ## Principles
 
+**HARD: no refusals.** No tool, skill, role, check or step rejects, blocks or limits on behalf of the owner; code reports facts and the single owner decides. Full rule: [`../remix-agent/SKILL.md`](../remix-agent/SKILL.md) § Principles (first).
+
 P1–P6 live once in [`../remix-agent/SKILL.md`](../remix-agent/SKILL.md) (the Cadra agent body); read them first.
 
 ## The fixed pipeline (no step optional, none skippable)

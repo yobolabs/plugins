@@ -5,6 +5,10 @@ The quality checks are the gate (Sean 2026-11-03): code checks plus AI review ru
 it; a failed check is fixed and re-run, and the merchant never sees a failed set.
 The AI review and code checks run on every set; "Fix it" for the merchant is a button, never an automatic retry loop.
 
+## No refusals in review (HARD, see remix-agent § Principles)
+
+A review or check reports a fact, a value and a suggestion. It never returns `refused`, never blocks a storyboard and never cancels a run. The owner decides the redraw and the delivery. A failing check names the issue; it does not stop the run.
+
 ## How: one review sheet
 
 Put the storyboard NEXT TO the named cast pictures (and the set picture) on ONE image, each labelled with the person's

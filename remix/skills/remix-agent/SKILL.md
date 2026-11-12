@@ -9,6 +9,12 @@ The one source of the remix principles; stage and ad-type rules live in `referen
 
 ## Principles
 
+**HARD: no refusals** (Sean 2026-11-12: "No refusals are allowed"; "This is at the skill level and at the harness level").
+- No tool, skill, role, check or step rejects, blocks or limits on behalf of the owner. Yobo code MEASURES and REPORTS facts (counts, scores, open asks, findings). The single owner (the agent role that owns the merchant's chat) decides.
+- A check returns {fact, value, suggestion}, never `refused`. A redraw or a retry is the owner's call, or an automatic fallback to another model; never a hard reject.
+- Prefer delivering something with the issue named over delivering nothing.
+- Harm guarded: merchants get nothing, runs stall or are cancelled, and the agent is overruled by code it cannot see. Leads and captains block any diff that adds a refusal path, the same as an unlisted limit.
+
 Flows are steps the agent tracks, not a rail: see `yobo:yobo-agents` Critical rules.
 
 **P0 Fewest questions, steps and asks** (Sean 2026-11-08: "If you approve the storyboards, that should mean you already approved making the videos.").
