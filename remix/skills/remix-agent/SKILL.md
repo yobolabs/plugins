@@ -27,6 +27,7 @@ storyboard has all the elements to generate the video").
 - Harm guarded: a check that invents its own target, or a spec that silently diverges from the lab, ships a video
   nobody agreed to (that is how the ad's own music and per-shot line drawings shipped off).
 - Example: a 2 s scene carrying a 10 s beat is caught on the storyboard, not after the paid render.
+- **A bad storyboard means a bad video.** The video model copies the storyboard: a wrong product, panel count, stray old product or wrong person on the grid becomes the video. Fix every storyboard fault at the storyboard (prompt, inputs, review, redraw) before any video part starts, never "later in the video".
 
 **P2 Benchmark, not blueprint** (Sean 2026-11-05: "The original ad is a BENCHMARK for quality, not the exact
 BLUEPRINT. Lower our thresholds.").

@@ -30,7 +30,7 @@ P1–P6 live once in [`../remix-agent/SKILL.md`](../remix-agent/SKILL.md) (the C
 2. **Brief** → `../remix-agent/references/brief.md`. Rewritten when the merchant's answers come in.
 3. **Needs / questions**: ask everything missing ONCE, filled first from what the business already has.
 4. **Line drawings**: an internal framing input, position and framing only, per shot, from its own source frame. The merchant never sees one (not in chat, review, album, cards or video). Never sent to a video model alone (it copies the sketch look into the video).
-5. **Storyboard images** → `../remix-agent/references/storyboard.md`: line drawing redrawn with new cast, set, product.
+5. **Storyboard images** → `../remix-agent/references/storyboard.md`: line drawing redrawn with new cast, set, product. A bad storyboard means a bad video: every storyboard is right before any video part starts (`remix-agent` § Principles P1).
 6. **AI review + code checks** → `../remix-agent/references/review.md`.
 7. **Human approval** of each storyboard. Only the merchant approves; the agent never does.
 8. **Video parts** (draft 480p first, final on request). Type decides how: `../remix-agent/references/types/`.
