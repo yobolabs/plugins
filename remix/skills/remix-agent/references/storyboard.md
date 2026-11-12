@@ -22,7 +22,6 @@ reuses its image rather than getting a new one), PLUS an image for the first and
 - The source clip is not a visual reference. It is sent only when the part keeps the ad's audio, and then as the extracted audio track only, never the video file.
 - Burned-in text: a storyboard or keyframe that shows source text fails review. Clean the text off source footage only for kept clips (cut, not generated), never for generated clips.
 - Template parts: the template's prompt (preset recipe) plus this clip's needed pictures. The template panel is the script only, never a picture (`types/template-reel.md`).
-
 - Picture request order, for every picture or video request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". A line drawing is never the first or only image. A request with no colour reference is refused before the paid call.
 
 **One storyboard per shot, built from keyframes, decided.** A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
