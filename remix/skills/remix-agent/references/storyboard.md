@@ -16,13 +16,17 @@ in the prompt. Reference-to-video takes no first/last frame field and must not b
 reuses its image rather than getting a new one), PLUS an image for the first and the last frame of every video part
 (clip) sent to the video model. The review fails a set that is missing any of these.
 
+People who speak: one picture per shot, see `types/people-dialogue.md`.
+
 **Clip requests (one rule set for every video part):**
 - Each clip gets a storyboard of at least two keyframes: its first picture and its last picture. Add further keyframes only for significant moments that give the clip context.
 - Send a clip only the pictures it needs. Never send every picture of the set to one clip.
 - The source clip is not a visual reference. It is sent only when the part keeps the ad's audio, and then as the extracted audio track only, never the video file.
+- Modes: one continuous shot is an image-to-video clip. Its `image_url` is the clip's start picture and `end_image_url` its end picture, nothing else; cast and product are drawn into the pictures. A clip spanning several shots is a reference-to-video clip: ordered `image_urls` = start picture, the scenes' storyboards, end picture, then only the sheets that clip needs; the prompt says "@Image1 is the first frame, @ImageN the last frame". Never mix the two modes, and never send a reference-to-video clip a first/last frame field.
+- Edge pictures: a still shot's picture is also its clip's end. A storyboard drawn over a line drawing is its clip's start. A keyframe sheet is never an edge picture. Edge pictures are drawn like setup shots, from their own frame, with the scene's storyboard as look reference.
 - Burned-in text: a storyboard or keyframe that shows source text fails review. Clean the text off source footage only for kept clips (cut, not generated), never for generated clips.
 - Template parts: the template's prompt (preset recipe) plus this clip's needed pictures. The template panel is the script only, never a picture (`types/template-reel.md`).
-- Picture request order, for every picture or video request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". A line drawing is never the first or only image. A request with no colour reference is refused before the paid call.
+- Picture request order, for a picture request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". For a video request the order is per mode above (image-to-video: start picture, then end picture; reference-to-video: start picture first, end picture last). A line drawing is never the first or only image. A request with no colour reference is refused before the paid call.
 
 **One storyboard per shot, built from keyframes, decided.** A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
 part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,

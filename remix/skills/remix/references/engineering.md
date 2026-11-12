@@ -423,23 +423,15 @@ Check each one on prod by name before calling a remix release done (switch parit
 - The secret-guard hook flags regexes like `.*?` and SQL aliases like `v.key` in heredocs. Write those scripts with the
   Write tool and run them by path.
 
-## Start and end picture per clip, same-picture repeats (2026-11-07, m-remix-build-56)
+## Start and end picture per clip, same-picture repeats
 
 - **`toFrame` is exclusive.** A shot's last frame is `toFrame - 1`. Using `toFrame` as the last frame draws the next shot's first frame on every end picture, and the last shot asks for a frame that does not exist. Use one helper, `shotWindow(shot, fps)`, for every window; clamp frame grabs to the copy's last frame.
 
-Storyboard rules (what a set holds, clip requests): `../../remix-agent/references/storyboard.md`.
-Rulings by the remix lead; yobo `stages/video/part-edges.ts`, `part-starts.ts`, `advance/edge-scenes.ts`.
-- **One continuous shot → Seedance 2.0 i2v**: `image_url` = the clip's start picture, `end_image_url` = its end
-  picture, nothing else (cast and product are drawn into the pictures). The prompt writer gets the two pictures as
-  "first frame … start exactly on it" / "last frame … end exactly on it", never an empty reference list.
-- **Several shots → ref2v**: ordered `image_urls` = start picture, the scenes' storyboards, end picture, then the
-  sheets; the prompt says "@Image1 is the first frame, @ImageN the last frame". Never Kling; never mix the two modes.
-- **0 extra pictures where one exists**: a storyboard drawn over a line drawing (it has `guide`) is its clip's start;
-  a still shot's is also its end. A keyframe sheet is never an edge. Edge pictures are `<scene>@start|end` targets,
-  drawn like setup shots (line drawing of THEIR frame: the shot's first-frame still, or its LAST frame cut from the
-  stored source copy by the worker, `referenceKind: 'source_frame'`), with the scene's storyboard as look reference.
-  They live on `scene.edges`, are reviewed, set-checked and approved as their own cards ("Start of video N" /
-  "End of video N"; card titles never say "part").
+Clip-request rules (modes, edge pictures, what a clip is sent): `../../remix-agent/references/storyboard.md`.
+Builder files: yobo `stages/video/part-edges.ts`, `part-starts.ts`, `advance/edge-scenes.ts`.
+- **Edge pictures are builder targets**: `<scene>@start|end`, stored on `scene.edges`, reviewed, set-checked and approved as their own cards ("Start of video N" / "End of video N"; card titles never say "part").
+- **Edge picture source**: `<scene>@start|end` is drawn like a setup shot: a line drawing of THEIR frame (the shot's first-frame still, or its LAST frame cut from the stored source copy by the worker, `referenceKind: 'source_frame'`), with the scene's storyboard as look reference.
+- **Prompt writer**: the one-shot clip gets its two pictures as "first frame … start exactly on it" / "last frame … end exactly on it", never an empty reference list.
 - **Plan check `part_has_start_end`** before anything is paid: a moving clip on a run read from an ad whose stored
   copy is gone cannot get its end picture → one plain line. Runs made before G1 (no edges) render as before + log.
 - **A repeated shot is the SAME PICTURE, not "no hard cut"**: compare the two first frames at 64x64 colour, mean
