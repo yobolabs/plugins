@@ -427,7 +427,7 @@ Check each one on prod by name before calling a remix release done (switch parit
 
 - **`toFrame` is exclusive.** A shot's last frame is `toFrame - 1`. Using `toFrame` as the last frame draws the next shot's first frame on every end picture, and the last shot asks for a frame that does not exist. Use one helper, `shotWindow(shot, fps)`, for every window; clamp frame grabs to the copy's last frame.
 
-Sean 2026-11-06 22:4x: "Storyboard must have an image for every unique shot and for start and end shot of clips."
+Storyboard rules (what a set holds, clip requests): `../../remix-agent/references/storyboard.md`.
 Rulings by the remix lead; yobo `stages/video/part-edges.ts`, `part-starts.ts`, `advance/edge-scenes.ts`.
 - **One continuous shot → Seedance 2.0 i2v**: `image_url` = the clip's start picture, `end_image_url` = its end
   picture, nothing else (cast and product are drawn into the pictures). The prompt writer gets the two pictures as

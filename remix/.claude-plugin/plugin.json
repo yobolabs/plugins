@@ -1,7 +1,7 @@
 {
   "name": "remix",
   "description": "Ad Studio Remix: remake an existing video ad for a merchant's own business. Fixed pipeline (read ad, brief, line drawings, storyboards, AI review, human approval, video parts, join, export, post), run mostly from WhatsApp. Skill = universal rules + per-type and per-stage references; agent = remix-dev across slides, yobo, msg-api and Cadra.",
-  "version": "0.4.109",
+  "version": "0.4.110",
   "author": {
     "name": "Yobo Labs"
   },

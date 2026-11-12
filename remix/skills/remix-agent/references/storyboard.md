@@ -7,19 +7,22 @@ source frame (position and framing only). A master picture or set picture is a r
 substitutes for the shot's own line drawing. Line drawings never go to a video model alone (the old subject's shape
 leaks into the new product).
 
-**Video model: Seedance only, never Kling** (Sean 2026-11-06: "No, do not use Kling. We have plenty of experience to
-know"). Every remix video part, draft and final, runs on Seedance. A clip of one continuous shot uses Seedance
+**Video model: Seedance only, never Kling.** Every remix video part, draft and final, runs on Seedance. A clip of one continuous shot uses Seedance
 image-to-video with the start picture as `image_url` and the end picture as `end_image_url`. A clip spanning several
 shots uses Seedance reference-to-video: ordered `image_urls` (start picture first, end picture last), bound by @ tags
 in the prompt. Reference-to-video takes no first/last frame field and must not be mixed with one.
 
-**What a storyboard set must hold** (Sean 2026-11-06: "Storyboard must have an image for every unique shot and for
-start and end shot of clips"): one image for every UNIQUE shot (a shot that comes back, the same setup and framing,
+**What a storyboard set must hold:** one image for every UNIQUE shot (a shot that comes back, the same setup and framing,
 reuses its image rather than getting a new one), PLUS an image for the first and the last frame of every video part
 (clip) sent to the video model. The review fails a set that is missing any of these.
 
-**One storyboard per shot, built from keyframes, decided** (Sean 2026-11-06: "keep per shot" … "It should be based
-on keyframes"). A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
+**Clip requests (one rule set for every video part):**
+- Each clip gets a storyboard of at least two keyframes: its first picture and its last picture. Add further keyframes only for significant moments that give the clip context.
+- Send a clip only the pictures it needs. Never send every picture of the set to one clip.
+- The source clip is not a visual reference. It is sent only when the part keeps the ad's audio, and then only for its audio.
+- Burned-in text: a storyboard or keyframe that shows source text fails review. Clean the text off source footage only for kept clips (cut, not generated), never for generated clips.
+
+**One storyboard per shot, built from keyframes, decided.** A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
 part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,
 last frame. A long shot is split at a real moment (a beat start or a ★), never mid-action. It is redrawn with the merchant's cast and product. That is for any source with no speech, even when people appear in it. People-dialogue ads (people who SPEAK) use
 one label-free picture per shot instead: a master per camera setup, and every other shot of that setup drawn from its
