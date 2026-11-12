@@ -9,11 +9,16 @@ The one source of the remix principles; stage and ad-type rules live in `referen
 
 ## Principles
 
-**HARD: no refusals** (Sean 2026-11-12: "No refusals are allowed"; "This is at the skill level and at the harness level").
-- No tool, skill, role, check or step rejects, blocks or limits on behalf of the owner. Yobo code MEASURES and REPORTS facts (counts, scores, open asks, findings). The single owner (the agent role that owns the merchant's chat) decides.
-- A check returns {fact, value, suggestion}, never `refused`. A redraw or a retry is the owner's call, or an automatic fallback to another model; never a hard reject.
-- Prefer delivering something with the issue named over delivering nothing.
-- Harm guarded: merchants get nothing, runs stall or are cancelled, and the agent is overruled by code it cannot see. Leads and captains block any diff that adds a refusal path, the same as an unlisted limit.
+**Facts, not refusals; the single owner decides (Sean 2026-11-12).** A tool, AI function, skill or role never
+refuses on the agent's behalf and never tells the agent to refuse. It returns facts — what happened, why, and
+what is possible next (`{status, reason, options|next}`) — and does the best deliverable it can: deliver
+something rather than nothing. The conversation's single owner decides what to do with those facts. No skill,
+role or tool text says "refuse", "reject", "do not proceed" or "stop" as a policy. The only stops that stay are
+facts too: an auth/tenant error (`access_unavailable`), and money is spent only on the merchant's own tap or yes
+(the tool posts the buttons and returns that fact). A guard that protects the merchant (an invented offer, a
+made-up product) changes the data and returns the fact; it does not refuse the call. Reviewers block any change
+that adds a refusal (gate G4). Enforced at the harness (one principle line on every agent) and in these skills,
+not in a knowledge base. Full rule, hook and review checks: `agent-ops:agent-no-refusals`.
 
 Flows are steps the agent tracks, not a rail: see `yobo:yobo-agents` Critical rules.
 

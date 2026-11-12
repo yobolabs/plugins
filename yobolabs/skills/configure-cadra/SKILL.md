@@ -12,6 +12,17 @@ public REST API — the same operations the in-app copilot runs (`configure_agen
 Works identically in Claude Code, Codex, or a plain terminal: the helper is
 dependency-free Node.
 
+**Facts, not refusals; the single owner decides (Sean 2026-11-12).** A tool, AI function, skill or role never
+refuses on the agent's behalf and never tells the agent to refuse. It returns facts — what happened, why, and
+what is possible next (`{status, reason, options|next}`) — and does the best deliverable it can: deliver
+something rather than nothing. The conversation's single owner decides what to do with those facts. No skill,
+role or tool text says "refuse", "reject", "do not proceed" or "stop" as a policy. The only stops that stay are
+facts too: an auth/tenant error (`access_unavailable`), and money is spent only on the merchant's own tap or yes
+(the tool posts the buttons and returns that fact). A guard that protects the merchant (an invented offer, a
+made-up product) changes the data and returns the fact; it does not refuse the call. Reviewers block any change
+that adds a refusal (gate G4). Enforced at the harness (one principle line on every agent) and in these skills,
+not in a knowledge base. Full rule, hook and review checks: `agent-ops:agent-no-refusals`.
+
 > **Scope.** This skill drives the product from the outside, over its public API.
 > For work *inside* the platform — the ReAct loop, provider resolution, why an
 > execution hangs, cadra-web/cadra-api code — use the `cadra` plugin
