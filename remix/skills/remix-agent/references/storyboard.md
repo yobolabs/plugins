@@ -19,8 +19,11 @@ reuses its image rather than getting a new one), PLUS an image for the first and
 **Clip requests (one rule set for every video part):**
 - Each clip gets a storyboard of at least two keyframes: its first picture and its last picture. Add further keyframes only for significant moments that give the clip context.
 - Send a clip only the pictures it needs. Never send every picture of the set to one clip.
-- The source clip is not a visual reference. It is sent only when the part keeps the ad's audio, and then only for its audio.
+- The source clip is not a visual reference. It is sent only when the part keeps the ad's audio, and then as the extracted audio track only, never the video file.
 - Burned-in text: a storyboard or keyframe that shows source text fails review. Clean the text off source footage only for kept clips (cut, not generated), never for generated clips.
+- Template parts: the template's prompt (preset recipe) plus this clip's needed pictures. The template panel is the script only, never a picture (`types/template-reel.md`).
+
+- Picture request order, for every picture or video request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". A line drawing is never the first or only image. A request with no colour reference is refused before the paid call.
 
 **One storyboard per shot, built from keyframes, decided.** A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
 part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,
@@ -48,7 +51,6 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 - A still is drawn from its ONE source frame, never from a keyframe sheet. Any reference that names a sheet, even one with a single panel, makes the model draw grids or split panels. Edge frames (single frame) render clean. Video scenes keep their sheet of every moment.
 - The AI storyboard review must include the check "one picture, no panels, grid or split". Without it, split frames pass review.
 - Seedance renders clips of at least 4 s. A short scene keeps the ad's cut through the preset clip recipe (render window, play the scene).
-- Picture request order, for every picture or video request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". A line drawing is never the first or only image. A request with no colour reference is refused before the paid call.
 - A line drawing is an internal framing input to the picture model only. The merchant never sees one: not in chat, the review page, the album, the cards or the video. The merchant sees the source frame and the new storyboard picture. The Remix Lab is a team tool and may show line drawings.
 
 - **Product words in every storyboard prompt come from the approved sheet**, as principle P5 in `../SKILL.md` requires.
