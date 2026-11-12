@@ -152,3 +152,8 @@ Sean: "You need to have every video I make with remix in context stored somewher
   Get a file through the back-office page in the row, or presign the S3 key.
 - **Backfill a link-only original free first:** `yt-dlp` the post link, then store it through the lab store
   (`upload-url` → PUT → PATCH `source.key`). Apify only after asking.
+
+## Upload to template: the path
+
+- Load the file with CDP `DOM.setFileInputFiles` on `#srcFile`. The run id is in localStorage `remixLab.run.file:<name>:<size>`; the source is stored at load (`source.key`).
+- Back office `app.yobolabs.ai/backoffice/remix-lab/<runId>` → Save as template. Save reads the stored copy through yobo (house org), then builds the breakdown and the draft template.

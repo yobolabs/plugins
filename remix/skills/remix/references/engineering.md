@@ -595,3 +595,12 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Every merchant message reports finished work or carries the live button that moves the work on. Never send the merchant elsewhere, never "tell me to …", never a second confirm after a choice, never ask for a tap that already happened, never an internal word ("assembly", "pipeline"). Money is solved in place: [Add credits] on that message; the run resumes by itself when credits land.
 - A stale button: when the live ask is the newest message, reply with one line ("Your question is just above."). When newer messages sit below, re-post the live ask with its buttons.
 - Enforced in code: `ask-has-buttons.test.ts` (no buttonless ask unless allow-listed with a reason) and `copy-lint.test.ts` (banned phrases in fallbacks and copy rows). Any merchant-line change passes the G12 gate.
+
+## A new prod path is proven end to end before the first fix
+
+- Trace every hop to the final row on real data before the first prod release: read-only SQL, a script run inside the worker container, pure functions run locally on a real snapshot. Batch every fix found that way into one release. One bug per release costs one release per bug.
+
+## Repro inside the prod worker
+
+- The worker container has no curl. Fetch the file on the host, `docker cp` it in, and run as root: `docker exec -u 0 worker-service /opt/remix/bin/python scripts/remix/analyze.py <file> --json <out>`.
+- During a worker deploy two containers run (`worker-service-new` and the draining `worker-service`). Grep both logs.
