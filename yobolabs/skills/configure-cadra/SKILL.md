@@ -23,6 +23,10 @@ made-up product) changes the data and returns the fact; it does not refuse the c
 that adds a refusal (gate G4). Enforced at the harness (one principle line on every agent) and in these skills,
 not in a knowledge base. Full rule, hook and review checks: `agent-ops:agent-no-refusals`.
 
+**Cadra sets no product limits on an org's agents; the org configures them (Sean 2026-11-12).** Do not add a
+cap, timer or truncation to an agent config to "be safe". Money, rate or safety caps need a `LIMITS.md` row
+and a review (gate G8). Detail: `cadra:agents` → `agent-structure-best-practices.md` § Limits.
+
 > **Scope.** This skill drives the product from the outside, over its public API.
 > For work *inside* the platform — the ReAct loop, provider resolution, why an
 > execution hangs, cadra-web/cadra-api code — use the `cadra` plugin

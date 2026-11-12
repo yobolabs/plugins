@@ -44,7 +44,7 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
 - End card: org brand logo, fall back to the yobo brand profile when the slides brand kit has none. Captions and on-screen
   text come from a word-timed transcript in post (Finish); shown to the merchant before export.
 - WhatsApp video cap is 16 MB: the chat gets a copy that fits (about 15 MB, 720p if needed); the full file stays in Ad
-  Studio. If the send fails: one line with the link.
+  Studio. If the send fails: one line in words with a button to Ad Studio, never a raw link.
 - Export waiver: the MQL waiver applies at export too (quote passes the remixId).
 
 ## Music
