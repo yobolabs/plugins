@@ -317,7 +317,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 
 - **A set-aside run takes no typed answer.** The owner-inbound typed-product path skips runs in `state.setAside`, and `remix_start`'s `parkOnNewRequest` writes `setAside` BEFORE the scratch refusal; a later set-aside overwrites `setAside.at`. So "`setAside.at` is after the text" does not prove the run was not aside at the time: read the tool logs.
 
-- **`remix_start` with no usable source does not refuse.** It returns `{status:'not_started', reason:<fact>, message, next, changed:false}` and yobo POSTS the ready-ad cards itself (`remix-tools.ts` `withSourceCards`, then `remix-scratch.ts` `scratchAnswer`), with `shownInChat` at the top level. A refusal would leave no run, and `needs:*` buttons on a run-less message are dead (tap routing answers only on an existing run).
+- **`remix_start` with no usable source does not refuse.** It returns `{status:'not_started', reason:<fact>, message, next, changed:false}` and the app posts the ready-ad cards itself (the source-card helper, then the scratch-answer helper), with `shownInChat` at the top level. A refusal would leave no run, and `needs:*` buttons on a run-less message are dead (tap routing answers only on an existing run).
 - **Every `remix_get` summary path carries the run's facts.** The open-ask path (`openAskFactsOf`, no `remixId`) once returned only `{openAsk, remixId, summary}`, so the agent guessed the stage from the open ask and said the video was not generated while a joined draft existed. Both paths return `latestVideo`, the phase and `review`; review opens the videos step whenever a video exists.
 
 ## Stop path

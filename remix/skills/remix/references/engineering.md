@@ -697,7 +697,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Every insert into the remix job table sets the reply language from the run: the chat's stamp, then the analyze job's language helper. A redo copies the language of the job it redoes. A new job-insert path copies that pair.
 - Prove a language change on the analyze job's reply language, not only on the run state.
 
-- **Review functions are vision functions with two image caps.** `remix_qa_review` takes at most 6 image variables (the vision cap in the cadra-web function config) AND at most 6 input images per run across all inputs. A storyboard review already sends 3 to 5 images, so the product images go as ONE picture. Comments that say "4 per function" are stale.
+- **Review functions are vision functions with two image caps.** `remix_qa_review` takes at most 6 image variables AND at most 6 input images per run across all inputs. A storyboard review already sends several images, so product images go as ONE picture.
 
 - **The agent's flags never move a run.** `remix_start` with `fresh:true` or `intent:'scratch'`, and the scratch park (`parkOnNewRequest` / `saveOnNewRequest`), act only when this turn's TRUSTED merchant words score the Jev `new_ad` check at or above `CHANGE_CLASSIFY_MIN_SCORE` (0.60). A scratch start with no concept takes the words as the concept when `has_idea` is at least 0.60 (one typed Jev call per `remix_start`, memoised per context). Before this gate a low-score reply set a live run aside.
 

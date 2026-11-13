@@ -35,7 +35,7 @@ The setup master is passed beside the sheet as the set and cast reference. Still
 one per measured shot. Each clip's storyboard is ONE keyframe sheet of its key moments: first frame, every beat start,
 every ★, last frame. A long shot is split at a real moment (a beat start or a ★), never mid-action. It is redrawn with the merchant's cast and product. That is for any source with no speech, even when people appear in it. People-dialogue ads (people who SPEAK) use the same timed sheet for every moving shot, speech shots included; the setup master is passed beside it as the set and cast reference (`types/people-dialogue.md`).
 
-**Redraw keeps the sheet.** A redraw keeps the sheet's panel count, order and shape and never brings back the source ad's object. The code checks the panel count. A mismatch is redrawn at most once per part (`STORYBOARD_AUTO_REDRAWS`, `_context/LIMITS.md`), then a failure line with [Fix it].
+**Redraw keeps the sheet.** A redraw keeps the sheet's panel count, order and shape and never brings back the source ad's object. The code checks the panel count. A mismatch is redrawn at most once per part (a per-part limit in the team limits register), then a failure line with [Fix it].
 A product sheet needs only one ticked moment, the same as the lab; there is no minimum of 3. The 4 s floor merges only video parts (`groups.ts`
 buildGroups), never storyboards. Do not re-raise this as a cost question.
 
