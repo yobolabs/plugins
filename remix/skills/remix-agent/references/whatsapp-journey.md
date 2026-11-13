@@ -19,7 +19,8 @@ string (an object whose keys contain ':' broke every "Use these").
   fallbacks are written in that voice and scored with the Jev voice scorer (precedent YMS-490). Never a machine line
   ("That button cannot do this now").
 - Every failure is **ONE plain line** in the chat's language saying what happens next, with a button when there is a
-  next step. Never silence, two lines, or a contradicting line.
+  next step. Never silence, two lines, or a contradicting line. The line names the step, the part when known, the cause in
+  plain words, and what each button does; an unknown cause is said as unknown. Never the bare "That step didn't work".
 - A merchant stop ends the run itself and every other live remix in that chat, never a finished video (joined, final, exported, posted). Its one line comes from the stop result's run field: only an ended run says stopped.
 - The agent handles free text and questions only, with typed remix tools. It never presses Approve, never states a
   price, never promises text/logos drawn by AI. Detail: below.
@@ -164,6 +165,7 @@ answers; the matcher never swaps products.
   remix's newest OPEN ask again with fresh tokens; nothing open: the line carries [Pick a ready ad]. "Open" = the
   remix's newest post with stored buttons (`remix_deliveries.payload_ref.repost`) with no tap on this remix after it
   (`remix_events`). Button tokens are NOT an answered signal: most taps never consume theirs.
+- **"Newest" resume means an ask newer than the one pressed, never an older open ask.** Every posted ask stores its question text. [Keep it] after a draft resolves through `keep_draft_line`.
 - **No part ask while the auto-join runs.** A QA LOOK verdict on a part is info (logged on the run); when every part is
   made and the join starts by itself, post no [Approve / Make it again] ask and no QA words ("source cuts").
 - **Several failed storyboards** redo on one ask (`make:redraw` + every failed scene). A failed video redoes one at a
@@ -173,6 +175,7 @@ answers; the matcher never swaps products.
 - **A press on a run's ask from a WhatsApp turn goes to the ask's own chat,** the side chat when the run has one, never to the turn's chat.
 - **At the final stage only the cut approval and the export charge the export.** Other gos at that stage are free.
 - **A change ask's forward option is paid (keep the plan) only at the brief.** Every later full-run phase offers a free [Looks good] instead. A go that cannot act gives the agent a fact and posts one line, never silence.
+- **A merchant's time maps to scenes on the cut timeline.** "From 13 s onwards" is `from`/`to` relative to the first scene, never summed render seconds. A time answer keeps the waiting note; never ask "which scene?" for a time. Labels use merchant numbering; every scene in a multi-scene change carries the note.
 
 ## Problem solver: fix → ask → stop well (SKILL.md P6)
 

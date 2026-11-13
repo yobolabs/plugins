@@ -105,6 +105,7 @@ elements to generate the video."
 
 - **A pass that made progress is never a stall outcome.** Any advance step that changed state returns a non-stall outcome. A refused `needs_help` move sets a retry wake, or nothing wakes the run.
 - **"AI provider returned an error" is a label, not a cause.** It is the default text for any image-run throw. Read the job row's `result.error.message` first, then the Cadra `ai_function_runs` row or the Vercel log. A fast failure (seconds) points to our input or ffmpeg; a slow one points to the provider.
+- **An ask's stored cause is a catalog code** (`job:<uuid>:<failReason>`), never display text. Auto-rerun classifies by the catalog; display text is read as ours, so auto-rerun re-runs a provider-blocked part on every worker swap.
 - **ffmpeg JPEG frame grabs need `-pix_fmt yuvj420p -strict unofficial`.** Without them, mjpeg refuses limited-range (tv-range) input frames.
 - **Worker container logs reset on every redeploy.** Read or save a run's log lines before the next deploy lands, or wake the run for a fresh decision line. A deploy that drains a remix job can drop that run's wake; see the yobo runbook's Worker section.
 - **Vercel runtime logs need the deployment id to be read** (see *Tracing a stuck run*). When they cannot answer, run the real code in the dev worker container: write a script under `/tmp`, run `npx tsx --tsconfig /app/tsconfig.json <script>`, import from `/app/src/...`, and write inside a transaction that throws at the end so it rolls back.
