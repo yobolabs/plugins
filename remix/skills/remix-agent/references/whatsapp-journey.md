@@ -127,6 +127,7 @@ answers; the matcher never swaps products.
   `selection_required` with a `reason` (`no_inbound`, `id_mismatch`, `facts_unavailable`, `run_mismatch`,
   `generation_mismatch`, `not_a_current_pick`) and logs `remix_selection_refused`. Read that reason before
   guessing. A turn that never records `customerRun` refuses every tap (the YMS-750 incident).
+- **A refusal's fix names the next tool when the merchant is waiting on an answer.** After the material ask, the fix says to read the recommended view in the same turn. "End the turn" is wrong there: it leaves a tap unanswered.
 - **Re-showing cards already in chat sends nothing.** The same picks under the same idempotency key are a msg-api
   `duplicate`. The entry tool therefore does not re-post cards shown by an earlier run. It returns `alreadyInChat` and
   tells the agent to ask, in one line, for a tap on the cards above. A refused tap tells the agent the same and never
