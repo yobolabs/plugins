@@ -315,6 +315,8 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 - A moving clip never falls back to one frame: `keyframesOf` (`storyboard-plan.ts`) returns every keyframe, and `storyboard-view.ts` always passes the reading beats for moving targets.
 - Any new billing or length path reuses the part-billing helper (`partBillSeconds`) and the one-second overflow trim, never the raw billed seconds. Otherwise a 15.07 s part bills 16 s, the video model refuses that duration, and every approval fails.
 
+- **A set-aside run takes no typed answer.** The owner-inbound typed-product path skips runs in `state.setAside`, and `remix_start`'s `parkOnNewRequest` writes `setAside` BEFORE the scratch refusal; a later set-aside overwrites `setAside.at`. So "`setAside.at` is after the text" does not prove the run was not aside at the time: read the tool logs.
+
 ## Stop path
 
 - Stop: yobo `services/video/remix/stop.ts` (stopRemixAndChat, then stopRemix, then cancelRemixRunTx via executeRemixCommand cancel). Phases in FINISHED_VIDEO_PHASES are never cancelled.
