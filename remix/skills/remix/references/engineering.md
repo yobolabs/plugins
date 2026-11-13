@@ -91,6 +91,9 @@ elements to generate the video."
   fallback; the env label comes from `NEXT_PUBLIC_ENVIRONMENT`, never `NODE_ENV` (it is `production` on the dev
   worker); dev reads only `YOBO_REMIX_ALERTS_DEV_CHANNEL_ID`. Never join a dev bot into a prod channel or put a prod
   channel id in a dev proof to make it pass.
+- **Two builders on one owner file are sequenced.** Parallel edits to the same file (for example the change wiring) conflict on every train.
+- **Before a release request on remix code, run the whole stages folder, front stage included,** not only the tests next to the change. Diff the failing test names against the same run on the base commit. A miss shipped a broken test to dev and prod and needed an emergency revert.
+- **A release line carries a typecheck result for the touched package, not only test results.** Green tests can hide a typed error that only the prod cut gate catches.
 
 ## A delivery row never proves a video was or was not sent (2026-11-09)
 
@@ -104,7 +107,7 @@ elements to generate the video."
 - **"AI provider returned an error" is a label, not a cause.** It is the default text for any image-run throw. Read the job row's `result.error.message` first, then the Cadra `ai_function_runs` row or the Vercel log. A fast failure (seconds) points to our input or ffmpeg; a slow one points to the provider.
 - **ffmpeg JPEG frame grabs need `-pix_fmt yuvj420p -strict unofficial`.** Without them, mjpeg refuses limited-range (tv-range) input frames.
 - **Worker container logs reset on every redeploy.** Read or save a run's log lines before the next deploy lands, or wake the run for a fresh decision line. A deploy that drains a remix job can drop that run's wake; see the yobo runbook's Worker section.
-- **Vercel runtime logs keep no history.** To see a web-path error, run the real code in the dev worker container: write a script under `/tmp`, run `npx tsx --tsconfig /app/tsconfig.json <script>`, import from `/app/src/...`, and write inside a transaction that throws at the end so it rolls back.
+- **Vercel runtime logs need the deployment id to be read** (see *Tracing a stuck run*). When they cannot answer, run the real code in the dev worker container: write a script under `/tmp`, run `npx tsx --tsconfig /app/tsconfig.json <script>`, import from `/app/src/...`, and write inside a transaction that throws at the end so it rolls back.
 - **Review to storyboards is a paid run-machine move.** It needs a merchant press, so a wake never takes it. A redraw from review starts in place and the phase stays `review`. A refused move is never silent: it logs and sets a retry wake (`REVIEW_RETRY_MS` row in `_context/LIMITS.md`).
 - **Every phase move outside a job landing wakes its run.** The generation bump and the enqueue happen together, with the enqueue after commit. A move that returns "started" with no job leaves the run idle forever.
 - **A deploy can kill a pass mid-way,** leaving the run marked processed with its starts never made. The due sweep must also pick runs idle in a work phase longer than `REMIX_STALL_GUARD_MS` (`_context/LIMITS.md` row).
@@ -112,6 +115,8 @@ elements to generate the video."
 - **An approval-only press calls `approve_item` without `askId`.** With an `askId`, `approve_item` takes the paid edge (review to parts) on the last approval (`approve-item-command.ts`). Approving the storyboards is the go for the videos (P0): the cost shows on that approval message. `approve-go.ts` is the loop's step for it.
 - **Every chat send goes through the delivery record** (`sendRemixDelivery`). A send that bypasses it is invisible to the retry and give-up path: a send accepted and then failed is never retried. The advance loop sends through `advance/loop-send.ts`.
 - **An open merchant grant skips the wait for "set already passed".** Otherwise [Try again] after the album writes a grant nobody reads, and the chat reports a redraw that is not running.
+- **A timed-out or failed video job never cancels its provider task.** A merchant Retry can then submit a second render while the first is still queued at the provider. After a Retry's new submit is accepted, call the provider's cancel tool once with the old request id and log the reply.
+- **A re-claimed video job polls its stored provider request id and never submits again.** Count the submit-attempt rows of a job (one row per provider task) before calling a second render. Read a provider task's state read-only with the status tool, using the prod Cadra key from the vault.
 
 ## Staff actions on dev
 
@@ -148,6 +153,7 @@ elements to generate the video."
 - **Pricing is parked.** Never add or change a price or credit UX. The free first remix is the MQL waiver; every paid
   quote or start must name the remix so the waiver applies.
 - **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (`../remix-agent/SKILL.md` P6, `../remix-agent/references/whatsapp-journey.md` § Problem solver).
+- **Model policy.** Every Cadra role and AI function runs the agreed model through the OpenRouter provider (`openai/gpt-6.1-terra`). A step that needs video input keeps its agreed watcher and writer split, stated as a fact. Any other model needs the owner's word.
 
 ## Pictures sent to people are compressed (Sean 2026-11-06)
 
@@ -359,6 +365,7 @@ Before a dev proof sends from a fictional or test number, check that the number 
 org binding (msg-api contact → conversations; yobo remix_runs for that org). A reused number answers someone else's
 open ask: a "1" meant for a menu proof started a paid storyboard batch on another dev org's remix. Use a new number,
 or close the old conversation first.
+A proof script presses only a run it created itself, on a test number. Never pick an existing run because it looks idle.
 
 
 ## Paid starts on yobo-native runs: keys, go, parts, retries (2026-11-06)
@@ -381,6 +388,7 @@ The first yobo run past storyboard approval hit six gaps in a row. Each rule bel
   a `usable` verdict) feeds the video catalog, storyboard assets and chat-photo. A storyboard sheet with no photo asks
   in chat: ONE `photo` ask naming the item, with the sheet target on its item. A chat photo then binds to that ask
   (`sheet-photo-bind.ts`), consumes it as the `retry:sheet` press, and wakes the run.
+- **Every key a part start puts on its input outside the go params must be listed in the job's run-key list** (`jobs.ts` RUN_KEYS). Otherwise the paid go check reads it as a changed parameter and refuses the start as changed since approval. Check this for any new input key on the part-start body.
 
 ## Switches a remix prod release must carry (2026-11-06)
 
@@ -556,6 +564,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 ## Web side chat: sends, media and new surfaces
 
 - A web side chat run sends nothing to WhatsApp: no final video, no timed nudge.
+- A run started inside a side chat inherits that chat's WhatsApp link and reply language from the chat's newest run. Reading only the main chat's record loses both.
 - A new chat surface must be checked for media, plain status lines and inbound files. Earlier surfaces lost media (conversation notify dropped image and video parts), lost plain lines (the side chat showed only card rows) and had no photo upload.
 
 ## Higgsfield busy answers
@@ -591,6 +600,17 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Local loop: `next dev` under memory pressure gets SIGKILLed by the system guardian. Use a built `next start` with the rebuild script.
 - Local loop: Cadra image URLs must be https on a public host (cadra-api `stored-url.ts`, cadra-web `attachments-s3.ts`). yobo's download refuses http.
 - Local loop: when the tester's browser is flaky, drive the run with headless Chrome and a curl next-auth cookie jar. Never print a credential file.
+- **The mini-run wrapper does not pass the caller's NODE_OPTIONS into the job.** Put it inside the command (`mini-run env NODE_OPTIONS=... <command>`). Without it tsc runs out of memory and a grep for error lines prints a false zero.
+- **Never change a worktree's branch while a mini-run from it is still syncing.** The sync fails and the job exits 0 with no result. Read the job's last lines for the head and base count before quoting a gate.
+- **A base-vs-head typecheck runs as ONE mini job:** copy the base versions of the changed files aside, run tsc on head, swap the base copies in, run tsc on base, restore, then compare the sorted file-and-code keys. Print the exit code. A job that waits too long for a slot exits without running: re-queue it, that is not a result.
+- **Pure tests that import database-touching modules** set a dummy DATABASE_URL and dynamic-import the module; the client is lazy and no query runs. A hook blocks mocking the database client module. The mini has no DATABASE_URL, so tests that import the runners are judged locally with the env file linked into the worktree.
+- **A turn spec must fake every paid or model port.** An unfaked one cold-imports the start graph and can push a test past its timeout on a loaded machine.
+- **Judge chat behaviour from message rows, not log counts.** The delivery record drops repeated progress keys, so four log events can be one message.
+- **`ad_video_jobs.claimed_at` is a heartbeat** refreshed about every minute while a job holds its claim, not the start time. Queue wait comes from the claim log line.
+- **Staff scripts read copy through the code path's own reader.** A direct key read can return empty where the code falls back to the default copy.
+- **A same-text-in-several-places fix needs a sweep before its proof.** Grep every place the source string is built and every place it is shown, list them in the review, then prove.
+- **The Mac load guard refuses new subagents above a load threshold, and one lane can hold a mini job slot for a long time.** Free your slot when a captain's gate waits on it.
+- **A fresh worktree has no env file, and targeted tests need a dummy DATABASE_URL.** A Jira call from a worker needs the Jira token and base URL from the vault (the base URL is not in the environment).
 
 ## Merchant lines follow the agent contract (R11)
 
@@ -606,3 +626,97 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 
 - The worker container has no curl. Fetch the file on the host, `docker cp` it in, and run as root: `docker exec -u 0 worker-service /opt/remix/bin/python scripts/remix/analyze.py <file> --json <out>`.
 - During a worker deploy two containers run (`worker-service-new` and the draining `worker-service`). Grep both logs.
+
+## Prod reads
+
+- Judge what a merchant actually received from msg-api's message rows (direction, author type, message type, delivery status; never the content column). A remix delivery row marked delivered only means msg-api accepted the send, and some lines (refusals, export refusals) write no delivery row at all.
+- Judge an ask as open or closed by its closed time, never by a delivery row. Front refusals write no delivery row, so an "ask open, no delivery" watcher raises false alarms.
+- A quiet-tap check reads the run's delivery rows and events. Remix lines do not show in msg-api's outbound logs.
+- Before counting an org as a real customer, group the run's chat across orgs and check the test tag on the phone. One chat can be re-bound to another org, and a finished video for an org the chat has left waits silently.
+- Read prod with a script that imports the app's own database client and runs inside a read-only transaction with the superuser setting. The secret guard blocks piped scripts that name the database variable, so pipe the file in and import the client by path. Use default-export fallbacks for module interop. Remove the copy as root afterwards.
+- Dev reads use the admin connection entry from the vault; the entry for the row-level-security role returns zero rows for job tables. Prod reads use the admin entry with the read-only default option set.
+- Apify entries in the vault for dev and prod can answer user-or-token-not-found. For any Apify probe, use the Cadra credential behind the Instagram fetch tool.
+- Watcher alerts key on new delivery rows only. A run's snapshot keeps old failed rows.
+- The worker container's app folder is not writable for its default user: back up to a temp folder and remove files as root. Its grep has no include option.
+- Back Office rescue uses the run's own buttons: retry the approved step (free, no new consent), re-send the last question, or cancel the run. A re-send counts only when msg-api reports it sent, duplicate or queued. Each environment needs its own staff profile.
+
+## Prod watch
+
+- A stall is a run in a work step (needs, brief, teardown, storyboards, parts, joining) with no open ask, no running job and a wake time in the past. A run waiting on an open ask with a past wake is normal.
+- While a worker deploy drains the old container, the new container holds the run leases. Read logs from the new container before calling a run stuck.
+
+## Staff recoveries
+
+- A run paused from parts with no storyboard approvals: [Retry step] refuses again. Recover it with a staff move back to review that does not wake the run, then post the ready ask with the list of pictures that were shown, so [Approve all] approves exactly those. Back up the run row first.
+- Close stale asks beside a new album without posting anything: an old redraw tap would re-run that scene at cost. Back up first.
+
+## Money and system presses
+
+- A system-started paid job (re-join, part, re-render) carries a credit waiver bound to its own press run, so the start is not charged. A final-target join is never covered by the video price. No waiver, no start.
+- A free run shows no price line on a paid button. Check the first-remix waiver before adding credits to a go ask.
+- Estimates: the storyboard estimate is the current one. An early estimate from the source breakdown, recorded right after analyze, is planned and not yet live.
+
+## Prod rescues
+
+- A staff send to a merchant uses the notify schema, where text is required even for an images-only message. Dry-validate the payload (text length, key length, image count and https) before any real send.
+- A failed run-tied delivery row stops the run on any non-transient send failure. For a staff re-send that must not touch the run, use the plain notify path, which writes no delivery row.
+- A delivery-caused stop has no staff resume in [Retry step]: it re-runs the whole step and closes every open ask. Resume by moving the run to the phase before the stop without closing the other asks, close only the press's own ask, and back up the run first.
+- A system re-join also posts the join-started line, so a staff re-join sends two merchant messages. Count both when reporting.
+- The silent re-join decision returns none when another fault sits beside the sound fault. A staff rescue for that case must force the start.
+- A retired limit does not re-run what it stopped. A stage that read the limit's failure needs a "fits now, one free re-read" branch, once per run.
+- Never hand-retry a real merchant's job. Prove with a free function test run and the next natural job.
+
+## Prod traps
+
+- Due-sweep starvation: the advance loop takes a fixed number of due runs per tick (see the LIMITS row). A run due only through an elapsed wake that does nothing must leave the due set, or no-op runs starve new ones. Check by counting runs with a past wake, by phase.
+- Worker swaps lose in-flight jobs: a draining container can claim a job and die. The re-delivery sees a fresh claim and must hand it back, not answer busy. Read both containers' logs until the old one is gone.
+- A limit or gate that fires writes a run-ledger row (step, key, cause with its score), not only a log, so a daily count can come from the database. Logs disappear with their containers.
+- Cadra structured output has no optional keys: a new output field is always present, empty when unused. Every reader strips it before the function version flips. The script schema is strict, so one unknown key means no stored script. The writers' merchant-view trailer is stripped the same way.
+- REMIX_REFUSALS_OFF softens every run guard, including the merchant-press check on paid phases. Merchant-charged edges must never be softened. Check any new "refusals off" switch for money edges.
+- The refusals switch does not reach the gates in the tools module. Never assume a new gate is off on prod because the variable is set.
+- A park or set-aside must keep open asks open and write a ledger row. Any path that closes an ask leaves a record (a ledger row or a line), never only a closed time.
+- A failed job kept in run state can read as the failure of a later tap, and delivery dedupe by job id then silences the stop line. Match each failure to the tap that caused it.
+- HTTP 402 across several calls usually means the platform's upstream credit is nearly out, not one org's billing. Ask the agents lead before concluding.
+- Most prod storyboard rejections are for more panels than planned. More is acceptable; fewer is a finding. Failed pictures store no output, so keep the request id for examples.
+- A supersede writes the cause of the transition, not run-state fields. Watchers read the causation.
+
+## Gotchas
+
+- Removing a refusal by swapping a route can move it downstream. Trace every stage that reads the same data before calling a refusal removed: an empty keep routes to storyboards, but scenes left empty still stop at plan.
+- Agent flags never move a run. The start tool's fresh and scratch intents act only when this turn's trusted words score at or above 0.60 as a new ad on the classifier. A scratch start with no concept takes the words as the concept when they score at or above 0.60 for an idea. One classifier call per start, memoised per context.
+- A start with no product takes the product the merchant named in the chat's newest run, if that run was not delivered. A typed name is re-checked by the classifier; a catalog product is used only when the product menu was answered.
+- A name typed at the product menu closes the menu ask it answers. Any new answered path must close the ask it answers.
+- Cadra vision functions have a per-call image cap and a per-run cap across all inputs. A storyboard review already sends several images, so the product photo goes as one picture.
+- One-time and per-round lines need a run-level key, never a per-ask or per-post key; a per-ask key posted the same line several times. A queued resend of a one-time line is dropped once the run has moved on, and old open asks are closed when a newer one supersedes them.
+
+## Chat language
+
+- Every insert into the remix job table sets the reply language from the run: the chat's stamp, then the analyze job's language helper. A redo copies the language of the job it redoes. A new job-insert path copies that pair.
+- Prove a language change on the analyze job's reply language, not only on the run state.
+
+## Tracing a stuck run
+
+- Vercel runtime logs are read per deployment: `vercel logs -d <deployment id>` with a time window. Without the deployment id the command filters to the current git branch. Each row's logs array holds every console line of that request. Get the id from the inspect command for the environment's domain.
+- Before tracing one run, check that the step has ever succeeded: count its jobs by status on prod and dev. Zero ever means a code path bug, not a merchant case.
+- A press on a still-open ask reuses its first receipt. Any start or refusal keyed on that receipt is the same key on every retry; the platform dedupes the line and the press looks silent. Key on the press instead.
+
+## Lab twin
+
+- The Higgsfield tool account in a session may have no plan. A lab twin of a part then runs on the platform's reference-to-video API, with the key id and secret from the vault as an authorization key pair, and with media as public https links from the media upload.
+- A reference-clip edit that blurs a product can return a safety refusal twice. Check any reference-clip edit for refusals before shipping it.
+
+## Tool result rules
+
+- Any flag the agent runtime acts on (silent end, shown-in-chat, the posted signal) sits at the top level of a yobo tool result. A copy nested inside a status or view object is for the agent to read; it is never the only copy. A flag nested only in a status object is never read, and the run fails with an empty reply.
+
+## Dev proof
+
+- A proof must use the path the bug used. Typed text without a change tap goes to the Cadra agent, not to the change wiring. A fix can pass tests and fail live when the proof takes the other path.
+- Test dev proofs on a phone with no open video of the same product: the mention switcher treats product names as video mentions.
+- A wake does not re-run a stop the run already recorded. Prove a front-half fix on a fresh run, never by waking an old one.
+- A hand wake of a dev run: put the script in a file, copy it into the worker container and run it there. An inline script passed over ssh loses its quoting. Do not wake during a worker recreate: the wake can land on the draining container.
+- A builder can run a free dev proof through the WhatsApp test rig (text, tap and read on a fictional number, under the secret-run wrapper). A made-up business without a website gets an org with no catalog products.
+- A WhatsApp list row is answered by sending its id as a button reply through the test rig.
+- Direct dev tool calls need the trusted chat headers (root execution id, execution id, chat customer reference, inbound message id, session id), not only the execution-context header. Without them the run has no creator.
+- A fixed-sentence reply may exist only after a paid stage. Pick the stage where the behaviour shows before asking for budget.
+- Web-chat dev runs need a signed-in browser. Without one, drive the run on the WhatsApp rig with fictional numbers.

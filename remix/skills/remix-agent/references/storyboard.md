@@ -27,6 +27,7 @@ People who speak: one picture per shot, see `types/people-dialogue.md`.
 - Burned-in text: a storyboard or keyframe that shows source text fails review. Clean the text off source footage only for kept clips (cut, not generated), never for generated clips.
 - Template parts: the template's prompt (preset recipe) plus this clip's needed pictures. The template panel is the script only, never a picture (`types/template-reel.md`).
 - Picture request order, for a picture request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". For a video request the order is per mode above (image-to-video: start picture, then end picture; reference-to-video: start picture first, end picture last). A line drawing is never the first or only image. A clip request with no colour picture is not sent to the video model: it has no approved storyboard yet (RULES 12, storyboard first). The fact (which clip, colour picture missing) goes to the run's owner, who draws or redraws that storyboard.
+- Video words for a clip never append a scene's own text: scene text can come from an earlier pack and name a product the brief replaced. What the approved storyboard shows reaches the video as each shot's first line.
 
 **One storyboard per shot, built from keyframes, decided.** A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
 part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,
@@ -80,3 +81,16 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
   named, never hidden behind a count.
 - Models for pictures, which fits which job: `remix-context` search "higgsfield gotchas" and the
   type files. Prompts over 5,000 characters are refused by the many-reference picture model: fall back to each rule's first sentence.
+
+## Keyframe sheet
+
+- A keyframe sheet never leaves an empty grid cell: its moments are padded to the full grid with in-between moments inside the same shot.
+- A video part drawn as one clip sheet is the same picture on every member scene. Anything the review reads per scene (failures, redraws, remakes, grants, the quality-fix count) is read through the part, so a failed part sheet ends in the storyboard failure line and [Fix it] redraws the part once.
+
+## Model fallback
+
+- A fallback redraw on another model carries the scene's data, never another model's own variables. A variable only some board functions declare is listed as function-only and dropped for a function that does not declare it. Add a new function-only variable to that list; never copy a full per-function list, since it drifts and drops live variables.
+
+## Numbering
+
+- The merchant's scene number is the caption number: the ad's kept shot is Scene 1, and internal scene indexes never reach the merchant. The agent passes the merchant's number in scene operations and the app maps it.

@@ -35,3 +35,7 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 - Brief-writer output that fails validation: retry once, then ONE plain line to the merchant.
 - Ad notes (per source ad) and product notes (per merchant product) are saved after every remix and loaded into the
   brief next time. Ad- and product-specific detail lives only there, never in generic rules.
+
+## Checks on the brief
+
+- Checks on the brief writer's answer: the product description section is required. It may be one product line, a products line (inline or as a list), or one heading per product. A missing description is filled from the picked products' names and logged; the job never fails for it.

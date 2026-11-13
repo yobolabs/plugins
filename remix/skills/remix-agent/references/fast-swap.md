@@ -127,6 +127,7 @@ swapped, Higgsfield 01a1a46a). Without that line Seedance kept the panel's own p
 **Source download is server-side.** An Instagram CDN video URL (Apify `videoUrl`) answers a browser User-Agent or any
 Referer with a 302 carrying no CORS header; a server request gets 200. The URL also expires (signed `oe=`). Download on
 the server, store our own copy, and never hand the CDN URL to a browser or keep it in a template.
+There is no source length cap: the whole video is fetched up to a fixed byte cap, and over that cap the first part that fits is read and the reading is marked trimmed.
 A server fetch can still be walled where a home IP is not (Facebook share links from the worker's IP): prove every
 fetch fix by running the shipped function inside the prod worker container, never by a fetch from your own machine
 (builder map: `remix` skill `references/code-map.md` → Traps).

@@ -8,6 +8,9 @@ The AI review and code checks run on every set; "Fix it" for the merchant is a b
 ## No refusals in review (HARD, see remix-agent § Principles)
 
 A review or check reports a fact, a value and a suggestion. It never returns `refused`, never blocks a storyboard and never cancels a run. The owner decides the redraw and the delivery. A failing check names the issue; it does not stop the run.
+- A verdict that keeps no scene routes to a full remake of every scene, never to a refusal. Check every branch that can end a run before a merchant choice for the same rule.
+- A universal ready ad is ordered last for a business in another category, never dropped.
+- When a storyboard role acts on a tool's refusal, the cause is the tool's answer. Read the tool answer before changing a model or role text.
 
 ## How: one review sheet
 
@@ -95,6 +98,8 @@ invented person through: check for repeats explicitly.)
 
 Built in code: `scenes_match_shots`, `beats_map_audio`, `scene_has_picture` (slides `storyboard-check.ts`).
 Cadra functions: `remix_storyboard_review` (v7), `remix_set_check` (v2).
+
+Code counters on a picture (panel count, ink stats) only measure and log. They never refuse, redraw or reach the merchant, because a green screen or a reflection reads as extra panels. The vision board check owns panel and content truth.
 
 ## Known gaps (verified against slides origin/develop, 2026-11-03)
 

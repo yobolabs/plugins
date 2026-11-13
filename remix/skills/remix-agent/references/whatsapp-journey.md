@@ -30,6 +30,7 @@ string (an object whose keys contain ':' broke every "Use these").
 - **Never call the source ad "your ad"** (Sean 2026-11-05: "why would it tell me a person isn't in my ad — Yobo built
   this ad"). The merchant's ad is the remix; the one being copied is "the original ad" (id "iklan aslinya", es "el
   anuncio original") in every line, copy row and prompt the merchant sees.
+- **The shared source assessment (why it fits) is model text in no stated language.** A non-English chat does not get it in its own language until a translation step exists.
 
 ## Tap ids
 
@@ -48,6 +49,8 @@ A go binds to an open ask, never to a stray "yes". A tap with no handler falls t
 `REMIX_TOKEN_ACTIONS` (`extensions/remix/events/action-tokens.ts`), or it goes out bare and a yobo-owned tap answers
 "That button is old". (Corrected: this line used to say `[a-z]+` only.) It also forwards a WhatsApp photo with no tap id
 (`nativeReplyId: null`, `photo: { attachmentUuid, mimeType }`, caption in `text`) — see *Needs list and chat photos*.
+
+A tokenless tap has two exits. On a run with no jobs it goes to the agent. On a run with jobs, a bare paid go gets a bare-tap fact and the agent answers; nothing is pressed. Some live buttons are tokenless by design (`needs:pick_ad`, `needs:try_anyway`, `needs:add_none`), so a scan for bare taps must filter to paid go ids.
 
 ## Steps as buttons
 
@@ -96,6 +99,10 @@ answers; the matcher never swaps products.
   idempotent on the attachment uuid) + slides `remix_set { needsPick: { rowId, assetId, from: 'whatsapp' } }`;
   logo → `saveMerchantLogoLink` (org `brand_assets`, stable public URL — the end card stores the URL in its
   snapshot, so a needs-row pick alone is not enough) + the logo row's pick. One line back, or one "send it again" line.
+- **A typed answer to a choice ask counts as the choice.** A held list is released by every path that promises it: a typed change at a breakdown choice is the choice, and the list no longer waits behind an unanswered one.
+- **"Add another product" lists close when the needs list is used.** A press already on such a list is answered first, never dropped.
+- **A typed decline reaches the leave-out check for needs questions as well as rows.** Otherwise it is saved as the answer and echoed back.
+- **Plain text caps at 4096 characters and an interactive body at 1024.** Split a long plain list at 4096 rather than sending it as many messages, and keep interactive bodies within 1024.
 
 ## Getting the ad in (front entry)
 
@@ -124,6 +131,8 @@ answers; the matcher never swaps products.
   `duplicate`. The entry tool therefore does not re-post cards shown by an earlier run. It returns `alreadyInChat` and
   tells the agent to ask, in one line, for a tap on the cards above. A refused tap tells the agent the same and never
   to claim a start.
+
+- **The same chat, execution and source starting twice returns the first run** (already started), and a set-aside run runs no pass.
 
 ## Go-ask rules (back chain)
 
@@ -158,6 +167,11 @@ answers; the matcher never swaps products.
   made and the join starts by itself, post no [Approve / Make it again] ask and no QA words ("source cuts").
 - **Several failed storyboards** redo on one ask (`make:redraw` + every failed scene). A failed video redoes one at a
   time (`make:remake` + that part); more than one failed video keeps a typed note.
+- **A typed yes is stale only when the run has moved on, never by its age.** The run moved on when a newer ask carries a yes (open or closed) or the run has ended. A generic yes is gated by that check; a tap or an exact title presses at any age. Only a fresh start starts a new run. A wall-clock cut-off drops real yeses on runs that have not moved.
+- **A stale or already-used list tap is reopened while the run is still at that step.** A tap is stale only when the run has moved past that ask's step or the ask was answered. A closed, unanswered ask of the current step reopens and the tap applies. Every list carries its own way out ([Just this one] / [Skip]) and is offered once per run.
+- **A press on a run's ask from a WhatsApp turn goes to the ask's own chat,** the side chat when the run has one, never to the turn's chat.
+- **At the final stage only the cut approval and the export charge the export.** Other gos at that stage are free.
+- **A change ask's forward option is paid (keep the plan) only at the brief.** Every later full-run phase offers a free [Looks good] instead. A go that cannot act gives the agent a fact and posts one line, never silence.
 
 ## Problem solver: fix → ask → stop well (SKILL.md P6)
 
@@ -276,6 +290,7 @@ English text only), so the rules live there, once:
 
 New copy key = English fallback in code + a `remix_copy_row_missing` log + a seed migration row. Pricing: never add/change;
 never say price, credits, "free" in agent text, relay payment tool results only.
+Fast-ask copy rows sit under the fast prefix (`ads_gen.copy.remix.fast_<key>.<lang>`); part-copy rows have no such prefix. A sweep or migration that drops the prefix reports false gaps or writes dead rows. Every live line needs en, id and es rows, and the copy-row guard test fails when one is missing. New copy migrations insert only missing rows, and their rollback deletes only rows still equal to what they inserted.
 Copy with `{placeholders}`: `ads/config.ts` `fillTemplate` THROWS on any var not passed, so a line reader that pre-fills
 with `{}` silently falls back to English. Read the raw row (`getAdsText`) and fill your own vars.
 Social post: reuses the existing yobo social publish path through Buffer / Hootsuite (`yobo:social` → dev.md "Other
@@ -286,6 +301,7 @@ behind Meta review; no TikTok through Buffer/Hootsuite.
 
 - msg-api waits about 5 s for yobo on a chat inbound. A yobo handler acks inside that window and does slow work (store, provider calls) in `after()`; otherwise msg-api also hands the turn to the agent and the chat gets two lines.
 - A tapped ask closes on every posted outcome, including the photo-asked outcome. Otherwise the advance loop replays it each tick and later steps (fast sheet, go ask) never run.
+- **A silent end (the agent posts no text) is only for a live job that will post by itself:** queued, rendering or finalising. With nothing running and no open ask, the agent gets the fact (the failed step and its cause, or that no button is open) and speaks. A live job whose finish never posts is a stage bug, not a reason for an age cutoff.
 
 ## Go record on a photo answer
 

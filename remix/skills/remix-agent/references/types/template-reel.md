@@ -23,6 +23,7 @@ shows the prompt that made it (often with a small product photo and a "comment X
 - **Check how the product appears.** Template reels often print the product on props (flyers, posters, a shirt
   pocket). That is an indirect appearance: no swap, use the storyboard pipeline (`../fast-swap.md` → "Swap only when the
   product is shown as itself").
+- **The reference video of a preset part is the raw template window.** The video model can copy the source product out of it even with correct storyboards, and template part clips are not text-cleaned, so source captions can ride along. The result is a draw, not deterministic: a redo with identical inputs can pass. Check the reference clip for the source product before paying for a part.
 
 ## Worked example (2026-11-04)
 

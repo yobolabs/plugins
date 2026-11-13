@@ -51,6 +51,7 @@ Back to [SKILL.md](../SKILL.md). Read when joining video parts, laying music, ex
 
 Music (Sean 2026-11-05): default = the source ad's own track; the merchant can search or pick a track we already have;
 similar-track matching only with a free source (no paid music vendor). From scratch, the same match and search, seeded by the script's mood.
+Planned rule: when the original ad talks and no part has a spoken line, the join lays one library track picked by the ad's mood and tempo, named in the ready line with [Change music]; the final QA states it as a fact. Until that is built, such a join is silent by design and the final QA says so without a hold.
 
 ## Post
 
@@ -62,6 +63,12 @@ After export the video posts through the Buffer / Hootsuite route; direct Instag
 - With the ad's own audio, every cut sits on the source cut frame (`analysis.hardCuts`), frame-exact. The original editor already cut to that audio.
 - Never move cuts to a computed beat grid. Beat snapping is only for a new track, from beats found by Cadra and stored in the template.
 - Export check: cut times equal the source's cut times within ±1 frame.
+- Speech in the source is a voiced script line, or a voice whose style, language or pace describes speech. Two of those saying none or silent means no speech. A voice field that only says "silent" is not speech, so the ad's own sound is laid. A silent join where the ad's sound is wanted is our fault: re-join it once (free) and never ask the merchant.
+- The ad's own cut frames are quantised and can drift off their music, and a beat grid can lock at half tempo. Record both grids and their cut shares before choosing one; on such ads no fixed grid reaches a high cut-on-beat share.
+
+## Final QA
+
+- The join lays our own mark in its one ffmpeg pass, so no unmarked file exists. The final QA grabs its frames with the mark's box covered and gets one fact line naming the box. Our own mark is never a finding and never offered as a change, on the draft or the final join.
 
 ## A generated part that covers several ad shots
 

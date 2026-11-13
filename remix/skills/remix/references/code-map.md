@@ -21,6 +21,7 @@ Back to [SKILL.md](../SKILL.md). Repo paths are for the dev team; specs and the 
 | Web chat remix cards + side chat | yobo `src/app/(org)/chat/components/RemixTurnCard.tsx`, `ChatListColumn.tsx` (Remix entry), `hooks/useRemixHistoryPoll.ts`, `src/lib/copilot/webchat/conversation-thread.server.ts`, `src/extensions/remix/web-chat.ts`, `web-focus.ts`, `web-surface.ts`; msg-api `src/routes/internal/webchat-session-conversation.ts` |
 | Ad Library read (the ONE reader) | yobo `src/extensions/remix/library/ad-library.ts` → slides `GET /api/v1/content/items/{id}` (content.search key, Bearer) |
 | Ad Library video into a remix | yobo `src/extensions/remix/library/library-copy.ts` (`libraryVideoUrl` port in `native-source-start.ts`) |
+| Export of the final cut | `[Approve it]` (go:yes, target make:cut) at phase final → advance-loop exportPress → video-start chargeExport (gate → remix export job → charge-only run) → final → exported → export_ready. Runs in the worker |
 
 ## Roles (which agent part runs which step)
 
@@ -196,8 +197,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 - **"No ready ads for <category> yet" is an empty recommender, never a switch.** yobo `recommendFor`
   (`extensions/remix/templates/recommend.ts`) posts that line when zero cards survive. Check in this order: reviewed
   (`review_status='done'`) slides `content_items` with that `category` tag (`content_item_tags.item_id`); a saved
-  `video_url` asset (`status='ok'`, `s3_key` set); bytes ≤ yobo `ads_gen.video_ref_max_bytes` (slides filter); length ≤
-  `ads_gen.remix_max_source_seconds` (yobo filter, unknown length kept); an https thumb. Usual root cause: the Ad
+  `video_url` asset (`status='ok'`, `s3_key` set); bytes ≤ yobo `ads_gen.video_ref_max_bytes` (slides filter); an https thumb. Usual root cause: the Ad
   Library review backlog (few `done` items per category), not code. The other root cause is code: yobo
   `templates/ready-ads.ts` `readyAdsOf` hid an APPROVED template from any org with no `remix_source_fits` row
   (the "No ready ads for fashion" bug, 2026-11-06). A missing fit row means "not yet judged": in the org's own
@@ -291,6 +291,23 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
   tab sent a message into Main Chat. A background tab's `innerText` is empty; use `textContent`/aria-labels.
 - **Slicing a long suite on mini-run:** a detached runner script (setpgrp + background) gets reaped; run each
   `--shard=N/4` as its own background tool call instead.
+- **Start entry paths.** A run starts from four entries: the agent's start tool, a ready-ad card tap, a ready-ad list row on a run, and the gallery pick. A rule added only in the start tool misses the other three: put start-time rules in the shared start function, or wire every entry.
+- **A start with no usable source does not refuse.** The start tool returns a not-started fact (reason, message, next, changed false), and the app posts the ready-ad cards itself. The shown-in-chat flag sits at the top level of that result.
+- **Every summary of a run carries the run's facts.** A read without a run id takes the open-ask path, and that path must still return the latest video, the phase and the review state. An open-ask-only summary let the agent say a finished draft did not exist.
+- **A set-aside run takes no typed answer.** The typed-answer path skips set-aside runs, and the set-aside is written before the scratch refusal, so a later set-aside overwrites its time. To know whether a run was aside at a moment, read the tool logs, not the set-aside time.
+- **`remix_asks.action` is the first button's prefix, not the card.** A list, a product confirm and a pick card can share one action. Never group or close asks by action alone: use the item key family and the explicit supersede pairs.
+- **Every picked product reaches the writers.** A product row without scenes goes to the writers as "to place, at least one", listed with its row id. The beats writer names each scene's products, and the app fills only an empty scene list from that, so a photo goes only to those storyboards.
+- **The needs list never waits on a product search.** An empty catalog means no product with a photo. A fresh site scan's rows show "I'll find it on your site"; a refill binds or draws them and posts at most one line after the list.
+- **A catalog product with no images resolves as a name-only asset.** Anything that treats a resolved catalog asset as a picture must check its url first; the brief once failed every run on that.
+- **The entry rewrites a ready-ad link to a template id before the entry card check.** Any entry rule about a merchant's link must also hold for the rewritten shape.
+- **A video sent in WhatsApp reaches the run only through its stored org file.** The run takes that file's id (the attachment id is the stored artifact's id). The chat media id from the message context is not a file id.
+- **Threads sources:** yt-dlp has no extractor for Threads. The post's public embed page lists the video file, and the fetch reads it there.
+- **Remix replies bypass msg-api's logs.** Remix lines post from the app straight to the gateway, so msg-api's broker logs show no outbound for them. A quiet-tap or no-reply check reads the run's delivery rows and events, never msg-api outbound counts in a time window.
+- **There is no source length cap.** The source fetch reads the whole video up to a fixed byte cap; over it, the first part that fits is read and the reading carries the trimmed flag. The reference byte cap sets the analysis-copy size, not a fetch limit.
+
+## Video parts
+
+- Any new billing or length path reuses the part-billing helper (`partBillSeconds`) and the one-second overflow trim, never the raw billed seconds. Otherwise a 15.07 s part bills 16 s, the video model refuses that duration, and every approval fails.
 
 ## Stop path
 

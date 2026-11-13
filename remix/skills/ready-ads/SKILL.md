@@ -66,6 +66,8 @@ Read it in full before the first QC of a session.
 5. Fixing an outdated one is the same as making a new one from its Instagram post (Make, steps 1–5). A fixed reading
    needs a fresh read: old readings are reused per ad.
 
+Two facts for reading a result: a "No check ran" line on a template page means no remix from it has passed QA yet, not that the template is unchecked. A universal ready ad still has a product category: it is offered last to other categories and never dropped, so set its category.
+
 ## Never
 
 - Delete a ready ad or its reading. Hold it instead. A delete is Sean's call.
@@ -81,4 +83,5 @@ Read it in full before the first QC of a session.
 | Rules behind every check | Remix KB: "product-rules" (R22 ready ads only, R23 Instagram link, R24 readiness, R25 local → dev → prod, R28 draft model) |
 | Plan this skill follows | Remix KB: "Ready-ad skill — plan" |
 | Lab steps | `remix` skill → `references/lab.md` |
+| Copy a ready ad between envs | Update the target env's rows in place (back them up first): readings are unique per shared source key and templates per breakdown and plan version. Asset buckets differ per env and the dev bucket is unversioned, so list the target keys before any write. Part clips are keyed by reading id. |
 | Something the skill cannot do (a check the page does not show) | tell the user in one line and name the remix lead; never work around it |
