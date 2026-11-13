@@ -20,6 +20,8 @@ made-up product) changes the data and returns the fact; it does not refuse the c
 that adds a refusal (gate G4). Enforced at the harness (one principle line on every agent) and in these skills,
 not in a knowledge base. Full rule, hook and review checks: `agent-ops:agent-no-refusals`.
 
+**No hard-coded decisions (gate G7).** Code stores state, returns facts and runs the agent's tool calls. Code does NOT post a merchant line in reaction to a situation, choose the next question, decide meaning by threshold or regex, hold, skip, drop or refuse, route an inbound away from the agent by a fixed rule, or cap what the agent sees or does. The agent decides those with its skills. A diff that does any of these is a finding (G7), same as a refusal (G4).
+
 Flows are steps the agent tracks, not a rail: see `yobo:yobo-agents` Critical rules.
 
 **P0 Fewest questions, steps and asks** (Sean 2026-11-08: "If you approve the storyboards, that should mean you already approved making the videos.").
