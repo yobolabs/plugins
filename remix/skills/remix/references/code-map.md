@@ -260,6 +260,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
   `reading` with a source blueprint has no slides to start `remix_analyze`; the front pass starts it once the blueprint
   is `done`/`failed` (failed → the one-line refusal + [Try again]) and waits while it is queued/running. Without it every
   native run sits at `reading` forever (dev 2026-11-06). A journey test must go past "the run wakes" to "analyze starts".
+- **A run started inside a side chat inherits the WhatsApp link and the language from the merchant's newest run**, not from Main Chat alone. The default-WhatsApp-chat lookup (`remix-tools.ts` `defaultWhatsAppChat`) used to read only the Main Chat record, so a side-chat run had no WhatsApp link and spoke English in a chat in another language.
 - **Web side chat = its own msg-api WEBCHAT conversation.** A side-chat run's HOME (`state.conversationUuid`) is the side
   chat; the merchant's WhatsApp chat rides as `state.webChat.whatsApp` (nudge + final video only, `withWebSurface`).
   `state.webChat.sessionUuid` binds the run to the side session; a web card tap off Main Chat is allowed only from that

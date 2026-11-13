@@ -697,6 +697,8 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Every insert into the remix job table sets the reply language from the run: the chat's stamp, then the analyze job's language helper. A redo copies the language of the job it redoes. A new job-insert path copies that pair.
 - Prove a language change on the analyze job's reply language, not only on the run state.
 
+- **Review functions are vision functions with two image caps.** `remix_qa_review` takes at most 6 image variables (the vision cap in the cadra-web function config) AND at most 6 input images per run across all inputs. A storyboard review already sends 3 to 5 images, so the product images go as ONE picture. Comments that say "4 per function" are stale.
+
 ## Tracing a stuck run
 
 - Vercel runtime logs are read per deployment: `vercel logs -d <deployment id>` with a time window. Without the deployment id the command filters to the current git branch. Each row's logs array holds every console line of that request. Get the id from the inspect command for the environment's domain.
