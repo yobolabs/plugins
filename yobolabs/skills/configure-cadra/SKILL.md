@@ -105,7 +105,17 @@ cadra agent diff --help                                 # usage and the full lis
 - **Hosts:** a consistent env pair (dev `app-dev.yobolabs.ai` on side A, prod `app.yobolabs.ai` on side B; a local `127.0.0.1:<port>` and the dev host) is learned from the mapped objects (same field, same path after the host, majority both ways, at least 2 values) or given with `--host a=b`, and reads as one host when comparing. It is listed at the top (`env hosts: ...`). **A host in the wrong env is a difference, not noise:** a prod value holding the dev host, a dev value holding the prod host, a value whose host is not its pair's host, or a loopback host on a side that is not local is row status `wrong-env-host` (exit 1) with the field path and the stored value. Printed values are always the stored ones.
 - A `differs` row with no `--fields` names only the object. Read the diff before calling two sides "the same".
 
+- A gate id goes only on the real write command. The gate guard counts any command that carries it as one use, including offline generators that only write local files.
+- A new run-rule or harness key cannot be saved on prod until the API that publishes it is live. For an opt-in rule that replaces default-on behaviour, the order is: web schema key, then the API deploy, then the harness write at once. Accept the short gap.
+- Before porting a held-out commit, measure what prod runs. A commit believed unshipped can already be live; porting it alone can switch behaviour off for every role not on the opt-in list.
+- Provider row names lie. Check key identity by the key's hash prefix from the key endpoint, never by row name. Dev and prod never share a key.
+- The context repo is main-only. Gate-log pushes there need the branch override; it has no develop branch.
+
 ## Promote a whole agent version, env → env (`cadra agent promote`, p151)
+- Model policy: every Cadra and Yobo agent, role and text or image AI function runs `openai/gpt-6.1-terra` through the OpenRouter provider. A step that needs video input keeps its agreed watcher model.
+- A promote keeps the TARGET role lock's provider and model. After every promote, read back each role lock's and agent's model and confirm `openai/gpt-6.1-terra`.
+
+- After any prod-to-dev rebuild by promote, compare every AI function and skill file between dev and prod, field by field. A promote misses skill file versions and AI-function input declarations.
 
 An agent reaches another environment as ONE new release that carries the whole proven source
 release: its own config, harness, tools, skills, roles, delegates and channel profile. Never

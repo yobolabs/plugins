@@ -21,6 +21,8 @@ link) changes the working copy only; nothing live moves until a release is cut a
 
 Agent REST routes take the **uuid**. The numeric id that `list` prints returns `422 "Invalid uuid"`.
 
+- `pinOverrides` ids are row ids. Kind `skill` takes the `skill_versions` row id, not the skill's version number. Kind `role_lock` takes the lock id. After a `skills.update`, read the new row id (the max id for that skill) before the cut. A version number gives a 500 on the pin insert.
+
 ## Gate id traps (agent-gate-guard)
 
 - One id = one change. It is **spent only by the deploy/promote write**, not by earlier edits.
@@ -95,6 +97,8 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   `agents.cutRelease` from a signed-in dev app tab (check `location.href` first).
 - Plain-chat and advice turns are part of the proof: a formatting change that fixes a draft can break ordinary
   replies, and a release that fails them is rolled back, not patched forward.
+
+- Yobo web-chat proof turn in a test org: in a signed-in app tab, switch to the test org through the user-org switch call, then refresh the session with the next-auth update call (csrf from the csrf endpoint). Reload the chat, open a new side chat (never the main chat), set the textarea with the native value setter and an input event, and click the send button by its aria label. Read the root and role executions by agent id and time, not by the newest row. Switch the session back to the operator's home org in the same step.
 
 ## Also true on dev, and other release traps (m-yobo-offerguard-1, 2026-11-05)
 
