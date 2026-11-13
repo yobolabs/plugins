@@ -8,7 +8,7 @@ The prod-watch session tracks every real prod remix run. The detail (stall, staf
 2. **The watcher never ends a turn with a question to Sean.** It acts, then reports.
 3. **Times are labelled.** Write every time in UTC (`Z`) or local (`+08`), never mixed.
 4. **Fictional test numbers are excluded from every prod measure.** The ranges are `+44 7700 9xx` and `+1 555 01xx`.
-5. **The watcher model is sonnet.** Judgment work does not run on haiku.
+5. **The watcher model is opus.** Judgment work does not run on sonnet or haiku.
 6. **First step of every watcher session:** load `remix:remix`, then read this file.
 
 A Stop hook enforces rule 2 for sessions named `*prodwatch*` (chief-of-staff `hooks/prodwatch-stop-guard.py`). It blocks a stop whose last message asks Sean whether to forward or send.
