@@ -297,6 +297,11 @@ behind Meta review; no TikTok through Buffer/Hootsuite.
 
 - A long render (a 15-second draft part can take about 17 minutes) says so in the making line: it carries an estimate in minutes (fast_video_eta). A silent wait is not allowed.
 
+## Undeliverable recipients (131026)
+
+- A send that gives up with 131026 (`Message undeliverable`) writes a fact on the run: `remix_recipient_unreachable {code, sends, connection}`, named in the team alert. No merchant message is sent, because the merchant cannot receive one.
+- Retrying a 131026 never helps: the failure is on the recipient side. Do not retry it.
+
 ## Known gaps (not built)
 
 - **Typed messages during a change request.** While `state.awaitingChange` is open, every typed message counts as the change, including "Stop this remix". `runChange` ignores the run's phase, so an ended run still takes messages. Approved fix, not built: classify typed messages first (stop, new ad, change) with Jev and act at 0.60 or above; stop takes the stop path; ended runs are ignored.
