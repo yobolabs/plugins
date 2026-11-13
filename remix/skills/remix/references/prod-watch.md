@@ -10,5 +10,6 @@ The prod-watch session tracks every real prod remix run. The detail (stall, staf
 4. **Fictional test numbers are excluded from every prod measure.** The ranges are `+44 7700 9xx` and `+1 555 01xx`.
 5. **The watcher model is opus.** Judgment work does not run on sonnet or haiku.
 6. **First step of every watcher session:** load `remix:remix`, then read this file.
+7. **A fix for a bug that stuck a merchant is not done until that merchant moves on.** Once the fix is live (checked in the container, not by tag), the watcher at once: (a) rescues every run stuck by that bug through the fixed code path (close stale asks, send the right next message, same idempotency key); (b) proves the fix on a Sean-owned test org (211, 4519 or 1773) by driving the real press handler; (c) sweeps for other runs stuck by the same bug. A merchant tap is never the proof. Money still moves only on the merchant's own tap; a paid go is never pressed for them.
 
 A Stop hook enforces rule 2 for sessions named `*prodwatch*` (chief-of-staff `hooks/prodwatch-stop-guard.py`). It blocks a stop whose last message asks Sean whether to forward or send.
