@@ -74,7 +74,7 @@ Moved verbatim from `SKILL.md` (2026-09-30). Read before diagnosing a lost, late
 - **A template approved on the dev WABA does not exist on prod.** Different WABA, separate Meta
   submission and approval.
 - **The fabrication gate kills a brief when a p78 READER call fails, even one the model retried.**
-  `fabrication-gate.ts` suppresses on any `success === false`, and p78's `read_result` /
+  Since YMS-929, a run with at least one failed and one successful data tool is a partial brief: delivered, with an "unfetched sources" line written by code (`withUnfetchedSourcesLine`). Still suppressed: every data tool failed, an unrecovered reader loss with no source name, truncated or missing traces. p78's `read_result` /
   `search_result` introduced a recoverable failure class: the model writes one malformed call
   (`bad_args`, empty `resultId`), the tool refuses, and it retries correctly a second later. Fixed
   2026-09-18 — the exemption is narrow on three axes (reader tool **AND** one of four recoverable

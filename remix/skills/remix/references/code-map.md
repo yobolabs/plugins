@@ -339,3 +339,11 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 - Every job apply drops scenes that lack a scene index, and writes the result back. Any new seed of the run's scenes must set the index, or the first job apply wipes them.
 - A template run's `project.source.url` is the donor org's own copy, not the ad link. A lookup by that URL finds nothing. Find the source copy through the run's own breakdown (`findSourceCopy` falls back to it). Never treat a copy URL as a source key.
 - Template copies are private uploads. The deconstruct step reads upload sources by plain HTTP, so use the stable unsigned own-bucket URL as the reference key and sign the GET at fetch time. A public URL is refused; a presigned URL as the key breaks blueprint dedupe.
+
+## Review storyboards on WhatsApp is a link, not a reply button
+
+- The remix role writes `[[open_app:review_storyboards:<remixId>]]`. WhatsApp sends it as a `cta_url` message and never reports a tap, and yobo has no review page-view signal. Measure delivery by the msg-api outbound kind `cta_url` with a `/remix` review destination. A watch that matches button ids finds nothing.
+
+## Prod worker image can be replaced out of band
+
+- A hand `docker` deploy on the prod worker host can prune the captain's staged images and keep old code. Before any "worker LIVE" claim, check the `worker-service` image tag and grep the content inside the running container. The captain's swap line alone is not proof.

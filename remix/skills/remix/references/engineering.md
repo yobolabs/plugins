@@ -580,6 +580,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 ## Proof and tooling traps for builders
 
 - Compare typecheck counts by the same method on both sides: a stale linked core-sdk adds about 20 TS2307 (`@jetdevs/core/errors`) that are not defects. Diff the error lists (file + message, no line numbers). A silent exit 134 or 144 means killed (OOM or load), not zero errors: rerun with `NODE_OPTIONS=--max-old-space-size=10240`.
+- "On prod" is proven by content, never by ancestry. `git branch -r --contains <sha>` says yes for a commit that a held-out cut left out of main's tree. Count the commit's added lines present in `git show origin/main:<file>`.
 - A typed-yes or needs-test run needs core pinned: `node scripts/vercel-prebuild.mjs` and `git update-index --skip-worktree package.json pnpm-lock.yaml`; revert both after. Run local vitest with `--pool=threads --maxWorkers=2` when the Mac is loaded.
 - The cmux Agent Chrome test browser does not play remote mp4 (a control clip fails). A "video won't play" report is unproven until checked in a browser that plays H.264 (the cmux WebKit tab does).
 - Proof chats with an open paid ask (Approve all / Make it): never send free text that can read as yes ("go ahead", "ok", "yes please"), because the reply starts the paid step. Answer a different question with a neutral fact, close the open ask first, or use a fresh own number.
