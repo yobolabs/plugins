@@ -11,6 +11,8 @@ Back to [SKILL.md](../../SKILL.md). Applies inside any other type when a screen 
 ## Detection and keying
 
 - Screens are a fact beside the ad type, not a type of their own. One classification over every scene's words decides it; the keyword list is only a hint and the fallback when the classifier returns nothing. A run read before this existed is detected on first read and stored back.
+- The screens picture rule is data: it lives in a config row read into the type rules, never in a code string, so it can change without a release.
+- Every owned read of a run carries the ad type and how it was read beside the screens fact, and a weak fit does not repeat the type.
 - The own-screen needs row stays a prop row. A location or background row would become the merchant's set, so the source's website-screen background must never reach it. The row is keyed after the join and never asked up front.
 - The screen is keyed inside the join, never as its own job. The phone-screen runner bills with no bill item, so a separate start would need its own go and fund another video. The join input carries the screen key: the screen file, the spans of live scenes in the join's timeline, and one frame of pad.
 - The screenshot is the merchant's own, found first: the picture chosen on the own-screen row, else one classification over the org's image files for a screenshot of the business's own site or app, above a confidence bar. Below the bar the draft stays green and the same message asks for the screenshot. A late photo binds to the own-screen row and triggers one free system re-join with no join-started line.
