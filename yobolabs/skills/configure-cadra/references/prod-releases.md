@@ -30,6 +30,10 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   deviation.
 - The guard treats any `GET` whose path contains `/releases` as a config write: it needs the gate tag in the
   command but does not spend the id.
+- **An AI-function golden publish is a prod agent change.** `prompt.setGoldenVersion` / `prompts.createVersion` need their own gate id. The tRPC router key is `prompt.*` (`prompt.update` mints a version, then `prompt.setGoldenVersion`); undo = `setGoldenVersion` back to the old version.
+- **Put `AGENT_GATE=<id>` on the command line of every prod write**, including `cd <packet>; python3 run.py js/<step>.js` and `P=<dir>; cd $P && ...` shapes. The hook resolves both and spends the id on the step that puts the change live. Never `export` it. A relative script path resolves from the session's shell directory.
+- **Build prod js and DEPLOY-LOCK files with the Write tool, not a Bash heredoc or `python -c`.** The hook scans the command text: a command that only BUILDS a file holding the prod host and a write verb reads as the write (and, with `AGENT_GATE` on it, spends the id). Write the template with Write, fill it from a script that holds no prod host or write verb, then run ONE write per command with its id.
+- **The hook reads the LOCAL gate-log** (the monorepo's local `_context/.../gate-log.md`), not the context repo's `main`. The shared checkout runs far behind origin, so a row pushed only to `main` is invisible and the write is denied "not in gate-log as APPROVED prod". Write every gate row to BOTH the local file (append) and context `main` (from a fresh clone). Wording changed after approval: ask the lead for an amendment row in the local copy before applying.
 - A change that alters every reply (for example a style rule) is its own release, not a rider on another.
 - The guard reads the gate-log **verdict column**: it must say `APPROVED prod`. "Approved in a message" or
   "APPROVED dev; prod same id after…" blocks the write — ask the architect to set the row.
@@ -79,6 +83,10 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   (`userOrg.switchOrg(<org>)`) and use a fresh session before any data fix.
 
 ## Proof turns
+
+- **`aiFunctions.testRun` through a browser eval often answers "Timed out waiting for JavaScript result" while the run still executes.** Never retry the POST (a retry is a second metered run). Poll `prompt_executions` by the idempotency key, which must be a uuid (a string key returns 400). Parallel posts work.
+- **A prod working-copy cut can carry persona head drift** (the diff guard refuses it). Fix: read the live release's persona instruction from `getReleaseDiff(live, spare).before`, set the head instruction to it, cut, restore the head instruction, and move the pointer only if the diff matches.
+- **Monitor loops on `psql` default output:** "(0 rows)" contains a digit. Select `coalesce(string_agg(...), 'NONE')` instead.
 
 - **Config cache is about 5 minutes.** Run proof turns only after it; a turn 40 s after a pointer move proves
   nothing (it ran the old release).

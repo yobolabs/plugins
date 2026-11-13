@@ -107,6 +107,7 @@ cadra agent diff --help                                 # usage and the full lis
 
 - A gate id goes only on the real write command. The gate guard counts any command that carries it as one use, including offline generators that only write local files.
 - A new run-rule or harness key cannot be saved on prod until the API that publishes it is live. For an opt-in rule that replaces default-on behaviour, the order is: web schema key, then the API deploy, then the harness write at once. Accept the short gap.
+- **Order for a new run-rule key:** web schema, then the api deploy plus a grep inside the container, then the harness write plus a cut (harness pin only), then the pointer. cadra-web saves the key only when the LIVE api lists it in `runRuleFields` (400 "not supported by this environment's agent runtime" otherwise). A key that turns an always-on behaviour into opt-in needs a PARITY LIST: before the api deploy, read prod logs for who gets the behaviour today (group by root agent and org) and, in the same window, write the harness key listing exactly those subjects. A root in another org goes to the agents lead first. Record the gap (api live to pointer moved) in the proof line.
 - Before porting a held-out commit, measure what prod runs. A commit believed unshipped can already be live; porting it alone can switch behaviour off for every role not on the opt-in list.
 - Provider row names lie. Check key identity by the key's hash prefix from the key endpoint, never by row name. Dev and prod never share a key.
 - The context repo is main-only. Gate-log pushes there need the branch override; it has no develop branch.
@@ -193,6 +194,8 @@ cadra ping     # verify key + origin before anything else
 
 Outside Claude Code (Codex, terminal, CI), point at the checked-out path instead
 of `${CLAUDE_PLUGIN_ROOT}`.
+
+- **Never create Cadra objects with an app's integration key** (for example the yobo app's dev `CADRA_API_KEY`): it can create and deploy but lacks `agents:update`, `agents:delete` and `tools:read`, so the object cannot be cleaned up with it (403 `INSUFFICIENT_PERMISSIONS`). For a dev probe, mint a key on the API Keys page (or use a lane with a builder session) and plan its delete before the create.
 
 ## Never guess a field name
 
