@@ -7,7 +7,7 @@ source frame (position and framing only). A master picture or set picture is a r
 substitutes for the shot's own line drawing. Line drawings never go to a video model alone (the old subject's shape
 leaks into the new product).
 
-**Video model: Seedance only, never Kling.** Every remix video part, draft and final, runs on Seedance. A clip of one continuous shot uses Seedance
+**Video model: Seedance only, never Kling.** Every remix video part, draft and final, runs on Seedance 2.5. Never route drafts to Seedance 2.0: its queue stalls past the part deadline. The draft model comes from the first profile with stage "drafts" in `ads_gen.remix_model_profiles`, not from the run's chosen model. A clip of one continuous shot uses Seedance
 image-to-video with the start picture as `image_url` and the end picture as `end_image_url`. A clip spanning several
 shots uses Seedance reference-to-video: ordered `image_urls` (start picture first, end picture last), bound by @ tags
 in the prompt. Reference-to-video takes no first/last frame field and must not be mixed with one.

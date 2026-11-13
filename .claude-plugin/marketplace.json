@@ -240,7 +240,7 @@
       "name": "remix",
       "source": "./remix",
       "description": "Ad Studio Remix: remake an existing video ad for a merchant's business. Fixed pipeline from reading the ad to a posted video, run mostly from WhatsApp. Skill = universal rules + per-type and per-stage references; agent = remix-dev.",
-      "version": "0.4.110",
+      "version": "0.4.111",
       "keywords": [
         "remix",
         "ad-studio",
