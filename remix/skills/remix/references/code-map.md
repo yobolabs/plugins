@@ -310,6 +310,8 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 
 ## Video parts
 
+- Picture labels: `part-starts.ts` builds the prompt labels; `part-prepare.ts` appends the product photos after the sheets; `referenceRolesMismatch` guards that order (a mismatch holds the part before submit).
+- A moving clip never falls back to one frame: `keyframesOf` (`storyboard-plan.ts`) returns every keyframe, and `storyboard-view.ts` always passes the reading beats for moving targets.
 - Any new billing or length path reuses the part-billing helper (`partBillSeconds`) and the one-second overflow trim, never the raw billed seconds. Otherwise a 15.07 s part bills 16 s, the video model refuses that duration, and every approval fails.
 
 ## Stop path

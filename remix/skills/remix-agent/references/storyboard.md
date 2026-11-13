@@ -7,33 +7,35 @@ source frame (position and framing only). A master picture or set picture is a r
 substitutes for the shot's own line drawing. Line drawings never go to a video model alone (the old subject's shape
 leaks into the new product).
 
-**Video model: Seedance only, never Kling.** Every remix video part, draft and final, runs on Seedance 2.5. Never route drafts to Seedance 2.0: its queue stalls past the part deadline. The draft model comes from the first profile with stage "drafts" in `ads_gen.remix_model_profiles`, not from the run's chosen model. A clip of one continuous shot uses Seedance
-image-to-video with the start picture as `image_url` and the end picture as `end_image_url`. A clip spanning several
-shots uses Seedance reference-to-video: ordered `image_urls` (start picture first, end picture last), bound by @ tags
-in the prompt. Reference-to-video takes no first/last frame field and must not be mixed with one.
+**Video model: Seedance only, never Kling.** Every remix video part, draft and final, runs on Seedance 2.5. Never route drafts to Seedance 2.0: its queue stalls past the part deadline. The draft model comes from the first profile with stage "drafts" in `ads_gen.remix_model_profiles`, not from the run's chosen model. Every remix video part, one shot or several, uses Seedance
+reference-to-video, as the Remix Lab does: ordered `image_urls` = the clip's storyboard keyframe sheet(s), then the cast
+and product sheets, then the product photos, bound by @ tags in the prompt. The prompt writer's labels follow that exact
+order; a part whose labels and pictures do not line up is held before submit with the mismatch fact, for the run owner to decide. Image-to-video (first and last frame
+only) drops the sheets and is never used for remix parts. Reference-to-video takes no first/last frame field.
 
 **What a storyboard set must hold:** one image for every UNIQUE shot (a shot that comes back, the same setup and framing,
-reuses its image rather than getting a new one), PLUS an image for the first and the last frame of every video part
-(clip) sent to the video model. The review fails a set that is missing any of these.
+reuses its image rather than getting a new one). Each video part's storyboard is ONE timed keyframe sheet: panel 1 =
+the clip's first keyframe, last panel = its last keyframe, each with its time. The review fails a set missing either edge panel.
 
-People who speak: one picture per shot, see `types/people-dialogue.md`.
+People who speak: every moving shot, speech shots included, gets its timed sheet like any clip (`types/people-dialogue.md`).
+The setup master is passed beside the sheet as the set and cast reference. Stills keep one frame.
 
 **Clip requests (one rule set for every video part):**
-- Each clip gets a storyboard of at least two keyframes: its first picture and its last picture. Add further keyframes only for significant moments that give the clip context.
+- Each clip gets ONE timed keyframe sheet: panel 1 its first keyframe, last panel its last keyframe, each with its time; between them every beat start of the reading and every ★. A clip of several shots is one sheet across them, hard cut marked. No separate start/end pictures.
 - Send a clip only the pictures it needs. Never send every picture of the set to one clip.
 - The source clip is not a visual reference. It is sent only when the part keeps the ad's audio, and then as the extracted audio track only, never the video file.
-- Modes: one continuous shot is an image-to-video clip. Its `image_url` is the clip's start picture and `end_image_url` its end picture, nothing else; cast and product are drawn into the pictures. A clip spanning several shots is a reference-to-video clip: ordered `image_urls` = start picture, the scenes' storyboards, end picture, then only the sheets that clip needs; the prompt says "@Image1 is the first frame, @ImageN the last frame". Never mix the two modes, and never send a reference-to-video clip a first/last frame field.
-- Edge pictures: a still shot's picture is also its clip's end. A storyboard drawn over a line drawing is its clip's start. A keyframe sheet is never an edge picture. Edge pictures are drawn like setup shots, from their own frame, with the scene's storyboard as look reference.
+- Mode: every clip is a reference-to-video clip: ordered `image_urls` = its sheet(s), then the cast and product sheets, then the product photos, only what that clip needs. The prompt binds each @ImageN by that order. Never send a first/last frame field.
+- Edge frames are the first and last panels of the clip sheet. A still shot's sheet is one frame. Edge panels are drawn like setup shots, from their own frame, with the scene's storyboard as look reference. A line drawing is never a panel or an image on its own.
 - Burned-in text: a storyboard or keyframe that shows source text fails review. Clean the text off source footage only for kept clips (cut, not generated), never for generated clips.
 - Template parts: the template's prompt (preset recipe) plus this clip's needed pictures. The template panel is the script only, never a picture (`types/template-reel.md`).
-- Picture request order, for a picture request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". For a video request the order is per mode above (image-to-video: start picture, then end picture; reference-to-video: start picture first, end picture last). A line drawing is never the first or only image. A clip request with no colour picture is not sent to the video model: it has no approved storyboard yet (RULES 12, storyboard first). The fact (which clip, colour picture missing) goes to the run's owner, who draws or redraws that storyboard.
+- Picture request order, for a picture request: Image 1 is the colour picture being edited or continued (the approved storyboard or the previous colour frame); then the cast and product sheets; the line drawing last, labelled "framing and positions only". For a video request the order is the reference-to-video order above (sheet(s), cast and product sheets, product photos). A line drawing is never the first or only image. A clip request with no colour picture is not sent to the video model: it has no approved storyboard yet (RULES 12, storyboard first). The fact (which clip, colour picture missing) goes to the run's owner, who draws or redraws that storyboard.
 - Video words for a clip never append a scene's own text: scene text can come from an earlier pack and name a product the brief replaced. What the approved storyboard shows reaches the video as each shot's first line.
 
-**One storyboard per shot, built from keyframes, decided.** A fast-cut ad gets one storyboard for every measured shot (20-37 on a fast ad), never one per video
-part. Each shot's storyboard is ONE keyframe sheet of that shot's key moments: first frame, every beat start, every ★,
-last frame. A long shot is split at a real moment (a beat start or a ★), never mid-action. It is redrawn with the merchant's cast and product. That is for any source with no speech, even when people appear in it. People-dialogue ads (people who SPEAK) use
-one label-free picture per shot instead: a master per camera setup, and every other shot of that setup drawn from its
-own line drawing with the master as a reference (`HOW-REMIX-WORKS.md` §A rule 7, proven on the 10-29 dialogue run).
+**One storyboard per video clip, built from keyframes, decided.** A fast-cut ad gets one storyboard per video clip, never
+one per measured shot. Each clip's storyboard is ONE keyframe sheet of its key moments: first frame, every beat start,
+every ★, last frame. A long shot is split at a real moment (a beat start or a ★), never mid-action. It is redrawn with the merchant's cast and product. That is for any source with no speech, even when people appear in it. People-dialogue ads (people who SPEAK) use the same timed sheet for every moving shot, speech shots included; the setup master is passed beside it as the set and cast reference (`types/people-dialogue.md`).
+
+**Redraw keeps the sheet.** A redraw keeps the sheet's panel count, order and shape and never brings back the source ad's object. The code checks the panel count. A mismatch is redrawn at most once per part (`STORYBOARD_AUTO_REDRAWS`, `_context/LIMITS.md`), then a failure line with [Fix it].
 A product sheet needs only one ticked moment, the same as the lab; there is no minimum of 3. The 4 s floor merges only video parts (`groups.ts`
 buildGroups), never storyboards. Do not re-raise this as a cost question.
 
