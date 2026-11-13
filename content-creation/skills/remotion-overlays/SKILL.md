@@ -45,6 +45,8 @@ Every composition takes `brand` + format + its own fields. `calculateMetadata` r
 
 Output is **transparent ProRes 4444** (`yuva444` — alpha present), set by each composition's `calculateMetadata` — no extra CLI flags needed.
 
+Proof renders and `npx tsc --noEmit` in this project run locally. Start the Bash command with `# local-ok: <reason>` as its first line; the mini-run guard blocks them otherwise. Keep one render at a time.
+
 Single overlay:
 ```bash
 cd "${CLAUDE_PLUGIN_ROOT}/skills/remotion-overlays"

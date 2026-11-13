@@ -15,13 +15,16 @@ Never put one video's words, names, labels or colours into a type or universal f
 ## Steps
 
 1. **Fetch free, no login.** `yt-dlp -o 'source.%(ext)s' --write-info-json <url>`. If the platform hides it, ask
-   the owner for the file. Never sign in to fetch.
+   the owner for the file. Never sign in to fetch. For YouTube also `--write-auto-subs --sub-langs en --sub-format vtt --skip-download`; the info JSON carries `chapters`.
 2. **Store a copy** in yobo prod S3 `yobo-oss-bucket`, key `remix-lab/211/<kind>-<id>/source.mp4` (HeadObject first,
    never overwrite). Note length, size and the first 16 hex of its sha256.
 3. **Measure.** Run this skill's `analyze.py` for cuts and beats. Make 2 fps contact sheets
    (`ffmpeg -i source.mp4 -vf "fps=2,scale=270:-1,tile=6x5" grid%02d.jpg`, frame i at t = i × 0.5 s within the
    whole video). Transcribe with Whisper word timestamps. When labels mark sections, read them at 4 fps from a
    cropped strip for exact boundaries.
+   Long videos (over 5 min): split by chapter. Use 1–2 fps sheets on demo segments and 0.5 fps on talk. Run `analyze.py`
+   only on demo segments (`ffmpeg -t <s> -c copy`). Use the auto-subtitles as the transcript; use Whisper only where the
+   words must be exact and subtitles are missing.
 4. **Read the text exactly.** Post caption, voice-over, and every on-screen instruction or prompt: extract
    full-resolution frames where text appears and copy it word for word. Mark hidden parts `[occluded]`.
 5. **Write the breakdown** from `breakdown-template.md`: persistent layers, then one row per technique with its
