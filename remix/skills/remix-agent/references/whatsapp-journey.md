@@ -319,6 +319,10 @@ behind Meta review; no TikTok through Buffer/Hootsuite.
 - A send that gives up with 131026 (`Message undeliverable`) writes a fact on the run: `remix_recipient_unreachable {code, sends, connection}`, named in the team alert. No merchant message is sent, because the merchant cannot receive one.
 - Retrying a 131026 never helps: the failure is on the recipient side. Do not retry it.
 
+## Storyboard set on the ready line
+
+- The storyboard set posts in one notify call: every picture, then the "Storyboards ready" line, then [Approve all] and [Change one]. Never split the set across calls; a split races on the outbound queue and loses order.
+
 ## Known gaps (not built)
 
 - **Typed messages during a change request.** While `state.awaitingChange` is open, every typed message counts as the change, including "Stop this remix". `runChange` ignores the run's phase, so an ended run still takes messages. Approved fix, not built: classify typed messages first (stop, new ad, change) with Jev and act at 0.60 or above; stop takes the stop path; ended runs are ignored.
