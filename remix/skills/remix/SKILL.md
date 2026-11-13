@@ -77,6 +77,6 @@ Related: `remix:ready-ads` (team: make a ready ad, QC saved ones), `yobo:ad-stud
 ## Team and leads
 
 - The prod watch is a standing role. The remix lead session and a prod-watch session both stay listed as leads, so cleanup never closes them; each hands over with a continuation when its context runs high.
-- A prod-watch session tracks every prod remix run (real merchants first, test orgs logged too) in a dated notes file. A run with no open ask and no moving job for ten minutes is stuck: the watch reports who, run, stage, cause and a suggested fix to the remix lead.
+- A prod-watch session tracks every prod remix run (real merchants first, test orgs logged too) in a dated notes file. Rules for the role: `references/prod-watch.md`. A run with no open ask and no moving job for ten minutes is stuck: the watch reports who, run, stage, cause and a suggested fix to the remix lead.
 - The remix lead decides the fix or rescue. The watch carries it out and handles the WhatsApp side for that remix, with a log row for every merchant message. Never from the watch: credits or refunds, deletes, deploys, or messages outside a remix session.
 - A persistent watch arms a recurring in-session check on its first turn and re-arms its watcher when that expires; a watcher alone times out and the session goes cold. The chief's sweep acts when the watch's last report is older than thirty minutes.
