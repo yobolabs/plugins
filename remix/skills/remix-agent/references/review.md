@@ -146,6 +146,8 @@ Rules that cost a prod incident to learn:
 
 Sean: "For storyboard, always try to fix first autonomously before delivering storyboard."
 
+- A keyframe-sheet board goes to the review with SHEET FACT: panel count, times, one continuous shot. The review never asks to remove the grid or merge panels. Edge pictures (start / end) are separate boards and get no sheet fact.
+
 - A failed storyboard check is fixed silently before anything is shown: the set is redone automatically, once. Only sets that pass are shown.
 - A failure we could not fix is shown with its own forward option. A fixed failure never shows a chat line, an ask or "problem" text on the page.
 - The review page is one vertical scroll on a phone: per scene their frame and the new picture side by side, per scene [Approve], [Redo] (with what is wrong) or [Don't approve]; one [Approve all].

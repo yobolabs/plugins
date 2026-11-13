@@ -21,6 +21,7 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 - **Templates ask only their prompt's bindings** (`@Image1 is <product>`): product only. Narrow both the run state and the needs job result, because the chat list is built from the job result.
 - **Each scene carries timed lines ("a–b s: what happens"), editable by the merchant.** They feed the storyboard sheet and the video prompt; a line is never written only into the video prompt.
 - **The Product line's shape sentence comes from the approved product sheet, read once at sheet approval.** It holds pack type, material, colour, label text, what is inside, and real size if known. The brief carries it word for word, and so does every storyboard and video prompt. A brief written from the product's name alone guesses the vessel.
+- **Cast follows the source, except an element a type rule requires in a shot.** A screens ad with no people gets one pair of hands only (no face or body) holding the phone; the brief lists it under Cast, and Never never forbids it.
 - **The product is described only as its approved sheet shows it** (principle P5 in `../SKILL.md`).
 - **The teardown works from the measured shot-list text, never the video.** The teardown agent does not open the source video. A failed fetch of the source link never shows in the brief, so judge a brief by its content, not by its source link.
 - **Per-shot slice** = that shot's row + the brief's tone, set, colours, light, people and never list. The slice, not the

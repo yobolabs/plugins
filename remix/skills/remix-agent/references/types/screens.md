@@ -6,3 +6,4 @@ Back to [SKILL.md](../../SKILL.md). Applies inside any other type when a screen 
 - The merchant's real screenshot is **keyed in afterwards**, one still per phone shot, median corners, full bleed, at 1080p (upscale the draft first). Never a full-frame screenshot; never model-drawn screen text.
 - The review checks green and keyable; a laptop with garbled text instead of a phone is a fail.
 - Needs step asks no screenshot or logo up front; keying is a post step.
+- With no people in the ad, one pair of hands holds the phone; never a phone standing or lying on its own.
