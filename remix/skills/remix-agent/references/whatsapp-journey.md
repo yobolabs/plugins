@@ -224,7 +224,7 @@ The rule is "Every choice or stop has a forward option" in § Problem solver abo
 - **Forward ids:** `needs:readyad` [Pick a ready ad] (lists through the one recommender, any run state),
   `needs:another_video` [Try another video] (any ask), `go:continue` [Looks good] / [Continue] / [Keep it] (ask items
   `{resume: <askId> | 'newest'}` → that ask's buttons again as a NEW ask row, else ONE line), `go:keep_draft`.
-- **Ad options look the same on every path** (picks, scratch, [Pick a ready ad]). An option with an instagram.com link is one link-preview message (WhatsApp draws the post; a tap opens the ad), then one picker message with the buttons. An option without an Instagram link (Ad Library) shows its sharpest stored still as the card picture: never its Ad Library URL (no preview renders, it reads as a bare link) and never a video file. A text-only list of options is not allowed.
+- **Ad options = the ad's Instagram link, never a picture** (every path: picks, scratch, [Pick a ready ad]). One link-preview message per option (instagram.com URL, preview on; WhatsApp draws the post, a tap plays the original ad), then one picker message with the buttons. Never a still, thumbnail or picture card, never the video file, never the Ad Library URL. An option with no Instagram link: find its IG link first; none found → it is not offered on WhatsApp. A picture shows the merchant a blurry frame instead of the ad they are about to remake.
   `go:yes` never counts as forward on its own (it is [Try again] as often as [Yes, go ahead]).
 - **The advance loop answers a forward press FIRST,** whatever the ask's action: an action-specific handler drops
   unknown buttons (a `front_retry` ask returned `front_idle` = silence).
