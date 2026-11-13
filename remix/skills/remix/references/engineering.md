@@ -725,3 +725,4 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Direct dev tool calls need the trusted chat headers (root execution id, execution id, chat customer reference, inbound message id, session id), not only the execution-context header. Without them the run has no creator.
 - A fixed-sentence reply may exist only after a paid stage. Pick the stage where the behaviour shows before asking for budget.
 - Web-chat dev runs need a signed-in browser. Without one, drive the run on the WhatsApp rig with fictional numbers.
+- **A proof driver presses only runs it created.** Use one fresh fictional number per proof and never another lane's org or run, and name the spend. A driver that pressed a live dev run started paid parts that nobody had approved.
