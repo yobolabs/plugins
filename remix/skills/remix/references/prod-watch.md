@@ -15,5 +15,6 @@ The prod-watch session tracks every real prod remix run. The detail (stall, staf
 9. **A chat with several open runs is report-only.** Do not pin, set aside or un-set-aside any run in it. Pinning the newest starves the other run's plan message (delivery skips non-pinned runs as superseded), and un-setting a run the merchant left re-fires the stall guard. Hold until the run-keyed delivery fix is live.
 10. **Back-fill rows are never the first live row.** A recovery row carries its recovered-by tag; any watcher that looks for the first live row excludes tagged rows.
 11. **Provider noise is measured before it is raised.** Count failed over total per model across 20 minutes. A rate of 1-2% `ERR_HTTP2_STREAM_ERROR` is noise. A merchant-visible retry card caused by one is a lead report at once.
+12. **A set-aside run is ended, not failed.** Any watcher count or dashboard that lists failures leaves set-aside runs out.
 
 A Stop hook enforces rule 2 for sessions named `*prodwatch*` (chief-of-staff `hooks/prodwatch-stop-guard.py`). It blocks a stop whose last message asks Sean whether to forward or send.

@@ -644,6 +644,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Judge what a merchant actually received from msg-api's message rows (direction, author type, message type, delivery status; never the content column). A remix delivery row marked delivered only means msg-api accepted the send, and some lines (refusals, export refusals) write no delivery row at all.
 - Judge an ask as open or closed by its closed time, never by a delivery row. Front refusals write no delivery row, so an "ask open, no delivery" watcher raises false alarms.
 - A quiet-tap check reads the run's delivery rows and events. Remix lines do not show in msg-api's outbound logs.
+- A no-reply review reads the chat, not metadata: the last few messages of the chat, our outbound text, and the merchant's inbound by type and button id only (never their text). Classify by OUR last message: a typed-only ask after a tap, a refusal, mixed language, an error reply, a duplicate, old button wording, or a clear ask with buttons. An image row's content is its stored fallback URL, not a bare link.
 - Before counting an org as a real customer, group the run's chat across orgs and check the test tag on the phone. One chat can be re-bound to another org, and a finished video for an org the chat has left waits silently.
 - Read prod with a script that imports the app's own database client and runs inside a read-only transaction with the superuser setting. The secret guard blocks piped scripts that name the database variable, so pipe the file in and import the client by path. Use default-export fallbacks for module interop. Remove the copy as root afterwards.
 - Dev reads use the admin connection entry from the vault; the entry for the row-level-security role returns zero rows for job tables. Prod reads use the admin entry with the read-only default option set.
@@ -651,11 +652,13 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Watcher alerts key on new delivery rows only. A run's snapshot keeps old failed rows.
 - The worker container's app folder is not writable for its default user: back up to a temp folder and remove files as root. Its grep has no include option.
 - Back Office rescue uses the run's own buttons: retry the approved step (free, no new consent), re-send the last question, or cancel the run. A re-send counts only when msg-api reports it sent, duplicate or queued. Each environment needs its own staff profile.
+- Write a query that needs regex whitespace in a `.cjs` file with a template literal and `[[:space:]]`. In an inline double-quoted query string, a backslash-s is collapsed to a plain `s`, and the text read changes silently.
 
 ## Prod watch
 
 - A stall is a run in a work step (needs, brief, teardown, storyboards, parts, joining) with no open ask, no running job and a wake time in the past. A run waiting on an open ask with a past wake is normal.
 - While a worker deploy drains the old container, the new container holds the run leases. Read logs from the new container before calling a run stuck.
+- Idle is measured from the later of the run's update time and its last job. A run whose job just finished (part done, join not yet created) looks idle from its update time alone.
 
 ## Staff recoveries
 
@@ -663,6 +666,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Close stale asks beside a new album without posting anything: an old redraw tap would re-run that scene at cost. Back up first.
 - [Retry step] reads `pausedFrom` from the open refusal ask (`staff-ports` `loadRun` → `refusalOf`), not from run state. Check that ask's items before calling a run refused.
 - A wake does not replay an ask that was already consumed (a superseded skip or a fast-choice hold). Rescue through the named path (fast-choice release or staff retry step), never a plain wake. If nothing posts within 3 minutes, revert so the stall guard does not fire again.
+- A stop that is ruled a misread is undone, not re-sent: restore the phase from the run's cancelled-phase ledger row, reopen the ask under a version check, and send nothing. A short typed phrase that means "it is good" can read as a stop; check intent before any cancel.
 
 ## Money and system presses
 
