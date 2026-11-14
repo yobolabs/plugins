@@ -18,6 +18,7 @@ link) changes the working copy only; nothing live moves until a release is cut a
    `pinOverrides`; read the **last DEPLOY-LOCK row** for the held pins and its NEXT CUT FROM base, and write the
    new row when you finish.
 5. A rollback is the same pointer call with `action:"rollback"` and needs no gate id.
+6. **Rollback bundle for channel-profile changes.** Snapshot the profile content (`agents.channel_profile`) before applying, not only the release or version number: a release snapshot can differ from the live profile. To restore, pick the version whose content equals the pre-apply profile. Never restore "the version before the promote".
 
 Agent REST routes take the **uuid**. The numeric id that `list` prints returns `422 "Invalid uuid"`.
 

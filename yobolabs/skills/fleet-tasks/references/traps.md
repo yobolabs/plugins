@@ -213,6 +213,11 @@ not delivered").
   missing, so the adapter never checked the 24 h chat window: tip-without-tap sent 0/190 on prod. Fixed in yobo
   `23e97ff39`; that path now writes `todaysTipSentDirect` / `todaysTipInAlert` with `markRunTipDelivery`.
 
+## Dev-proving an internal route behind the API-key auth: no vault key works
+
+- A yobo `/api/v1/internal/*` route behind `withApiAuth` validates against the `api_keys` rows. The internal key, the SDK key and the Cadra-side key names in the vault all return 401 `INVALID_API_KEY` on dev. Do not loop over keys.
+- Ask the owner of the Cadra dev tool (stored credential) to run the call once, and attach the response as proof.
+
 ## Proving a Runs-tab change: agents have no Super User login (2026-11-04)
 
 - **`bo.listRuns` answers `Permission required: admin:agent_tasks_read` from every agent login
