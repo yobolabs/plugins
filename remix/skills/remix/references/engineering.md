@@ -119,6 +119,8 @@ elements to generate the video."
 - **A timed-out or failed video job never cancels its provider task.** A merchant Retry can then submit a second render while the first is still queued at the provider. After a Retry's new submit is accepted, call the provider's cancel tool once with the old request id and log the reply.
 - **A re-claimed video job polls its stored provider request id and never submits again.** Count the submit-attempt rows of a job (one row per provider task) before calling a second render. Read a provider task's state read-only with the status tool, using the prod Cadra key from the vault.
 
+- An optional read that may fail runs in its own transaction with explicit casts. Inside a shared advance transaction, a failed read aborts that transaction, and every later query in it fails, even when the failure was caught.
+
 ## Staff actions on dev
 
 - Retry and cancel a step from the back office in a staff profile: tRPC `remixMonitor.staffRetryStep` and `staffCancel`. A merchant profile gets 403.
@@ -155,6 +157,8 @@ elements to generate the video."
   quote or start must name the remix so the waiver applies.
 - **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (`../remix-agent/SKILL.md` P6, `../remix-agent/references/whatsapp-journey.md` § Problem solver).
 - **Model policy.** Every Cadra role and AI function runs the agreed model through the OpenRouter provider (`openai/gpt-6.1-terra`). A step that needs video input keeps its agreed watcher and writer split, stated as a fact. Any other model needs the owner's word.
+
+- A lead decision that changes pipeline behaviour is preceded by one `remix-context` search by the lead, cited. Subagents cannot load the remix-context KB, so the lead does the search before the decision is made.
 
 ## Pictures sent to people are compressed (Sean 2026-11-06)
 
@@ -481,6 +485,8 @@ Builder files: yobo `stages/video/part-edges.ts`, `part-starts.ts`, `advance/edg
 - **`remix_runs.source_breakdown_id` is never written (YMS-781).** A run cannot be joined to its stored original
   (`remix_source_copies`); match by org and date until it is fixed.
 
+- A port's "already on main" is proved by content, never by history. Grep the port tree for each fix's marker and check each commit's diff hunks are present. Patch-id or ancestry can skip a commit whose content a hold-out cut from main. Match soak evidence to the worker version that carries the code, not to the run's time.
+
 ## Starting a remix from a ready-ad template (2026-11-07, m-remix-build-55)
 
 - **A template card starts from the template, never from its link.** `remix_start {templateId}` makes a yobo run at
@@ -668,6 +674,8 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - A wake does not replay an ask that was already consumed (a superseded skip or a fast-choice hold). Rescue through the named path (fast-choice release or staff retry step), never a plain wake. If nothing posts within 3 minutes, revert so the stall guard does not fire again.
 - A stop that is ruled a misread is undone, not re-sent: restore the phase from the run's cancelled-phase ledger row, reopen the ask under a version check, and send nothing. A short typed phrase that means "it is good" can read as a stop; check intent before any cancel.
 
+- Back Office Retry maps every delivery mode a run can pause in. A mode it does not map falls back to the ledger path. A re-send under the old delivery key is deduped as a duplicate and leaves the run silent, so re-send under a new key per staff attempt.
+
 ## Money and system presses
 
 - A system-started paid job (re-join, part, re-render) carries a credit waiver bound to its own press run, so the start is not charged. A final-target join is never covered by the video price. No waiver, no start.
@@ -684,6 +692,8 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - A retired limit does not re-run what it stopped. A stage that read the limit's failure needs a "fits now, one free re-read" branch, once per run.
 - Never hand-retry a real merchant's job. Prove with a free function test run and the next natural job.
 
+- Before any rescue, list the chat's other live runs and the merchant's last event. Never revive a run the merchant has moved past: a rescue would post into a chat where the merchant has moved on.
+
 ## Prod traps
 
 - Due-sweep starvation: the advance loop takes a fixed number of due runs per tick (see the LIMITS row). A run due only through an elapsed wake that does nothing must leave the due set, or no-op runs starve new ones. Check by counting runs with a past wake, by phase.
@@ -697,6 +707,9 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - HTTP 402 across several calls usually means the platform's upstream credit is nearly out, not one org's billing. Ask the agents lead before concluding.
 - Most prod storyboard rejections are for more panels than planned. More is acceptable; fewer is a finding. Failed pictures store no output, so keep the request id for examples.
 - A supersede writes the cause of the transition, not run-state fields. Watchers read the causation.
+
+- An exit null or a signal kill in a worker job is read in the box's kernel log (`journalctl -k` or `dmesg`) for a memory-cgroup out-of-memory line before a deploy is blamed. Size a container memory cap from production peaks, not one dev sample. A cap that fires writes its own visible fact on the job row, and each cap has a `_context/LIMITS.md` row.
+- A remix-group worker swaps only when the running remix jobs on that group are zero. A swap that lands mid-join kills the join.
 
 ## Gotchas
 
@@ -738,3 +751,4 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Direct dev tool calls need the trusted chat headers (root execution id, execution id, chat customer reference, inbound message id, session id), not only the execution-context header. Without them the run has no creator.
 - A fixed-sentence reply may exist only after a paid stage. Pick the stage where the behaviour shows before asking for budget.
 - Web-chat dev runs need a signed-in browser. Without one, drive the run on the WhatsApp rig with fictional numbers.
+- Prove each new build on a fresh fictional phone and a fresh run when an earlier build touched that path's state. A run that passed through a half-fixed build carries that state, and later failures on it are not evidence about the new code.
