@@ -52,6 +52,8 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Diff before moving the pointer.** Compare the new release with the live one (`getReleaseDiff`). The diff must hold exactly the intended change: pins compared on kind, subject and version (not ids), and the snapshot minus the pins. Refuse the cut otherwise.
 - The release note records the snapshot patch and the pin overrides. That line is the audit trail.
 
+- `cutRelease` from live cannot add a pin the release does not already have (`PIN_OVERRIDE_NOT_IN_RELEASE`), and a snapshot patch has no brain key. A dirty head may just be stale against live: diff before calling it someone's work, sync the head to live byte-for-byte, then cut from the working copy.
+
 ## Building on the live head (prod)
 
 - **Prod agents carry unreleased foreign heads** (another lane's draft on a skill/tool). Before writing a row,

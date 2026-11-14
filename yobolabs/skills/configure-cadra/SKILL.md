@@ -73,6 +73,9 @@ passed" updates, no captain or chief relays. Progress goes in your own task file
 and your §2. A code-only fix that does not change how an agent behaves needs no lead message.
 Dev agents are release-pinned too: an edit changes HEAD only; a proof counts only if its run logs the changed version (`harness <uuid> vN`, `agent_executions.agent_version_id`).
 
+- A dev tool-text fix needs its prod gate row in the same change, or a promote. Otherwise prod keeps the old text while dev is fixed.
+- Gate-log rows use the 7-column format with the approved-prod marker; the gate guard refuses any other shape. Write list cells with `/`, never `|`, which shifts the verdict column.
+
 ## Agent config is applied by you, not the release captain
 
 - Agent config changes (roles, skills, tool rows, agent settings, prompts) are not a deploy. Your own session
@@ -113,8 +116,8 @@ cadra agent diff --help                                 # usage and the full lis
 - The context repo is main-only. Gate-log pushes there need the branch override; it has no develop branch.
 
 ## Promote a whole agent version, env → env (`cadra agent promote`, p151)
-- Model policy: every Cadra and Yobo agent, role and text or image AI function runs `openai/gpt-6.1-terra` through the OpenRouter provider. A step that needs video input keeps its agreed watcher model.
-- A promote keeps the TARGET role lock's provider and model. After every promote, read back each role lock's and agent's model and confirm `openai/gpt-6.1-terra`.
+- Model policy: remix roles and remix text AI functions run `openai/gpt-6.1-sol` through the org OpenRouter row; image functions keep their image models; other agents follow the owner's word (teams/agents-RULES.md #17a). A step that needs video input keeps its agreed watcher model.
+- A promote keeps the TARGET role lock's provider and model. After every promote, read back each role lock's and agent's model and confirm the model the policy names for that agent or role.
 
 - After any prod-to-dev rebuild by promote, compare every AI function and skill file between dev and prod, field by field. A promote misses skill file versions and AI-function input declarations.
 
@@ -153,6 +156,9 @@ Rules:
 - **Target roles whose skills differ from source:** `--overwrite` re-freezes the lock and fails `ROLE_LOCK_MISMATCH`. Use `--keep role:<id>` (p151 keep flag) for every role not meant to change.
 - **Dev labels ride into the target.** The persona name and description, the core role name and any dev email binding are copied. Rename the dev source to the prod labels and cut a new release before promoting. Snapshot `channelBindings` are audit-only: prove the change with `channel_connections` and `agent_channel_bindings` row counts before and after.
 - Roles with a deployed-release pin: a role promote does not reach an agent pinned to a release. Cut a new release after promoting a role (`cadra:agents` → `agent-releases.md` § *A role promote does NOT reach an agent pinned to a release*).
+
+- To rebuild a lower environment after its data is lost, promote from the newest version of the source environment, never from an older release. Then diff channel-profile keys across the two environments: a later key write creates a new version the older release lacks.
+- Rebuild by `cadra agent promote`, never by copying database tables (ids differ between environments).
 
 ## Setup
 
@@ -196,6 +202,8 @@ Outside Claude Code (Codex, terminal, CI), point at the checked-out path instead
 of `${CLAUDE_PLUGIN_ROOT}`.
 
 - **Never create Cadra objects with an app's integration key** (for example the yobo app's dev `CADRA_API_KEY`): it can create and deploy but lacks `agents:update`, `agents:delete` and `tools:read`, so the object cannot be cleaned up with it (403 `INSUFFICIENT_PERMISSIONS`). For a dev probe, mint a key on the API Keys page (or use a lane with a builder session) and plan its delete before the create.
+
+- Per-environment API keys drift. After adding a permission-gated route, diff the key permissions dev vs prod; a link-only teardown fails on a prod key that lacks the download permission.
 
 ## Never guess a field name
 
@@ -455,6 +463,8 @@ any tools change and confirm the belt is what you meant.
    `cadra:agents` `references/agent-releases.md`.
 
 6. **Tool `description` has a length cap.** Put the long procedure in `agentInstructions` and keep a one-line pointer in `description`. A longer description is refused as too big.
+
+- Find a dev twin of a prod tool by uuid, not by name. Two same-named rows can differ; read the agent's release pins or match `tools.uuid` first, and save the target's before-text before any edit.
 
 ### Per-environment, every time
 
