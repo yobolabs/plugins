@@ -22,6 +22,8 @@ link) changes the working copy only; nothing live moves until a release is cut a
 Agent REST routes take the **uuid**. The numeric id that `list` prints returns `422 "Invalid uuid"`.
 
 - `pinOverrides` ids are row ids. Kind `skill` takes the `skill_versions` row id, not the skill's version number. Kind `role_lock` takes the lock id. After a `skills.update`, read the new row id (the max id for that skill) before the cut. A version number gives a 500 on the pin insert.
+- **The channel profile is not release-pinned.** `agents.saveChannelProfile` is live on save and returns a number from the agent version counter, not the release id. Move the deploy pointer to the cut RELEASE id, never to the profile's `versionId`.
+- **Channel notices are read live from the agent row.** They live in `agents.channel_profile.messages['<key>']` as `{lang: text}` per message key (for example `chat.early_ack`, `chat.slow_turn`). A save takes effect before any release. Prove a notice with `POST /internal/v1/agents/<id>/channel-notices`.
 
 ## Gate id traps (agent-gate-guard)
 
@@ -46,7 +48,7 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Never cut prod from `base: "working_copy"`.** A prod working copy can drift far from its releases. A working-copy cut ships that drift and also sweeps newer tool versions into the release.
 - Cut from the live release: `base: {fromVersionId: <live>}` with `expectedFromId: <live>`. Hold every other pin at its live version with `pinOverrides`.
 - Change the prompt with `snapshotPatch: {persona: {systemInstruction}}`. It is allowed only with a `fromVersionId` base. Every base pin is kept, and the working copy is never read or written.
-- Add a tool with `snapshotPatch: {coreRole: {addTools: [{toolId, versionId}]}}` (CAD-604). It becomes a native pin at `versionId`. Skills cannot be added this way.
+- Add a tool with `snapshotPatch: {coreRole: {addTools: [{toolId, versionId}]}}` (CAD-604). It becomes a native pin at `versionId`. Skills cannot be added this way. Error codes and the expected diff: `cadra:agents` `references/agent-releases.md` § Adding a tool to a released agent.
 - **Diff before moving the pointer.** Compare the new release with the live one (`getReleaseDiff`). The diff must hold exactly the intended change: pins compared on kind, subject and version (not ids), and the snapshot minus the pins. Refuse the cut otherwise.
 - The release note records the snapshot patch and the pin overrides. That line is the audit trail.
 
@@ -79,11 +81,29 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   release; a linked unreleased agent changes on the PUT.
 - **Role promote alone does not reach spawned roles**: the agent version pins the role lock. A role change needs
   role promote + agent publish + deploy.
+- **Before promoting a role whose reply is relayed to the merchant, check the target env's runtime has the relay code.**
+  Otherwise the merchant gets the reply twice: the relay and the root each write one. Grep the runtime's role-reply relay
+  (`src/services/agent-runtime/role-reply-relay.ts`) for `resultRelaysRoleReply` on the deployed branch. Check the tree,
+  never commit ancestry: a commit can sit in history while its code is absent from the tree.
 - `promoteGolden` NOT_FOUND on a role is usually a **stale browser org context**, not an ownerless role: switch org
   (`userOrg.switchOrg(<org>)`) and use a fresh session before any data fix.
 
+## AI-function evals and input media
+
+- **Input images are capped per variable, per function and per run.** The caps are config keys in the cadra-web AI-function
+  config: `MAX_IMAGE_VARIABLES_VISION` (vision text/json functions), `MAX_IMAGE_VARIABLES` (image output), `MAX_INPUT_IMAGES_PER_RUN`
+  (all image variables of one run, list items included) and `MAX_INPUT_IMAGE_BYTES`. A run over the per-run cap fails with
+  `PARAM_INVALID`. Read the config before trusting a count in a code comment; those comments can be stale.
+- **Re-running past inputs:** a stored video variable is a presigned URL that expires. Strip the query string before the re-run
+  and make sure the object is still readable.
+- **Measure a stochastic AI-function failure before any version flip:** run each candidate version at least 3 times and the live
+  version as a baseline the same number of times. Compare scene count, timing and the voiced / non-voiced pattern against the
+  baseline execution, not only "succeeded". A single miss in three runs can be the new version's regression.
+
 ## Proof turns
 
+- **Viewing Cadra images needs no API key.** The session tRPC `attachments.getDownloadUrl` is a POST mutation (a GET returns 405).
+  Do not mint an API key to read attachments.
 - **`aiFunctions.testRun` through a browser eval often answers "Timed out waiting for JavaScript result" while the run still executes.** Never retry the POST (a retry is a second metered run). Poll `prompt_executions` by the idempotency key, which must be a uuid (a string key returns 400). Parallel posts work.
 - **A prod working-copy cut can carry persona head drift** (the diff guard refuses it). Fix: read the live release's persona instruction from `getReleaseDiff(live, spare).before`, set the head instruction to it, cut, restore the head instruction, and move the pointer only if the diff matches.
 - **Monitor loops on `psql` default output:** "(0 rows)" contains a digit. Select `coalesce(string_agg(...), 'NONE')` instead.

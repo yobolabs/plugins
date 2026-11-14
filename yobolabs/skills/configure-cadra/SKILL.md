@@ -449,6 +449,10 @@ any tools change and confirm the belt is what you meant.
 4. **Diff dev vs prod endpoints before relying on sender identity.** The prod daily-brief tool
    lacked headers `X-Execution-Id` / `X-Chat-Customer-Ref` / `X-Root-Execution-Id`
    (`{ctx.executionId}` / `{ctx.customerRef}` / `{ctx.rootExecutionId}`) until 2026-10-07.
+5. **A tool PUT writes a new tool version; release-pinned agents keep the old one.** After any tool-row write, list the
+   agents that pin the tool and cut plus move a release per agent with
+   `pinOverrides [{kind:'tool', subjectId:<tool id>, versionId:<new>}]`, diff guarded to those pins. Detail:
+   `cadra:agents` `references/agent-releases.md`.
 
 ### Per-environment, every time
 

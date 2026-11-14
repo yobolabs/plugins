@@ -193,6 +193,15 @@ the shape.
 - **Endpoint `speaksOwnLine`** (list of action names): for those actions the runtime sends no pre-tool narration,
   because the tool's own reply is the line the user reads. Needs the cadra-api and cadra-web builds that know the
   flag; on an older web build it is stripped on save (see the bullet above).
+- **Tool text has a hard length cap.** cadra-web rejects an over-long `description` on create, and the cap is lower on update.
+  Keep `description` to a sentence or two and put the detail in `agentInstructions`.
+- **A tool that takes an `intent` parameter must honour it.** Its result must not argue with the explicit intent. An `agentNote`
+  that points at an open item can make the model continue that item instead of the one requested. Return facts and leave the
+  choice to the caller.
+- **A yobo dispatcher tool** (one tool that routes by a `tool` name to a yobo internal route) needs: `category` `INTERNAL`;
+  `bodyTemplate` `{"tool":"<name>"}`, not `bodyDefaults` (for this dispatcher shape `bodyDefaults` did not reach the body, and
+  the call 400s with "Tool name is required"); no `authCredentialId` (an EXTERNAL credential sends the wrong auth and 401s); and
+  the `{ctx.*}` context headers. Copy the header set from a dispatcher tool that works.
 
 ## Platform tools and safe tool edits (2026-11-06)
 
