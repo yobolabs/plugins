@@ -661,6 +661,8 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 
 - A run paused from parts with no storyboard approvals: [Retry step] refuses again. Recover it with a staff move back to review that does not wake the run, then post the ready ask with the list of pictures that were shown, so [Approve all] approves exactly those. Back up the run row first.
 - Close stale asks beside a new album without posting anything: an old redraw tap would re-run that scene at cost. Back up first.
+- [Retry step] reads `pausedFrom` from the open refusal ask (`staff-ports` `loadRun` → `refusalOf`), not from run state. Check that ask's items before calling a run refused.
+- A wake does not replay an ask that was already consumed (a superseded skip or a fast-choice hold). Rescue through the named path (fast-choice release or staff retry step), never a plain wake. If nothing posts within 3 minutes, revert so the stall guard does not fire again.
 
 ## Money and system presses
 
