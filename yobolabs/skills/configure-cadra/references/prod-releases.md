@@ -154,3 +154,24 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 A release note can say "no deployment" while `agents.deployed_version_id` points at that very release (dev 443, rel 2255).
 Before any diff, parity check or cut, re-read `deployed_version_id` on both sides. Shared admin users write many sessions' releases,
 so `created_by` does not tell you which session made a release: only the note does. Always write a note.
+
+## Gate, cut and promote traps
+
+- A tool write and its release cut take two gate ids. `tools.update` returns the tool row, not a version id, and there is no list-versions call. Use one gate id for the head write, read the new version id from the tool versions table, then use a second gate id for the cut.
+- A gate id is spent by the script that uses it, even when the write rolled back. A retry needs a new gate id.
+- Wording changed after a gate was approved needs an amendment row in the gate log first. The gate log is owned by the agents lead; send the close note there.
+- A cut from the working copy can carry persona system-instruction head drift, and the diff guard refuses it. Fix: read the live release's persona instruction from the release diff (before side), set the head to it, cut, restore the head, and move only if the diff matches the intent.
+- The snapshot patch has no `brain` key (only persona system instruction or core-role add-tools). An agent model change needs a working-copy cut; check the release diff and move only if the diff is the model.
+- A role promote freezes the whole head, and it can freeze a skill at its current head instead of the template the previous lock froze. Before any promote, check drift: for each skill, the md5 of the head template must equal the md5 of the frozen prompt content of the lock's prompt version (ignore a trailing newline); for each tool in the lock, the frozen content must contain the head description and agent instructions; for each role, sha256 of the head system instruction must equal the lock's content hash. Restore a drifted head to the frozen template first, and name any remaining drift in the gate.
+- Model-only switch: a model change is a role head update plus promote. If the head differs from the pinned lock (drafts), save the head as lock plus new model, promote, and check the diff is the model only; then restore the saved head. Compare old and new lock JSON with model, lock id, version, hash and timestamps removed; they must be equal. Read back the lock and the agent model after every promote.
+- Release order across Cadra text and yobo code: by default, the Cadra role or tool text that reads a tool learns both the old and new shapes first, then the yobo tool ships the new shape. Reverse the order when the new Cadra text would break today's prod yobo tool (a new argument on an old tool gives an empty reply).
+- Tool and role watch queries: select the output length too (`length(coalesce(e.output,''))`). A child that shows completed with an empty output is not a success.
+- Monitor loops on psql output: select `coalesce(string_agg(...), 'NONE')`. The default "(0 rows)" text contains a digit and defeats digit matching.
+- A generator that inserts a sentence must assert the inserted text appears exactly once after the edit, not only that the anchor count is right.
+- Prod and dev role text differ. Never assume a dev anchor exists in prod: count the anchor in prod first, and get the agents lead to approve the prod placement.
+
+## Proof turns on test orgs
+
+- Before a dev proof turn, map the org to its users' phone numbers. Never drive a proof from an org whose creator is a real merchant or staff phone; use only the reserved test numbers from the test-number list.
+- Before a prod proof turn, check the org's state (ready ads, open remix) so the turn hits the path under test. A change request on an org with no ready ads can start a paid ad set.
+- Proof for a tool-using agent means the first real run by the product, read back from its run rows, not a test-run call.

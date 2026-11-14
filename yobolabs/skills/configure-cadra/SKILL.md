@@ -454,6 +454,8 @@ any tools change and confirm the belt is what you meant.
    `pinOverrides [{kind:'tool', subjectId:<tool id>, versionId:<new>}]`, diff guarded to those pins. Detail:
    `cadra:agents` `references/agent-releases.md`.
 
+6. **Tool `description` has a length cap.** Put the long procedure in `agentInstructions` and keep a one-line pointer in `description`. A longer description is refused as too big.
+
 ### Per-environment, every time
 
 Tool rows are **per-org** and agent uuids differ per environment. A definition

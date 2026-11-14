@@ -232,3 +232,10 @@ Cadra brief tool tagged `read` (not `generative`), or free orgs stay blocked. Tr
 `is_active` definition exists (scanner `definitions:0` = none) → run `status_reason`
 (`payment-required`, `data-gate-empty`) → gateway message status for the wamid → the tap execution's
 `metadata.entitlement.refusals` in Cadra. Test on a paid or `is_admin_override` org.
+
+## Lifecycle collector (export feed)
+
+- The lifecycle collector runs on a cron with concurrency 1 and a deadline. Every non-finalized snapshot (including skipped runs) is re-collected each run, so its volume grows with the fleet, not with sends.
+- Writes are batched per statement. Do not go back to one transaction per row: that version timed out every run and never reached the newest rows.
+- Healthy = `collection complete` in the worker logs on every cron tick. `limit fired: deadline` means the run was cut; the job error says how many rows were written of the total. The deadline is a LIMITS row (key `agent_task_lifecycle_collector.deadline_ms`); read that row before changing it.
+- Check the target DB host before pointing a tool at the dev database. Dev is no longer on the same host family as prod.
