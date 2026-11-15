@@ -33,6 +33,14 @@ elements to generate the video."
 - Never answer "make this idea" by offering unrelated ads. A source ad, when used, is a quality benchmark (`../remix-agent/SKILL.md` P2).
 - Design: `REVIEW.md` §13.27 (remix_start script source; architect gate pending).
 
+## Owner wakes (owner speaks)
+
+- Remix code never writes a merchant-facing sentence. A fixed line can land in a language the merchant did not choose, promise work that has not started, or leave the merchant with no next step.
+- To tell the merchant something, code wakes the owner through `requestAgentTurn` with: a neutral task line (`turnText`), the facts, and the `next` step and `options` when the merchant has a choice. The owner writes the words.
+- Cards (pictures and buttons) stay yobo's. There is one general owner rule for every kind: no per-kind persona line and no new fixed merchant sentence. Route any new one through a wake.
+- Every wake path carries a non-empty `turnText`, including beside-open and pending-request wakes. msg-api skips a wake without one (`owner_text_missing`).
+- A `skipped` answer is logged as skipped, never as a woken or successful turn.
+
 ## Shipping and proving
 
 - **"On prod" is checked by content, never by git ancestry.** Grep the changed line on `main`. A release can hold code
@@ -693,6 +701,10 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Never hand-retry a real merchant's job. Prove with a free function test run and the next natural job.
 
 - Before any rescue, list the chat's other live runs and the merchant's last event. Never revive a run the merchant has moved past: a rescue would post into a chat where the merchant has moved on.
+- A rescue moves a run only into a phase that has a press edge for the open ask. Look up the ask's edge for the target phase in `press-edges` (keyed on the run's phase) before the write. A press with no edge in that phase lands as unhandled.
+- A duplicate receipt is not an applied effect. Before treating a replay's `duplicate` as done, check the effect the press was meant to write (the run field or row). A press that landed in a phase that never saved its effect is skipped on every replay. Fix the effect, not the receipt.
+- Before closing or superseding an ask, find where the merchant's words are stored (the ask's patch, a note, a run row). An ask can hold the only copy of a typed change, and the next draw must read it.
+- A failed system fix after join keeps its part as the view reports it. If the view counts a failed part as made while the join gate refuses it, every [Try again] shows the same card. The view and the gate read the same fence.
 
 ## Prod traps
 
@@ -752,3 +764,4 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - A fixed-sentence reply may exist only after a paid stage. Pick the stage where the behaviour shows before asking for budget.
 - Web-chat dev runs need a signed-in browser. Without one, drive the run on the WhatsApp rig with fictional numbers.
 - Prove each new build on a fresh fictional phone and a fresh run when an earlier build touched that path's state. A run that passed through a half-fixed build carries that state, and later failures on it are not evidence about the new code.
+- Dev sets `ads_gen.credits_unlimited`, which makes every dev org count as staff. Paid-only and staff-exempt gates (own-source paid need, own video over the length cap) can never fire on dev. Prove them locally on a paid non-staff org, then on prod with a paid test org at zero credits.

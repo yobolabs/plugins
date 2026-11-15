@@ -23,6 +23,8 @@ open and drive the lab per `references/lab.md` (Sean 2026-11-04: "You're suppose
 
 **HARD: no refusals.** No tool, skill, role, check or step rejects, blocks or limits on behalf of the owner; code reports facts and the single owner decides. Full rule: [`../remix-agent/SKILL.md`](../remix-agent/SKILL.md) § Principles (first).
 
+**Owner speaks.** Remix code never writes a merchant-facing sentence. It hands the owner facts, a neutral task line and the next step with its options; the owner writes the words in the merchant's language. Cards (pictures and buttons) stay yobo's. Contract: [`references/engineering.md`](references/engineering.md) § Owner wakes.
+
 P1–P6 live once in [`../remix-agent/SKILL.md`](../remix-agent/SKILL.md) (the Cadra agent body); read them first.
 
 ## The fixed pipeline (no step optional, none skippable)
