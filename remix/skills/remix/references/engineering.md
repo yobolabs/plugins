@@ -360,6 +360,10 @@ Instagram hides them from downloaders that are not logged in (yt-dlp "empty medi
 says "private" or "public". It gives the steps: save the reel on the phone (⋯ → Save, or screen-record it) and send
 the file here, with [Send the video here] and [Pick a ready ad]. It never claims a second try that did not run.
 
+## Test accounts
+
+Resetting a test WhatsApp number to repeat onboarding: follow the yobo:whatsapp skill, section "Reset a test WhatsApp number".
+
 ## A proof number must be fresh (2026-11-06)
 
 Before a dev proof sends from a fictional or test number, check that the number has no open remix, conversation or
