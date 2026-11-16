@@ -18,7 +18,7 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 
 ## Rules
 
-- **Templates ask only their prompt's bindings** (`@Image1 is <product>`): product only. Narrow both the run state and the needs job result, because the chat list is built from the job result.
+- **A ready-ad run's needs come from the teardown's §9 entities.** One merchant row per need kind (all packs of a kind in one row, each @Name kept underneath), filled from the catalog first. The ad's person is kept unless the teardown marks it generate; everything else is "we make it". The needs writer's questions stay open, never required: ask only what cannot be found, once. No placeholder row and no fixed "which product goes in your video?" question.
 - **Each scene carries timed lines ("a–b s: what happens"), editable by the merchant.** They feed the storyboard sheet and the video prompt; a line is never written only into the video prompt.
 - **The Product line's shape sentence comes from the approved product sheet, read once at sheet approval.** It holds pack type, material, colour, label text, what is inside, and real size if known. The brief carries it word for word, and so does every storyboard and video prompt. A brief written from the product's name alone guesses the vessel.
 - **Cast follows the source, except an element a type rule requires in a shot.** A screens ad with no people gets one pair of hands only (no face or body) holding the phone; the brief lists it under Cast, and Never never forbids it.
