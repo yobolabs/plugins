@@ -112,8 +112,8 @@ cadra agent diff --help                                 # usage and the full lis
 - The context repo is main-only. Gate-log pushes there need the branch override; it has no develop branch.
 
 ## Promote a whole agent version, env → env (`cadra agent promote`, p151)
-- Model policy: every Cadra and Yobo agent, role and text or image AI function runs `openai/gpt-6.1-terra` through the OpenRouter provider. A step that needs video input keeps its agreed watcher model.
-- A promote keeps the TARGET role lock's provider and model. After every promote, read back each role lock's and agent's model and confirm `openai/gpt-6.1-terra`.
+- Model policy: remix roles, the teardown agent, Remix Product Discovery and every remix_* text AI function run `openai/gpt-6.1-sol` through the org OpenRouter row. Other agents keep their agreed model; image and video-input steps keep theirs. Moving any other agent is an ask to Sean.
+- A promote keeps the TARGET role lock's provider and model. After every promote, read back each role lock's and agent's model and confirm it matches the policy above.
 
 - After any prod-to-dev rebuild by promote, compare every AI function and skill file between dev and prod, field by field. A promote misses skill file versions and AI-function input declarations.
 
