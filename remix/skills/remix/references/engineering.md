@@ -308,6 +308,11 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   template AND its parts (a direct .mp4 read writes the house org, so merchants cannot see it). The read's own plan
   can already be right (egg drop: keep 0–2.47, 4 stills, one 4 s video); check it before hand-editing `plan.parts`.
   On prod, keep it hidden (house org, universal=false) until one paid dev video is checked.
+- **A template teardown is a remix-worker job, never a web-route call.** The web host has no ffmpeg (frame grabs fail
+  with ENOENT). The web builds the full teardown request (source URL, frames plan, org) and enqueues it; the worker
+  runs exactly that request and never rebuilds URLs from its own env, because the public base URL differs between web
+  and worker. A batch of template re-reads goes through the same queue. Prove it by the count of templates with a
+  complete §9 after the batch, and re-run the entity eval set (prominence) on the batch.
 - Template SOURCES and rights (lead-6 2026-11-07). The target is 3 approved templates per category per env; a universal
   template does not count toward the 3. Ad Library items carry rightsClass `third_party_reference` and keep today's
   rules. A brand-WEBSITE product video (a store's own CDN clip) is also `third_party_reference`, but ONLY as a

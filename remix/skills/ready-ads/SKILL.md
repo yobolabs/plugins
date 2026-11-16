@@ -85,3 +85,4 @@ Two facts for reading a result: a "No check ran" line on a template page means n
 | Lab steps | `remix` skill → `references/lab.md` |
 | Copy a ready ad between envs | Update the target env's rows in place (back them up first): readings are unique per shared source key and templates per breakdown and plan version. Asset buckets differ per env and the dev bucket is unversioned, so list the target keys before any write. Part clips are keyed by reading id. |
 | Something the skill cannot do (a check the page does not show) | tell the user in one line and name the remix lead; never work around it |
+| A template re-read or teardown that will not start | it runs on the remix worker, not the web; tell the remix lead |
