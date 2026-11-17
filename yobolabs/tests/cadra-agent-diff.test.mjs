@@ -6,8 +6,11 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { mkdtempSync, readFileSync, readdirSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
-  buildRows, bundleText, canonical, exitCodeOf, extractObjects, fieldDiff, functionKeysNamed, functionObject,
+  buildRows, bundleText, focusSegment, isLongText, lineDiff, textDiffFileName, unifiedDiff, writeTextDiffs, canonical, exitCodeOf, extractObjects, fieldDiff, functionKeysNamed, functionObject,
   descriptorObject, envHostRule, findHostProblems, isLoopbackOrigin, learnEnvHosts, mapObjects, normalise, uuidNameRule, parseDiffArgs, parseDiffSide, sha256, summarise,
 } from "../skills/configure-cadra/scripts/diff.mjs";
 
@@ -393,6 +396,10 @@ test("args: sides with and without @release, flags", () => {
 
 const stubs = [];
 const origins = {};
+// Two persona texts whose changed line is equal for its first 200 chars: clipped at 140 they print the same.
+const SAME_HEAD = `- Pass the user's exact change, ${"the original image as the BASE, ".repeat(6)}`;
+const LONG_A = ["line 1", "line 2", "line 3", "line 4", `${SAME_HEAD}use the newest and name which one you used.`, "line 6", "line 7", "line 8", "line 9"].join("\n");
+const LONG_B = LONG_A.replace("use the newest", "if she has not chosen, ask first; otherwise use the newest");
 
 function stub({ agentId, orgId, env, releaseId, pointer, bundleOver, functions, noPrompts }) {
   const b = bundle({ env, orgId, agentId, releaseId, ...bundleOver });
@@ -437,6 +444,8 @@ before(async () => {
   origins.j = await stub({ agentId: 362, orgId: 4, env: "prod", releaseId: 2311, pointer: 2311, bundleOver: { instruction: "Same first line.\nOpen https://app.yobolabs.ai/b" }, functions: [] });
   origins.k = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, functions: [] });
   origins.l = await stub({ agentId: 362, orgId: 4, env: "prod", releaseId: 2311, pointer: 2311, bundleOver: { endpointPatch: { 1: "https://app-dev.yobolabs.ai/api/a" } }, functions: [] });
+  origins.m = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, bundleOver: { instruction: LONG_A }, functions: [] });
+  origins.n = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { instruction: LONG_B }, functions: [] });
   origins.d = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: null, functions: [] });
 });
 after(() => stubs.forEach((s) => s.close()));
@@ -544,4 +553,96 @@ test("CLI: --help lists the ignored fields", async () => {
   assert.equal(r.code, 0);
   assert.match(r.stdout, /Ignored fields/);
   assert.match(r.stdout, /orgId/);
+});
+
+// ---- full text: focus segment, unified diff, --text-dir ----------------------------------------------
+
+test("focus segment: the first differing char with 40 chars either side, cut marks where cut", () => {
+  const f = focusSegment(`${"x".repeat(100)}AAA${"y".repeat(100)}`, `${"x".repeat(100)}BBB${"y".repeat(100)}`);
+  assert.equal(f.at, 100);
+  assert.equal(f.a, `…${"x".repeat(40)}AAA${"y".repeat(37)}…`);
+  assert.equal(f.b, `…${"x".repeat(40)}BBB${"y".repeat(37)}…`);
+});
+
+test("line diff: two changed lines that clip to the same 140 chars print where they differ (line, offset, segment)", () => {
+  const out = lineDiff(LONG_A, LONG_B);
+  assert.equal(out.length, 2);
+  assert.match(out[0], /A-only: L5 @\d+: ….*use the newest/);
+  assert.match(out[1], /B-only: L5 @\d+: ….*if she has not chosen/);
+  assert.notEqual(out[0].replace("A-only", ""), out[1].replace("B-only", ""));
+});
+
+test("line diff: lines that already clip differently keep today's form", () => {
+  assert.deepEqual(lineDiff("same\nold line", "same\nnew line"), ["      A-only: old line", "      B-only: new line"]);
+});
+
+test("unified diff: hunk header, 3 lines context, - before +, nothing truncated; equal texts give empty", () => {
+  const lines = unifiedDiff(LONG_A, LONG_B, { labelA: "dev:443@1", labelB: "dev:443@2" }).trimEnd().split("\n");
+  assert.equal(lines[0], "--- dev:443@1");
+  assert.equal(lines[1], "+++ dev:443@2");
+  assert.equal(lines[2], "@@ -2,7 +2,7 @@");
+  assert.deepEqual(lines.slice(3), [" line 2", " line 3", " line 4", `-${LONG_A.split("\n")[4]}`, `+${LONG_B.split("\n")[4]}`, " line 6", " line 7", " line 8"]);
+  assert.equal(unifiedDiff(LONG_A, LONG_A), "");
+});
+
+test("unified diff: far-apart changes are separate hunks; an added line and an absent side are handled", () => {
+  const a = [...Array(20).keys()].map((i) => `l${i}`).join("\n");
+  const b = a.replace("l1\n", "l1\nNEW\n").replace("l18", "L18");
+  const d = unifiedDiff(a, b);
+  assert.equal((d.match(/^@@/gm) ?? []).length, 2);
+  assert.match(d, /^@@ -1,5 \+1,6 @@$/m);
+  assert.match(d, /^\+NEW$/m);
+  assert.match(d, /^-l18\n\+L18$/m);
+  assert.equal(unifiedDiff(undefined, "a\nb"), "--- a\n+++ b\n@@ -0,0 +1,2 @@\n+a\n+b\n");
+});
+
+test("unified diff: lines equal after normalising are context, and the stored lines are written", () => {
+  const d = unifiedDiff("host dev\nx", "host other\ny", { na: "host H\nx", nb: "host H\ny" });
+  assert.match(d, /^ host dev$/m);
+  assert.match(d, /^-x\n\+y$/m);
+});
+
+test("text diff file names are filesystem-safe and unique", () => {
+  const taken = new Set();
+  assert.equal(textDiffFileName("agent", "Yobo (Live)", "systemInstruction", taken), "agent-Yobo_Live-systemInstruction.diff");
+  assert.equal(textDiffFileName("agent", "Yobo (Live)", "systemInstruction", taken), "agent-Yobo_Live-systemInstruction-2.diff");
+  assert.equal(textDiffFileName("tool", "a/b", "endpoints[0].description", new Set()), "tool-a_b-endpoints_0_.description.diff");
+});
+
+test("long text: a string with a newline or over 140 chars, on either side; short values and objects are not", () => {
+  assert.equal(isLongText("a\nb", "a"), true);
+  assert.equal(isLongText("x".repeat(141), undefined), true);
+  assert.equal(isLongText("short", "other"), false);
+  assert.equal(isLongText({ a: 1 }, "x".repeat(200)), false);
+});
+
+test("writeTextDiffs: one file per differing long text field, path set on the row, short fields get no file", () => {
+  const rows = rowsOf(bundle({ instruction: LONG_A }), bundle({ env: "dev", orgId: 4, agentId: 362, instruction: LONG_B }));
+  for (const r of rows) if (r.status === "differs") r.fields = fieldDiff(r._na, r._nb, r._ra, r._rb);
+  const dir = mkdtempSync(join(tmpdir(), "textdiff-"));
+  const written = writeTextDiffs(rows, dir, { labelA: "A", labelB: "B" });
+  assert.deepEqual(readdirSync(dir), ["agent-Remix_root-systemInstruction.diff"]);
+  assert.deepEqual(rows.find((r) => r.kind === "agent").textDiffs, written);
+  assert.match(readFileSync(written[0], "utf8"), /^\+- Pass .*if she has not chosen, ask first/m);
+});
+
+test("CLI: --text-dir writes the full diff and prints its path under the row; without it no file and no path", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "textdiff-"));
+  const r = await cli(["aaa:443@2315", "bbb:362@2311", "--changes", "--no-functions", "--text-dir", dir], envs("m", "n"));
+  assert.equal(r.code, 1, r.stderr + r.stdout);
+  const file = join(dir, "agent-Remix_root-systemInstruction.diff");
+  assert.ok(r.stdout.includes(`differs\n    text diff: ${file}\n`), r.stdout);
+  assert.ok(readFileSync(file, "utf8").includes(`+${LONG_B.split("\n")[4]}`));
+  const plain = await cli(["aaa:443@2315", "bbb:362@2311", "--changes", "--no-functions", "--fields"], envs("m", "n"));
+  assert.doesNotMatch(plain.stdout, /text diff:/);
+  assert.match(plain.stdout, /B-only: L5 @\d+: .*if she has not chosen/);
+});
+
+test("CLI: --fields on a long one-line value whose clips are equal prints the differing segment", async () => {
+  const one = (tail) => `${"z".repeat(150)}${tail}`;
+  const pa = await stub({ agentId: 443, orgId: 36, env: "dev", releaseId: 2315, pointer: 2315, bundleOver: { instruction: one("AAA") }, functions: [] });
+  const pb = await stub({ agentId: 362, orgId: 4, env: "dev", releaseId: 2311, pointer: 2311, bundleOver: { instruction: one("BBB") }, functions: [] });
+  const r = await cli(["aaa:443@2315", "bbb:362@2311", "--changes", "--no-functions", "--fields"], { CADRA_AAA_API_URL: pa, CADRA_AAA_BUILDER_API_KEY: "k", CADRA_BBB_API_URL: pb, CADRA_BBB_BUILDER_API_KEY: "k" });
+  assert.match(r.stdout, /A: @150: "…z{40}AAA"/);
+  assert.match(r.stdout, /B: @150: "…z{40}BBB"/);
 });

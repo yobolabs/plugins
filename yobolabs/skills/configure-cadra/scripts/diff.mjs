@@ -24,6 +24,8 @@
  * Hash = sha256 of the canonical JSON of the object AFTER the ignored fields are removed.
  */
 import { createHash } from "node:crypto";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { client, fail, uuidOf } from "./promote.mjs";
 
 // ---------------------------------------------------------------------------
@@ -491,7 +493,7 @@ function die(msg, code = 2) {
   process.exit(code);
 }
 
-export const DIFF_HELP = `cadra agent diff <envA>:<agent>[@release] <envB>:<agent>[@release] [--json] [--fields] [--changes] [--function KEY]... [--no-functions] [--host a=b]...
+export const DIFF_HELP = `cadra agent diff <envA>:<agent>[@release] <envB>:<agent>[@release] [--json] [--fields] [--changes] [--function KEY]... [--no-functions] [--host a=b]... [--text-dir DIR]
 
 Read-only. Compares the release bundles of two agents (any two environments), their AI functions and skill files.
   <agent>      numeric id or uuid in that environment's org
@@ -505,6 +507,10 @@ Read-only. Compares the release bundles of two agents (any two environments), th
                without it the public descriptor is compared on both sides (title, description, output kind, parameters,
                output schema) and the run exits 2 with a warning naming what was not compared
   --host a=b   a is side A's env host, b is side B's (repeat); overrides what is learned
+  --text-dir DIR   for every differing long text field (system instruction, prompt text, skill instructions, tool
+               description / agentInstructions, AI function content / system prompt) write the full unified diff
+               (3 lines context, nothing truncated) to DIR/<kind>-<name>-<field>.diff and print its path under the row.
+               The only files written; nothing is written to either environment
 Hosts: an env pair (side A host X is the same service as side B host Y, e.g. app-dev.yobolabs.ai on dev and
   app.yobolabs.ai on prod, or 127.0.0.1:3100 on a local side and the dev host) is learned from the mapped objects:
   the same field path, a url with the same rest after the host, strict majority both ways, at least 2 values; each
@@ -528,7 +534,7 @@ Ignored fields (they differ per environment by design; never compared):
   text      a host that is half of a consistent env pair reads as the pair's token (see Hosts); no other host is ignored`;
 
 export function parseDiffArgs(argv) {
-  const res = { sides: [], json: false, fields: false, changes: false, functions: [], noFunctions: false, hosts: [], help: false };
+  const res = { sides: [], json: false, fields: false, changes: false, functions: [], noFunctions: false, hosts: [], textDir: null, help: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const val = () => {
@@ -542,6 +548,7 @@ export function parseDiffArgs(argv) {
     else if (a === "--no-functions") res.noFunctions = true;
     else if (a === "--help" || a === "-h") res.help = true;
     else if (a === "--function") res.functions.push(val());
+    else if (a === "--text-dir") res.textDir = val();
     else if (a === "--host") {
       const [fromHost, toHost, extra] = val().split("=");
       if (!fromHost || !toHost || extra !== undefined) die("--host takes <hostA>=<hostB>, e.g. app-dev.yobolabs.ai=app.yobolabs.ai");
@@ -632,23 +639,178 @@ function clip(v, n = 110) {
   return s.length > n ? `${s.slice(0, n)}… (${s.length} chars)` : s;
 }
 
-/** Which lines differ is decided on the normalised text (na, nb); the lines printed are the stored ones (a, b). */
-function lineDiff(a, b, na = a, nb = b, max = 6) {
+/**
+ * The first place two strings differ, with `pad` chars either side: { at, a, b } (a, b are the segments, with "…"
+ * where they were cut). Used when two clipped values print the same, so the change is never hidden by the clip.
+ */
+export function focusSegment(a, b, pad = 40) {
+  const sa = String(a);
+  const sb = String(b);
+  let k = 0;
+  while (k < sa.length && k < sb.length && sa[k] === sb[k]) k++;
+  const from = Math.max(0, k - pad);
+  const seg = (s) => `${from > 0 ? "…" : ""}${s.slice(from, k + pad)}${k + pad < s.length ? "…" : ""}`;
+  return { at: k, a: seg(sa), b: seg(sb) };
+}
+
+const LINE_MAX = 140;
+const shown = (l) => (l.length > LINE_MAX ? `${l.slice(0, LINE_MAX)}…` : l);
+
+/**
+ * Which lines differ is decided on the normalised text (na, nb); the lines printed are the stored ones (a, b).
+ * When an A-only and a B-only line print the same after the clip, both print their first differing segment instead
+ * (line number, char offset, ±40 chars), so two different lines never look identical.
+ */
+export function lineDiff(a, b, na = a, nb = b, max = 6) {
   const la = String(a).split("\n");
   const lb = String(b).split("\n");
   const nla = String(na).split("\n");
   const nlb = String(nb).split("\n");
   const sa = new Set(nla);
   const sb = new Set(nlb);
+  const only = (stored, norm, other) =>
+    stored.map((l, i) => ({ l, n: i + 1 })).filter(({ n }) => !other.has(norm[n - 1] ?? stored[n - 1]) && (norm[n - 1] ?? stored[n - 1]).trim());
+  const ao = only(la, nla, sb);
+  const bo = only(lb, nlb, sa);
+  // Pair lines whose clipped form is equal; each pair prints the segment where they really differ.
+  const used = new Set();
+  for (const x of ao) {
+    const j = bo.findIndex((y, i) => !used.has(i) && y.l !== x.l && shown(y.l) === shown(x.l));
+    if (j < 0) continue;
+    used.add(j);
+    const f = focusSegment(x.l, bo[j].l);
+    x.focus = `L${x.n} @${f.at}: ${f.a}`;
+    bo[j].focus = `L${bo[j].n} @${f.at}: ${f.b}`;
+  }
   const out = [];
-  const only = (stored, norm, other, sign) => {
-    const mine = stored.filter((_, i) => !other.has(norm[i] ?? stored[i]) && (norm[i] ?? stored[i]).trim());
-    for (const l of mine.slice(0, max)) out.push(`      ${sign} ${l.length > 140 ? `${l.slice(0, 140)}…` : l}`);
+  const print = (mine, sign) => {
+    for (const x of mine.slice(0, max)) out.push(`      ${sign} ${x.focus ?? shown(x.l)}`);
     if (mine.length > max) out.push(`      ${sign} … ${mine.length - max} more line(s)`);
   };
-  only(la, nla, sb, "A-only:");
-  only(lb, nlb, sa, "B-only:");
+  print(ao, "A-only:");
+  print(bo, "B-only:");
   return out;
+}
+
+/** A and B lines of one leaf field diff: clipped values, or the first differing segment when the clips are equal. */
+function valueLines(d) {
+  const ca = clip(d.a);
+  const cb = clip(d.b);
+  if (ca !== cb || typeof d.a !== "string" || typeof d.b !== "string" || d.a === d.b) return [`      A: ${ca}`, `      B: ${cb}`];
+  const f = focusSegment(d.a, d.b);
+  return [`      A: @${f.at}: ${JSON.stringify(f.a)}  (${d.a.length} chars)`, `      B: @${f.at}: ${JSON.stringify(f.b)}  (${d.b.length} chars)`];
+}
+
+// ---------------------------------------------------------------------------
+// --text-dir: one full unified diff file per differing long text field
+// ---------------------------------------------------------------------------
+
+/** A text field long enough to deserve its own file: a string on either side holding a newline or over 140 chars. */
+export const isLongText = (a, b) =>
+  (typeof a === "string" || typeof b === "string") &&
+  (a === undefined || typeof a === "string") && (b === undefined || typeof b === "string") &&
+  [a, b].some((s) => typeof s === "string" && (s.includes("\n") || s.length > LINE_MAX));
+
+/** Line edit script (LCS) between two line arrays: [{ op: " " | "-" | "+", a?: i, b?: j }]. Common head/tail trimmed first. */
+function editScript(A, B) {
+  let s = 0;
+  while (s < A.length && s < B.length && A[s] === B[s]) s++;
+  let ea = A.length;
+  let eb = B.length;
+  while (ea > s && eb > s && A[ea - 1] === B[eb - 1]) { ea--; eb--; }
+  const head = [...Array(s).keys()].map((i) => ({ op: " ", a: i, b: i }));
+  const tail = [...Array(A.length - ea).keys()].map((i) => ({ op: " ", a: ea + i, b: eb + i }));
+  const n = ea - s;
+  const m = eb - s;
+  const mid = [];
+  if (n * m > 25_000_000) {
+    // Too large for the table: the middle reads as removed then added. Still complete, never truncated.
+    for (let i = s; i < ea; i++) mid.push({ op: "-", a: i });
+    for (let j = s; j < eb; j++) mid.push({ op: "+", b: j });
+  } else {
+    const L = new Uint32Array((n + 1) * (m + 1));
+    for (let i = n - 1; i >= 0; i--)
+      for (let j = m - 1; j >= 0; j--)
+        L[i * (m + 1) + j] = A[s + i] === B[s + j] ? L[(i + 1) * (m + 1) + j + 1] + 1 : Math.max(L[(i + 1) * (m + 1) + j], L[i * (m + 1) + j + 1]);
+    let i = 0;
+    let j = 0;
+    while (i < n || j < m) {
+      if (i < n && j < m && A[s + i] === B[s + j]) { mid.push({ op: " ", a: s + i, b: s + j }); i++; j++; }
+      else if (i < n && (j === m || L[(i + 1) * (m + 1) + j] >= L[i * (m + 1) + j + 1])) { mid.push({ op: "-", a: s + i }); i++; }
+      else { mid.push({ op: "+", b: s + j }); j++; }
+    }
+  }
+  return [...head, ...mid, ...tail];
+}
+
+/**
+ * Full unified diff (line-based, `context` lines around each change, no truncation). Equality per line is decided on
+ * the normalised text (na, nb) when it has the same line count as the stored text; the lines written are the stored
+ * ones. Returns "" when the texts are equal.
+ */
+export function unifiedDiff(a, b, { labelA = "a", labelB = "b", na = a, nb = b, context = 3 } = {}) {
+  const split = (s) => (s === undefined || s === null || s === "" ? [] : String(s).split("\n"));
+  const SA = split(a);
+  const SB = split(b);
+  let NA = split(na);
+  let NB = split(nb);
+  if (NA.length !== SA.length) NA = SA;
+  if (NB.length !== SB.length) NB = SB;
+  const ops = editScript(NA, NB);
+  const changed = ops.map((o, i) => (o.op !== " " ? i : -1)).filter((i) => i >= 0);
+  if (!changed.length) return "";
+  const hunks = [];
+  for (const i of changed) {
+    const last = hunks[hunks.length - 1];
+    if (last && i - context <= last.end + context) last.end = i;
+    else hunks.push({ start: i, end: i });
+  }
+  const out = [`--- ${labelA}`, `+++ ${labelB}`];
+  for (const h of hunks) {
+    const from = Math.max(0, h.start - context);
+    const to = Math.min(ops.length - 1, h.end + context);
+    const slice = ops.slice(from, to + 1);
+    const aLines = slice.filter((o) => o.op !== "+");
+    const bLines = slice.filter((o) => o.op !== "-");
+    const aStart = aLines.length ? aLines[0].a + 1 : (ops.slice(0, from).filter((o) => o.op !== "+").length);
+    const bStart = bLines.length ? bLines[0].b + 1 : (ops.slice(0, from).filter((o) => o.op !== "-").length);
+    out.push(`@@ -${aStart},${aLines.length} +${bStart},${bLines.length} @@`);
+    for (const o of slice) out.push(`${o.op}${o.op === "+" ? SB[o.b] : SA[o.a]}`);
+  }
+  return `${out.join("\n")}\n`;
+}
+
+/** `<kind>-<name>-<field>.diff`, safe for any filesystem; `taken` makes repeated names unique (-2, -3, …). */
+export function textDiffFileName(kind, name, field, taken = new Set()) {
+  const safe = (s) => String(s).replace(/[^A-Za-z0-9._-]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 80) || "_";
+  const base = `${safe(kind)}-${safe(name)}-${safe(field)}`;
+  let file = `${base}.diff`;
+  for (let n = 2; taken.has(file); n++) file = `${base}-${n}.diff`;
+  taken.add(file);
+  return file;
+}
+
+/** Write one unified diff file per differing long text field of the differing rows; sets row.textDiffs = [path]. */
+export function writeTextDiffs(rows, dir, { labelA = "a", labelB = "b" } = {}) {
+  mkdirSync(dir, { recursive: true });
+  const taken = new Set();
+  const written = [];
+  for (const r of rows) {
+    if (r.status !== "differs" && r.status !== "wrong-env-host") continue;
+    for (const d of r.fields ?? []) {
+      if (!isLongText(d.a, d.b)) continue;
+      const file = join(dir, textDiffFileName(r.kind, r.name, d.path, taken));
+      const text = unifiedDiff(d.a, d.b, {
+        labelA: `${labelA} ${r.kind} ${r.name} ${d.path}`, labelB: `${labelB} ${r.kind} ${r.name} ${d.path}`,
+        na: typeof d.na === "string" ? d.na : d.a, nb: typeof d.nb === "string" ? d.nb : d.b,
+      });
+      if (!text) continue;
+      writeFileSync(file, text);
+      (r.textDiffs ??= []).push(file);
+      written.push(file);
+    }
+  }
+  return written;
 }
 
 function printTable(head, rows, fields, warnings, summary, changesOnly, envLines = []) {
@@ -665,6 +827,7 @@ function printTable(head, rows, fields, warnings, summary, changesOnly, envLines
   console.log(fmt(cols.map(([h]) => h)));
   for (const r of rows) {
     console.log(fmt(cols.map(([, k]) => k(r))));
+    for (const p of r.textDiffs ?? []) console.log(`    text diff: ${p}`);
     for (const f of r.hostFindings ?? []) {
       console.log(`    wrong-env-host  ${f.side}  ${f.path}`);
       console.log(`      ${f.side}: ${clip(f.value)}`);
@@ -677,8 +840,7 @@ function printTable(head, rows, fields, warnings, summary, changesOnly, envLines
           console.log(`      (${d.a.length} chars vs ${d.b.length} chars)`);
           for (const l of lineDiff(d.a, d.b, d.na, d.nb)) console.log(l);
         } else {
-          console.log(`      A: ${clip(d.a)}`);
-          console.log(`      B: ${clip(d.b)}`);
+          for (const l of valueLines(d)) console.log(l);
         }
       }
   }
@@ -755,6 +917,7 @@ export async function runDiff(argv) {
     hostCheck: (a, b) => findHostProblems(a, b, envPairs, { localA, localB }),
   });
   for (const r of rows) if (r.status === "differs" || r.status === "wrong-env-host") r.fields = fieldDiff(r._na, r._nb, r._ra, r._rb);
+  if (o.textDir) writeTextDiffs(rows, o.textDir, { labelA: `${A.env}:${A.agent}@${sa.release}`, labelB: `${B.env}:${B.agent}@${sb.release}` });
   const summary = summarise(rows);
   const clean = rows.map(({ _na, _nb, _ra, _rb, ...r }) => (o.fields || o.json ? r : { ...r, fields: undefined }));
   const head = `DIFF  ${A.env}:${sa.bundle.agent.name}@${sa.release}  vs  ${B.env}:${sb.bundle.agent.name}@${sb.release}  (bundles ${String(sa.bundle.bundleHash).slice(0, 10)} / ${String(sb.bundle.bundleHash).slice(0, 10)})`;
