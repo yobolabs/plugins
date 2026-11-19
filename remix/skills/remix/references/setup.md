@@ -23,6 +23,12 @@ Sign-in refused or no results → your Cadra account is not in the org that owns
 Claude Code in a terminal (rare): `claude mcp add -s user --transport http --client-id cadra-claude-code
 --callback-port 33418 remix-context <the URL above>`, then `/mcp` → Authenticate. Never paste a key anywhere.
 
+**Auto KB push (hook).** `hooks/remix-kb-push.mjs` runs on every prompt: on remix work (keyword in the prompt, or
+`remix` in the cwd) it queries the Remix KB REST route and adds the top 3 docs to context as "Remix KB (auto, read
+before answering)". It needs a local key proxy route (`REMIX_KB_BASE`, default the `cadra-prod-yobo` route on the
+local key proxy); without one it stays silent. Off: `REMIX_KB_HOOK=0`. Log: `~/.claude/logs/remix-kb-push.log`.
+The hits are a pointer, not the answer: `read_document` the doc before acting on it.
+
 ## 2. The team lab
 
 Nothing to install. https://remix-lab.yobolabs.ai signs you in with Yobo Connect (team email domains only).
