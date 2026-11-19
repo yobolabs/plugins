@@ -9,6 +9,9 @@ A **ready ad** is an ad a merchant can remix in one tap. The back office calls i
 team. It is three things: the original Instagram video, its plan (which parts keep the ad's own footage and which are
 made again with the merchant's product), and what the merchant must give to finish it.
 
+**NEVER approve a template by hand** (not in the back-office QC tab, not by any status write). Approval follows the
+completed breakdown. QC staff check and hold; they never flip an incomplete template to approved.
+
 **Default (no ask):** run **QC** (below) on every ready ad in the live back office and show the pass/fail table.
 
 Write to the user in plain words. No code, no ids unless they ask, no internal names.
@@ -38,11 +41,16 @@ Write to the user in plain words. No code, no ids unless they ask, no internal n
    becomes "Waiting for review", which merchants never see. The save keeps yobo's own reading of the Instagram link,
    not the lab's plan, so QC that reading (step 5). "Not read" or "Source video not saved" means yobo has no reading of that Instagram link yet: use
    Templates → **New template**, paste the same Instagram link, **Read the ad (free)**, then save again.
-5. **QC it** (below). All checks pass → tell the user it is ready for the remix lead. The lead approves it only after one
-   test remix on dev passes (Q11). This skill never presses Approve.
+5. **QC it** (below). All checks pass → tell the user it is complete and waits for its dev test remix (Q11). This skill
+   never presses Approve and nobody approves it by hand.
 6. The remix lead reviews the first batch each team member makes. Tell the user that once.
 
 ## QC
+
+**QC = the template is complete.** A ready ad exists for merchants only when all five exist: its needs, its
+brief, its line drawings, its prompts and the storyboard of the original ad. Any one missing → it is not a ready
+ad: hold it and never show it in the merchant gallery. Verify by the per-item count query in the checklist
+(Q3), never by its status and never from memory. Never say "all templates are ready" without that count.
 
 Checklist, how to check each item on the page, and the report format: [`references/checklist.md`](references/checklist.md).
 Read it in full before the first QC of a session.
@@ -58,7 +66,7 @@ Read it in full before the first QC of a session.
    per check, and one line saying what to fix.
 4. Then act, without a second question (the user can say Stop or Change):
    - **Fail** on any check → **Hold** it with the reason (the check number and one plain line).
-   - **All pass and it was waiting for review** → list it for the remix lead to approve; say so.
+   - **All pass and it was waiting for review** → list it as complete; approval follows its breakdown, never a hand press.
    - **Approved and failing** → Hold does not work on approved ones yet: list it for the remix lead, never try to Hold.
    - A warning (⚠) alone never holds anything; list it in the report.
    - **A recorded exception** (the Remix KB search for this ad's link or name finds a decision by Sean to keep it as is)
@@ -71,7 +79,7 @@ Two facts for reading a result: a "No check ran" line on a template page means n
 ## Never
 
 - Delete a ready ad or its reading. Hold it instead. A delete is Sean's call.
-- Press Approve, Not usable or Universal, anywhere. Approving is the remix lead's step.
+- Press Approve, Not usable or Universal, anywhere, or write a template's status to approved.
 - Change anything in the back office other than Save as template and Hold.
 - Start a paid run without saying its size first, or more than one per ready ad.
 - Message merchants or the team.

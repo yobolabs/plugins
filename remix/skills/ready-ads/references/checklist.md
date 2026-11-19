@@ -1,6 +1,6 @@
 # Ready-ad QC checklist
 
-Back to [SKILL.md](../SKILL.md). One ready ad passes only when **every** check passes. **Q3 comes first**: a ready ad that is not complete fails, whatever else passes. The checks come from the team's
+Back to [SKILL.md](../SKILL.md). **Never approve a template by hand** (back-office QC tab or any status write): approval follows the completed breakdown; you check and hold. One ready ad passes only when **every** check passes. **Q3 comes first**: a ready ad that is not complete fails, whatever else passes. The checks come from the team's
 rules (Remix KB "product-rules" R22–R28) and the readiness check the developers run. Write each finding in plain
 words; the check number goes in the Hold reason.
 
@@ -34,7 +34,7 @@ save → look at it. The Original is the first video on the page. A small origin
 |---|---|---|---|---|
 | Q1 | **Instagram link** | "open the ad" goes to an Instagram reel or post, and that post's video is the same ad as the Original: same opening shot **and** the same product in the product shots | open the link. `/reels/<code>/` → the first video in the feed is the post. Compare its first shot and a product shot near the end with the Original (Instagram shows no length: skip length). Only a login wall → "link ok, cut not compared" (pass). Cannot tell → ⚠ "needs a human look" | no link → Hold "Q1 no Instagram post". Same idea but another product or cut → Hold "Q1 Instagram post is a different cut" (approved → list for the remix lead). Fix = Make from the right post |
 | Q2 | **Length** | the Source line says 30 s or less | Configuration → Source | Hold: "Q2 longer than 30 s" |
-| Q3 | **Template is complete** | the page shows the full template: Configuration has its Settings (Sound, Make, Look), "What the agent asks the merchant" lists its questions, and Assets lists the parts. A merchant run follows this template and never re-plans, so anything missing breaks the video | "Not captured yet" under Settings or under the questions → **FAIL**. "No stored parts" → FAIL. Plan version needs the readiness report | Hold: "Q3 template not complete: <what is missing>". Approved → list for the remix lead. Fix = remake it so the full template is saved |
+| Q3 | **Template is complete** | all five exist: a non-empty teardown brief; at least 1 need (`config.entities`); at least 1 prompt (`config.shotPrompts`); and every moment of every clip (`config.clips[].moments[]`) has both a storyboard frame (`frameKey`, the original ad's storyboard) and a line drawing (`lineDrawingKey`). The page also shows Settings (Sound, Make, Look), the merchant questions and the Assets parts. A merchant run follows this template and never re-plans | the **count query** below, for every ready ad, never the status. "Not captured yet" under Settings or the questions, or "No stored parts" → FAIL | Hold: "Q3 template not complete: <which of the five is missing>". Approved and incomplete → list for the remix lead to hold; never approve to "fix" it. Fix = run its breakdown (teardown) so all five are saved |
 | Q4 | **Plan covers the ad** | every part edge sits on one of the **Cuts** (within 0.05 s), parts do not overlap, and the last part ends at or before the ad's length. Time before Part 1, between parts or after the last part is kept footage: fine when the header shows a "kept" chip | Assets vs Cuts vs Source length. A gap with no "kept" chip, or a hidden gap the page cannot show → readiness report | Hold: "Q4 part N cuts mid-shot at N s" or "Q4 parts overlap" |
 | Q5 | **Video parts can be made** | every "Remade · video" part has 4–15 s of new video; its own length is 30 s or less | Assets lines | Hold: "Q5 part N too short / too long for the video model" |
 | Q6 | **Stored clips match the plan** | readiness report has no `stored_parts_mismatch` | readiness report | Hold: "Q6 stored clips do not match the plan" |
@@ -48,6 +48,30 @@ save → look at it. The Original is the first video on the page. A small origin
 
 Q11 runs only when Q1–Q10 and Q12 pass (a paid run on a failing ready ad is wasted), and only in Make or when the user asks: a QC of many ready ads writes "— not run" for Q11.
 
+### Completeness count (Q3, read-only)
+
+Run on prod inside a read-only transaction (connection from the vault, never pasted). Complete = `brief` true,
+`needs` ≥ 1, `prompts` ≥ 1, `moments` ≥ 1, and `frames` = `drawings` = `moments`. Any approved row that is not complete
+is a Q3 FAIL. Drop the `where` line to count every status.
+
+```sql
+begin read only;
+select t.id, t.status,
+       length(btrim(coalesce(t.teardown_brief, ''))) > 0                    as brief,
+       jsonb_array_length(coalesce(t.config->'entities', '[]'))             as needs,
+       jsonb_array_length(coalesce(t.config->'shotPrompts', '[]'))          as prompts,
+       count(m.v)                                                           as moments,
+       count(m.v) filter (where coalesce(m.v->>'frameKey', '') <> '')       as frames,
+       count(m.v) filter (where coalesce(m.v->>'lineDrawingKey', '') <> '') as drawings
+from remix_templates t
+left join lateral jsonb_array_elements(coalesce(t.config->'clips', '[]')) c(v) on true
+left join lateral jsonb_array_elements(coalesce(c.v->'moments', '[]')) m(v) on true
+where t.status = 'approved'
+group by t.id, t.status, t.teardown_brief, t.config
+order by t.id;
+rollback;
+```
+
 ## What the page cannot show (yet)
 
 Q3 (plan version), Q4 hidden gaps, Q6 (stored clips) and the reading's link key (the reading must be stored under the Instagram code,
@@ -56,6 +80,15 @@ office shows them:
 
 - Write "needs readiness report" in those cells, never Pass.
 - Tell the user once: the remix lead runs the readiness report; the result belongs on the ready ad's page.
+
+## Learnings
+
+- **2026-11-19: 17 approved templates had no breakdown.** QC-tab approval checked only the Instagram link and the teardown never
+  ran, so a merchant waited 12 min on "still reading your ad" and restarted twice. The 17 were set to held; the other 45
+  were counted complete (all frames and line drawings present). The rule "incomplete template = FAIL" already stood
+  since 2026-11-09 but nothing enforced it in code. So: count per item (query above), never trust status or memory.
+  Code fixes are being built, not shipped: approve checks completeness and queues the teardown, the gallery shows
+  only complete templates, and an unbroken template start runs the pasted-link journey.
 
 ## Report
 

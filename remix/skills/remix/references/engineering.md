@@ -203,7 +203,10 @@ an ad line becomes a live discount nobody approved.
 
 Merchant gallery = 3 cards per row on phone, auto-fill grid on desktop (Sean: cards "too big"). Each card may carry
 the Ad Library proof (days the source ran) and one recommender "Why:" line; the gallery shows templates only, never
-raw Ad Library ads.
+raw Ad Library ads. **Only complete templates are shown** (brief, needs, prompts, and a frame and line drawing on every
+moment; ready-ads checklist Q3): the gallery and the template start filter on that, never on status alone. Approve in the
+back-office QC tab checks the same completeness and queues the teardown when it is missing; no hand approval of an
+incomplete template (fixes `fix/template-approve-needs-teardown`, being built).
 
 ## Entry link, gate, handoff and sample ads (verified 2026-11-06)
 
@@ -503,6 +506,9 @@ Builder files: yobo `stages/video/part-edges.ts`, `part-starts.ts`, `advance/edg
 - **Templates come in two plan modes: `clip` and `whole_ad`.** Both must start natively. On 2026-11-07 prod had 8 whole_ad
   and 2 clip; a start that only took clip sent every whole_ad tap to a paid link reading. Every dev proof taps one
   template of EACH mode; a pass on one mode proves nothing about the other.
+- **An unbroken template start runs the pasted-link journey.** A template with no breakdown yet is started exactly as if the
+  merchant had pasted its link: the same "studying it" step, the same breakdown and needs messages, never a silent wait
+  or a "still reading" line the merchant can only restart (fix `fix/template-unbroken-url-journey`, being built).
 - **A link that IS an approved template is that template's start** (match on `remix_source_breakdowns.source_key`, canonical +
   legacy key; `remix_templates.source_key` is our S3 key, not the link). If that start cannot be made (no stored copy,
   plan unreadable, template gone) fall back to the link start and log why; never a dead end.
