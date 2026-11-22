@@ -126,12 +126,15 @@ wants to change it. Lab manual: `remix-context` search "Remix lab — how it wor
   label-free model grid, YMS-777). Copy the newest version over it before you edit, and keep an undo copy of the live
   prototype (`undo/prod-proto-<id>-before-vNNN.html`).
 - **The cut detector misses fast warm-tone cuts:** about 20 hard cuts were read as 2 scenes. Check the scene count
-  against the ad by eye before the plan; too few scenes = wrong plan.
+  against the ad by eye before the plan; too few scenes = wrong plan. For a template ad, compare the measured cut list with the reading's scenes, and start a lab run only when they agree.
 - **Keep the lab tab alive while it renders:** a hidden cmux tab reset the lab mid-render and lost the job ids. Use
   focus emulation (see Usage step 1), never reload during a run.
 - **No status evals while the lab renders or joins.** A browser surface is reloaded when an eval waits too long on a busy page, and every in-page state is lost, including paid parts not yet saved to the run. Press Make or Make the MP4 with ONE eval, then poll the run row (`remix_lab_runs`: assets, final_key, status) in the database.
 - **Recover a paid part the page lost from the video model's job status by its request id** (the lab's own status tool through `execute-direct`, then read the execution's output video link) and load it as the scene's "My own clip". Never re-render a part that already finished.
 - A video file that will not load after an upload (readyState 0, no error): load it by https link instead, in a fresh tab. A stuck player stays stuck.
+- Product rows with the same name merge into one product, so a meal photo (bowl, box) then appears in scenes meant for one item. Name rows distinctly, or draw a reference of that item alone with "Draw it" and pick it per scene.
+- Back then Next resets every scene sheet and its words (picks persist): finish the lab's steps 3 and 4 before drawing any sheet.
+- The Choose… buttons are not in scene order: check the picker's "SCENE n" title before ticking.
 
 
 ## The lab keeps every video (v9.17–v9.18, Sean 2026-11-06)

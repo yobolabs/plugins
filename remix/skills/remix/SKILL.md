@@ -30,7 +30,7 @@ P1–P6 live once in [`../remix-agent/SKILL.md`](../remix-agent/SKILL.md) (the C
 ## The fixed pipeline (no step optional, none skippable)
 
 1. **Read the ad**: cuts, shots, still/moving, music bpm from pixels and audio (code, never the LLM: an LLM guesses cut times and the beats drift), then one
-   reading (`video_blueprint`) fed the measured cut list. A script start skips this.
+   reading (`video_blueprint`) fed the measured cut list. The reading states each segment's PURPOSE (what it shows the viewer, which product it features). A change of purpose, usually the featured product switching, is a scene edge even inside one continuous take: the reading names the purpose, and code places the edge in time from a measured colour, region or audio change next to it, never an LLM time. Motion alone never splits. A script start skips this.
 2. **Brief** → `../remix-agent/references/brief.md`. Rewritten when the merchant's answers come in.
 3. **Needs / questions**: ask everything missing ONCE, filled first from what the business already has.
 4. **Line drawings**: an internal framing input, position and framing only, per shot, from its own source frame. The merchant never sees one (not in chat, review, album, cards or video). Never sent to a video model alone (it copies the sketch look into the video).

@@ -36,13 +36,15 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Agent-field writes (e.g. `state_mode`) and AI-function rows have no deploy step**, so the guard never spends
   their id; the architect records the spend in `gate-used.txt` by hand.
 - A command that names the guard's own script path trips the guard (it reads the file and sees write patterns).
+- The guard reads the local working copy of the gate log. A freshly approved id refused as not approved means its row exists only on the remote: ask the lead to add it to the local copy. Never override.
+- Run the deploy-pointer call and the DEPLOY-LOCK row edit as separate commands. The guard can block a chained command, and then nothing in it runs.
 
 ## Prod cut: from the sealed live release only
 
 - **Never cut prod from `base: "working_copy"`.** A prod working copy can drift far from its releases. A working-copy cut ships that drift and also sweeps newer tool versions into the release.
 - Cut from the live release: `base: {fromVersionId: <live>}` with `expectedFromId: <live>`. Hold every other pin at its live version with `pinOverrides`.
-- Change the prompt with `snapshotPatch: {persona: {systemInstruction}}`. It is allowed only with a `fromVersionId` base. Every base pin is kept, and the working copy is never read or written.
-- Add a tool with `snapshotPatch: {coreRole: {addTools: [{toolId, versionId}]}}` (CAD-604). It becomes a native pin at `versionId`. It is refused when the base already pins that tool natively (move it with `pinOverrides`); a tool the base holds only through a role lock is allowed.
+- Change the prompt with `snapshotPatch: {persona: {systemInstruction}}`. It is allowed only with a `fromVersionId` base. Every base pin is kept, and the working copy is never read or written. The agent's working copy then keeps the old text, and the next working-copy cut reverts the change: follow every such release write with a sync of the working copy (its own gate id).
+- Add a tool with `snapshotPatch: {coreRole: {addTools: [{toolId, versionId}]}}` (CAD-604). It becomes a native pin at `versionId`. It is refused when the base already pins that tool natively (move it with `pinOverrides`); a tool the base holds only through a role lock is allowed. One release pins a tool at only one version across native and spawn pins: a native copy of a role-held tool at a new version is refused at commit.
 - Add a skill with `snapshotPatch: {coreRole: {addSkills: [{skillUuid, versionId?}]}}` (CAD-654). `versionId` omitted means the skill's applied current version. It is refused when the base already pins the skill. Every check runs before anything is written.
 - **Diff before moving the pointer.** Compare the new release with the live one (`getReleaseDiff`). The diff must hold exactly the intended change: pins compared on kind, subject and version (not ids), and the snapshot minus the pins. Refuse the cut otherwise.
 - **Judge a cut by the pins in the database too.** `getReleaseDiff` keeps one pin per kind and subject, so a tool held natively and through role locks collapses into one row. Compare `agent_version_pins` of the two releases with `EXCEPT ALL` over (kind, source, subject, version, via_role_lock_id). A role-lock override does not move an agent-level tool pin: override the tool explicitly and read the pins back for every tool you meant to change.
@@ -102,6 +104,7 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   `agents.cutRelease` from a signed-in dev app tab (check `location.href` first).
 - Plain-chat and advice turns are part of the proof: a formatting change that fixes a draft can break ordinary
   replies, and a release that fails them is rolled back, not patched forward.
+- **A reply that promises a card but shows none** ("brings up …:") with no tool call means the tool is missing on that environment, not a staging or render bug. First check whether the run called any tool (tool rows in the execution logs), then whether the tool exists on the agent's pinned release (tools table and release pins).
 
 - Yobo web-chat proof turn in a test org: in a signed-in app tab, switch to the test org through the user-org switch call, then refresh the session with the next-auth update call (csrf from the csrf endpoint). Reload the chat, open a new side chat (never the main chat), set the textarea with the native value setter and an input event, and click the send button by its aria label. Read the root and role executions by agent id and time, not by the newest row. Switch the session back to the operator's home org in the same step.
 
@@ -118,6 +121,7 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Harness text edits** need a signed-in system user (browser tab): check `location.href` before every write — a
   tab left on prod receives a "dev" write.
 - **A browser tab driving tRPC can drop the POST response** ("Load failed") while the server finishes the write. Verify every write in the database; never re-POST.
+- **A browser-eval tool that returns before async work ends** (cmux `browser eval`) never hands back an async `fetch` result: use a synchronous `XMLHttpRequest` for calls from the page. Browser panes can be closed mid-task, and an eval aimed at a closed pane runs on whichever tab is active: re-open the tab and check `location.host` exactly before every write.
 - **Spawned roles inherit the parent's harness text** (log line `… (inherited)`) but get no State and no
   `state_update` tool: guard State instructions with "If you have state_update: …".
 

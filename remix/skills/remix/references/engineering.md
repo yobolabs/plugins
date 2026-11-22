@@ -128,6 +128,7 @@ elements to generate the video."
 - **An open merchant grant skips the wait for "set already passed".** Otherwise [Try again] after the album writes a grant nobody reads, and the chat reports a redraw that is not running.
 - **A timed-out or failed video job never cancels its provider task.** A merchant Retry can then submit a second render while the first is still queued at the provider. After a Retry's new submit is accepted, call the provider's cancel tool once with the old request id and log the reply.
 - **A re-claimed video job polls its stored provider request id and never submits again.** Count the submit-attempt rows of a job (one row per provider task) before calling a second render. Read a provider task's state read-only with the status tool, using the prod Cadra key from the vault.
+- **A landed job is applied or stale.** A job that lands for older inputs goes to the stale list (`input_changed`), not applied, and a pending entry pointing at it never resolves. Check both before treating a job as running.
 
 - An optional read that may fail runs in its own transaction with explicit casts. Inside a shared advance transaction, a failed read aborts that transaction, and every later query in it fails, even when the failure was caught.
 
@@ -135,7 +136,7 @@ elements to generate the video."
 
 - Retry and cancel a step from the back office in a staff profile: tRPC `remixMonitor.staffRetryStep` and `staffCancel`. A merchant profile gets 403.
 - Dev credits: tRPC `credits.grantCredits` (admin).
-- New AI function variables must land in the function version before any caller sends them, and prod function creation goes through an admin session (`prompt.create`). See cadra `ai-functions.md` § Templates and variables.
+- New AI function variables must land in the function version before any caller sends them, and prod function creation goes through an admin session (`prompt.create`). See cadra `ai-functions.md` § Templates and variables. Check per function and per environment (dev and prod) that the function's live version declares the variable: an undeclared variable fails every call (`invalid_request "Undeclared variable"`) and the merchant sees a failure line. A variable is inert only on a version that declares it. Switch a new variable on per writer, never with one switch for all writers.
 
 ## Taps on yobo-owned runs
 
@@ -148,6 +149,7 @@ elements to generate the video."
 - **Remix source copies are private.** Anonymous reads are denied on the bucket, so a bare `remix-sources` URL fails. Hand out only a signed GET (`signRemixInput`, `_context/LIMITS.md` row).
 - **A signed GET handed to a queued provider must outlive the queue.** Inputs for providers use the two-hour signature from `signRemixInput`. The SDK default of 900 s can expire while a job waits.
 - **Signing never depends on one public-base env var.** A worker without that var signs nothing, and the GET fails under the private bucket. The signer matches every own-bucket URL shape by its key, and every unsigned fetch logs. Set the worker env in the host env file, not in code.
+- **Copy rows share keys.** Source copy rows of different orgs can point at the same storage key (one house or public ad, many merchants). A read that finds a row by object or cropped key picks the caller org's row first, then the oldest, then by id; never an unordered `limit(1)`. A verdict stored on another org's row (cleaned, no text) never decides this org's step.
 
 ## Who decides, budget, pricing (`../remix-agent/SKILL.md` P4)
 
@@ -163,11 +165,13 @@ elements to generate the video."
   need to ask me if the budget is still there"). A small paid DEV proof inside the standing dev budget runs without an ask; name the cost (pictures/seconds) in the proof line; prod spend, customer sends and above-budget still ask. Prove with unit tests and
   free pages first; name the cost (scenes x seconds x model) before an end-to-end run. Every subagent brief says "no
   paid renders" unless the lead cleared that run.
+- **A paid batch stops at the approved total.** A loop over batches counts the approved scope with the run's own pick predicate (for example video vs static) before the ask, and stops at that total, not only per batch. A subagent brief states a paid-call cap as one total for the whole job, including a resumed rerun.
+- **Bulk jobs never run on a merchant-path provider key.** Cadra limits are per key and per hour, so a bulk job on that key starves merchant runs.
 - **Photo-bind proofs show handling under the msg-api tap timeout on a slow store.** A rig that copies an object already stored nearby hides real fetch latency; prove the real fetch path.
 - **Pricing is parked.** Never add or change a price or credit UX. The free first remix is the MQL waiver; every paid
   quote or start must name the remix so the waiver applies.
 - **Agents make, self-check, show and wait.** A failed self-check is fixed or asked about, never a stop (`../remix-agent/SKILL.md` P6, `../remix-agent/references/whatsapp-journey.md` § Problem solver).
-- **Model policy.** Every Cadra role and AI function runs the agreed model through the OpenRouter provider (`openai/gpt-6.1-terra`). A step that needs video input keeps its agreed watcher and writer split, stated as a fact. Any other model needs the owner's word.
+- **Model policy.** Remix roles, the teardown agent, product discovery and every `remix_*` text AI function run `openai/gpt-6.1-sol` through the org's OpenRouter provider; image and video-input steps keep their own models (`yobolabs:configure-cadra` § Promote). A step that needs video input keeps its agreed watcher and writer split, stated as a fact. Any other model needs the owner's word.
 
 - A lead decision that changes pipeline behaviour is preceded by one `remix-context` search by the lead, cited. Subagents cannot load the remix-context KB, so the lead does the search before the decision is made.
 
@@ -331,6 +335,7 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   runs exactly that request and never rebuilds URLs from its own env, because the public base URL differs between web
   and worker. A batch of template re-reads goes through the same queue. Prove it by the count of templates with a
   complete §9 after the batch, and re-run the entity eval set (prominence) on the batch.
+- **All media work runs only in the worker** (ffmpeg, ffprobe, frame cuts, clean copies, joins). A web or tool route records the request and lets the worker's next job do it. A media step that fails on a missing binary (`spawn … ENOENT`) is not counted as attempted: the worker retries it.
 - Template SOURCES and rights (lead-6 2026-11-07). The target is 3 approved templates per category per env; a universal
   template does not count toward the 3. Ad Library items carry rightsClass `third_party_reference` and keep today's
   rules. A brand-WEBSITE product video (a store's own CDN clip) is also `third_party_reference`, but ONLY as a
@@ -646,6 +651,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - **A same-text-in-several-places fix needs a sweep before its proof.** Grep every place the source string is built and every place it is shown, list them in the review, then prove.
 - **The Mac load guard refuses new subagents above a load threshold, and one lane can hold a mini job slot for a long time.** Free your slot when a captain's gate waits on it.
 - **A fresh worktree has no env file, and targeted tests need a dummy DATABASE_URL.** A Jira call from a worker needs the Jira token and base URL from the vault (the base URL is not in the environment).
+- msg-api's local `node_modules` can lag its lockfile (a package missing): run msg-api tests through the mini-run wrapper, not locally.
 
 ## Merchant lines follow the agent contract (R11)
 
@@ -676,6 +682,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - The worker container's app folder is not writable for its default user: back up to a temp folder and remove files as root. Its grep has no include option.
 - Back Office rescue uses the run's own buttons: retry the approved step (free, no new consent), re-send the last question, or cancel the run. A re-send counts only when msg-api reports it sent, duplicate or queued. Each environment needs its own staff profile.
 - Write a query that needs regex whitespace in a `.cjs` file with a template literal and `[[:space:]]`. In an inline double-quoted query string, a backslash-s is collapsed to a plain `s`, and the text read changes silently.
+- msg-api's conversation status is stored in mixed case (`OPEN` and `open`): match on `lower(status)`.
 
 ## Prod watch
 
@@ -711,6 +718,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Send a staff message to a merchant as the brand through the internal notify path (https `images[]` / `videos[]`, text required, the agent-notice flag so the agent's history holds it). Never use takeover: it posts a visible "team joined" line and a "back" line to the merchant. A video sent by hand must be H.264 (`ffprobe` the codec; transcode with libx264 and faststart): WhatsApp refuses HEVC with 131053 while the text still delivers. Test every hand send on the owner's own number first.
 - A rejected tool call may already have run. Read back the rows before saying nothing was sent.
 - `ad_video_jobs.notify_status` means "slides nudged", never "the merchant got it": read the `remix_deliveries` rows, and msg-api's message rows for "was it sent". A delivery row in state `intent` (or skipped for a missing conversation) is a pending resend that the reconcile tick retries with backoff: never delete it.
+- A test that switches a merchant chat's acting org blocks that org's deliveries until it is switched back. Never run such a test in a real merchant's chat.
 
 - Before any rescue, list the chat's other live runs and the merchant's last event. Never revive a run the merchant has moved past: a rescue would post into a chat where the merchant has moved on.
 - A rescue moves a run only into a phase that has a press edge for the open ask. Look up the ask's edge for the target phase in `press-edges` (keyed on the run's phase) before the write. A press with no edge in that phase lands as unhandled.
@@ -743,11 +751,15 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - A name typed at the product menu closes the menu ask it answers. Any new answered path must close the ask it answers.
 - Cadra vision functions have a per-call image cap and a per-run cap across all inputs. A storyboard review already sends several images, so the product photo goes as one picture.
 - One-time and per-round lines need a run-level key, never a per-ask or per-post key; a per-ask key posted the same line several times. A queued resend of a one-time line is dropped once the run has moved on, and old open asks are closed when a newer one supersedes them.
+- A scratch start that carries an idea runs the idea path (the script writer) once after the concept is saved. Saving the concept alone starts nothing and the merchant waits. The idea path in the start tool runs before the scratch block, so a fall-through after the concept save never reaches it: call that handler once.
+- **Re-runs and idempotency.** Every call to a Cadra AI function carries an idempotency key built from its inputs. A path that runs the same function again on purpose (re-clean, re-read, re-teardown after a prompt change) adds a generation value saved on the row to that key; a first run keeps its plain key. Without it Cadra replays the first stored answer, writes no new execution row, and the new prompt version never runs. Prove a re-run by a new execution row, not by the result.
+- When a model must judge N items from images, send one image per item with the item's id or time burned into the picture and an index in the JSON row, never a flat list matched by position (a flat list was read one step off). Burn labels with a font shipped with the code: the worker image has no fontconfig.
 
 ## Chat language
 
 - Every insert into the remix job table sets the reply language from the run: the chat's stamp, then the analyze job's language helper. A redo copies the language of the job it redoes. A new job-insert path copies that pair.
 - Prove a language change on the analyze job's reply language, not only on the run state.
+- Most runs carry no chat language: the stamp works only when msg-api maps the run while it is live. The trustworthy source is the tap receipt's language, then the org's currency locale. Never read a job's reply language `en` as proof of an English merchant.
 
 ## Tracing a stuck run
 
@@ -764,6 +776,7 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 
 - Any flag the agent runtime acts on (silent end, shown-in-chat, the posted signal) sits at the top level of a yobo tool result. A copy nested inside a status or view object is for the agent to read; it is never the only copy. A flag nested only in a status object is never read, and the run fails with an empty reply.
 - Set `shownInChat`, `appSpeaksNext` or an "end your turn with no text" line only when the app's own post returned sent or duplicate in THAT conversation (claim keys are per conversation). The runtime drops the agent's line on those flags, so a false flag is an empty turn. When nothing was posted there, return `agentSpeaks: true` and ask for one short line.
+- A tool-fact fix names the execution it was read from and the branch (arguments) that execution hit, and its test covers that branch. Read the agent's real execution first: a fact added to a branch the agent does not call is never seen.
 
 ## Dev proof
 
@@ -779,6 +792,10 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Web-chat dev runs need a signed-in browser. Without one, drive the run on the WhatsApp rig with fictional numbers.
 - Prove each new build on a fresh fictional phone and a fresh run when an earlier build touched that path's state. A run that passed through a half-fixed build carries that state, and later failures on it are not evidence about the new code.
 - Dev sets `ads_gen.credits_unlimited`, which makes every dev org count as staff. Paid-only and staff-exempt gates (own-source paid need, own video over the length cap) can never fire on dev. Prove them locally on a paid non-staff org, then on prod with a paid test org at zero credits.
+- **One runner per test phone.** Before a send, read the phone's last 5 inbound messages: any inbound in the last 10 minutes that your runner did not send means another runner is live, so stop. Two runners on one phone double-send, corrupt each other's rows and void the proof. A rig's synthetic message id is unique per send (milliseconds, phone and a random part): two parallel sends with the same id are dropped as duplicates, a silent no reply.
+- Before any paid dev proof or eval round, check that dev runs the feature: read the develop head (a cut or re-land head means dev holds only prod plus the cut items until the re-land) and grep the feature's own symbol inside the dev worker, and the web when it runs there. Either check fails: wait for the re-land, never spend.
+- The WhatsApp ready-ad offer shows one card per universal template in the org's category; a second card exists only with two or more there. A pick button works only in a chat that showed that card (elsewhere the tap goes to the agent). Re-tapping an ad whose run is unfinished answers that it is already being made and starts no run.
+- Fictional test phones reach the dev gateway mock, so no handset ever draws a link preview. A link-preview proof needs a real whitelisted phone that messaged the line in the last 24 hours.
 
 ## Dev proofs run through the WhatsApp tap
 

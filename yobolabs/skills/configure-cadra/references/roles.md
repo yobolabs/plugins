@@ -161,6 +161,8 @@ cadra role get <roleUuid>    # → "outputSchema": {…}   (null when unset)
 new schema goes live only when the role is **promoted to golden in the app**
 (promote stays app-only, see above).
 
+**Wording that must survive the relay goes in a structured reply.** Plain-text role output is rewritten by the root before the user sees it (section titles get lost). Return `{"userReply": …}` for anything whose wording must reach the user as written. A relayed reply also skips the root's false-claim guard.
+
 ### Rules, limits and codes
 
 On create/update the root must be an object schema — `"type": "object"` with at
@@ -240,7 +242,7 @@ listings; do not try to reuse or reassign one.
 
 ## Gotchas
 
-- **Tool text is frozen in each role lock.** `toolDescriptions` carry a `contentHash`. A tool text change reaches spawned roles only after `promoteGolden` on each role that has the tool; the cut must pin the new role locks.
+- **Tool text is frozen in each role lock.** `toolDescriptions` carry a `contentHash`. A tool text change reaches spawned roles only after `promoteGolden` on each role that has the tool; the cut must pin the new role locks. The hash covers the tool's name, description and agent instructions, not its input schema: a schema-only change needs no re-freeze, only a release pin move to the new tool version; a description change needs the re-freeze.
 - **`promoteGolden` freezes the CURRENT heads** of the role's skills and tool texts, so a teammate's unreleased head edit rides into the new lock. Diff the new lock against the old (skills `contentHash`, `toolDescriptions`) before cutting. Rows whose head already equals the release pin show as changed after a promote: check head = pin, then it is no behaviour change. A prod role HEAD can hold the text of a rolled-back lock: build prod edits on the LIVE lock text and set HEAD to it before `promoteGolden`, or the failed change ships again.
 - **After moving an agent to another org, re-freeze every pinned role** (`promoteGolden`). A role lock's sealed scope keeps the org id from freeze time; otherwise every spawn fails `ROLE_LOCK_SCOPE_MISMATCH`. Detail and fix: `cadra:agents` → `references/run-forensics.md` § *Org move and ROLE_LOCK_SCOPE_MISMATCH*.
 - `agentType: "SPECIALIST"` on something you intended to be spawnable → it never

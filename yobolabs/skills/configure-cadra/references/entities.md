@@ -164,6 +164,7 @@ Forgetting `template` is the most common 400 on this entity.
 - **`PUT /skills/{uuid}` and tRPC `skills.update` need `baseVersion`** (optimistic concurrency). Without it: 400 zod `baseVersion Required`. Read the current version first. Reference files go through `skills.files.put` with `expectedCurrentVersion`, one version per call.
 - **A template-only skill version inherits the previous version's files.** Its `files_manifest` is NULL, and `skills.files.list {version}` still lists them. That is not a lost file.
 - **Prod may lack lock-skill pre-activation.** Then a skill template never reaches a prod role spawn unless the role activates the skill. Check the `Role skills pre-activated from lock` log on the target env before you rely on a template rule.
+- **A spawned role has no `read_skill_file`.** Its lock skills are pre-activated and its tools are its belt plus the meta tools, so a template line telling a role to read a reference file is dead text. A prompt line telling a role to activate a skill is not reliable either. Put a must-follow rule in the tool schema (typed parameters with one-line field descriptions), or as a short line in each role method and in the harness.
 - **An agent save can be a whole-agent PUT.** When several lanes share one agent, send partial updates (for example only `harnessId`) so you do not overwrite another lane's fields.
 
 ---
@@ -286,6 +287,14 @@ Permissions: `prompt:*`. **Identity field is `title`, not `name`** — `find` an
 | `tags` | | tag[] ≤20 |
 | `variables` | | variable[] ≤50 |
 
+AI function (prompt) traps:
+
+- **An empty answer is a refusal.** When a prompt line already asks for the whole output and the model still returns an empty list or empty text, add an output-schema floor (`minItems: 1`, `minLength: 1`) and one line saying the whole plan is always returned. More prompt words alone did not fix it.
+- **`prompt_executions.response` is a preview of at most 20,000 characters.** Long outputs are cut there, so counts read from it are lower bounds. Read the caller's stored full text before calling something dropped.
+- **A failed run keeps its provider reason.** The run read returns `providerReason` (finish reason, native finish reason, refusal, error or HTTP status and cause), `provider` and `model`; a synchronous failure throws with `details.executionId` and `details.providerReason`.
+- **The vision cap counts declared image parameters, not images:** at most 6 image parameters per function, and one image parameter takes a list of up to 100 uuids.
+- **Test runs from a browser tab:** the tab's script state can reset mid-run. Send `aiFunctions.testRun` with an `idempotencyKey` and poll `prompt_executions` by that key. A prod prompt publish needs the gate id on its command.
+
 ---
 
 ## guardrail → `/api/v1/guardrails`
@@ -390,7 +399,7 @@ real, bounds-checked field. Details in `roles.md` → *Structured output*.
 - The PATCH also saves an agent **snapshot** version (`agent_versions.kind = snapshot`) without moving `deployed_version_id`; the next release cut from the working copy carries the keys.
 - A runtime key without `agents:update` gets `403 INSUFFICIENT_PERMISSIONS`. With no write key for that env, run cadra-web's `saveChannelProfile` (versions-repository) in a script from an origin/develop worktree: stub `server-only` (`NODE_OPTIONS=--require <stub>`), and set `INTERNAL_API_DATABASE_URL` too or it fails "Privileged database client is not available"; guard the DB host.
 
-**Harness settings** (`numbers`, `policy`, `texts`) have no REST route: tRPC `harnesses.get`, `harnesses.usage` (which agents share it, check before changing a shared harness) and `harnesses.update {uuid, numbers?, texts?, policy?}` (system user only). `numbers` and `texts` each **replace the whole object**, so send the full current value with your edit merged in; `policy` merges (`unset` removes keys). Unknown keys are refused by the harness guard. Each update mints a new harness version; a pinned agent runs it only after a release cut pins it.
+**Harness settings** (`numbers`, `policy`, `texts`) have no REST route: tRPC `harnesses.get`, `harnesses.usage` (which agents share it, check before changing a shared harness) and `harnesses.update {uuid, numbers?, texts?, policy?}` (system user only). `numbers` and `texts` each **replace the whole object**, so send the full current value with your edit merged in; `policy` merges (`unset` removes keys). Unknown keys are refused by the harness guard. Each update mints a new harness version; a pinned agent runs it only after a release cut pins it. A harness's name does not tell its values (a name can still describe a setting changed versions ago): read the current version's `numbers`, never the name.
 
 **Em/en dashes never reach the user (since 2026-10-15).** cadra-api rewrites every em dash and en dash in what any agent sends the user (reply, stream, status lines, paused reply) into plain punctuation; code and URLs are left alone. There is no switch. Write prompts and copy without them anyway, so stored text and what the user reads match.
 

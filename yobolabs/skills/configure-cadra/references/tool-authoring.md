@@ -195,7 +195,7 @@ the shape.
 - **Endpoint `speaksOwnLine`** (list of action names): for those actions the runtime sends no pre-tool narration,
   because the tool's own reply is the line the user reads. Needs the cadra-api and cadra-web builds that know the
   flag; on an older web build it is stripped on save (see the bullet above).
-- **A tool that posted the user's line says so itself**: a top-level `shownInChat: true` (or `silentEnd: true` when the next line arrives by itself). `speaksOwnLine` is the blanket form, so prefer the per-result flag. A refused or failed result never counts as posted unless it also says `shownInChat: true`, so a tool that posted must not also return `refused: true`: return a status that names what was posted. Set the flag only after the post really happened in that conversation.
+- **A tool that posted the user's line says so itself**: a top-level `shownInChat: true` (or `silentEnd: true` when the next line arrives by itself). `speaksOwnLine` is the blanket form, so prefer the per-result flag. A refused or failed result never counts as posted unless it also says `shownInChat: true`, so a tool that posted must not also return `refused: true`: return a status that names what was posted. Set the flag only after the post really happened in that conversation. An explicit `shownInChat: false` beats the endpoint's `speaksOwnLine`: a tool that only queues a line to post after the reply returns `shownInChat: false`, or the run drops its reply and nothing is sent.
 - **Cadra does not validate the model's arguments against `schema`.** No validator is wired, so the receiving app's own validation is the only gate. Make its refusal name the field.
 
 ## Platform tools and safe tool edits (2026-11-06)

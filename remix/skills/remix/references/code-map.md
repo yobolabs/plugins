@@ -334,6 +334,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 ## Clip runs: the product sheet
 
 - Clip runs (templates/clip-run.ts) send the paid product sheet (input fast sheet) as the second image, not the raw catalog or research photo. The raw photo changed the product from shot to shot.
+- A catalog product with no usable photo (one the AI drew) is never sent to a part as a catalog id: the part uses the approved product sheet as the product picture. An unresolvable brand reference is dropped from the part's references and logged, never a reason to refuse the part. A product with a catalog photo keeps photo and sheet.
 
 ## Scene indices and template copies
 

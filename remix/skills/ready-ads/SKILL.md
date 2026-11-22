@@ -32,7 +32,7 @@ Write to the user in plain words. No code, no ids unless they ask, no internal n
 ## Make a ready ad
 
 1. **Pick the ad.** It must be an Instagram reel or post link and 30 s or shorter. A file with no Instagram post, an
-   Ad Library cut or a brand-site video cannot become a ready ad: say so and ask for the Instagram post.
+   Ad Library cut or a brand-site video cannot become a ready ad: say so and ask for the Instagram post. A plan that keeps 100% of the ad (no remade part) or splits into many sub-second picture parts is not a ready-ad candidate (no product slot, or fragmented).
 2. **Run it in the Remix Lab** with `?ad=<Instagram link>`, the full remix, with a sample product. Follow the `remix`
    skill's lab steps. This is a small paid run: say the number of pictures and video seconds before you press Make.
 3. **Look at the result** (frame strip, as in `lab.md` step 7): product real and right size, kept parts free of the old
@@ -40,8 +40,8 @@ Write to the user in plain words. No code, no ids unless they ask, no internal n
 4. **Save it.** Back office → sidebar **Remix runs** (the lab's saved runs) → open this run → **Save as template**. It
    becomes "Waiting for review", which merchants never see. The save keeps yobo's own reading of the Instagram link,
    not the lab's plan, so QC that reading (step 5). "Not read" or "Source video not saved" means yobo has no reading of that Instagram link yet: use
-   Templates → **New template**, paste the same Instagram link, **Read the ad (free)**, then save again. Wait for the **Read the ad (free)** button to render after pasting, or the click is lost. The read's category comes from the AD's product: pick the QC sample product from that read, not from an earlier lab run.
-5. **QC it** (below). All checks pass → tell the user it is complete and waits for its dev test remix (Q11). This skill
+   Templates → **New template**, paste the same Instagram link, **Read the ad (free)**, then save again. Wait for the **Read the ad (free)** button to render after pasting, or the click is lost. The read's category comes from the AD's product: pick the QC sample product from that read, not from an earlier lab run. The free read already writes a draft plan with stored parts, and readiness passes without a paid run. On dev the read lands in the Templates list 1–4 minutes later; re-opening the same link then offers a paid "Run it as YoboLabs": never press it.
+5. **QC it** (below). After the teardown, show the template's scenes next to the ad's measured cuts (Q0) first. All checks pass → tell the user it is complete and waits for its dev test remix (Q11). This skill
    never presses Approve and nobody approves it by hand.
 6. The remix lead reviews the first batch each team member makes. Tell the user that once.
 
@@ -73,8 +73,14 @@ Read it in full before the first QC of a session.
      → write "kept by Sean <date>: <what>" in its row, never a fail to act on.
 5. Fixing an outdated one is the same as making a new one from its Instagram post (Make, steps 1–5). A fixed reading
    needs a fresh read: old readings are reused per ad.
+   Drive a re-teardown with ONE apply call, then watch read-only facts (source key, the parts' created time, teardown time): a repeated apply after a save starts a second teardown.
+   A fix to how templates are read (scenes, edges, parts, text) states which paths it changes: new templates, the re-read of existing ready ads, or both. Its dev proof runs on the path the reported ad uses (an existing ready ad needs a re-read and teardown proof). A rule that reads model output (edge placement, kinds) is judged by re-applying it, free, to the stored real readings of the eval set before any merge; a builder's own fixture is not the proof.
 
 Two facts for reading a result: a "No check ran" line on a template page means no remix from it has passed QA yet, not that the template is unchecked. A universal ready ad still has a product category: it is offered last to other categories and never dropped, so set its category.
+
+### Static ready ads
+
+Static ready ads are the slides Ad Library's `quality=top` set, not template rows (one owner: the Ad Library). QC = look at the in-review Hot and Proven statics. A plain product, food, model or room photo with no offer and no ad text FAILs "no ad layout": it is not an ad. Give subagents this rule in their brief. Accept through the Ad Library's bulk action: preview the count (`contentLibrary.bulkCount`), then accept in chunks of at most 25 (`bulkCreate`, accept_ai) and keep the bulk operation id as the undo. Staff reach the Ad Library console through the CRM sign-in, which grants the content-library scope; a Yobo SSO session is refused.
 
 ## Never
 
@@ -95,3 +101,4 @@ Two facts for reading a result: a "No check ran" line on a template page means n
 | Copy a ready ad between envs | Update the target env's rows in place (back them up first): readings are unique per shared source key and templates per breakdown and plan version. Asset buckets differ per env and the dev bucket is unversioned, so list the target keys before any write. Part clips are keyed by reading id. |
 | Something the skill cannot do (a check the page does not show) | tell the user in one line and name the remix lead; never work around it |
 | A template re-read or teardown that will not start | it runs on the remix worker, not the web; tell the remix lead |
+| Prod internal template tools (`remix_template_*`) | signed with the execution-context HMAC; an unsigned call gets 401 `auth.service_key_rejected` |

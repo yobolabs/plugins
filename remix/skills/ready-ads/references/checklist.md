@@ -19,7 +19,7 @@ words; the check number goes in the Hold reason.
 | Video model | Configuration → Make | absent when Settings says "Not captured yet" (saved before settings were recorded) |
 | Product prompt | "Product-scene prompt" block | **collapsed**: read it with `textContent` or open the block first; `innerText` shows only the heading |
 
-Read numbers from page text, not screenshots. The "Needs storyboards … No check ran" banner is not part of QC: ignore it.
+Read numbers from page text, not screenshots. One read per ready ad: the back office's staff tRPC `remixMonitor.templates.detail` (read-only) returns what Q2–Q7, Q9, Q12 and Q13 need: plan parts (bill = seconds of new video; use it for Q5 and Q12), cuts, stored parts including keep parts (Q6 compares all plan parts), readiness, card copy (no "template" or "preset"), the playable copy for WhatsApp and web, and crop (clean key, burned-text flag). The page tabs hide most of it, and scraping the page is slow and partial. The "Needs storyboards … No check ran" banner is not part of QC: ignore it.
 
 ### Frames (Q8, Q11)
 
@@ -32,6 +32,7 @@ save → look at it. The Original is the first video on the page. A small origin
 
 | # | Check | Pass when | How to check | On fail |
 |---|---|---|---|---|
+| Q0 | **Scene edges** | three steps in order: (1) the ad: every scene edge listed by eye from frames, hard cuts and each change of purpose or featured product inside a continuous take, with times; (2) the breakdown identifies every edge from step 1 (a hard cut, or a purpose change placed on a measured peak) within 0.75 s; (3) the template's scenes and clips split on exactly those edges, one purpose per clip. Measured cuts are hard cuts and the in-clip beats (soft cuts) of a continuous shot, from code (the reading's cut list and a pixel scene-detect on the stored copy), never from the LLM reading. A change over time inside one shot (colour change, morph, an object moving between items) is its own keyframe moment, not a merged scene | frames of the Original + Configuration → Cuts, against the template's scenes and clips. Run it on every new make and on every approved ad after any change to the reading code | a missed edge, a clip spanning two purposes, or a split with no edge → Hold "Q0 scenes do not match the ad: N in the ad, M in the template" (record both counts, keep the undo id). It goes back for a re-read and is never approved as is |
 | Q1 | **Instagram link** | "open the ad" goes to an Instagram reel or post, and that post's video is the same ad as the Original: same opening shot **and** the same product in the product shots | open the link. `/reels/<code>/` → the first video in the feed is the post. Compare its first shot and a product shot near the end with the Original (Instagram shows no length: skip length). Only a login wall → "link ok, cut not compared" (pass). Cannot tell → ⚠ "needs a human look" | no link → Hold "Q1 no Instagram post". Same idea but another product or cut → Hold "Q1 Instagram post is a different cut" (approved → list for the remix lead). Fix = Make from the right post |
 | Q2 | **Length** | the Source line says 30 s or less | Configuration → Source | Hold: "Q2 longer than 30 s" |
 | Q3 | **Template is complete** | all five exist: a non-empty teardown brief; at least 1 need (`config.entities`); at least 1 prompt (`config.shotPrompts`); and every moment of every clip (`config.clips[].moments[]`) has both a storyboard frame (`frameKey`, the original ad's storyboard) and a line drawing (`lineDrawingKey`). The page also shows Settings (Sound, Make, Look), the merchant questions and the Assets parts. A merchant run follows this template and never re-plans | the **count query** below, for every ready ad, never the status. "Not captured yet" under Settings or the questions, or "No stored parts" → FAIL | Hold: "Q3 template not complete: <which of the five is missing>". Approved and incomplete → list for the remix lead to hold; never approve to "fix" it. Fix = run its breakdown (teardown) so all five are saved |
@@ -45,6 +46,7 @@ save → look at it. The Original is the first video on the page. A small origin
 | Q11 | **A real remix works** | one remix from this ready ad on dev (the merchant gallery) finishes: cuts on the ad's beat, the sample product shown at real size, no broken or frozen part | make one (small paid dev run; say its size first), frame strip of the result | Hold: "Q11 remix failed: <what you saw>" |
 | Q12 | **Fits the draft video model** | every video part is 4–15 s of new video; Make shows Seedance 2.0 when Settings are recorded | Assets; Configuration → Make. No Make line → write "model not shown" (warning) | under 4 s or over 15 s → Hold "Q12 part N does not fit the draft model". A part showing more than 9 pictures → ⚠ "part N has more than 9 pictures: the draft will drop some" (warning only, never a Hold) |
 | Q13 | **No bare links** | no raw URL (http, https, presigned or storage link) appears in the page copy, the chat text or the fallback line; each link sits behind a button or short link text, and media goes as media | page copy and the chat preview; remix journey text | Fix the copy: put the link behind a button or in words. Hold: "Q13 bare link on page or chat" |
+| Q14 | **Clean model inputs (text)** | the part clips (the plan parts' stored clips, the video model's @Video1) and the teardown frames show no source text; `config.framesBurnedText` is not true, and a copy with text boxes has a clean copy (`crop.cleanKey`) | Configuration → crop + frames of each part clip (method above). Look at the part clips again after any re-teardown: a template saved before its copy was cleaned keeps the raw source clip | Hold: "Q14 model inputs carry the source's words" |
 
 Q11 runs only when Q1–Q10 and Q12 pass (a paid run on a failing ready ad is wasted), and only in Make or when the user asks: a QC of many ready ads writes "— not run" for Q11.
 
@@ -97,10 +99,10 @@ Save one file per QC run: `ready-ads-QC-<date>.md` in the user's working folder.
 ```
 # Ready-ad QC · <live or dev> · <date> · <N> checked
 
-| Ready ad | Status | Q1 | Q2 | Q3 | Q4 | Q5 | Q6 | Q7 | Q8 | Q9 | Q10 | Q11 | Q12 | Q13 | Result | Fix |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| iced matcha latte (food & drink) | approved | ✅ | ✅ | report | ✅ | ✅ | report | ✅ | ✅ | ✅ | ✅ | — | ✅ | PASS* | — |
-| paint-by-numbers (home) | held | ❌ | ✅ | … | | | | | | | | | | FAIL | find its Instagram post, make again |
+| Ready ad | Status | Q0 | Q1 | Q2 | Q3 | Q4 | Q5 | Q6 | Q7 | Q8 | Q9 | Q10 | Q11 | Q12 | Q13 | Q14 | Result | Fix |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| iced matcha latte (food & drink) | approved | ✅ | ✅ | ✅ | report | ✅ | ✅ | report | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | PASS* | — |
+| paint-by-numbers (home) | held | ✅ | ❌ | ✅ | … | | | | | | | | | | | | FAIL | find its Instagram post, make again |
 
 ✅ pass · ❌ fail · ⚠ warning · N/A · report = needs readiness report · — = not run (an earlier check failed)
 PASS* = passes everything the page shows; waiting for the readiness report.
