@@ -168,3 +168,7 @@ Sean: "For storyboard, always try to fix first autonomously before delivering st
 
 - A storyboard check that cannot start is not a pass and does not message the merchant. Re-run it once silently; if it still cannot start, record it as not run (no pass, no failures) and raise a team alert.
 - The video gate needs only the merchant's approval, or the recorded just-swap choice.
+
+## Own marks are not merchant faults
+
+Before a review check becomes binding (a fail that holds a merchant step or offers a paid fix), audit what our own pipeline puts in the frames: the unpaid draft watermark, burned-in overlays, letterboxing. Give those to the reviewer as facts, and drop in code, with a log line, any finding that is only our own mark. Why: a fail caused only by our own draft watermark asked a merchant to pay to remake it.

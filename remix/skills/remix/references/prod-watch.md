@@ -21,3 +21,10 @@ The prod-watch session tracks every real prod remix run. The detail (stall, staf
 15. **Test orgs and fictional-contact runs are not merchants.** Leave them out of every count.
 
 A Stop hook enforces rule 2 for sessions named `*prodwatch*` (chief-of-staff `hooks/prodwatch-stop-guard.py`). It blocks a stop whose last message asks Sean whether to forward or send.
+
+## Prod watch traps
+
+- Read helpers that pass SQL inside JS strings lose backslashes: `'\s'` arrives as `'s'`. Write POSIX classes (`[[:space:]]+`) in those queries, and read back the text you are checking.
+- The watch runner runs `one/<watcher>.sh`. A same-name file one folder up is a dead copy: edit only the `one/` file, back it up first, and prove the edit against a real alert before calling it fixed.
+- Before acting on a "no delivery" or "nothing in 5 min" alert on a web-pane run, read the run's web focus and how its last agent turn ended. A recent web focus plus a tool-ended turn means the ask is in the pane, not lost.
+- A rescue that posts a prepared ask on a WhatsApp-led run must first clear the web-surface hold, or the post lands on the web only. Check every rescue by its messaging delivery row, never by the send status.

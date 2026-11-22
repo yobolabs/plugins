@@ -779,3 +779,10 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - Web-chat dev runs need a signed-in browser. Without one, drive the run on the WhatsApp rig with fictional numbers.
 - Prove each new build on a fresh fictional phone and a fresh run when an earlier build touched that path's state. A run that passed through a half-fixed build carries that state, and later failures on it are not evidence about the new code.
 - Dev sets `ads_gen.credits_unlimited`, which makes every dev org count as staff. Paid-only and staff-exempt gates (own-source paid need, own video over the length cap) can never fire on dev. Prove them locally on a paid non-staff org, then on prod with a paid test org at zero credits.
+
+## Dev proofs run through the WhatsApp tap
+
+- On dev the web-only chat flag is ON: every ask goes to the contact's web chat, and WhatsApp gets one open line. A test runner using the admin login cannot see that web chat.
+- To tap a card in a dev proof, read the newest ask's real button id from the messaging row and send it as a WhatsApp interactive reply. Never type an id by hand: an id without its token is read as a tap on an ask that was never delivered.
+- Typed changes reach the storyboard role only as "Change shot N: ...". Other phrasings can route to the wrong role.
+- The local gateway mock is not deployed dev. Test sends to a non-whitelisted phone can fail about 1 in 10.

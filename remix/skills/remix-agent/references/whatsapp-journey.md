@@ -331,3 +331,11 @@ behind Meta review; no TikTok through Buffer/Hootsuite.
 
 - **Typed messages during a change request.** While `state.awaitingChange` is open, every typed message counts as the change, including "Stop this remix". `runChange` ignores the run's phase, so an ended run still takes messages. Approved fix, not built: classify typed messages first (stop, new ad, change) with Jev and act at 0.60 or above; stop takes the stop path; ended runs are ignored.
 - **Video go reserves funds for the whole video.** Today a go can start some parts and then refuse the rest (`credits_short`). Proposed, not built: reserve for the whole video, and a `credits_short` refusal offers the payment path, not [Try again].
+
+## Paid steps need her own tap
+
+A paid step starts only on the owner's tap of that run's button, or her typed yes when only one run waits on her. When her words could fit more than one run, the press returns a needs-choice fact, and the owner asks which ad, naming each.
+
+## Re-sending a stored ask
+
+Before any path re-sends a stored ask card, check two things. (1) Did she tap it? A tapped ask is closed: never re-post it, never force it. (2) Is it already in her chat? A web-only row with a stored web copy counts as delivered. If it is already there, return a fact with a force option for her explicit "send it again". Ignore force on a turn with no message from her. Why: a repost without these checks produced duplicate cards, including one after her tap.

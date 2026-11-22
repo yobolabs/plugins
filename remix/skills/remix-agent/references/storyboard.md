@@ -96,3 +96,7 @@ buildGroups), never storyboards. Do not re-raise this as a cost question.
 ## Numbering
 
 - The merchant's scene number is the caption number: the ad's kept shot is Scene 1, and internal scene indexes never reach the merchant. The agent passes the merchant's number in scene operations and the app maps it.
+
+## Safety refusal fallback (worn apparel and lingerie boards)
+
+In testing, Flare, Sunburst, Grok 2 and NB Pro refused these boards; Qwen Image 3 Edit accepted them with the product and cast kept. On a safety refusal the draw goes Flare, then Qwen Image 3 Edit (1-3 image inputs, its own aspect list, nearest ratio, never a default 1:1), then NB Pro, then NB, skipping any model that refused that shot.

@@ -61,7 +61,7 @@ BLUEPRINT. Lower our thresholds.").
 - Good: keep every part with no product, remake the fewest seconds (stills as one picture, neighbours merged),
   regenerate only what changed, save every paid output the moment it lands. Nothing paid without a cleared budget
   (the remix lead clears runs inside the day's budget). Pricing is by size (Sean 2026-11-08, "sizing" approach): a code
-  estimate over the breakdown gives a size band (Light, Standard, Full), and the band sets the remix's credits. Every
+  estimate over the breakdown gives a size (XS, S, M, L), and the band sets the remix's credits. Every
   scene is kept. The price is not per second and not capped. The size and its credits show on the message that starts the remix (SIZING.md:82, the Make tap, chat and Ad Studio). The storyboard approval message, which starts the paid videos, shows the same credits again. Rates, redo
   factor, margin and band limits are config rows, values pending Sean.
 - Harm guarded: paying for seconds the ad already had, or a surprise cost (`references/fast-swap.md`).

@@ -133,3 +133,12 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 A release note can say "no deployment" while `agents.deployed_version_id` points at that very release (dev 443, rel 2255).
 Before any diff, parity check or cut, re-read `deployed_version_id` on both sides. Shared admin users write many sessions' releases,
 so `created_by` does not tell you which session made a release: only the note does. Always write a note.
+
+## Agent config never comes from scripts or saved bundles
+
+- Agent config moves only from the source agent's live state, through the platform's own promote or save path. Never write agent config with a hand-written script, and never use a saved bundle, snapshot, plan file or old export as the source. Those are for undo and audit only.
+- A promote that writes only the release does not reach runtime when the agent's head is not pinned: the build-config route serves the live agent row and its tools. After every promote, read back the persona hash and tool list from the live row, not from the release bundle.
+
+## Gate probes spend ids
+
+Testing the gate guard with a real approved, unused gate id on the live hook marks that id used. Test the approved-unused path only in the sandbox suite. Test the live hook only with an already-used or non-existent id. A test command that names a production host is itself blocked by the live hook, so keep probe inputs in a scratch script.
