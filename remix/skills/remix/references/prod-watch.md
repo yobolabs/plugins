@@ -16,5 +16,8 @@ The prod-watch session tracks every real prod remix run. The detail (stall, staf
 10. **Back-fill rows are never the first live row.** A recovery row carries its recovered-by tag; any watcher that looks for the first live row excludes tagged rows.
 11. **Provider noise is measured before it is raised.** Count failed over total per model across 20 minutes. A rate of 1-2% `ERR_HTTP2_STREAM_ERROR` is noise. A merchant-visible retry card caused by one is a lead report at once.
 12. **A set-aside run is ended, not failed.** Any watcher count or dashboard that lists failures leaves set-aside runs out.
+13. **Judge a missed block or false claim only after reading every successful save tool in the execution**, including `_childSaves` in handoff results, not only the failed tool's own retry. A result of `started: 0` or `moved: false` does not prove a no-op (a woken run can still advance a step).
+14. **Due-sweep: flag only a run in a WORK step** (needs, brief, teardown, storyboards, parts, joining) with a past `next_wake_at`, no open ask and no running job. A past wake on a merchant wait is normal.
+15. **Test orgs and fictional-contact runs are not merchants.** Leave them out of every count.
 
 A Stop hook enforces rule 2 for sessions named `*prodwatch*` (chief-of-staff `hooks/prodwatch-stop-guard.py`). It blocks a stop whose last message asks Sean whether to forward or send.

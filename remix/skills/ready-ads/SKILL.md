@@ -40,7 +40,7 @@ Write to the user in plain words. No code, no ids unless they ask, no internal n
 4. **Save it.** Back office → sidebar **Remix runs** (the lab's saved runs) → open this run → **Save as template**. It
    becomes "Waiting for review", which merchants never see. The save keeps yobo's own reading of the Instagram link,
    not the lab's plan, so QC that reading (step 5). "Not read" or "Source video not saved" means yobo has no reading of that Instagram link yet: use
-   Templates → **New template**, paste the same Instagram link, **Read the ad (free)**, then save again.
+   Templates → **New template**, paste the same Instagram link, **Read the ad (free)**, then save again. Wait for the **Read the ad (free)** button to render after pasting, or the click is lost. The read's category comes from the AD's product: pick the QC sample product from that read, not from an earlier lab run.
 5. **QC it** (below). All checks pass → tell the user it is complete and waits for its dev test remix (Q11). This skill
    never presses Approve and nobody approves it by hand.
 6. The remix lead reviews the first batch each team member makes. Tell the user that once.
@@ -82,6 +82,7 @@ Two facts for reading a result: a "No check ran" line on a template page means n
 - Press Approve, Not usable or Universal, anywhere, or write a template's status to approved.
 - Change anything in the back office other than Save as template and Hold.
 - Start a paid run without saying its size first, or more than one per ready ad.
+- Use "Run it as YoboLabs" for QC: it starts a full remix on the house org and stops at the merchant questions.
 - Message merchants or the team.
 
 ## Where things are

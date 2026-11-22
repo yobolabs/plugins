@@ -61,7 +61,7 @@ Redraw keys and budget. One remake counter per scene, read by every step that re
 under one key and counted under another. Live budget per scene is 2 paid redraws: 1 storyboard auto-redraw (`STORYBOARD_AUTO_REDRAWS`, value 1, `_context/LIMITS.md`
 row) plus 1 set-check remake (`SET_CHECK_REMAKES`). Source: `SCENE_REDRAW_BUDGET = STORYBOARD_AUTO_REDRAWS + SET_CHECK_REMAKES`
 at `src/extensions/remix/advance/steps/storyboard-review.ts:96` (yobo repo, origin/develop; the test asserts 2 at
-`storyboard-review.test.ts:202`). A merchant [Try again] is always one more redraw and is never blocked. A failed edge picture is its scene's missing picture: the line and [Drop scene n] name that scene.
+`storyboard-review.test.ts:202`). A merchant [Try again] is always one more redraw and is never blocked. A set-check start key names what it checks (the batch's picture signature), never only a count: a count can fall back when a scene leaves the set, repeat an old key, dedupe onto that round's landed jobs and leave the run in review. A failed edge picture is its scene's missing picture: the line and [Drop scene n] name that scene.
 
 ## Fit: only templates the product fits
 

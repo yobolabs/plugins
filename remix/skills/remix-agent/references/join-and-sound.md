@@ -62,6 +62,8 @@ After export the video posts through the Buffer / Hootsuite route; direct Instag
 - "Anytime we use the audio from the ad, the edit MUST match."
 - With the ad's own audio, every cut sits on the source cut frame (`analysis.hardCuts`), frame-exact. The original editor already cut to that audio.
 - Never move cuts to a computed beat grid. Beat snapping is only for a new track, from beats found by Cadra and stored in the template.
+- With the ad's own audio the remake keeps the source length generally. When the track has no real beat or hard timing (ambience, sizzle), clip timing is flexible and the ad's audio fades at the new end. A replaced scene takes the slot of the shot it replaces.
+- Sound-led formats (ASMR, POV, food sound): the parts' own sound is the product. Do not lay the ad's music over it (lab: untick "Use the ad's music"; the join lays the ad's audio once and drops every part's own sound while it is on). Pick sources by format and sound, not by plays.
 - Export check: cut times equal the source's cut times within ±1 frame.
 - Speech in the source is a voiced script line, or a voice whose style, language or pace describes speech. Two of those saying none or silent means no speech. A voice field that only says "silent" is not speech, so the ad's own sound is laid. A silent join where the ad's sound is wanted is our fault: re-join it once (free) and never ask the merchant.
 - The ad's own cut frames are quantised and can drift off their music, and a beat grid can lock at half tempo. Record both grids and their cut shares before choosing one; on such ads no fixed grid reaches a high cut-on-beat share.

@@ -183,6 +183,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 - **Only the run machine writes run state.** `run-machine-writers.test.ts` fails any other `remix_runs` writer. A
   side writer (lease, web focus) is allow-listed with a guard test, writes ONE state key with `jsonb_set`, and never
   bumps `version` (a bump makes the machine's version CAS lose mid-advance).
+- **A migration file with no `drizzle/meta/_journal.json` entry is skipped silently.** Check `git diff --name-only` for the journal before the release request.
 - **Drizzle journal `when` must be strictly increasing.** Two entries with the same `when` make drizzle skip one; new
   entry = `max(when) + 1000`, and recheck after any renumber.
   A new `when` must also **exceed the max `when` already in the file**: never type a made-up or round future value,

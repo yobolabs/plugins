@@ -48,6 +48,7 @@ elements to generate the video."
 - **No `as never` on a ledger, state or wait-reason value.** The cast hides a value the DB CHECK refuses (2026-11-06:
   wait_reason 'staff_retry' violated remix_run_steps_wait_ck; tsc passed, the staff retry threw on dev). Use the
   real union type (`satisfies RemixWaitReason`), and run a real-PG test on any new path that writes a row with a CHECK constraint.
+- **Run state is parsed with strict schemas** (`RemixProjectSchema` is `.strict()`). A new state field ships in the same commit as its schema entry and a test that writes the field and reads the run back. A read that returns null after a write is this bug: every later read of the row fails and the run breaks silently.
 - **Tests use the real data shape.** A fixture with an invented field passes while prod reads a field that does not
   exist (2026-11-06: `storyboard.jobUuid` vs the real `storyboard.ref.jobUuid` made every set-check tap silent). Back
   every reader change with a free read-only replay of real runs (old view vs new view, 0 diffs).
@@ -105,12 +106,13 @@ elements to generate the video."
 
 ## A delivery row never proves a video was or was not sent (2026-11-09)
 
-- The delivery row's repost payload holds text and buttons only. Media are never re-posted, so the row cannot show a video. The expected-parts and parts counts count message-api messages, not videos. Never conclude "no video in the send" from that row.
+- The delivery row's repost payload holds text, buttons, a list and the pictures of a picture batch, never a video, so the row cannot show a video (rows stored before the album fix keep text and buttons only). A batch Meta refuses after msg-api accepted it (131056) re-sends the failed pictures, not only the caption. The expected-parts and parts counts count message-api messages, not videos. Never conclude "no video in the send" from that row.
 - Truth for a QA ask: the prod worker log line `remix_qa_hold {jobUuid, status, videoShown, videoLost}`, read with `docker logs --since/--until` on the worker-service container. Delivery runs in worker-service, not Vercel. Evidence: a prod join showed `videoShown: true` while its delivery row showed one part.
 - message-api drops videos on any non-WhatsApp lane, or on a connection without the `video` capability, and reports it in `videosDropped`. Every yobo send that carries videos reads that field.
 
 ## Advance loop and failure reading
 
+- **A retry starts its named step or says why it did not.** [Try again] and the back-office Retry step force the step they name; if nothing starts, the run posts its failure line again (cause `retry_no_start`) with a team alert. A retry that only moves the phase can end idle with no job and no line (next wake null). When a merchant reports "no response", check for this before blaming the agent.
 - **A pass that made progress is never a stall outcome.** Any advance step that changed state returns a non-stall outcome. A refused `needs_help` move sets a retry wake, or nothing wakes the run.
 - **"AI provider returned an error" is a label, not a cause.** It is the default text for any image-run throw. Read the job row's `result.error.message` first, then the Cadra `ai_function_runs` row or the Vercel log. A fast failure (seconds) points to our input or ffmpeg; a slow one points to the provider.
 - **An ask's stored cause is a catalog code** (`job:<uuid>:<failReason>`), never display text. Auto-rerun classifies by the catalog; display text is read as ours, so auto-rerun re-runs a provider-blocked part on every worker swap.
@@ -154,6 +156,7 @@ elements to generate the video."
   Architecture calls go to the agents lead's gate, template approval is the lead's QC check (frames, product right and
   real size, no other brand, no garbled faces/text), spend stays inside the day's budget. No paid third-party vendor
   (music libraries etc.) without Sean naming one. Ask Sean only for what the CLAUDE.md money/customer/delete rules name.
+- **Fetching an ad link through the paid Apify account is a standing decision.** Any downloadable ad link (Instagram, TikTok, YouTube, Facebook, Threads, any source Apify supports) falls back to Apify when our own fetch fails, before the merchant sees a failure. Nobody asks Sean about that spend. (Staff template fills on the house org still use free reads only.)
 - **No paid render without a cleared budget** (pictures, draft clips, finals all bill the platform key, dev too).
   When Sean has given a budget for the day, the ledger owner (the remix lead) clears each run inside it and logs it in
   the day's paid-budget ledger; never ask Sean again per run (Sean 2026-11-05: "I already gave a budget today so no
@@ -705,6 +708,9 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - The silent re-join decision returns none when another fault sits beside the sound fault. A staff rescue for that case must force the start.
 - A retired limit does not re-run what it stopped. A stage that read the limit's failure needs a "fits now, one free re-read" branch, once per run.
 - Never hand-retry a real merchant's job. Prove with a free function test run and the next natural job.
+- Send a staff message to a merchant as the brand through the internal notify path (https `images[]` / `videos[]`, text required, the agent-notice flag so the agent's history holds it). Never use takeover: it posts a visible "team joined" line and a "back" line to the merchant. A video sent by hand must be H.264 (`ffprobe` the codec; transcode with libx264 and faststart): WhatsApp refuses HEVC with 131053 while the text still delivers. Test every hand send on the owner's own number first.
+- A rejected tool call may already have run. Read back the rows before saying nothing was sent.
+- `ad_video_jobs.notify_status` means "slides nudged", never "the merchant got it": read the `remix_deliveries` rows, and msg-api's message rows for "was it sent". A delivery row in state `intent` (or skipped for a missing conversation) is a pending resend that the reconcile tick retries with backoff: never delete it.
 
 - Before any rescue, list the chat's other live runs and the merchant's last event. Never revive a run the merchant has moved past: a rescue would post into a chat where the merchant has moved on.
 - A rescue moves a run only into a phase that has a press edge for the open ask. Look up the ask's edge for the target phase in `press-edges` (keyed on the run's phase) before the write. A press with no edge in that phase lands as unhandled.
@@ -757,10 +763,12 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 ## Tool result rules
 
 - Any flag the agent runtime acts on (silent end, shown-in-chat, the posted signal) sits at the top level of a yobo tool result. A copy nested inside a status or view object is for the agent to read; it is never the only copy. A flag nested only in a status object is never read, and the run fails with an empty reply.
+- Set `shownInChat`, `appSpeaksNext` or an "end your turn with no text" line only when the app's own post returned sent or duplicate in THAT conversation (claim keys are per conversation). The runtime drops the agent's line on those flags, so a false flag is an empty turn. When nothing was posted there, return `agentSpeaks: true` and ask for one short line.
 
 ## Dev proof
 
 - A proof must use the path the bug used. Typed text without a change tap goes to the Cadra agent, not to the change wiring. A fix can pass tests and fail live when the proof takes the other path.
+- A complete needs list posts no card: it is pressed silently (needs-auto-use). A proof that needs an open needs card must force an incomplete list (a question no business data can answer).
 - Test dev proofs on a phone with no open video of the same product: the mention switcher treats product names as video mentions.
 - A wake does not re-run a stop the run already recorded. Prove a front-half fix on a fresh run, never by waking an old one.
 - A hand wake of a dev run: put the script in a file, copy it into the worker container and run it there. An inline script passed over ssh loses its quoting. Do not wake during a worker recreate: the wake can land on the draining container.

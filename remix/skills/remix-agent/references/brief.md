@@ -39,6 +39,7 @@ Back to [SKILL.md](../SKILL.md). Read when writing, rewriting, or feeding the br
 - Brief-writer output that fails validation: retry once, then ONE plain line to the merchant.
 - Ad notes (per source ad) and product notes (per merchant product) are saved after every remix and loaded into the
   brief next time. Ad- and product-specific detail lives only there, never in generic rules.
+- A rule change to a writer that rewrites an ad for a merchant (brief, beats, needs, storyboard, video prompt) is a world-agnostic principle: no brand, product, food or object names in the rule, and examples only as three or more different pairs. Prove it with a cross-world matrix on real variables (several source-world to merchant-world pairs plus one same-world control), never one case. A row passes when no source-world prop is left, the actions are kept, and there is one product name and one person description.
 
 ## Checks on the brief
 

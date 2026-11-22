@@ -44,10 +44,9 @@ let's pop open the browser and load the remix site." Do this first, every time:
    3. put the product photos into the photo box: every photo you have of it (front, side, top; up to 8), not only
       one. Files on disk: CDP `DOM.setFileInputFiles` on `#qPhoto` (it takes several). Otherwise build `File`s from
       their bytes (base64), wrap them in a `DataTransfer` and dispatch `drop` on `#qPick`. The thumbnail and file
-      names appear when it worked. Every change the user or merchant wants (flyer words, which hand holds it, a fix
-      after a bad run) goes into the **Prompt** box, nowhere else (Sean 2026-11-04: "it's also the place for the team
+      names appear when it worked. Brand, product, cast, look and never-list changes (flyer words, which hand holds it) go into the **Prompt** box (Sean 2026-11-04: "it's also the place for the team
       to put in any overrides or adjustments"): on template reels it is pre-filled with the panel's prompt, so edit
-      that text in place; what the box says wins over the lab's own lines;
+      that text in place; what the box says wins over the lab's own lines. The Prompt box reaches every storyboard picture, so a change about one scene goes in that scene's own words or its Redo note, never the Prompt box. Product photos are plain shots of the product only: never a finished ad frame, a competitor frame or a styled mock-up in a product row (the storyboard writer copies its composition); a look reference (box, sauce, colour) goes on its own item row, never on the main product;
    4. press **Make the product sheet** (1 paid picture: front, three-quarter, side, back) and look at it: every side
       must look like the product (shape, label, colours), nothing from the photos' background. Wrong → press again.
       Make it refuses to start without a sheet (Sean 2026-11-04: "create a character sheet even if it's a product
@@ -130,6 +129,9 @@ wants to change it. Lab manual: `remix-context` search "Remix lab — how it wor
   against the ad by eye before the plan; too few scenes = wrong plan.
 - **Keep the lab tab alive while it renders:** a hidden cmux tab reset the lab mid-render and lost the job ids. Use
   focus emulation (see Usage step 1), never reload during a run.
+- **No status evals while the lab renders or joins.** A browser surface is reloaded when an eval waits too long on a busy page, and every in-page state is lost, including paid parts not yet saved to the run. Press Make or Make the MP4 with ONE eval, then poll the run row (`remix_lab_runs`: assets, final_key, status) in the database.
+- **Recover a paid part the page lost from the video model's job status by its request id** (the lab's own status tool through `execute-direct`, then read the execution's output video link) and load it as the scene's "My own clip". Never re-render a part that already finished.
+- A video file that will not load after an upload (readyState 0, no error): load it by https link instead, in a fresh tab. A stuck player stays stuck.
 
 
 ## The lab keeps every video (v9.17–v9.18, Sean 2026-11-06)
