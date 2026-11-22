@@ -42,8 +42,10 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Never cut prod from `base: "working_copy"`.** A prod working copy can drift far from its releases. A working-copy cut ships that drift and also sweeps newer tool versions into the release.
 - Cut from the live release: `base: {fromVersionId: <live>}` with `expectedFromId: <live>`. Hold every other pin at its live version with `pinOverrides`.
 - Change the prompt with `snapshotPatch: {persona: {systemInstruction}}`. It is allowed only with a `fromVersionId` base. Every base pin is kept, and the working copy is never read or written.
-- Add a tool with `snapshotPatch: {coreRole: {addTools: [{toolId, versionId}]}}` (CAD-604). It becomes a native pin at `versionId`. Skills cannot be added this way.
+- Add a tool with `snapshotPatch: {coreRole: {addTools: [{toolId, versionId}]}}` (CAD-604). It becomes a native pin at `versionId`. It is refused when the base already pins that tool natively (move it with `pinOverrides`); a tool the base holds only through a role lock is allowed.
+- Add a skill with `snapshotPatch: {coreRole: {addSkills: [{skillUuid, versionId?}]}}` (CAD-654). `versionId` omitted means the skill's applied current version. It is refused when the base already pins the skill. Every check runs before anything is written.
 - **Diff before moving the pointer.** Compare the new release with the live one (`getReleaseDiff`). The diff must hold exactly the intended change: pins compared on kind, subject and version (not ids), and the snapshot minus the pins. Refuse the cut otherwise.
+- **Judge a cut by the pins in the database too.** `getReleaseDiff` keeps one pin per kind and subject, so a tool held natively and through role locks collapses into one row. Compare `agent_version_pins` of the two releases with `EXCEPT ALL` over (kind, source, subject, version, via_role_lock_id). A role-lock override does not move an agent-level tool pin: override the tool explicitly and read the pins back for every tool you meant to change.
 - The release note records the snapshot patch and the pin overrides. That line is the audit trail.
 
 ## Building on the live head (prod)
@@ -91,8 +93,11 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Waiting on a REST `/agents/<uuid>/execute` run: poll `GET /executions/<executionUuid>`** (`cadra execution
   get`) until the status leaves `running`. The `streamUrl` it returns serves the app's HTML shell to an API key,
   not events. Read the tool result from `agent_execution_logs` (`outputLength`, `resultRef`) for the proof.
-- **Proofs run on a TEST contact** (fictional sender, test org), never a real person's chat or the owner's own
-  dev conversation, and each lane on its own test conversation (shared test chats collide).
+- **Proofs run on a TEST contact** (fictional sender, test org), never a real person's chat, never the owner's own
+  dev or prod chat or run, and each lane on its own test conversation (shared test chats collide). An injected
+  inbound posted as a real phone counts as sending in that person's name, and a proof that stores anything on a
+  real run (a save, a note) changes what that person sees. Prod proofs run in a dedicated test org's chat; the
+  proof report says "injected" and names the chat, and the gate row names the org.
 - **Dev twin write route** when the dev org's API-key quota is full: session tRPC `tools.update` +
   `agents.cutRelease` from a signed-in dev app tab (check `location.href` first).
 - Plain-chat and advice turns are part of the proof: a formatting change that fixes a draft can break ordinary
@@ -112,6 +117,7 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
   a quoting failure cuts nothing.
 - **Harness text edits** need a signed-in system user (browser tab): check `location.href` before every write — a
   tab left on prod receives a "dev" write.
+- **A browser tab driving tRPC can drop the POST response** ("Load failed") while the server finishes the write. Verify every write in the database; never re-POST.
 - **Spawned roles inherit the parent's harness text** (log line `… (inherited)`) but get no State and no
   `state_update` tool: guard State instructions with "If you have state_update: …".
 
@@ -119,7 +125,8 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 
 - Check that the tool is pinned on the agent at all. A tool can be pinned on neither prod nor dev.
 - When pinning a dev twin, compare `billing_class` with prod. Dev 199 (generative) against prod 128 (read) made entitlement refuse the call.
-- A prod cut from the live release can change existing pins only. Adding a pin to a prod agent needs CAD-590.
+- A prod cut from the live release moves existing pins with `pinOverrides`; a new tool or skill pin goes in with `snapshotPatch` (see *Prod cut*).
+- **A product flag that makes the agent call a tool goes ON in prod only when that tool is pinned in the deployed prod release.** List the tools the flag's code path wakes the agent to call and check each pin first. Otherwise the prepared work is never delivered and the agent writes text pointers instead.
 
 ## Read the live id, not the release note (2026-11-06)
 

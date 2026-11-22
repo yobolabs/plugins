@@ -19,7 +19,7 @@ A tool is what lets an agent do something outside the model. Three
 | `WEBHOOK` | fire-and-forget POST | notifications, triggers with no useful response |
 
 `category` is `INTERNAL` (Cadra's own surfaces), `EXTERNAL` (third-party), or
-`DATA` (reads a datastore). It drives grouping and some policy — set it honestly.
+`DATA` (reads a datastore). It drives grouping and some policy — set it honestly. An `INTERNAL` tool with no `authCredentialId` is sent the platform's internal-key header; a tool with a stored credential is not, and neither is an `EXTERNAL` tool with its own base URL, so an app route that expects the internal key answers 401. Check category and credential before blaming the key.
 
 ## Single-endpoint API tool
 
@@ -48,7 +48,7 @@ The simplest and most common shape:
 - `schema` is the **JSON Schema the LLM fills in**. Every property needs a
   `description` — that text is the only thing the model sees explaining the
   parameter. Mark `required` accurately; optional-everything schemas produce
-  empty calls.
+  empty calls. A required field the user cannot know gets invented by the model (a required source URL was filled with a made-up site): make it optional, or say where the model finds it.
 - `agentInstructions` is where call-time policy lives (when to call, when not to,
   what to do on failure). Keep it out of the agent's system instruction so it
   travels with the tool.
@@ -91,6 +91,8 @@ One tool, several operations — the agent picks the endpoint by `name`:
 Per-endpoint fields: `id` (stable, required), `name` (what the model calls,
 ≤100), `method`, `path`, `description` (≤500), `parameters` (path/query JSON
 Schema), `requestBody` (body JSON Schema), `headers`, `viewResult`.
+
+**`requestBody.properties` is a whitelist.** When it names any property, only those arguments are sent in the body. A new argument the app starts to expect is silently dropped until the tool row's `requestBody` names it, so ship the row update in the same cut as the app change.
 
 **`id` is a stable key — do not renumber it.** Changing it detaches history and
 any binding that references it.
@@ -193,6 +195,8 @@ the shape.
 - **Endpoint `speaksOwnLine`** (list of action names): for those actions the runtime sends no pre-tool narration,
   because the tool's own reply is the line the user reads. Needs the cadra-api and cadra-web builds that know the
   flag; on an older web build it is stripped on save (see the bullet above).
+- **A tool that posted the user's line says so itself**: a top-level `shownInChat: true` (or `silentEnd: true` when the next line arrives by itself). `speaksOwnLine` is the blanket form, so prefer the per-result flag. A refused or failed result never counts as posted unless it also says `shownInChat: true`, so a tool that posted must not also return `refused: true`: return a status that names what was posted. Set the flag only after the post really happened in that conversation.
+- **Cadra does not validate the model's arguments against `schema`.** No validator is wired, so the receiving app's own validation is the only gate. Make its refusal name the field.
 
 ## Platform tools and safe tool edits (2026-11-06)
 

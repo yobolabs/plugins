@@ -235,7 +235,7 @@ normalizes it.
 
 ## kb → `/api/v1/knowledge-bases`
 
-Permissions: `knowledgeBase:*`.
+Permissions: `knowledgeBase:*`. A key that cuts agent releases can lack `knowledgeBase:update`: its KB upload gets 403, so use a key that holds the verb.
 
 | Field | Req | Type |
 |---|---|---|

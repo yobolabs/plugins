@@ -90,6 +90,9 @@ Moved verbatim from `SKILL.md` (2026-09-30). Read before diagnosing a lost, late
   uses `maxRetriesPerRequest: null`, so `queue.add` **hangs rather than throws** during a Redis
   outage and a bare `await` never reaches its catch. On failure the run is rolled back to `failed`
   with reason `retry-enqueue-failed` and logs `agent_task.retry.enqueue_failed`.
+- **`failed / timeout-swept` with "claimed N minutes ago and never dispatched"** is a `pending` run the reconciler wrote off. It no longer proves a lost enqueue: a run still waiting in the runner queue behind a big wave is skipped by the sweep (log field `stillQueued`), so check the queue before calling it lost.
+- **`skipped_no_profile` has two reasons.** `no-business-profile`: no named business profile. `no-online-presence`: named, but no website and no Instagram saved (the org website, the profile, or the website or Instagram confirmed at chat sign-up all count; other platforms do not). Preflight and the runner share `missingProfileDetail`, and ops counts the two apart.
+- **`orgs.business_category` defaults to `other`** and is rarely refined, so a `businessCategory` audience rule matches little. Preview the audience before activating.
 - **A deliverable number is not an OPENABLE one.** The send side resolves a phone through the
   destination ladder; the TAP resolves the acting org from that phone's chat identity. They can
   disagree — a CTA lands on a handset that answers as a different org and `get_daily_brief` returns
