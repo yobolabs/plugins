@@ -41,6 +41,9 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 
 - A gate row's `footprint:` field is exactly `before=<full footprint.sh line> after=<full footprint.sh line>`. The guard reads every `si=`, `tools=`, `tooltext=`, `skillindex=` and `harness=` token in it: shorthand (`after=same`) is refused, and a note that contains a measure token is read as the after value. Write comments in words only.
 
+- A gated change needs its `footprint:` line in the gate-log row before the first prod write (skill create or update, cut with `deploy:false`), not only before the pointer move. Ask the lead for a predicted after-line (before plus the added pins and description chars), then measure the `deploy:false` cut with `footprint.sh` and stop if it differs.
+- A new skill pin adds its description to skillindex. Offset it in the same release (shorter descriptions of pinned skills, templates untouched) and prove the trimmed skills' behaviour by the right tool call on the phrasings removed, not by the skill load.
+
 ## Prod cut: from the sealed live release only
 
 - **Never cut prod from `base: "working_copy"`.** A prod working copy can drift far from its releases. A working-copy cut ships that drift and also sweeps newer tool versions into the release.

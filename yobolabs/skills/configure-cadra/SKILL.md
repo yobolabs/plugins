@@ -548,3 +548,7 @@ meaningless until descriptions pass (a role with no when-to-use never overlaps).
 
 - A release refused with `footprint_grew` keeps the guard on. In the same cut, drop text whose fact a tool result already serves (check the live result first), then cut again. An exception id is only for growth with no such offset.
 - Before removing an app-side copy of a tool's description or parameter schema, diff it against the live Cadra tool row (requestBody/schema and text). Port anything the app copy has that the row lacks into the row first (function into requestBody, how-to into the role's reference doc), then delete the app copy. Cadra's requestBody is a whitelist: a parameter only the app copy names never reaches the tool.
+
+## Prod agent writes through the org profile
+
+Prod Yobo agent writes: open the cmux login profile that is a member of the agent's org (`browser-tab.sh --new <profile>`), use session tRPC, switch to the agent's org for the write and back after, and read every write back. A tool pinned natively to a release has no `agent_tools` row and does not show in `tools.list`: find it through the release pin instead.

@@ -822,3 +822,15 @@ Every yobo remix tool that reads her words or posts to the chat resolves both fr
 ## Screen fixes are proven on a real run
 
 A fix to a screen the merchant uses is proven by a test that loads a real failing run's stored state (ids only, URLs stripped), runs it through the same server view builder and the component path she taps, and fails on develop before the fix. A pure-function test alone is not proof: the page can read a second path the unit test never touches.
+
+## Proof of a remix tool path
+
+A proof of a remix tool path records the argument shape the owner sent each turn. Code accepts every shape the tool's schema allows (top-level change, plan entries with a change, both) on the same path. A shape it holds or ignores is a bug, not agent drift.
+
+## Data fixes are tested on real rows
+
+A fix for how a run's data is read (needs rows, cast, briefs, plan entries) is tested on rows copied from the failing run (dev DB read, ids only), not on fixtures written from the spec. A merchant pick rewrites row fields: an invented row passes while the real one does not.
+
+## Prepared asks
+
+A card or ask the owner should post goes through prepared asks (`prepared-ask.ts`); the owner posts it with `remix_post_ask`. A prepared ask needs a remix run stored on the run state. A site with no run keeps its current post until a run-less prepared card exists.

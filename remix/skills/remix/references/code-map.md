@@ -353,3 +353,6 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 ## Tool results and session rows
 
 - Cadra tool results are in `session_messages` rows with `role = 'tool'` (join on `execution_id`). `agent_executions` holds the task input and final output only; a tool-result token searched there is never found.
+## Native template start dedupes per chat
+
+Native template start dedupes per chat: an open run of the same ready ad in phase `reading` or `needs` in that conversation returns `already_started {remixId}` (`native-source-start.ts`, `sameChatTemplateRun`). `fresh:true` is read only by the agent tool (`remix-tools.ts`) and never reaches this start. A new run of that ready ad needs the agent tool path or a finished earlier run.
