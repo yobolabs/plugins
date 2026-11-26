@@ -32,3 +32,11 @@ Hosts, connection ids and secrets live in the inventory and the vault. Use the p
 
 - The side chat polls only while its tab is in front. Bring the tab to the front before waiting on a reply.
 - A draft or final video that fails with a provider HTTP 400 shows "This video isn't working out" with no progress line before it. Check the run record, not the chat.
+
+## Gallery use resumes runs: one open run per proof org
+
+Before a dev remix proof, count the proof org's open runs. Run proofs in an org with one open run at a time, so a fresh proof does not resume an old run.
+
+## WebKit pane and entry links
+
+Web login for a WhatsApp test phone's own org: mint a dev chat-entry link through the msg-api caller route. A cmux WKWebView pane does not keep the entry session, so prove it in Chromium.

@@ -86,3 +86,11 @@ Related: `remix:ready-ads` (team: make a ready ad, QC saved ones), `yobo:ad-stud
 ## Lead: prod-watch alerts via a one-shot watcher
 
 The lead watches the prod-watch alerts log with a background job that exits on the first new filtered alert, and is re-armed after the lead handles it, with its seen and offset files beside it. Never use a Monitor for it: every empty Monitor expiry wakes a full-context turn.
+
+## Live proof on dev: a quiet chat only
+
+Run a live proof only in a chat nobody else is using. Check the chat is quiet first, and never tap a confirm card in a shared chat. If a tap may have started another run, report it to the lead at once.
+
+## Fast Swap proof source
+
+For a Fast Swap proof, use a real dev ready-ad clip with a visible product, scaled to the target size. A synthetic test pattern may get no Just swap offer, so the proof cannot start.

@@ -564,3 +564,7 @@ A browser-run write script larger than about 2 KB: pass it as `eval --script "$(
 ## Dev writes on the no-net-growth agents
 
 Dev writes to an agent on the no-net-growth list (443, 362) need a root footprint line in the command: `FOOTPRINT='footprint: before=<line> after=<line>' <command>`, both lines from the footprint script.
+
+## Gate guard reads the local gate log
+
+The guard reads the local gate log under the monorepo `_context` path, not origin. A gate id that origin shows approved but the guard denies means the local copy is stale: compare the gate id count in the local log against origin before re-running.

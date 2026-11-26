@@ -263,3 +263,7 @@ listings; do not try to reuse or reassign one.
   environment. Nothing fails at save time — it fails at spawn. Verify uuids
   against the target with `cadra tool find` / `cadra skill find` before applying
   to a new environment.
+
+## Role tool text is frozen in the role lock
+
+Role tool text is frozen in the role lock (a "Role tool description, <tool>" prompt version). After a tool row PUT, re-promote the role so the lock picks up the new text, then read the lock.
