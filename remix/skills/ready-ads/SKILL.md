@@ -78,6 +78,8 @@ Read it in full before the first QC of a session.
 
 Two facts for reading a result: a "No check ran" line on a template page means no remix from it has passed QA yet, not that the template is unchecked. A universal ready ad still has a product category: it is offered last to other categories and never dropped, so set its category.
 
+- **Fixtures go to context-large, never the vault.** Every video, render or picture fixture a QC run or a proof rig saves goes to `<context-large>/Repos/yobo-context/slides/_specs/<spec>/qc/fixtures/` (same relative path as the spec); the QC doc links that path. Never write a fixture into the vault's `qc/fixtures/`.
+
 ### Static ready ads
 
 Static ready ads are the slides Ad Library's `quality=top` set, not template rows (one owner: the Ad Library). QC = look at the in-review Hot and Proven statics. A plain product, food, model or room photo with no offer and no ad text FAILs "no ad layout": it is not an ad. Give subagents this rule in their brief. Accept through the Ad Library's bulk action: preview the count (`contentLibrary.bulkCount`), then accept in chunks of at most 25 (`bulkCreate`, accept_ai) and keep the bulk operation id as the undo. Staff reach the Ad Library console through the CRM sign-in, which grants the content-library scope; a Yobo SSO session is refused.

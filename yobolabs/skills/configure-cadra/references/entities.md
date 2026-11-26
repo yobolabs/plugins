@@ -274,6 +274,8 @@ Extra ops: `GET /{id}/documents`, `POST /{id}/query`, `POST /{id}/documents` (up
 
 ## prompt → `/api/v1/prompts`
 
+- **New AI function version on dev:** from a signed-in dev tab, `prompt.update {uuid, systemPrompt}` (it merges over the prompt row, so first check the row equals the golden version), then `prompt.getVersions {promptUuid}` for the new id and `prompt.setGoldenVersion {promptUuid, versionId}`. A UI-minted API key lacks `prompt:update`. Undo = setGoldenVersion back to the old id.
+
 Permissions: `prompt:*`. **Identity field is `title`, not `name`** — `find` and
 `apply` key on `title` for this entity.
 

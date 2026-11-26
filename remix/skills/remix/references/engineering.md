@@ -140,6 +140,9 @@ elements to generate the video."
 
 ## Taps on yobo-owned runs
 
+- A tap that code presses for her (typed go, re-drive) records its receipt with a real uuid: derive it from the idempotency key (uuid v5 or sha256 → uuid) so a replay stays a duplicate. A composed string fails the uuid column and the tap is lost.
+- A press that does not go through (failed, priced, already answered) re-posts the card it waited on, below her message, with its button. A held change never ends with zero buttons.
+
 - **Yobo answers run before the slides read.** `tap.ts` reads the remix from slides (`remix_get`) before most branches, and slides answers `not_found` for native yobo runs. Every yobo-owned answer runs before that read.
 - **An unknown yobo tap goes to the advance loop** as a press on the open ask that posted the button (`events/yobo-press.ts`). The loop needs a handler for every button an ask posts, on both routes: the tap route and the action-token route.
 - **Tests cover yobo-owned taps with `remix_get` answering `not_found`.** A happy slides mock hides this class of failure.
