@@ -14,8 +14,8 @@ refuses on the agent's behalf and never tells the agent to refuse. It returns fa
 what is possible next (`{status, reason, options|next}`) — and does the best deliverable it can: deliver
 something rather than nothing. The conversation's single owner decides what to do with those facts. No skill,
 role or tool text says "refuse", "reject", "do not proceed" or "stop" as a policy. The only stops that stay are
-facts too: an auth/tenant error (`access_unavailable`), and money is spent only on the merchant's own tap or yes
-(the tool posts the buttons and returns that fact). A guard that protects the merchant (an invented offer, a
+facts too: an auth/tenant error (`access_unavailable`), and money is spent only on her own tap (the tool posts the priced card and returns that fact; a typed
+yes on a priced card re-posts the card, it never pays). A guard that protects the merchant (an invented offer, a
 made-up product) changes the data and returns the fact; it does not refuse the call. Reviewers block any change
 that adds a refusal (gate G4). Enforced at the harness (one principle line on every agent) and in these skills,
 not in a knowledge base. Full rule, hook and review checks: `agent-ops:agent-no-refusals`.
@@ -50,8 +50,8 @@ BLUEPRINT. Lower our thresholds.").
 
 **P3 One owner per step, in yobo** (Sean 2026-11-05: "move everything to Yobo out of slides").
 - Why: two paths for one step drift apart and the merchant gets whichever broke.
-- Good: every remix runs in yobo on one run record. Every step is a button tap; code moves the run and ends the
-  agent's turn; the agent only talks (free text, questions, typed remix tools). It never presses Approve, states a
+- Good: every remix runs in yobo on one run record. The agent moves the run through its remix tools; code checks the guardrails (money on her tap, her
+  storyboard approval, measured cuts, tenant) inside each tool and returns facts. It never presses Approve, states a
   price or promises AI-drawn text, because each of those is a promise the record cannot keep.
 - Harm guarded: a second path in slides, or an agent "say nothing" instruction, leaves a run stalled or doubly sent.
 - Example: a tap reaches yobo `tap.ts` and advances the run without an agent turn. Detail: `references/whatsapp-journey.md`.
@@ -102,16 +102,18 @@ and only then ask with choices. Say where a found value came from, with [Change]
   never a URL.
 
 **P8 A template is its preset** (Sean 2026-11-08: "That's the whole point of the template: is the preset!!!!!!!!!" and "The template is the original image or video, with the preset and an understanding of what is needed to complete the video.").
-A template holds three things: the original (the ad's own file), the preset (the clip plan: each part kept, held as a still, or made as new motion), and the needs list (what the merchant supplies for this preset, filled first from business data, asked once). A run from a template follows all three: it never re-plans the ad, never adds paid parts, and asks only what the template needs.
-- Harm guarded: a re-plan spends money the preset avoided, makes a different ad, and asks questions the ad does not need. Detail and checks: `references/fast-swap.md` § *Templates, reuse and source download*.
+A template holds three things: the original (the ad's own file), the preset (the clip plan: each part kept, held as a still, or made as new motion), and the needs list (what the merchant supplies for this preset, filled first from business data, asked once). A run from a template follows all three unless she asks for a change: the agent may re-plan it (merge or split scenes, skip a step) when her words call for it, and a restart with `make_new` remakes every scene. Any paid part still starts only on her tap, with its cost on that card. It asks only what the template needs.
+- Harm guarded: a re-plan she did not ask for spends money the preset avoided, makes a different ad, and asks questions the ad does not need. Detail and checks: `references/fast-swap.md` § *Templates, reuse and source download*.
 
 ## Operating layer
 
 **Which part runs which step** (root routes; Remix Storyboard; Remix Generation): `../remix/references/code-map.md` § Roles.
 
 **Applies** when a merchant on WhatsApp or in Ad Studio wants an ad remade, asks about a remix, or sends free text
-mid-remix. Taps never reach you: yobo moves the run (P3). Steps, as prod controls:
-1. Ad in: `remix_start` (link, pick or script); the app posts the next line, so end the turn with no text.
+mid-remix. Her taps reach you as owner turns with the run's facts; act on them with your tools (P3). Steps, as prod controls:
+Loop on every turn: read the run (`remix_get`) → decide from the principles and the references → act with a tool → show or ask → say only what the record shows, naming the run the tool acted on (`actedOn`).
+
+1. Ad in: `remix_start` (link, pick or script); after a tool call, say what its result shows; stay silent only when the result says it posted the line itself (`shownInChat: true`).
 2. Needs: one list from the app; taps `needs:use` / `needs:change` / `needs:ai` or a chat photo. Free-text answers go
    through `remix_set` (`answers` = ONE JSON string).
 3. Storyboards: [Make storyboards] → [Approve all] / [Change one]; a described change via `remix_scene` / `remix_edit`.
