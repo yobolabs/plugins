@@ -834,3 +834,7 @@ A fix for how a run's data is read (needs rows, cast, briefs, plan entries) is t
 ## Prepared asks
 
 A card or ask the owner should post goes through prepared asks (`prepared-ask.ts`); the owner posts it with `remix_post_ask`. A prepared ask needs a remix run stored on the run state. A site with no run keeps its current post until a run-less prepared card exists.
+
+## Tap-turn facts are read before the advance
+
+Tap-turn facts are read before the advance applies a recorded press. A fact that gates on her other open asks excludes the ask this tap answers, or the owner is woken again when that ask closes.

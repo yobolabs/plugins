@@ -163,3 +163,7 @@ Testing the gate guard with a real approved, unused gate id on the live hook mar
 ## Removing or swapping a skill
 
 A cut from a version can add a skill but not remove one; a skill pin with `versionId` null is refused. To remove or swap a skill, set the agent's own working-copy skill links (per agent; other agents keep theirs), then cut from `working_copy` with `pinOverrides` holding every other pin at its live version.
+
+## Remove a tool from a cut
+
+Remove a tool the base pins natively with `snapshotPatch: {coreRole: {removeTools: [toolId]}}` on a `{fromVersionId}` base. This drops the native pin and the coreRole tool uuid and tool setting entries together.

@@ -568,3 +568,7 @@ Dev writes to an agent on the no-net-growth list (443, 362) need a root footprin
 ## Gate guard reads the local gate log
 
 The guard reads the local gate log under the monorepo `_context` path, not origin. A gate id that origin shows approved but the guard denies means the local copy is stale: compare the gate id count in the local log against origin before re-running.
+
+## Org window steps from a browser
+
+Run an org window step (promoteGolden, skills.files.put) from a browser without awaiting it. Push each step to a window-level log array and return started, then poll that array until the last step is done.
