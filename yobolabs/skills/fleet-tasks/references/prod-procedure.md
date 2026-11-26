@@ -40,3 +40,7 @@ container). A file-based recreate activates all of them as a side effect. Dump
 one line, `docker run` with the same image, binds, network and restart policy, then swap names —
 keep the old container stopped for rollback. Update the file too, so the next deploy keeps it.
 A var that looks container-only may just have a leading space in the file (Docker trims it).
+
+## Worker log reads cover only the current container
+
+`docker logs` on `worker-service` starts at its last recreate. A count of skip reasons or outcomes read from it states the window (`since <container StartedAt>`); for a longer window, read the database rows.

@@ -135,3 +135,7 @@ fetch fix by running the shipped function inside the prod worker container, neve
 Draft = 480p video, 1k pictures, until sign-off. Regenerate only what changed; reuse paid output; save every paid
 output the moment it lands. Text, captions, prices and logos are added in post, never drawn by a model; the product's
 own printed label stays.
+
+## Creator outro is not part of the ready ad
+
+The source's closing creator clip (the creator's logo, wordmark, app icon or end card) is not part of the ready ad. The teardown names it as the creator outro, the plan drops that part, the ad's music fades at the new end, and the outro is not reused.

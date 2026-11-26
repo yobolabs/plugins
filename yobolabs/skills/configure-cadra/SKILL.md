@@ -556,3 +556,11 @@ Prod Yobo agent writes: open the cmux login profile that is a member of the agen
 ## Same-org clone refresh
 
 Source and target in the same org share every object, so a promote between them creates duplicates. Refresh a same-org clone with a release cut on the clone, from its live release: `pinOverrides` to each source-release version that differs, and `snapshotPatch` for `persona.systemInstruction` from the source.
+
+## Browser write scripts
+
+A browser-run write script larger than about 2 KB: pass it as `eval --script "$(cat <file>)"` with the gate variable on the same command, and treat the write as done only when the returned JSON shows the guard checks passed.
+
+## Dev writes on the no-net-growth agents
+
+Dev writes to an agent on the no-net-growth list (443, 362) need a root footprint line in the command: `FOOTPRINT='footprint: before=<line> after=<line>' <command>`, both lines from the footprint script.
