@@ -155,3 +155,11 @@ so `created_by` does not tell you which session made a release: only the note do
 ## Gate probes spend ids
 
 Testing the gate guard with a real approved, unused gate id on the live hook marks that id used. Test the approved-unused path only in the sandbox suite. Test the live hook only with an already-used or non-existent id. A test command that names a production host is itself blocked by the live hook, so keep probe inputs in a scratch script.
+
+## Harness update and locked keys
+
+`harnesses.update` merges the policy keys you send (unset removes). `on_new_message` and `continue_step` are locked and refuse any write, so never resend a whole stored policy. Send only the changed keys, then read the new `harness_versions` row, because the update returns no version id.
+
+## Removing or swapping a skill
+
+A cut from a version can add a skill but not remove one; a skill pin with `versionId` null is refused. To remove or swap a skill, set the agent's own working-copy skill links (per agent; other agents keep theirs), then cut from `working_copy` with `pinOverrides` holding every other pin at its live version.

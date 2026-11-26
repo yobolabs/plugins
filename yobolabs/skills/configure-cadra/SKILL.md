@@ -552,3 +552,7 @@ meaningless until descriptions pass (a role with no when-to-use never overlaps).
 ## Prod agent writes through the org profile
 
 Prod Yobo agent writes: open the cmux login profile that is a member of the agent's org (`browser-tab.sh --new <profile>`), use session tRPC, switch to the agent's org for the write and back after, and read every write back. A tool pinned natively to a release has no `agent_tools` row and does not show in `tools.list`: find it through the release pin instead.
+
+## Same-org clone refresh
+
+Source and target in the same org share every object, so a promote between them creates duplicates. Refresh a same-org clone with a release cut on the clone, from its live release: `pinOverrides` to each source-release version that differs, and `snapshotPatch` for `persona.systemInstruction` from the source.
