@@ -815,3 +815,10 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 
 - Prod proofs through yobo internal tools: business-acting tools (`remix_start`, `remix_make`, `remix_set`) refuse the callback key by design. Prove them with a natural run or a real chat turn, never by key-hunting. Template tools (`remix_template_teardown`) accept it.
 - A proof of per-turn dedupe sends the same `X-Execution-Id` on every call.
+## Child tool calls use the root inbound
+
+Every yobo remix tool that reads her words or posts to the chat resolves both from the root inbound when called in a child (role) execution: `rootInboundOf` gives text, tapId and conversation. Each tool has a test for the child-call case. A tool that works only on root calls is a bug.
+
+## Screen fixes are proven on a real run
+
+A fix to a screen the merchant uses is proven by a test that loads a real failing run's stored state (ids only, URLs stripped), runs it through the same server view builder and the component path she taps, and fails on develop before the fix. A pure-function test alone is not proof: the page can read a second path the unit test never touches.

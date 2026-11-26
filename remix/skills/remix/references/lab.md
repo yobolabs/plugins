@@ -162,3 +162,7 @@ Sean: "You need to have every video I make with remix in context stored somewher
 
 - Load the file with CDP `DOM.setFileInputFiles` on `#srcFile`. The run id is in localStorage `remixLab.run.file:<name>:<size>`; the source is stored at load (`source.key`).
 - Back office `app.yobolabs.ai/backoffice/remix-lab/<runId>` → Save as template. Save reads the stored copy through yobo (house org), then builds the breakdown and the draft template.
+
+## Proof runs are fresh
+
+Before a dev proof, query `remix_runs` for open runs on the ready ad and pick one with no run yet, so "Use" creates a run after the deploy. A reused run carries needs, asks and pins written by the old code and proves nothing about the fix. Record the run's `created_at` next to the deploy time in the proof line.

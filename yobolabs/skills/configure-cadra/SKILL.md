@@ -543,3 +543,8 @@ meaningless until descriptions pass (a role with no when-to-use never overlaps).
 - `references/recipes.md` — git-backed definitions, promoting local → dev, Codex usage.
 - `scripts/audit.mjs` — the auditor (`--help` for checks and flags).
 - Live OpenAPI: `GET {CADRA_API_URL}/api/v1/docs`.
+
+## Release guard and tool copies
+
+- A release refused with `footprint_grew` keeps the guard on. In the same cut, drop text whose fact a tool result already serves (check the live result first), then cut again. An exception id is only for growth with no such offset.
+- Before removing an app-side copy of a tool's description or parameter schema, diff it against the live Cadra tool row (requestBody/schema and text). Port anything the app copy has that the row lacks into the row first (function into requestBody, how-to into the role's reference doc), then delete the app copy. Cadra's requestBody is a whitelist: a parameter only the app copy names never reaches the tool.

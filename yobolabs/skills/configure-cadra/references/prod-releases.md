@@ -39,6 +39,8 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - The guard reads the local working copy of the gate log. A freshly approved id refused as not approved means its row exists only on the remote: ask the lead to add it to the local copy. Never override.
 - Run the deploy-pointer call and the DEPLOY-LOCK row edit as separate commands. The guard can block a chained command, and then nothing in it runs.
 
+- A gate row's `footprint:` field is exactly `before=<full footprint.sh line> after=<full footprint.sh line>`. The guard reads every `si=`, `tools=`, `tooltext=`, `skillindex=` and `harness=` token in it: shorthand (`after=same`) is refused, and a note that contains a measure token is read as the after value. Write comments in words only.
+
 ## Prod cut: from the sealed live release only
 
 - **Never cut prod from `base: "working_copy"`.** A prod working copy can drift far from its releases. A working-copy cut ships that drift and also sweeps newer tool versions into the release.
