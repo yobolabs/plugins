@@ -127,7 +127,7 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 
 ## Footprint guard compares with the live release
 
-- The root footprint guard compares a new cut with the agent's live release: any tooltext growth is refused, whatever was freed earlier. A tool description holds at most 1000 characters. Words for a new tool option go in the endpoint's field description (the requestBody property), which the footprint does not count; keep the tool description unchanged.
+- The root footprint guard compares a new cut with the agent's live release: any tooltext growth is refused, whatever was freed earlier. A tool description holds at most 1000 characters. Words for a new tool option go in the endpoint's field description (the requestBody property), which the footprint does not count; keep the tool description unchanged. Write text changes net ≤ 0 (drop redundant words in the same change). Code-defined tool text (meta-tool descriptions) is not in the footprint: measure it with a unit test that builds the served description, on base and head.
 
 ## Tool pins and billing class before a release
 

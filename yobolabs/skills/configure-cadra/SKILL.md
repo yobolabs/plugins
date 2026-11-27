@@ -154,6 +154,10 @@ Rules:
 - **Dev labels ride into the target.** The persona name and description, the core role name and any dev email binding are copied. Rename the dev source to the prod labels and cut a new release before promoting. Snapshot `channelBindings` are audit-only: prove the change with `channel_connections` and `agent_channel_bindings` row counts before and after.
 - Roles with a deployed-release pin: a role promote does not reach an agent pinned to a release. Cut a new release after promoting a role (`cadra:agents` → `agent-releases.md` § *A role promote does NOT reach an agent pinned to a release*).
 
+## Session writes from a shared browser profile
+
+- A session tRPC write from a shared cmux browser profile checks `location.host` and the server org in the SAME eval as the write; the profile's org can change between two of your calls. Never switch the org without restoring it: record the org before, switch, write, switch back, and log both times.
+
 ## Setup
 
 | Env var | Purpose |
