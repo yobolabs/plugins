@@ -110,6 +110,10 @@ elements to generate the video."
 - Truth for a QA ask: the prod worker log line `remix_qa_hold {jobUuid, status, videoShown, videoLost}`, read with `docker logs --since/--until` on the worker-service container. Delivery runs in worker-service, not Vercel. Evidence: a prod join showed `videoShown: true` while its delivery row showed one part.
 - message-api drops videos on any non-WhatsApp lane, or on a connection without the `video` capability, and reports it in `videosDropped`. Every yobo send that carries videos reads that field.
 
+## A WhatsApp proof counts only delivered rows
+
+- A WhatsApp proof reads each msg-api row's delivery status. A row SKIPPED with reason `web_only` never reached the merchant. With `phone_chat_on_chat` on (the default), every remix ask on WhatsApp is one line plus `[Continue in Yobo]`, and the cards live on the web stage page (`stage-link.ts` `remixStageLink`). A tap sent on a button id that was never delivered is synthetic and does not count as proof. Tap only buttons delivered on that surface after your own message.
+
 ## Advance loop and failure reading
 
 - **A retry starts its named step or says why it did not.** [Try again] and the back-office Retry step force the step they name; if nothing starts, the run posts its failure line again (cause `retry_no_start`) with a team alert. A retry that only moves the phase can end idle with no job and no line (next wake null). When a merchant reports "no response", check for this before blaming the agent.

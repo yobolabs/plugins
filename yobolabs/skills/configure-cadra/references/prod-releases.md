@@ -125,6 +125,10 @@ Agent REST routes take the **uuid**. The numeric id that `list` prints returns `
 - **Spawned roles inherit the parent's harness text** (log line `… (inherited)`) but get no State and no
   `state_update` tool: guard State instructions with "If you have state_update: …".
 
+## Footprint guard compares with the live release
+
+- The root footprint guard compares a new cut with the agent's live release: any tooltext growth is refused, whatever was freed earlier. A tool description holds at most 1000 characters. Words for a new tool option go in the endpoint's field description (the requestBody property), which the footprint does not count; keep the tool description unchanged.
+
 ## Tool pins and billing class before a release
 
 - Check that the tool is pinned on the agent at all. A tool can be pinned on neither prod nor dev.

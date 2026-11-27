@@ -103,6 +103,7 @@ Two consequences to know:
   the new one. A role edit that "has no effect" is usually this.
 - Pass `changeNotes` on updates that change the method — it is the only
   human-readable label the version history gets.
+- **Changing a tool row that roles pin:** promote each role (re-freeze from its head), then diff the new lock with the old one (`agent_role_locks.lock` jsonb, element by element in `toolDescriptions`); only that tool's entry may differ. Cut from the live release with `pinOverrides` for each new lock and for the tool's new version, then check the release diff shows only that tool.
 - **Promote alone does not reach a deployed agent either.** The agent's deployed
   version (release) pins each role's golden lock (`role_lock` pin). After a
   promote, move the agent too: dev = publish + deploy the agent; prod = cut a
