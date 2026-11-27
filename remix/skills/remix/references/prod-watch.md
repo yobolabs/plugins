@@ -30,3 +30,7 @@ A Stop hook enforces rule 2 for sessions named `*prodwatch*` (chief-of-staff `ho
 - A rescue that posts a prepared ask on a WhatsApp-led run must first clear the web-surface hold, or the post lands on the web only. Check every rescue by its messaging delivery row, never by the send status.
 - Execution log shape: tool rows are `type='tool_result'` with the title `Tool Result: <tool> - SUCCESS|FAILED`; their payload is in `metadata` and `content` is empty. Assistant text is `type='message'` (there is no `text` or `llm_response` type). A block event has `metadata->>'event' = 'root_claim_blocked'` with `cause` and `tool`; it fires only when the root's own tool failed and the root then claims success.
 - `ad_video_jobs` has no `updated_at` column. `remix_deliveries` carries `message_ids` (an array), `state` (delivered, provider_accepted, failed, skipped) and `reason`.
+
+## Takeover: check the prodwatch job first
+
+- On takeover, run `launchctl list | grep remix-prodwatch` before trusting a quiet `alerts.log`. No pid means not running: `launchctl bootstrap gui/$(id -u) <plist>`, and keep the plist linked in `~/Library/LaunchAgents` so it loads after a reboot. A silent log with the job down hides every prod stall.

@@ -810,3 +810,8 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 - To tap a card in a dev proof, read the newest ask's real button id from the messaging row and send it as a WhatsApp interactive reply. Never type an id by hand: an id without its token is read as a tap on an ask that was never delivered.
 - Typed changes reach the storyboard role only as "Change shot N: ...". Other phrasings can route to the wrong role.
 - The local gateway mock is not deployed dev. Test sends to a non-whitelisted phone can fail about 1 in 10.
+
+## Prod tool proofs: org-acting tools and idempotency
+
+- Prod proofs through yobo internal tools: business-acting tools (`remix_start`, `remix_make`, `remix_set`) refuse the callback key by design. Prove them with a natural run or a real chat turn, never by key-hunting. Template tools (`remix_template_teardown`) accept it.
+- A proof of per-turn dedupe sends the same `X-Execution-Id` on every call.

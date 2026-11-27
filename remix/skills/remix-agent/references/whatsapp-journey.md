@@ -339,3 +339,8 @@ A paid step starts only on the owner's tap of that run's button, or her typed ye
 ## Re-sending a stored ask
 
 Before any path re-sends a stored ask card, check two things. (1) Did she tap it? A tapped ask is closed: never re-post it, never force it. (2) Is it already in her chat? A web-only row with a stored web copy counts as delivered. If it is already there, return a fact with a force option for her explicit "send it again". Ignore force on a turn with no message from her. Why: a repost without these checks produced duplicate cards, including one after her tap.
+
+## Web-only rows are the design
+
+- With `phone_chat_on_chat` on (prod default), remix cards (needs, sheets, storyboards, priced go) post to the web stage page; WhatsApp gets one line plus `[Continue in Yobo]`. A WhatsApp delivery row `SKIPPED web_only` is expected.
+- Prove a remix step on the path merchants use: the WhatsApp line, then the merchant's tap on the web stage page.

@@ -349,3 +349,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 ## Prod worker image can be replaced out of band
 
 - A hand `docker` deploy on the prod worker host can prune the captain's staged images and keep old code. Before any "worker LIVE" claim, check the `worker-service` image tag and grep the content inside the running container. The captain's swap line alone is not proof.
+
+## Tool results and session rows
+
+- Cadra tool results are in `session_messages` rows with `role = 'tool'` (join on `execution_id`). `agent_executions` holds the task input and final output only; a tool-result token searched there is never found.
