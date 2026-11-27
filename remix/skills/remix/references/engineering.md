@@ -116,6 +116,8 @@ elements to generate the video."
 ## A WhatsApp proof counts only delivered rows
 
 - A WhatsApp proof reads each msg-api row's delivery status. A row SKIPPED with reason `web_only` never reached the merchant. With `phone_chat_on_chat` on (the default), every remix ask on WhatsApp is one line plus `[Continue in Yobo]`, and the cards live on the web stage page (`stage-link.ts` `remixStageLink`). A tap sent on a button id that was never delivered is synthetic and does not count as proof. Tap only buttons delivered on that surface after your own message.
+- Count what the merchant was sent from `remix_deliveries` (one row per delivery: kind, idempotency_key, message_ids), not from the live web chat, which can draw one saved message more than once until reload. Use the live page only for what she sees, and say which one a proof line counts.
+- A proof of a hand-back or nudge change must run the path the change added. A web view of the stage already counts as seen, so a web-only rig shows no regression, not ON. Prove "seen by her inbound" with a WhatsApp-started run answered on WhatsApp, the web page never opened; prove "seen by remix_show" only where the remix_show tool exists on that environment.
 
 ## Advance loop and failure reading
 
