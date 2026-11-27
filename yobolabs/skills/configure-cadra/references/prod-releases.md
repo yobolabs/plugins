@@ -167,3 +167,9 @@ A cut from a version can add a skill but not remove one; a skill pin with `versi
 ## Remove a tool from a cut
 
 Remove a tool the base pins natively with `snapshotPatch: {coreRole: {removeTools: [toolId]}}` on a `{fromVersionId}` base. This drops the native pin and the coreRole tool uuid and tool setting entries together.
+
+## Agent and role promotes are rows of the release train
+
+- Every agent or role promote, dev or prod, is an item on the release train runbook: one card per promote on the train, with its owner and undo written on the card.
+- The proof is a read-back: after the promote, read the live pointer (`agents.deployed_version_id`) and each changed role lock, and record the version ids on the card.
+- A train with an agent promote is not closed until the read-back is on the card. Undo is the previous release pointer, moved back by one cut.
