@@ -356,3 +356,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 ## Native template start dedupes per chat
 
 Native template start dedupes per chat: an open run of the same ready ad in phase `reading` or `needs` in that conversation returns `already_started {remixId}` (`native-source-start.ts`, `sameChatTemplateRun`). `fresh:true` is read only by the agent tool (`remix-tools.ts`) and never reaches this start. A new run of that ready ad needs the agent tool path or a finished earlier run.
+
+## Scene seeding: three paths
+
+A run's scenes come from one of three paths: native (advance/plan-start.ts, no template), a ready-ad template (templates/project-seed.ts), or an own video (template/from-source.ts, read back through template/view.ts viewRunScenes). A change that adds a scene kind or field lands in all three, and every reader of run scenes (needs, sheet gate, beats request and check, storyboard counts, join) is checked for the new kind. Prove it with one dev run per path.
