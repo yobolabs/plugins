@@ -200,6 +200,7 @@ cadra ping     # verify key + origin before anything else
 Outside Claude Code (Codex, terminal, CI), point at the checked-out path instead
 of `${CLAUDE_PLUGIN_ROOT}`.
 - Creating a tool credential has no REST route: use tRPC `tools.createCredential` with a session cookie of an agent account whose active org is the target org (the session org decides the credential's org). Capture the cookie from the browser straight into a mode-600 file, inject it with secret-run, delete it after, and read back org_id before creating the tool.
+- Tools read their key from a `credentials` row (`authCredentialId`); AI functions read `providers`, and a `providers` row cannot back a tool. Before creating a tool on another environment, check that environment's `credentials` for the provider. If only a `providers` row holds the key, create a credentials row from the same vault key (compare by length and sha256 prefix, never by value) and record both undo steps: delete the tool, then the credential.
 
 ## Never guess a field name
 
