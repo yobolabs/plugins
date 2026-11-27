@@ -35,6 +35,8 @@ elements to generate the video."
 
 ## Owner wakes (owner speaks)
 
+- A tool result sets `shownInChat:true` only when this tool posted the merchant-visible text in this turn. It arms the owner's empty-reply tail. A card yobo posted in another path is reported as its own fact (`openAsk {askId, posted:true}` or `cardPosted {askId}`); the owner still writes one line. Never report "nothing was posted" when yobo posted a card.
+
 - Remix code never writes a merchant-facing sentence. A fixed line can land in a language the merchant did not choose, promise work that has not started, or leave the merchant with no next step.
 - To tell the merchant something, code wakes the owner through `requestAgentTurn` with: a neutral task line (`turnText`), the facts, and the `next` step and `options` when the merchant has a choice. The owner writes the words.
 - Cards (pictures and buttons) stay yobo's. There is one general owner rule for every kind: no per-kind persona line and no new fixed merchant sentence. Route any new one through a wake.

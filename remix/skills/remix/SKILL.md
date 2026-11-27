@@ -89,6 +89,8 @@ The lead watches the prod-watch alerts log with a background job that exits on t
 
 ## Live proof on dev: a quiet chat only
 
+- A dev proof rig never switches the org of a shared dev account. The current org is stored per user, so every session on that account moves. Use a business that account already acts for, or a dedicated rig account; if a switch is unavoidable, record the previous org and restore it before the rig ends.
+
 Run a live proof only in a chat nobody else is using. Check the chat is quiet first, and never tap a confirm card in a shared chat. If a tap may have started another run, report it to the lead at once.
 
 ## Fast Swap proof source
