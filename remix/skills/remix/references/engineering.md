@@ -40,6 +40,8 @@ elements to generate the video."
 - Cards (pictures and buttons) stay yobo's. There is one general owner rule for every kind: no per-kind persona line and no new fixed merchant sentence. Route any new one through a wake.
 - Every wake path carries a non-empty `turnText`, including beside-open and pending-request wakes. msg-api skips a wake without one (`owner_text_missing`).
 - A `skipped` answer is logged as skipped, never as a woken or successful turn.
+- A wake's fact reaches the owner as `context.agentHandoff.fact`. The runtime lets a turn end with no text only from `context.tap.silentEnd`, so a `silentEnd` on a wake fact changes nothing. Before building on a new fact field, check the receiver reads it.
+- A recorded ask is not a shown ask. The web chat draws only delivered messages. Give a stored ask a post path (the owner posts it) or draw it on the stage page, and prove the buttons render on each surface the merchant uses.
 
 ## Shipping and proving
 
@@ -591,6 +593,8 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
   a template's QC; only kept (`keep`) parts must be free of the old product.
 - Port onto a held-out `main`: develop has work main lacks (yobo `insertRun` ask-close, msg-api origin-web spec blocks).
   Re-run the port's tests on main; a conflict hunk can drag develop-only tests in — drop them, never the fix.
+- A proof that taps an old card reads the press's `askId` first. A web chat card of a closed ask stays tappable, and a press with no `askId` binds to the current open ask, priced or not. An old-card tap is never proof that the card is safe.
+- Before a typed proof on a test chat, list the org's open runs. Another session's open run makes typed asks and "stop" act on the wrong run or ask which one. Stop that run with its owner's OK first, then prove on one open run.
 
 ## Web side chat in a hidden tab
 
