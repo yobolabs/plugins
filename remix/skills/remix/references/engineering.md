@@ -103,6 +103,7 @@ elements to generate the video."
 - **Two builders on one owner file are sequenced.** Parallel edits to the same file (for example the change wiring) conflict on every train.
 - **Before a release request on remix code, run the whole stages folder, front stage included,** not only the tests next to the change. Diff the failing test names against the same run on the base commit. A miss shipped a broken test to dev and prod and needed an emergency revert.
 - **A release line carries a typecheck result for the touched package, not only test results.** Green tests can hide a typed error that only the prod cut gate catches.
+"A claim about what the merchant saw or what ran (an ask not shown, nothing started) cites the run's rows: remix_asks (created_at, closed_at), remix_events (tap, by whom) and ad_video_jobs in that window. One read of the chat text is not evidence: an ask can post minutes after her message."
 
 ## A delivery row never proves a video was or was not sent (2026-11-09)
 

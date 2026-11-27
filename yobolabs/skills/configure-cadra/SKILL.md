@@ -72,6 +72,7 @@ prod id (dev proof ids go INSIDE that request); (b) a question about agent behav
 passed" updates, no captain or chief relays. Progress goes in your own task file; the lead reads the gate-log
 and your §2. A code-only fix that does not change how an agent behaves needs no lead message.
 Dev agents are release-pinned too: an edit changes HEAD only; a proof counts only if its run logs the changed version (`harness <uuid> vN`, `agent_executions.agent_version_id`).
+- In a gate step script, give injected secrets names no sourced helper uses (e.g. SECRET_OPENAI, never K/KEY/TOKEN), and assert the secret's length + sha256 prefix inside the child before any write. A sourced helper that assigns the same name replaces the secret silently.
 
 ## Agent config is applied by you, not the release captain
 
@@ -198,6 +199,7 @@ cadra ping     # verify key + origin before anything else
 
 Outside Claude Code (Codex, terminal, CI), point at the checked-out path instead
 of `${CLAUDE_PLUGIN_ROOT}`.
+- Creating a tool credential has no REST route: use tRPC `tools.createCredential` with a session cookie of an agent account whose active org is the target org (the session org decides the credential's org). Capture the cookie from the browser straight into a mode-600 file, inject it with secret-run, delete it after, and read back org_id before creating the tool.
 
 ## Never guess a field name
 
