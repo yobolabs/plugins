@@ -173,3 +173,5 @@ Remove a tool the base pins natively with `snapshotPatch: {coreRole: {removeTool
 - Every agent or role promote, dev or prod, is an item on the release train runbook: one card per promote on the train, with its owner and undo written on the card.
 - The proof is a read-back: after the promote, read the live pointer (`agents.deployed_version_id`) and each changed role lock, and record the version ids on the card.
 - A train with an agent promote is not closed until the read-back is on the card. Undo is the previous release pointer, moved back by one cut.
+
+- Harness change on a prod agent: take `numbers` whole from the harness version the DEPLOYED release pins (not the harness head, which can hold an undeployed version), add the change, write it, then read the new harness version id from the DB (`harness_versions` newest for that harness) before the cut. Do not rely on a version id in the harnesses.update response.
