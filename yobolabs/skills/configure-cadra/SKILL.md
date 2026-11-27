@@ -328,6 +328,8 @@ cadra skill create '{
 
 ### Tool
 
+- A rule the agent must act on goes in the tool's result text, not only its description. A description-only change did not change behaviour on 3 of 3 fresh dev chats. Test a description change on fresh chats before shipping; if behaviour does not change, move the rule into the result.
+
 ```bash
 cadra tool create '{
   "name": "Get Customer",
