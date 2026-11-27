@@ -107,6 +107,7 @@ cadra agent diff --help                                 # usage and the full lis
 - A `differs` row with no `--fields` names only the object. Read the diff before calling two sides "the same".
 
 - A gate id goes only on the real write command. The gate guard counts any command that carries it as one use, including offline generators that only write local files.
+- Take the DEPLOY-LOCK row in its own command before the gated write. The guard denies the whole command, and anything chained with it is lost. An id counts as spent once a command carrying it ran, even if the browser call inside failed: read the DB to see what landed before asking for the next id.
 - A new run-rule or harness key cannot be saved on prod until the API that publishes it is live. For an opt-in rule that replaces default-on behaviour, the order is: web schema key, then the API deploy, then the harness write at once. Accept the short gap. The web reads the run-rules shape strictly: an unknown key serves no policy at all (the root loses its orchestrator rules), so the key goes into the web schema first. Run rules come from the agent's own harness when it has one; the platform run-rules config row is only the fallback for an agent with no harness, and the two are never merged.
 - **Agent text is a promise.** A skill, KB doc or prompt line seeded to an environment names only the tools and capabilities that environment's running code has (check with a content grep on the running build). A part whose code is not live there waits, or ships with that clause removed and re-added with the code. A prod batch never adds root text that names a tool absent on prod. Why: a dead tool name makes the agent call a tool that is not there, and a capability the copilot promises a user is false.
 - Before porting a held-out commit, measure what prod runs. A commit believed unshipped can already be live; porting it alone can switch behaviour off for every role not on the opt-in list.
@@ -158,6 +159,7 @@ Rules:
 ## Session writes from a shared browser profile
 
 - A session tRPC write from a shared cmux browser profile checks `location.host` and the server org in the SAME eval as the write; the profile's org can change between two of your calls. Never switch the org without restoring it: record the org before, switch, write, switch back, and log both times.
+- The server org is the DB `users.current_org_id`, not the session's `currentOrgId`. Check the DB value before a session write: a write in the wrong org can silently no-op. `userOrg.switchOrg` changes the org for every session on that login, so switch, write and switch back in one eval, and read the DB value back after.
 
 ## Setup
 
@@ -496,6 +498,7 @@ Full guide: https://claude.ai/artifact/LWA8vL3QmKaKLcL3koFEfB (repo: `_context/c
 - **Capability lists replace.** `set-tools`, `set-skills`, and the `*Ids` arrays
   all overwrite the full set — send everything the agent should keep.
 - **Deleting is permanent.** There is no undo; `export` first.
+- **A team's lead needs a release cut after the team has its member rows.** A team root run loads the lead's deployed release; when that release does not pin the team, the run fails with `RELEASE_TEAM_NOT_PINNED`. A cut pins only teams where the agent has a `team_members` row with `is_lead`; creating a team with `leadAgentUuid` alone does not write that row. Order: create the team, set `memberAgentUuids` to include the lead (`teams.update`), cut and deploy a new release of the lead, then read back `snapshot.harness.teams`. Redeploying an already-deployed agent cuts nothing.
 
 ## Errors
 
