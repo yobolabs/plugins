@@ -499,6 +499,7 @@ Full guide: https://claude.ai/artifact/LWA8vL3QmKaKLcL3koFEfB (repo: `_context/c
   all overwrite the full set — send everything the agent should keep.
 - **Deleting is permanent.** There is no undo; `export` first.
 - **A team's lead needs a release cut after the team has its member rows.** A team root run loads the lead's deployed release; when that release does not pin the team, the run fails with `RELEASE_TEAM_NOT_PINNED`. A cut pins only teams where the agent has a `team_members` row with `is_lead`; creating a team with `leadAgentUuid` alone does not write that row. Order: create the team, set `memberAgentUuids` to include the lead (`teams.update`), cut and deploy a new release of the lead, then read back `snapshot.harness.teams`. Redeploying an already-deployed agent cuts nothing.
+- **A UI-minted dev API key is org-admin.** It has no scope picker, and it cannot read prompts (`prompt:read` missing, prompt reads return 403). Revoke it on the API Keys page when the read job ends.
 
 ## Errors
 
