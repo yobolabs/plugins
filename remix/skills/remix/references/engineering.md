@@ -633,6 +633,9 @@ credits per size, redo factor and margin are rate-card config rows (blank = `not
 
 ## Proof and tooling traps for builders
 
+- A UI ruling that removes or renames what the merchant sees (labels, @Names, status lines) is checked first against the tests that pin product rules: `git grep -n "RULES <n>\|<element testid>" -- '**/__tests__/**'`. A pinned rule the ruling contradicts goes back to the lead as one question with both rules named, before any build.
+- Proof shots of a stage the run has passed: open the run, then click that stage's tab. A `?stage=` link is a hint and lands on the current stage.
+
 - Compare typecheck counts by the same method on both sides: a stale linked core-sdk adds about 20 TS2307 (`@jetdevs/core/errors`) that are not defects. Diff the error lists (file + message, no line numbers). A silent exit 134 or 144 means killed (OOM or load), not zero errors: rerun with `NODE_OPTIONS=--max-old-space-size=10240`.
 - "On prod" is proven by content, never by ancestry. `git branch -r --contains <sha>` says yes for a commit that a held-out cut left out of main's tree. Count the commit's added lines present in `git show origin/main:<file>`.
 - A typed-yes or needs-test run needs core pinned: `node scripts/vercel-prebuild.mjs` and `git update-index --skip-worktree package.json pnpm-lock.yaml`; revert both after. Run local vitest with `--pool=threads --maxWorkers=2` when the Mac is loaded.
