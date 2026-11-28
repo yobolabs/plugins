@@ -74,6 +74,8 @@ and your §2. A code-only fix that does not change how an agent behaves needs no
 Dev agents are release-pinned too: an edit changes HEAD only; a proof counts only if its run logs the changed version (`harness <uuid> vN`, `agent_executions.agent_version_id`).
 - In a gate step script, give injected secrets names no sourced helper uses (e.g. SECRET_OPENAI, never K/KEY/TOKEN), and assert the secret's length + sha256 prefix inside the child before any write. A sourced helper that assigns the same name replaces the secret silently.
 
+For an agent on the no-net-growth list, the gate-log row carries `footprint: before=<footprint.sh line> after=<predicted line>`. The guard denies the write without it, and the denial does not spend the gate id. Write the field in the row before the first gated command.
+
 ## Agent config is applied by you, not the release captain
 
 - Agent config changes (roles, skills, tool rows, agent settings, prompts) are not a deploy. Your own session
