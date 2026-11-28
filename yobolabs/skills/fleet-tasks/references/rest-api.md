@@ -134,7 +134,7 @@ curl -s -H "X-Internal-API-Key: $KEY" \
 
 # 4. Activate with the token from step 2, for the SAME audience.
 curl -s -X POST -H "X-Internal-API-Key: $KEY" -H 'Content-Type: application/json' \
-  -d '{"isActive":true,"previewToken":"v1.…","actor":{"actorLabel":"sean via skill"}}' \
+  -d '{"isActive":true,"previewToken":"v1.…","actor":{"actorLabel":"<user> via skill"}}' \
   "$YOBO/api/v1/internal/agent-tasks/definitions/$TASK/activation"
 ```
 
@@ -227,7 +227,7 @@ each fake success:
 to know who acted.** Every mutation accepts an optional `actor`:
 
 ```json
-{"actor": {"actorUserId": 12, "actorLabel": "sean via fleet-tasks skill"}}
+{"actor": {"actorUserId": 12, "actorLabel": "<user> via fleet-tasks skill"}}
 ```
 
 `actorUserId` is validated against `users.id` — a dangling `created_by` is refused, not written —

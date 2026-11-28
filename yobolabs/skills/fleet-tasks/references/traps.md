@@ -37,13 +37,13 @@ Moved verbatim from `SKILL.md` (2026-09-30). Read before diagnosing a lost, late
   `whatsapp.adapter.ts:672-726`: (1) subscription `destination.phone` (E.164), (2)
   `daily_digest_configs.phone_number`, (3) the org's **ACTIVE OWNER's `users.phone`** via
   `resolveOwnerPhone` (`:650`, predicate `role='owner' AND status='active'`). Rung 3 is a deliberate
-  deviation from implementation.md §5, decided by Sean 2026-09-01 with the WABA quality-rating
-  tradeoff in front of him and narrowed to `owner` — the reasoning is in a comment at `:625-648`,
+  deviation from implementation.md §5, decided with the WABA quality-rating
+  tradeoff in view and narrowed to `owner` — the reasoning is in a comment at `:625-648`,
   so read it before "restoring" the two-rung version. Email falls back to the org's active owner.
   `cadra_channel` has **no** fallback and fails `no-destination`.
 - **`skipped_no_destination` is usually the TEST-ACCOUNT RESET, not a bug.** A recurring prod
   `WHATSAPP_TEST_ACCOUNT_RESET` deliberately strips test accounts' phones so WhatsApp onboarding can
-  be retested clean (Sean, 2026-09-18). It nulls `users.phone`, sets `org_members.status='removed'`,
+  be retested clean. It nulls `users.phone`, sets `org_members.status='removed'`,
   and on newer runs also sets `agent_task_subscriptions.enabled=false` + `bo_disabled=true` — so it
   empties rung 3's BOTH halves at once and the org goes dark silently. Check `audit_logs` for
   `WHATSAPP_TEST_ACCOUNT_RESET` near the date before investigating (2026-09-16 id 249/250 = 17 orgs,
@@ -230,8 +230,7 @@ not delivered").
 The CTA is delivered and READ; the tap reaches the responder agent, whose brief tool clone is tagged
 `billing_class=generative`, so the p75 gate refuses `PAYMENT_REQUIRED / NO_ACTIVE_SUBSCRIPTION` for any
 `subscriptions.status=free` org. Every free test org "fails" the same way, and people clone definitions
-hunting a bug that is the paywall. Sean's decision (2026-09-14): "morning brief should be received
-regardless of paywall". A brief needs BOTH: definition `scheduled_paywall_policy='no_paywall'` AND its
+hunting a bug that is the paywall. Policy: the morning brief is received regardless of paywall. A brief needs BOTH: definition `scheduled_paywall_policy='no_paywall'` AND its
 Cadra brief tool tagged `read` (not `generative`), or free orgs stay blocked. Triage order: an
 `is_active` definition exists (scanner `definitions:0` = none) → run `status_reason`
 (`payment-required`, `data-gate-empty`) → gateway message status for the wamid → the tap execution's

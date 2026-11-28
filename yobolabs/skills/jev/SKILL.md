@@ -89,13 +89,13 @@ judgement left over.
 3. Injected scaffolding in the state gets judged as the author's words — it once labelled 34%
    of msg-api traffic "fake". The CLI strips known blocks; clean the rest yourself.
 4. The state is **not injection-sandboxed**. When the answer drives an action, phrase it so YES
-   can only ADD a protective step (escalate, flag, ask Sean) — never skip one.
+   can only ADD a protective step (escalate, flag, ask the owner) — never skip one.
 5. Always a valid option ≠ the right option. For anything irreversible, confirm before acting.
 6. No production customer data in ad-hoc runs — synthetic or internal text only.
 
 ## Worked examples
 
-**1. Triage a Jira card → board + type** (Sean works CAD, YMS, AVA)
+**1. Triage a Jira card → board + type** (boards CAD, YMS, AVA)
 
 ```bash
 "$JEV" --state "Title: Avatar replies twice to the same WhatsApp message
@@ -126,13 +126,13 @@ A YES here may only ADD a human, never remove one.
     "revenue: ships or sells product|reliability: keeps existing systems up and correct|cost: lowers spend|admin: finance, legal, paperwork|none: serves no listed goal" \
   --bool worth_doing "This task clearly serves one of the goals above"
 ```
-→ `goal.value` = `reliability`. Route `none` / `worth_doing=false` to Sean, not to the bin.
+→ `goal.value` = `reliability`. Route `none` / `worth_doing=false` to the owner, not to the bin.
 
 ## Deeper reference
 
 - `core:jev-classifier` skill — building a production Jev gate (breaker, drift alarm, threshold sweeps).
-- Wiki: `/Volumes/HD/code/monorepo/_context/_general/_wiki/jev-classifier/_index.md`.
+- Wiki: `<repo-root>/_context/_general/_wiki/jev-classifier/_index.md`.
 - CLI source: `tools/bin/jev` (stdlib python3; `jev --help`).
 
-**Source of truth is `tools/skills/jev`** (`/Volumes/HD/code/ai/plugins/tools/skills/jev/SKILL.md` +
+**Source of truth is `tools/skills/jev`** (`<repo-root>/tools/skills/jev/SKILL.md` +
 `tools/bin/jev`). This copy lives in `yobolabs` for the dev team; keep both in sync by hand.

@@ -30,8 +30,7 @@ defaults true), `onboardingStatus` (`null` = none), `hasConnector`, `businessCat
 `signedUpFrom/To` (UTC date of `created_at`), `requireBusinessProfile`, `requireReachable` (the
 task channel's delivery ladder in SQL), `notReceivedTodayTaskId`. All AND together; no rules = every
 active merchant. **There are no hand-picked merchant lists** — `includeOrgIds`/`excludeOrgIds`
-existed briefly on 2026-09-18 and were removed at Sean's request ("I never wanted to add an explicit
-merchant"); a stored one surfaces as a legacy part that blocks saving.
+existed briefly on 2026-09-18 and were removed (merchants are never added explicitly); a stored one surfaces as a legacy part that blocks saving.
 
 **`rules` is a NEW mode, `.strict()`, on purpose — fail closed.** `readAudience` parses with a plain
 `z.object`, which STRIPS unknown keys: a worker built before a new narrowing key would read it as an

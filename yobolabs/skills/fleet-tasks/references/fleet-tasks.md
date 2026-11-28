@@ -698,7 +698,7 @@ outbound sync family. This is *not* the `connector-worker` container (POS/Shopif
 
 ⚠️ CORRECTED — **not Coolify.** Dev is rebuilt by `deploy-worker-dev.yml` on every push to
 `develop`. **Prod has NO workflow**: it is a hand-deployed container on the prod merchant box
-(`hosts.qraved-merchant` in `server-inventory.yaml`) — `git pull --ff-only` on `main` as the repo
+(`hosts.<host-key>` in `server-inventory.yaml`) — `git pull --ff-only` on `main` as the repo
 owner, then `sudo ./deploy-worker-v2.sh`, which builds a versioned image `saas-workers:v<stamp>`
 and keeps the previous ones (`./rollback-worker.sh`). Verify by grepping the changed line inside
 the container and requiring the three `agent-task-{scanner,runner,reconcile}] worker started`

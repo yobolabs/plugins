@@ -29,9 +29,8 @@ were reachable only from psql, which is why tasks were activated and then silent
   WhatsApp template) · Schedule · Advanced (limits, reminders, paywall, auto-enrol, never-answers).
   Header: state, Preflight, Activate/Deactivate. ONE Save bar for all tabs.
 - **Audience tab shows ONLY the rules.** Matching merchants are behind a **View matching merchants**
-  button that opens a modal; nothing is queried until it is clicked (Sean: "Don't default show the
-  audience. The user should click on something to view a modal.").
-- **There is no hand-picked merchant list and no "Add a merchant"** (Sean, 2026-09-18). Merchants are
+  button that opens a modal; nothing is queried until it is clicked.
+- **There is no hand-picked merchant list and no "Add a merchant"**. Merchants are
   chosen only by conditions — a name condition is `starts with` / `contains`, not a picker. The
   2026-09-01 enrolment panel (Explicit rows / Add a merchant / skip table) and the merchant pickers
   were deleted.

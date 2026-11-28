@@ -12,7 +12,7 @@ public REST API — the same operations the in-app copilot runs (`configure_agen
 Works identically in Claude Code, Codex, or a plain terminal: the helper is
 dependency-free Node.
 
-**Facts, not refusals; the single owner decides (Sean 2026-11-12).** A tool, AI function, skill or role never
+**Facts, not refusals; the single owner decides.** A tool, AI function, skill or role never
 refuses on the agent's behalf and never tells the agent to refuse. It returns facts — what happened, why, and
 what is possible next (`{status, reason, options|next}`) — and does the best deliverable it can: deliver
 something rather than nothing. The conversation's single owner decides what to do with those facts. No skill,
@@ -23,7 +23,7 @@ made-up product) changes the data and returns the fact; it does not refuse the c
 that adds a refusal (gate G4). Enforced at the harness (one principle line on every agent) and in these skills,
 not in a knowledge base. Full rule, hook and review checks: `agent-ops:agent-no-refusals`.
 
-**Cadra sets no product limits on an org's agents; the org configures them (Sean 2026-11-12).** Do not add a
+**Cadra sets no product limits on an org's agents; the org configures them.** Do not add a
 cap, timer or truncation to an agent config to "be safe". Money, rate or safety caps need a `LIMITS.md` row
 and a review (gate G8). Detail: `cadra:agents` → `agent-structure-best-practices.md` § Limits.
 
@@ -44,7 +44,7 @@ Prefer **declarative** for anything a team maintains. `apply` is an idempotent
 upsert keyed on `name`, so the same file re-applies cleanly to local, dev, and
 prod.
 
-## PROD agent changes need a review gate id (Sean 2026-11-05, HARD RULE, hook-enforced)
+## PROD agent changes need a review gate id (HARD RULE, hook-enforced)
 
 Every change to a **prod** Cadra agent's config needs an approved review id from the agent architect
 before it is written: root prompt, intent, model, harness / run rules, a role (content, belt, promote),
@@ -65,7 +65,7 @@ gate-log row, so writes from scripts or the app UI are caught too. Standard the 
 
 Pinned-release cut, diff, deploy-pointer, spent-id handling, the ~5 min config cache and how to prove a turn: `references/prod-releases.md`. Spent id: ask the lead for a new one, never `AGENT_GATE_OVERRIDE`.
 
-**The agents lead owns Cadra/Yobo agents (Sean 2026-11-06):** improving and optimizing agents is the lead's
+**The agents lead owns Cadra/Yobo agents:** improving and optimizing agents is the lead's
 work. Message the lead for: (a) a review — a plan before you build an agent change, or the §2 request for a
 prod id (dev proof ids go INSIDE that request); (b) a question about agent behaviour or troubleshooting;
 (c) an idea or finding to improve or optimize an agent. Nothing else: no FYIs, no "built / deployed / proof
@@ -117,7 +117,7 @@ cadra agent diff --help                                 # usage and the full lis
 - The context repo is main-only. Gate-log pushes there need the branch override; it has no develop branch.
 
 ## Promote a whole agent version, env → env (`cadra agent promote`, p151)
-- Model policy: remix roles, the teardown agent, Remix Product Discovery and every remix_* text AI function run `openai/gpt-6.1-sol` through the org OpenRouter row. Other agents keep their agreed model; image and video-input steps keep theirs. Moving any other agent is an ask to Sean.
+- Model policy: remix roles, the teardown agent, Remix Product Discovery and every remix_* text AI function run `openai/gpt-6.1-sol` through the org OpenRouter row. Other agents keep their agreed model; image and video-input steps keep theirs. Moving any other agent is an ask to the owner.
 - A promote keeps the TARGET role lock's provider and model. After every promote, read back each role lock's and agent's model and confirm it matches the policy above.
 
 - After any prod-to-dev rebuild by promote, compare every AI function and skill file between dev and prod, field by field. A promote misses skill file versions and AI-function input declarations.
