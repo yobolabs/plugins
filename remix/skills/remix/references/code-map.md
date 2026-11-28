@@ -309,6 +309,8 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 - **Remix replies bypass msg-api's logs.** Remix lines post from the app straight to the gateway, so msg-api's broker logs show no outbound for them. A quiet-tap or no-reply check reads the run's delivery rows and events, never msg-api outbound counts in a time window.
 - **There is no source length cap.** The source fetch reads the whole video up to a fixed byte cap; over it, the first part that fits is read and the reading carries the trimmed flag. The reference byte cap sets the analysis-copy size, not a fetch limit.
 
+- **Turn kind:** a wake (agentHandoff, automationIngress) never carries an inbound message id, on any channel. yobo treats a present id with unreadable words as her turn (turn-kind.ts merchantInboundOf), so a wake with an id takes the her-turn branch of every remix tool. When a tool acts as if she spoke on a wake, read the trusted X-Inbound-Message-Id source first.
+
 ## Video parts
 
 - Any new billing or length path reuses the part-billing helper (`partBillSeconds`) and the one-second overflow trim, never the raw billed seconds. Otherwise a 15.07 s part bills 16 s, the video model refuses that duration, and every approval fails.
@@ -353,6 +355,8 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 ## Tool results and session rows
 
 - Cadra tool results are in `session_messages` rows with `role = 'tool'` (join on `execution_id`). `agent_executions` holds the task input and final output only; a tool-result token searched there is never found.
+remix_asks keys a run by remix_id. run_id is a separate nullable column, so a query by run_id can return 0 rows for a run that has open asks. Query a run's asks by remix_id; "0 rows by run_id" proves nothing.
+
 ## Native template start dedupes per chat
 
 Native template start dedupes per chat: an open run of the same ready ad in phase `reading` or `needs` in that conversation returns `already_started {remixId}` (`native-source-start.ts`, `sameChatTemplateRun`). `fresh:true` is read only by the agent tool (`remix-tools.ts`) and never reaches this start. A new run of that ready ad needs the agent tool path or a finished earlier run.

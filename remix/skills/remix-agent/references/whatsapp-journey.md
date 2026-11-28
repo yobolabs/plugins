@@ -278,6 +278,8 @@ English text only), so the rules live there, once:
 - Media is sent as media, never as a message holding a presigned URL.
 - Fallback text for a channel without buttons uses words, not URLs.
 
+Run links: the agent ends a reply that points at a run with the `link` its remix_get call returned (link, openRunLinks[].link). No context block or prompt carries a pasteable open_app marker. msg-api drops a remix-run link on any turn that called no remix_* tool, so a pasted marker shows in the stream and then disappears.
+
 ## Owner files and copy
 
 | What | Where |
