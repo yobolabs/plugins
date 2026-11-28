@@ -143,7 +143,7 @@
       "name": "mockify",
       "source": "./mockify",
       "description": "App-design (UI/UX) capability-capture — an agency-model loop (ecosystem recon, concept directions with rendered HTML mockups, human pick, director deepen, adversarial crit, usability-first judge gate) that produces buildable design specs + mockups for jetdevs ecosystem apps, with post-implementation grading via screenshot diffs and human verdicts",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "keywords": [
         "mockify",
         "app-design",
