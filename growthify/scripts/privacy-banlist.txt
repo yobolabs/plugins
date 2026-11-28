@@ -25,8 +25,7 @@
 #     (standing no-time-estimates rule, spec NFR 6.2).
 
 # --- our-estate org / brand / infra identifiers (banned literals) ---
-qraved
-weeloy
-cadraos
-jetdevs
-ep-blue-mouse
+# The real list lives in the owner's private vault; it is not published here.
+# Add one literal per line below in your private copy, for example:
+# <org-or-brand-name>
+# <internal-host-or-infra-id>
