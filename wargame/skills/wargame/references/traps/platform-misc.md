@@ -64,7 +64,7 @@
 - Signal: loop over `$VAR` runs once; CLI args concatenate into one token
 - Cause: zsh doesn't word-split unquoted vars; this sandbox mangles `$S`/`--scope` passed via vars
 - Countermove: literal lists / `while read` / `${(f)}`; pass CLI flags inline-literal
-- Source: reference_qraved_db_backups, session 2026-07-03 superhost
+- Source: <backup-note>, session 2026-07-03 superhost
 
 ### PM-12 Config identity doesn't cross environments
 - Signal: agent/provider works in one env, "not found" in another with the same uuid

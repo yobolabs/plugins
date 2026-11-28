@@ -64,7 +64,7 @@
 
 ### CHM-11 Gateway infra facts that surprise
 - Signal: config edits "don't apply"; wrong DB assumed
-- Cause: gateway DB is MySQL (`dev.qraved.internal:3307/whatsapp`), not Postgres; `client_webhooks` config is read PER-REQUEST (edits live instantly, no restart); USER_ACTION category dispatches BEFORE CHAT_BOT but dev row returns consumed:false (both fire)
+- Cause: gateway DB is MySQL (`<dev-db-host>:3307/whatsapp`), not Postgres; `client_webhooks` config is read PER-REQUEST (edits live instantly, no restart); USER_ACTION category dispatches BEFORE CHAT_BOT but dev row returns consumed:false (both fire)
 - Countermove: trace via `whatsapp_webhook_logs` (inbound) + `whatsapp_webhook_send_logs` (dispatch payload/response_status) with MAX(id) baselines captured BEFORE the test
 - Source: reference_whatsapp_gateway_config_trace
 

@@ -58,7 +58,7 @@
 
 ### ED-10 Vercel deploy gated on bot commit author
 - Signal: push to develop → deployment readyState BLOCKED (or nothing builds)
-- Cause: cadra-web Vercel only deploys commits authored by the bot (`jetdevs <sean@jetdevs.com>`); human-authored direct push doesn't trip it
+- Cause: cadra-web Vercel only deploys commits authored by the bot (`jetdevs <email>`); human-authored direct push doesn't trip it
 - Countermove: ALWAYS `pnpm merge:develop` for cadra-web (stamps `VERCEL_BOT_NAME/EMAIL`); if a manual merge landed, push a follow-up bot-stamped commit
 - Source: p41-agent-latency-rag-epic (bit twice: `5223d05d`, `ed1677b0`)
 
@@ -106,7 +106,7 @@
 
 ### ED-18 Browser flows ride the NEXTAUTH_URL/APP_URL domain, never localhost
 - Signal: browser E2E/OAuth moves scripted on `http://localhost:PORT` fail — session missing, OAuth callback mismatch — while the app "works" in a manual tab
-- Cause: `NEXTAUTH_URL`/`APP_URL` point at the tunnel domain (e.g. `https://yobo-mini.cafesean.com`); Secure cookies and the OAuth redirect_uri are DERIVED from it — a localhost session and a tunnel-derived callback never share state
+- Cause: `NEXTAUTH_URL`/`APP_URL` point at the tunnel domain (e.g. `https://<host>`); Secure cookies and the OAuth redirect_uri are DERIVED from it — a localhost session and a tunnel-derived callback never share state
 - Countermove: drive every browser/OAuth flow on the exact NEXTAUTH_URL/APP_URL host; register the derived redirect_uri with the vendor; localhost is for curl only
 - Source: `_context/_wargames/p34-social-publishing/calibration.md` §1 — verified `yobo/.env.local:85,150,180`
 

@@ -17,13 +17,13 @@
 - Signal: `permission denied for schema drizzle` (pg_dump/migrations); queries silently filtered
 - Cause: `DATABASE_URL` = app_user (RLS-restricted); admin ops need `ADMIN_DATABASE_URL` (owner)
 - Countermove: direct queries/dumps/migrations always via ADMIN/owner URL; migrations set `DATABASE_MIGRATE_URL` to the owner URL
-- Source: CLAUDE.md, reference_qraved_db_backups, reference_msgapi_dev_deploy
+- Source: CLAUDE.md, <backup-note>, reference_msgapi_dev_deploy
 
 ### RLS-04 Neon `-pooler` host breaks pg_dump/direct tooling
 - Signal: pg_dump/psql failures against a working app DB URL
 - Cause: PgBouncer pooler endpoint doesn't support everything direct does
 - Countermove: strip `-pooler` from the host (use the `*_UNPOOLED` var when present) for dumps/migrations
-- Source: reference_qraved_db_backups
+- Source: <backup-note>
 
 ### RLS-05 System actor userId=0/null breaks every user-assuming layer
 - Signal: 422 `Validation failed` on internal execution create; agent has no memory of prior turns (re-asks forever); team resolution returns no lead/members; `SQLSTATE 23503` FK on agent_sessions (fail-open)
