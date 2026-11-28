@@ -2,10 +2,9 @@
 
 Read after a remix delivers its final video, or after any paid run fails. The Remix KB is team-facing: teammates
 and their Claude sessions search it (`remix-context` MCP) before they start a remix, so a lesson that stays in one
-chat is a lesson the next run pays for again (Sean 2026-11-04).
+chat is a lesson the next run pays for again.
 
-- **Every finished remix uploads its learnings to the Remix knowledge base** (Sean 2026-11-04: "because it's run by
-  internal users … after a remix completes a video, it needs to upload the learnings up to the remix knowledge base").
+- **Every finished remix uploads its learnings to the Remix knowledge base**.
   Finished = a final video delivered, or a paid run that failed. Same turn, before you report done: write one
   learnings note and sync it (sections below: where, format, how to upload, what goes to the skill).
   Never leave a paid run's lesson only in chat. Read the KB first (`remix-context` MCP: `search`, then `read_document`)
@@ -57,12 +56,12 @@ uploads it to the Remix KB under `slides/_specs/p131-remix-in-ad-studio/learning
 answers "Saved … as <name>". Never upload it any other way and never ask the user for a key.
 Check it landed: `remix-context` `search` for the note's title.
 
-**Sean's machines, only when the session's working directory IS the monorepo context repo** (`_context/` present): write the note into
+**the owner's machines, only when the session's working directory IS the monorepo context repo** (`_context/` present): write the note into
 `_context/slides/_specs/p131-remix-in-ad-studio/learnings/` and run the chief-of-staff `kb-sync.py run --kb remix
 --since-hours 3` instead (the sanctioned writer there; upsert, never delete).
-Any other working directory (an Obsidian vault, a home folder, a teammate's machine) → use the lab's Share learnings box, even on Sean's Mac.
+Any other working directory (an Obsidian vault, a home folder, a teammate's machine) → use the lab's Share learnings box, even on the owner's Mac.
 
-**Gap rows follow the note.** The register file is written on Sean's machines, in the same step as the note (`_context/…/gaps-<date>.md`). Teammates and the lab box cannot write it: send the `## Gaps` rows to the remix lead in the same message, and the lead writes them into the register. Until a row exists the note's `## Gaps` table is the record.
+**Gap rows follow the note.** The register file is written on the owner's machines, in the same step as the note (`_context/…/gaps-<date>.md`). Teammates and the lab box cannot write it: send the `## Gaps` rows to the remix lead in the same message, and the lead writes them into the register. Until a row exists the note's `## Gaps` table is the record.
 
 Never write to the KB any other way, and never put a key, customer data or a personal number in a note.
 

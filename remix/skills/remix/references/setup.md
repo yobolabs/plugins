@@ -1,6 +1,6 @@
 # First-time setup (once per machine)
 
-Users of this plugin have no local context files and install nothing locally (Sean 2026-11-04). The only setup is
+Users of this plugin have no local context files and install nothing locally. The only setup is
 connecting Claude to the Remix knowledge base (one `claude mcp add`); everything else runs in the lab page. Run this
 the first time the skill is used (the Remix knowledge base tools are missing).
 
@@ -9,8 +9,7 @@ source path in the KB: `search` for it and `read_document`, never try to open it
 
 ## 1. The Remix KB connection (read) — no key, sign in once
 
-Sean 2026-11-04: "no one needs keys … The MCP is authenticated through OAuth" · "Nobody uses terminal. Everyone's
-using claude app." In the **Claude app** (desktop or claude.ai):
+No one needs keys: the MCP is authenticated through OAuth, and users work in the Claude app, not a terminal. In the **Claude app** (desktop or claude.ai):
 
 1. Settings → **Connectors** → **Add custom connector**.
 2. Name: `Remix context`. URL: `https://app.cadraos.com/api/mcp/kb/88204510-bdff-47b3-bb81-daacf90b06fb`.
@@ -19,7 +18,7 @@ using claude app." In the **Claude app** (desktop or claude.ai):
 4. **Add** → **Connect** → sign in with your Cadra account → allow access.
 
 Check: ask Claude to search the Remix knowledge base for "how remix works"; it should cite `HOW-REMIX-WORKS.md`.
-Sign-in refused or no results → your Cadra account is not in the org that owns it: ask Sean (one line).
+Sign-in refused or no results → your Cadra account is not in the org that owns it: ask the owner (one line).
 Claude Code in a terminal (rare): `claude mcp add -s user --transport http --client-id cadra-claude-code
 --callback-port 33418 remix-context <the URL above>`, then `/mcp` → Authenticate. Never paste a key anywhere.
 

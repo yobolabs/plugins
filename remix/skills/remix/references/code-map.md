@@ -170,7 +170,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
   msg-api WEBCHAT); a WhatsApp-linked Main Chat uses the WA conversation's agent. The copilot key and that agent must
   sit in the SAME Cadra org: an agent in another org makes cadra-web's stream route answer `wrong_org` → SSE 404
   "Agent run not found" on every web turn. Diff dev vs prod for this row (dev drifted to an agent with no remix tools).
-- **A web remix runs in a Side Chat** (Sean 2026-11-06; rule in `engineering.md`). Shipped (prod 2026-11-07): a side
+- **A web remix runs in a Side Chat** (rule in `engineering.md`). Shipped (prod 2026-11-07): a side
   chat's WEBCHAT turn is accepted by the remix tools (`web-chat.ts runChatOf`), side taps and the side history poll work
   (see "Web side chat" below). Entry points: `/chat` "Remix a video" → gallery, and the gallery pick (next bullet).
 - **Web template pick = a NEW side chat, never Main Chat.** `gallery-pick.ts` with no `?c=` (picked on the web) calls
@@ -250,7 +250,7 @@ Source: `_context/cadra/_specs/p152-agent-architecture/build/443-remix-roles-202
 - **The staff Hold cannot hold an APPROVED template** (`repository/template-review-repository.ts:62`), and approve does
   not warn on a source over 30 s: both open as YMS-779. Until it ships, do not promise staff a way to pull an approved
   template from the UI.
-- **Staff template review stays open** (Sean 2026-11-06 "keep them open"): staff can approve any template; missing
+- **Staff template review stays open**: staff can approve any template; missing
   delivery or rights show as warning chips, not server refusals. Keep only the staff check, the gallery's
   conversation-to-org tie, and a separate press for any paid run.
 - **Staff ("house") runs use the existing YoboLabs org** through the `REMIX_HOUSE_ORG_ID` env, never a new org. Its id

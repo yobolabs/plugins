@@ -14,8 +14,7 @@ Back to [SKILL.md](../../SKILL.md). Load when a product moves through the shot(s
 
 ## Making-of ads (ingredients turn into the product)
 
-**A making-of ad needs a real recipe** (Sean 2026-11-04: "I don't think that's how you make a chicken with just an
-egg. There needs to be a chicken added"). When the ad shows ingredients turning into the product, the swapped
+**A making-of ad needs a real recipe**. When the ad shows ingredients turning into the product, the swapped
 ingredients must be a believable recipe for the merchant's product, with its MAIN raw ingredient in the most visible
 slot (the biggest pile, the first pour). Write this into the prompt; a 1:1 ingredient swap is not enough.
 On a swap this usually means more than one thing changes: use the storyboard pipeline (`../fast-swap.md` → "Swap only when ONE thing changes").

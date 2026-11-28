@@ -6,8 +6,7 @@ engine) and P6 (say what you see, never false).
 
 ## When someone invokes this skill (with or without an ad link)
 
-Sean 2026-11-04: "When someone invokes the remix skill and passes in the URL, even if they don't pass the URL,
-let's pop open the browser and load the remix site." Do this first, every time:
+When someone invokes the remix skill, with or without the URL, open the browser and load the remix site. Do this first, every time:
 
 1. **First time?** No Remix knowledge base tools in this session (no `search` on the Remix KB) → walk the user
    through `references/setup.md` (Claude app → Settings → Connectors) (Remix KB MCP; users have no local context files, the KB is their only source).
@@ -21,9 +20,7 @@ let's pop open the browser and load the remix site." Do this first, every time:
    ```
    `?ad=` loads that ad as soon as the page opens (it survives the sign-in). A session that drives its own
    browser tab opens the same URL there instead.
-4. **Drive the lab yourself** (Sean 2026-11-04: "You're supposed to help me with this. You're supposed to drive
-   it"). Never hand the user a list of clicks. **Browser tool = browser-use** (Sean 2026-11-04: "It should use
-   browser use, not claude-in-Chrome"): the browser-use plugin's MCP tools (`browser_exec`, `browser_screenshot`).
+4. **Drive the lab yourself**. Never hand the user a list of clicks. **Browser tool = browser-use**: the browser-use plugin's MCP tools (`browser_exec`, `browser_screenshot`).
    They drive whichever Chrome browser-use is attached to: often a separate agent Chrome window, not the one the
    user is looking at. So **in your first line say which window and tab** (the tab title starts with "Remix lab"),
    and bring that tab to the front (`activate_tab`) when the run starts so the user can watch; that is the one
@@ -35,22 +32,18 @@ let's pop open the browser and load the remix site." Do this first, every time:
       never bring the user's window to the front. Short checks (a few seconds each), never long wait loops;
       A CDN link that sends no CORS header (e.g. an Ad Library `fbcdn` mp4) fails "Couldn't read the video's frames":
       save the video file, reload the lab WITHOUT `?ad=` and upload the file (the old link stays bound otherwise). Results the page shows (sheets, videos) load through the lab Worker, never a direct browser fetch of a vendor CDN: without a CORS header the fetch fails with no error shown.
-   2. type the product name and its **real size**. **Never ask the user for anything you can look up** (Sean
-      2026-11-04: "You are supposed to search for that information. Stop asking me questions"; "It's fine to look
-      for local, but it should also look and search online if needed"). Size, in this order: the label in the photo
+   2. type the product name and its **real size**. **Never ask the user for anything you can look up**. Size, in this order: the label in the photo
       (ml, g, oz) → the user's own files (product notes, photos) → the Remix KB (product research for a known
       merchant) → the product's own listing or site (web search) → a stated estimate from a similar product. Say which source you used in one line and keep going.
       The only thing you may ask the user for is the sign-in;
    3. put the product photos into the photo box: every photo you have of it (front, side, top; up to 8), not only
       one. Files on disk: CDP `DOM.setFileInputFiles` on `#qPhoto` (it takes several). Otherwise build `File`s from
       their bytes (base64), wrap them in a `DataTransfer` and dispatch `drop` on `#qPick`. The thumbnail and file
-      names appear when it worked. Brand, product, cast, look and never-list changes (flyer words, which hand holds it) go into the **Prompt** box (Sean 2026-11-04: "it's also the place for the team
-      to put in any overrides or adjustments"): on template reels it is pre-filled with the panel's prompt, so edit
+      names appear when it worked. Brand, product, cast, look and never-list changes (flyer words, which hand holds it) go into the **Prompt** box: on template reels it is pre-filled with the panel's prompt, so edit
       that text in place; what the box says wins over the lab's own lines. The Prompt box reaches every storyboard picture, so a change about one scene goes in that scene's own words or its Redo note, never the Prompt box. Product photos are plain shots of the product only: never a finished ad frame, a competitor frame or a styled mock-up in a product row (the storyboard writer copies its composition); a look reference (box, sauce, colour) goes on its own item row, never on the main product;
    4. press **Make the product sheet** (1 paid picture: front, three-quarter, side, back) and look at it: every side
       must look like the product (shape, label, colours), nothing from the photos' background. Wrong → press again.
-      Make it refuses to start without a sheet (Sean 2026-11-04: "create a character sheet even if it's a product
-      swap");
+      Make it refuses to start without a sheet;
    5. check fit: does this product belong in this ad's scenes? If not, say so and stop (`../remix-agent/references/review.md` § Fit: only templates the product fits);
    6. press **Check the plan (free)** and read the plan line: which parts are kept (free) and which are remade (paid
       seconds). Every Keep part must be free of the old product, including on props (flyers, posters, screens,
@@ -71,7 +64,7 @@ let's pop open the browser and load the remix site." Do this first, every time:
    browser-use not available in this session → say so in one line (the user enables the browser-use plugin) and
    guide click by click meanwhile.
 
-## Who does what — users install nothing (Sean 2026-11-04)
+## Who does what — users install nothing
 
 "Users will not be installing local things" · "All the users of this remix lab … will not and should not need to
 install anything locally." The lab page is the engine; a teammate's Claude session drives the page (step 4 of "When someone invokes this skill"):
@@ -81,14 +74,14 @@ install anything locally." The lab page is the engine; a teammate's Claude sessi
 | load the ad (link or file), read it, crop, read the panel prompt, plan kept vs remade parts, cut and join (ffmpeg.wasm), every paid call (Cadra team key inside the lab's server), the MP4 download | open the lab (`?ad=`), search the Remix KB, fill the product, check fit, press Make it, watch, review the frames, download, write the learnings note | run ffmpeg or any local tool for the remix itself, call the Higgsfield MCP/API, use any Cadra key, vault or proxy, install anything (pip, brew, npm, env vars, keys) |
 
 If a step seems to need something from the right-hand column, the lab is missing a feature: tell the user in one line
-and report it (Sean / the lab owner). Never work around it on the user's machine. SKILL.md's pipeline and the stage references describe
+and report it (the lab owner). Never work around it on the user's machine. SKILL.md's pipeline and the stage references describe
 what the lab and Ad Studio do inside; they are for builders, not steps for a user's session to run.
 
 ## The lab twin is a gate for our tests (temporary)
 
 - Every test run (dev or prod) has a lab twin: the same source video file, product, photo and size, started at the same moment as the chat run. Tests are run by the prover session and the lead's subagents, not by builders. Some shifts ran no twins: check `twins/` before a proof line claims one. Notes go live in `twins/<run>/compare.md` (lab | chat | same? | what the chat missed). Proof lines cite the lab run id and its compare row. Rig setup: `references/tester-rigs.md`.
 
-Sean, 2026-11-08 (verbatim): "The lab is a gate only now for testing".
+The lab is a gate only now, for testing.
 
 Scope, and only for now: our own test attempts (team or agent proof runs on dev). Every such attempt runs with its lab twin, step by step. A test step is not passed, and the next paid test step does not start, until its lab twin step exists and is compared on output, skill rule, KB and screen. A twin that stops is a blocker, reported the same turn.
 
@@ -98,17 +91,15 @@ It never gates a merchant's run or any product code path.
 
 The remix lab (v9.00) is the working prototype. **The team uses it at https://remix-lab.yobolabs.ai** (Yobo Connect
 sign-in, no Cadra key field; how it is wired: lab manual → "Where it runs"). Never send the team the `/proto/…` link
-or ask anyone to paste a key. Its defaults are the product defaults unless Sean said otherwise
+or ask anyone to paste a key. Its defaults are the product defaults unless the owner said otherwise
 and the quote is on file. A spec, story or "parity: Left" row that diverges from the lab is a BUG in the port: fix the
 port to match the lab, never a silent default (that is how the ad's own music, per-shot line drawings and the
-breakdown view all shipped off). **It is never a question to Sean** (Sean 2026-11-06, on a storyboard ask: "This is
-already all fully designed and understood when we did remix lab. Why is this a question?"). **Nothing is decided by
-code** (Sean 2026-11-06: "Nothing is decided by code. Everything is based on our expertise" … "Code is only the tool
-we use when we decide what to do"). What a remix does comes
-from our written expertise: the principles (`HOW-REMIX-WORKS.md` §A), this skill, the lab manual and Sean's quoted
+breakdown view all shipped off). **It is never a question to the owner**. **Nothing is decided by
+code**. What a remix does comes
+from our written expertise: the principles (`HOW-REMIX-WORKS.md` §A), this skill, the lab manual and the owner's quoted
 rules. Code, the lab page's code included, only carries that out. "The code does X" is never a reason for X. Where code
 differs from the expertise, the code is the bug. Before filing any remix design ask, or re-filing one you inherited,
-read the expertise. If it answers the question, apply it. Ask Sean only when the expertise is silent, or when someone
+read the expertise. If it answers the question, apply it. Ask the owner only when the expertise is silent, or when someone
 wants to change it. Lab manual: `remix-context` search "Remix lab — how it works"; team steps: search "Remix Lab — team how-to".
 
 ## Driving a web remix in a cmux pane
@@ -137,9 +128,9 @@ wants to change it. Lab manual: `remix-context` search "Remix lab — how it wor
 - The Choose… buttons are not in scene order: check the picker's "SCENE n" title before ticking.
 
 
-## The lab keeps every video (v9.17–v9.18, Sean 2026-11-06)
+## The lab keeps every video (v9.17–v9.18)
 
-Sean: "You need to have every video I make with remix in context stored somewhere."
+Every video made with remix is stored in context.
 - **The run record starts when the ad loads**, not at the first paid output (v9.12 "no empty runs" is replaced). The
   ORIGINAL ad is copied to our S3 at load (`saveSource` → `remix-lab/<org>/<run>/source.mp4`, `source.key` on the run):
   an uploaded file directly, a link through the same URL the preview plays (Instagram links expire). Paid outputs

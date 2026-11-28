@@ -1,7 +1,7 @@
 # Review (the gate before the merchant sees any storyboard)
 
 Back to [SKILL.md](../SKILL.md). Rule: **any block is redone before it is shown; good enough passes** (see below). Then the human approves each storyboard.
-The quality checks are the gate (Sean 2026-11-03): code checks plus AI review run on every set BEFORE the merchant sees
+The quality checks are the gate: code checks plus AI review run on every set BEFORE the merchant sees
 it; a failed check is fixed and re-run, and the merchant never sees a failed set.
 The AI review and code checks run on every set; "Fix it" for the merchant is a button, never an automatic retry loop.
 
@@ -20,9 +20,7 @@ that sees the storyboard alone against brief text passed pictures with the wrong
 
 ## Good enough passes: the source ad is a benchmark, not a blueprint
 
-Sean: "Remix = take something that exists and make something NEW. It does not mean replicate scene by scene. The
-original ad is a BENCHMARK for quality, not the exact BLUEPRINT. Lower our thresholds." (agent-architect
-gate-20261105-12.)
+Remix = take something that exists and make something NEW; it does not mean replicate scene by scene. The original ad is a benchmark for quality, not the exact blueprint, so thresholds are lower. (agent-architect gate-20261105-12.)
 
 - **Every check that compares with the source ad judges the ad's job, not a match.** Drift, storyboard review, the QA
   reviewer and set/scene checks ask: does the hook still hook, is the product the hero, does the call to action land,
@@ -37,9 +35,7 @@ gate-20261105-12.)
   what the checks treat as a failure, not which parts are kept.
 - Changing a check's threshold is a behaviour change. If a counted cap changes, it still needs its `LIMITS.md` row.
 
-Sean 2026-11-05 ~21:1x: "these remix videos are not blueprints … We need flexibility … think about what the end goal
-is … providing a video quality video to the user who has no idea how to do this. They are not gonna be that nitpicky.
-We need to reduce how critical we are and pass approve things or pass things that are done well enough." (A reviewer
+These remix videos are not blueprints: judge the end goal, a good-quality video for a user who has no idea how to make one and is not nitpicky, and pass work that is done well enough. (A reviewer
 failed every storyboard because the new cast differed from the source person, and failed one because the source shot
 showed a hand and ours showed the hand plus part of the body.)
 
@@ -65,8 +61,7 @@ at `src/extensions/remix/advance/steps/storyboard-review.ts:96` (yobo repo, orig
 
 ## Fit: only templates the product fits
 
-**Only suggest a template the product fits** (Sean 2026-11-04: "[that product] doesn't make sense for this type
-of video … we should never offer this as a suggested ad template"). Before suggesting or running a template for a
+**Only suggest a template the product fits**. Before suggesting or running a template for a
 product, check the product belongs in that ad's scenes and actions (category, setting, how the product is used in
 the shot list). A snack tin in a fashion-bag laundry ad came out as nonsense even with size and crop right.
 No fit → say so in one line and offer the forward option (a fitting ready ad, the storyboard pipeline); never run it anyway.
@@ -147,9 +142,9 @@ Rules that cost a prod incident to learn:
 - Once the product is chosen, Yobo makes the product sheet and one character sheet per person. The chat shows ONE confirm card, "Is it right?", with [Yes] and [Fix one…].
 - Post one sheet pick at a time. Never two sheet picks at once.
 
-## Storyboard review: fix first, then the merchant decides (Sean 2026-11-08)
+## Storyboard review: fix first, then the merchant decides
 
-Sean: "For storyboard, always try to fix first autonomously before delivering storyboard."
+For a storyboard, always try to fix first autonomously before delivering it.
 
 - A keyframe-sheet board goes to the review with SHEET FACT: panel count, times, one continuous shot. The review never asks to remove the grid or merge panels. Edge pictures (start / end) are separate boards and get no sheet fact.
 

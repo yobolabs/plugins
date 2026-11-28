@@ -5,8 +5,7 @@ shows the prompt that made it (often with a small product photo and a "comment X
 
 ## What is different
 
-- **Template reels carry their own prompt** (Sean 2026-11-04: "grab the prompt from the video because it's shown on
-  the left side … we should actually include that"). When the ad sits beside a static text panel, crop that panel
+- **Template reels carry their own prompt**. When the ad sits beside a static text panel, crop that panel
   strip (full height, ≤420 px wide) and read it with a plain TRANSCRIBE function (`panel_prompt_reader`: "copy every
   word exactly, never summarise"), ONE call on the whole strip (≈35 s); ≥200 characters = the prompt that made the ad.
   A yes/no or describe function summarises long text ("a long paragraph of prompt text"), and a layout reader
@@ -31,7 +30,7 @@ Flyer reel DfICvQhO4UL: woman, taxi gust, flying flyers printed with the adverti
 ending on a held flyer close-up. Panel prompt 1543 characters. Runs 1–2 as a swap (Seedance 2.0 480p) failed:
 the flyers kept the original cup art and words even with the edited script and a product sheet; the held picture kept
 "SAVE THE DATE". Best swap plan the lab found: video 0–6.8 s (7 s billed) + 1 picture for 6.8–8.9 s. Outcome: this
-reel goes to the storyboard pipeline (Sean). Learnings: Remix KB `…template-reel-remix-failed-panel-prompt-9fd8.md`,
+reel goes to the storyboard pipeline (the owner). Learnings: Remix KB `…template-reel-remix-failed-panel-prompt-9fd8.md`,
 `…seedance-copies-2704.md`.
 
 ## The full path needs the real reading

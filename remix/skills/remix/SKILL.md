@@ -17,7 +17,7 @@ covered it?" before adding a rule.
 
 **Every invocation, first:** connect the `remix-context` MCP (the users' only source: `search` → `read_document`, cite
 the URI; not connected → `references/setup.md`; never guess a rule from memory, it drifts from the team's record), then
-open and drive the lab per `references/lab.md` (Sean 2026-11-04: "You're supposed to drive it"). Users install nothing.
+open and drive the lab per `references/lab.md`. Users install nothing.
 
 ## Principles
 

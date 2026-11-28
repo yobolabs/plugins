@@ -14,8 +14,7 @@ string (an object whose keys contain ':' broke every "Use these").
 
 - Every step is a **button tap** in the chat (msg-api reply buttons -> yobo `tap.ts`), never the agent, never typing,
   never a required web page. A web link is an optional extra.
-- **Every line remix posts itself speaks in the agent's Instinct persona** (Sean 2026-11-05: "we're supposed to use the
-  instinct persona"; p126, Yobo KB `yobo-agent/_specs/p126-instinct-persona/skill/persona-rules.md`). Copy rows and code
+- **Every line remix posts itself speaks in the agent's Instinct persona** (p126, Yobo KB `yobo-agent/_specs/p126-instinct-persona/skill/persona-rules.md`). Copy rows and code
   fallbacks are written in that voice and scored with the Jev voice scorer (precedent YMS-490). Never a machine line
   ("That button cannot do this now").
 - Every failure is **ONE plain line** in the chat's language saying what happens next, with a button when there is a
@@ -28,8 +27,7 @@ string (an object whose keys contain ':' broke every "Use these").
 ### Words the merchant sees
 
 - **Say "Remix", never "Remake"** (UI copy, routes, code names, docs).
-- **Never call the source ad "your ad"** (Sean 2026-11-05: "why would it tell me a person isn't in my ad — Yobo built
-  this ad"). The merchant's ad is the remix; the one being copied is "the original ad" (id "iklan aslinya", es "el
+- **Never call the source ad "your ad"**. The merchant's ad is the remix; the one being copied is "the original ad" (id "iklan aslinya", es "el
   anuncio original") in every line, copy row and prompt the merchant sees.
 - **The shared source assessment (why it fits) is model text in no stated language.** A non-English chat does not get it in its own language until a translation step exists.
 
@@ -63,8 +61,7 @@ themselves -> [Approve it] -> "Your video is ready." + the MP4 -> [Post it] / [N
 "Posted: <link>". [Approve it] (`make:cut`) is ONE tap = approve the cut + start the export on that same go (the web
 "Approve and export" button); there is no separate [Get the file] step. [Try again] (`make:export`) appears only when
 the cut was approved but the export did not start.
-**The merchant gets the assembled video, never the parts** (Sean 2026-11-05 ~21:5x: "Why is Yobo sending me the
-separate clips? I expect the final assembled video."). When every part has landed, the join starts by itself: no parts
+**The merchant gets the assembled video, never the parts**. When every part has landed, the join starts by itself: no parts
 approval, no join ask, no web-only review step. The ad's own music is laid once, cuts on its beats. Part clips are shown
 only after [Change a part] (one button per part). A web link is an optional extra under the video, never the only way on.
 Failure of any step: ONE line + [Make it again] / [Try again]. A photo sent in chat binds to the product row it
@@ -180,9 +177,7 @@ answers; the matcher never swaps products.
 
 ## Problem solver: fix → ask → stop well (SKILL.md P6)
 
-Sean 2026-11-05: "If the agent knows that, oh, okay, there's a problem, I found a problem … why don't they continue
-and ask and then deal with it instead of erroring out? … This should be part of the core principles of the agent. It
-should be a problem solver."
+When the agent finds a problem it continues, asks, and deals with it instead of erroring out. This is a core principle: the agent is a problem solver.
 
 **Every check fixes or asks. No check ever stops a remix as its first answer.** This holds for every gate in the
 pipeline (swap fit, product fit, drift, source length, QA, credits, needs) and for the agent's own turns:
@@ -196,11 +191,8 @@ pipeline (swap fit, product fit, drift, source length, QA, credits, needs) and f
    "I couldn't…" / "I'm looking into it" with no reason and no button is a bug.
 4. **Log every fix and every ask on the run** (which check, what it found, what was tried), so a stall is never
    a mystery.
-5. **Effort has an end (Sean 2026-11-05: "make sure that the agent will not go on indefinitely if the problem is
-   unsolvable … it really made an effort … then at some point it won't be able to continue and … let the team know
-   … in the meantime maybe try a different thing, maybe try a different video").** Per check: one self-fix, then one
-   ask, and keep going while each attempt changes something. Stop on JUDGMENT, not a count (Sean 2026-11-05: "the
-   signals for it's just not going to work appear … there must be some judgment"): the same refusal again with nothing
+5. **Effort has an end.** Per check: one self-fix, then one
+   ask, and keep going while each attempt changes something. Stop on JUDGMENT, not a count: the same refusal again with nothing
    changed, a block the remix cannot fix (Higgsfield down, the nsfw filter refusing the theme, an unreadable source), or
    a requirement only someone else can meet (no fitting product, no credits and no payment). The code records these
    signals on the run; the agent judges from them. On stop: tell the merchant ONE line with the way forward
@@ -211,14 +203,13 @@ pipeline (swap fit, product fit, drift, source length, QA, credits, needs) and f
 A new check, gate or refusal is not done until it has its fix step and its question. Reviewers block a gate that
 only stops.
 
-**Every choice or stop has a forward option** (Sean 2026-11-05, agent standard R6): the merchant can always move the
+**Every choice or stop has a forward option** (agent standard R6): the merchant can always move the
 work on without fixing anything themselves: [Continue] / [Keep it] / [Use your best pick], with the change option
 BESIDE it, never instead. A message whose only button is [Change more], [Try again] or "tell me what to change" is a
 bug. When the run truly cannot continue, the forward option is another way: [Pick a ready ad], [Try another video], a
 simpler version, or "the team is on it". Passes: [Keep original people] [Allow new person]; [Keep it] [Remake it].
 
-**Where it lives in Cadra (Sean 2026-11-05: "this is where we set the intent … there must be a way for it to solve and
-troubleshoot problems … the tools must support this too … the tools need to be accommodating").** Three parts, per
+**Where it lives in Cadra.** Three parts, per
 the Cadra standard (root prompt = routing, voice, hard rules only; feature behaviour in the role's skill + reference
 files):
 
@@ -272,7 +263,7 @@ English text only), so the rules live there, once:
 - WhatsApp gives the business no event when the merchant taps Done. The page sees only `visibilitychange` (hidden) and `pagehide`. Any "after Done" WhatsApp line goes through yobo `web-surface.ts` `webAway` with the nudge-once claim.
 - A typed or tapped pick in web chat is the answer. The card shows the pick and the thread posts no echo bubble.
 
-## No bare links to a merchant (Sean HARD rule)
+## No bare links to a merchant 
 
 - A merchant never sees a raw URL: not in web chat, WhatsApp, or anywhere else. Links go behind a button or a short link text.
 - Media is sent as media, never as a message holding a presigned URL.

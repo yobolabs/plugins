@@ -5,15 +5,14 @@ does not need this file. Every rule keeps its source quote and date.
 
 ## Where remix lives and how a run is planned (`../remix-agent/SKILL.md` P1, P3)
 
-**remix lives in yobo only (Sean 2026-11-05).**
+**remix lives in yobo only.**
 
-Sean: "move everything to Yobo out of slides, put it directly in Yobo." Every remix runs in yobo on the one yobo record;
+Every remix runs in yobo on the one yobo record;
 the slides remix pipeline is switched off (never a second path), then the Ad Studio remix editor and the Ad Library move
 into yobo. New remix work goes into yobo; never add remix behaviour to slides. Design: `REVIEW.md` §13.29.
 
-**build every video from a template (Sean 2026-11-05, architect gate-20261105-22).**
+**build every video from a template.**
 
-Sean: "Templates give us a step-by-step way to build a video. We just have to build from a template."
 Every way in (library template, the agent's script, a source ad) first becomes a TEMPLATE: each scene's job (hook,
 product hero, proof, CTA), timing, roles, product scenes, reusable clips. The template is the plan on the one yobo run
 record, versioned per edit; every step reads and writes it, and no step keeps its own copy. Then one pipeline builds
@@ -21,11 +20,8 @@ from it. Another merchant's offers, prices, brand and product names in a stored 
 Design: `REVIEW.md` §13.28.
 Music: `../remix-agent/references/join-and-sound.md` § Music.
 
-**a source ad is optional; the storyboard is the contract (Sean 2026-11-05).**
+**a source ad is optional; the storyboard is the contract.**
 
-Sean: "I don't think we need an existing ad. We can create them from scratch as long as we can come up with a script
-and then a storyboard can be generated. Remember, the key is we get to a storyboard, and the storyboard has all the
-elements to generate the video."
 
 - A remix starts from a source ad OR from a script (the agent's agreed concept). With a script, the script IS the
   brief: scenes, seconds, what each shows, lines, cast roles, product scenes. Then the same storyboard → review →
@@ -82,20 +78,18 @@ elements to generate the video."
 
 - **A limit needs a `LIMITS.md` row** (caps, timeouts, retries); a limit that fires logs on the job.
 - **Never remove what another ad type needs.** Diff against the last version before shipping a fix for one type.
-- **Proofs and proof replays never post into a chat a person is using** (a dev chat may be someone's phone; 2026-11-05: test replays landed in Sean's live dev chat 3 min
+- **Proofs and proof replays never post into a chat a person is using** (a dev chat may be someone's phone; 2026-11-05: test replays landed in a live dev chat 3 min
   after his real tap and read as his remix dying). Replays and injected taps go to a test conversation or test number.
   With no test line, mark every posted text "[TEST]" and tell whoever watches that chat first. One driver per chat:
   when the person is live, builders watch and do not tap.
 - **Dev passing is not prod passing.** Cadra prompts/skills/tools are per-env rows; diff dev vs prod before a promote.
-  An agent ships as a WHOLE VERSION, never piecemeal (Sean 2026-11-01 + 2026-11-06: "we're deploying the entire version
-  from dev to prod. That's how we do deployments of agents"). A release (p144) pins one version of every tool, skill,
+  An agent ships as a WHOLE VERSION, never piecemeal. A release (p144) pins one version of every tool, skill,
   role lock, harness and delegate (`agent_version_pins`). Change dev 443 first, prove it, then promote that release to
   prod 362 as one new prod release. The one-step tool `cadra agent promote` (p151) is SPEC ONLY, not built
   (agents-lead 2026-11-06); until it exists, dev-proven objects are copied to prod one by one under the agents-lead
   gate, with a full release diff before and after proving no prod-only item was overwritten. Never hand-edit a prod tool/skill/prompt row. Before any promote, dry-run BOTH ways: anything prod
   has that dev lacks (a fix made live on prod only) would be OVERWRITTEN by the promote, so port it to dev, prove it,
-  then promote (Sean 2026-11-06: "if anything changes … because it's live, but it was not done on dev, then will we be
-  overwriting"). Same as code: main never carries what develop lacks. Comparing dev vs prod = diff the two pinned releases
+  then promote. Same as code: main never carries what develop lacks. Comparing dev vs prod = diff the two pinned releases
   in full (harness, skills, tools, KBs, model, guardrails, channel profile) plus the yobo copy rows and switches they
   read. A difference you did not diff is not "model variance" (dev 443 vs prod 362 sample-ads gap, 2026-11-06).
   A proof is a real end-to-end run (link to delivered video) per ad type, not free steps on a synthetic inbound.
@@ -167,16 +161,14 @@ elements to generate the video."
 
 ## Who decides, budget, pricing (`../remix-agent/SKILL.md` P4)
 
-- **The remix lead decides; never ask Sean for sign-off on video work** (Sean 2026-11-05: "Stop asking me about
-  sign-off on these video ads. You have a budget, use the budget, do this autonomously." and "No paid" for vendors).
+- **The remix lead decides; never ask the owner for sign-off on video work**.
   Architecture calls go to the agents lead's gate, template approval is the lead's QC check (frames, product right and
   real size, no other brand, no garbled faces/text), spend stays inside the day's budget. No paid third-party vendor
-  (music libraries etc.) without Sean naming one. Ask Sean only for what the CLAUDE.md money/customer/delete rules name.
-- **Fetching an ad link through the paid Apify account is a standing decision.** Any downloadable ad link (Instagram, TikTok, YouTube, Facebook, Threads, any source Apify supports) falls back to Apify when our own fetch fails, before the merchant sees a failure. Nobody asks Sean about that spend. (Staff template fills on the house org still use free reads only.)
+  (music libraries etc.) without the owner naming one. Ask the owner only for what the CLAUDE.md money/customer/delete rules name.
+- **Fetching an ad link through the paid Apify account is a standing decision.** Any downloadable ad link (Instagram, TikTok, YouTube, Facebook, Threads, any source Apify supports) falls back to Apify when our own fetch fails, before the merchant sees a failure. Nobody asks the owner about that spend. (Staff template fills on the house org still use free reads only.)
 - **No paid render without a cleared budget** (pictures, draft clips, finals all bill the platform key, dev too).
-  When Sean has given a budget for the day, the ledger owner (the remix lead) clears each run inside it and logs it in
-  the day's paid-budget ledger; never ask Sean again per run (Sean 2026-11-05: "I already gave a budget today so no
-  need to ask me if the budget is still there"). A small paid DEV proof inside the standing dev budget runs without an ask; name the cost (pictures/seconds) in the proof line; prod spend, customer sends and above-budget still ask. Prove with unit tests and
+  When the owner has given a budget for the day, the ledger owner (the remix lead) clears each run inside it and logs it in
+  the day's paid-budget ledger; never ask the owner again per run. A small paid DEV proof inside the standing dev budget runs without an ask; name the cost (pictures/seconds) in the proof line; prod spend, customer sends and above-budget still ask. Prove with unit tests and
   free pages first; name the cost (scenes x seconds x model) before an end-to-end run. Every subagent brief says "no
   paid renders" unless the lead cleared that run.
 - **A paid batch stops at the approved total.** A loop over batches counts the approved scope with the run's own pick predicate (for example video vs static) before the ask, and stops at that total, not only per batch. A subagent brief states a paid-call cap as one total for the whole job, including a resumed rerun.
@@ -189,23 +181,20 @@ elements to generate the video."
 
 - A lead decision that changes pipeline behaviour is preceded by one `remix-context` search by the lead, cited. Subagents cannot load the remix-context KB, so the lead does the search before the decision is made.
 
-## Pictures sent to people are compressed (Sean 2026-11-06)
+## Pictures sent to people are compressed
 
-Sean: "we are not sending large files, right? We're going to compress them, of course, as our standard". Every picture a merchant's phone or browser loads (review page, WhatsApp album, gallery, back office) is a compressed rendition: WebP quality 82, 720 px wide (Sean: "WebP is the smallest and fastest"; measured 5 271 KB PNG → 82 KB). The raw model output (2k PNG) stays only as the source for models and the final export. Harm if not: 5-6 MB PNGs stall in the WhatsApp in-app browser and show blank tiles (prod remix a524de0a, 2026-11-06).
+Every picture a merchant's phone or browser loads (review page, WhatsApp album, gallery, back office) is a compressed rendition: WebP quality 82, 720 px wide (measured 5 271 KB PNG → 82 KB). The raw model output (2k PNG) stays only as the source for models and the final export. Harm if not: 5-6 MB PNGs stall in the WhatsApp in-app browser and show blank tiles (prod remix a524de0a, 2026-11-06).
 
-## A lab change is ported the same day (Sean 2026-11-06)
+## A lab change is ported the same day
 
-Sean: "every time Remix Lab is updated with skills, it should be ported, it should be moved into Cadra". A Remix Lab change (process step, prompt, rule, setting) is not done until the same change is on the prod path: Cadra skill / function rows (dev, then prod through the agents gate) or yobo / slides code. If it cannot move the same day, it gets a row in the lab→prod parity list (`yobo-merchant/_specs/p148-remix-in-yobo/lab-prod-parity-20261106.md` in the KB) with an owner. Cite the lab version and the prod row or commit together. Rules port one-to-one; lab controls do not (Sean 2026-11-06: "make sure that the skills are actually one-to-one
-because … the controls and pages UI of Remix Lab is different"): every lab control maps to a named prod control
+A Remix Lab change (process step, prompt, rule, setting) is not done until the same change is on the prod path: Cadra skill / function rows (dev, then prod through the agents gate) or yobo / slides code. If it cannot move the same day, it gets a row in the lab→prod parity list (`yobo-merchant/_specs/p148-remix-in-yobo/lab-prod-parity-20261106.md` in the KB) with an owner. Cite the lab version and the prod row or commit together. Rules port one-to-one; lab controls do not: every lab control maps to a named prod control
 (WhatsApp button id, Ad Studio route, agent tool) or is a parity-gap row; a lab-click step is rewritten as that prod
 control, never copied. Harm if not: the lab makes good videos while merchants on WhatsApp get the old process (prod run 8d05707d: a different person in every scene because the cast step never got the lab's identity cards).
 
-## Web chat runs the same remix (Sean 2026-11-06)
+## Web chat runs the same remix
 
-Sean: "a pure Yobo web chat experience … which will need to work with WhatsApp". Only merchants who use WhatsApp get
-it. **A web remix runs in a SIDE CHAT, never in Main Chat** (Sean 2026-11-06: "the idea of doing a remix inside of a
-Yobo web chat it's to use a side chat not the main chat because the main chat is a mirror of the WhatsApp chat the
-point of using side chat is to do very specific tasks"). Main Chat (`/chat`) mirrors the merchant's WhatsApp
+Only merchants who use WhatsApp get
+it. **A web remix runs in a SIDE CHAT, never in Main Chat**. Main Chat (`/chat`) mirrors the merchant's WhatsApp
 conversation (yobo `webchat/ingress/route.ts`); a Side Chat (`ChatSessionKind.SIDE`, p143) is one task. Harm if not:
 the remix's steps, buttons and progress lines flood the merchant's WhatsApp thread. Web proofs and web entry points
 (an "Open side chat" card, a remix deep link) open or create a side chat for the run. The responder is the same Yobo
@@ -214,15 +203,15 @@ agent: no second agent with its own remix rules. A run started or driven from th
 per step only while the merchant is off the web, one status line if they write there mid-run, and the final video.
 Harm if not: every step lands twice, once in each place.
 
-## Offers the merchant types (Sean 2026-11-06)
+## Offers the merchant types
 
 A typed offer is saved to the merchant's Yobo offers as INACTIVE (`isActive:false`, name de-duplicated): it is on the
 account, never redeemable until the merchant turns it on. Find-first reads active, in-date offers first. Harm if not:
 an ad line becomes a live discount nobody approved.
 
-## Template gallery (Sean 2026-11-06)
+## Template gallery
 
-Merchant gallery = 3 cards per row on phone, auto-fill grid on desktop (Sean: cards "too big"). Each card may carry
+Merchant gallery = 3 cards per row on phone, auto-fill grid on desktop. Each card may carry
 the Ad Library proof (days the source ran) and one recommender "Why:" line; the gallery shows templates only, never
 raw Ad Library ads. **Only complete templates are shown** (brief, needs, prompts, and a frame and line drawing on every
 moment; ready-ads checklist Q3): the gallery and the template start filter on that, never on status alone. Approve in the
@@ -248,19 +237,17 @@ incomplete template (fixes `fix/template-approve-needs-teardown`, being built).
   `.org.<id>` variant) exists; prod has no global row. The value is bare text (`config_value` is TEXT: write
   `yobo`, not `"yobo"`).
 
-## Default open: warn, don't refuse (Sean 2026-11-06)
+## Default open: warn, don't refuse
 
-Sean: "server refuses to do something is something we see everywhere, and so I'd rather keep them open and then we'll
-add the rules as we see needed". A business rule (template not delivered yet, rights not set, QA said ask, tags
+A business rule (template not delivered yet, rights not set, QA said ask, tags
 missing) is a WARNING the user sees, never a server refusal or a hidden button. Refuse only for: security and tenant
 isolation (staff auth, another org's data), money spent without a press, and what is technically impossible (no
 breakdown, no source copy). Add a hard gate only after a real problem happened, and name that problem in the code
 comment. Harm if not: work stops on rules nobody needed (staff could not approve a template; dev remix path off).
 
-## Prove in Yobo web chat first (Sean 2026-11-06)
+## Prove in Yobo web chat first
 
-Sean: "a major thing that we should've done first was to make sure that our Yobo web chat could do this and create a
-remix first before WhatsApp". Every remix change is proven end to end in a dev Yobo web SIDE CHAT first, driven in
+Every remix change is proven end to end in a dev Yobo web SIDE CHAT first, driven in
 the session's own browser tab (start → storyboards → parts → join → final). Web chat and WhatsApp share one run engine,
 so engine bugs show up there without a phone. Then the WhatsApp proof on a real handset, then prod.
 
@@ -271,10 +258,8 @@ first, the caller second. "msg-api first" is right only when msg-api is the side
 hides a wrong order: prod conv 2612 got sample ads at 06:34Z because msg-api went live 06:29Z and called a yobo route
 that only arrived ~06:39Z (404 → fail open → old behaviour). The release-request names the order.
 
-## Recovering a merchant's failed remix: the agent carries on (Sean 2026-11-06)
+## Recovering a merchant's failed remix: the agent carries on
 
-Sean: "We should have just acted like the YOBO agent figured it out and is now working on it and then the normal
-remix begins" · "I wanted a natural agent response, not a takeover response" · "This is why I wanted you to do this".
 When a live merchant's remix fails on our side (e.g. a login-walled Instagram reel), the lead session fixes it ITSELF
 at once, before the team has to take the chat over:
 1. Get the input another way (here: the reel's mp4 through a logged-in browser session's media API), into the org's Files.
@@ -293,7 +278,7 @@ Facts from the 2026-11-06 recovery (investor org 4115):
   start (`recoverRemixChat`) and check `ad_video_jobs.conversation_uuid` on the analyze job; later jobs read the chat
   from it (`remixChatOf`).
 - msg-api has no system-note → agent-turn route; the app path (breakdown first) is the working start.
-- **Never emulate the merchant's taps** (Sean 2026-11-06: "don't emulate the taps"). A recovery moves the run
+- **Never emulate the merchant's taps**. A recovery moves the run
   server-side (the same code path a tap calls, run as the system), never as a fake inbound from the merchant's
   number. Where only a merchant press can move it, the merchant presses.
 Never a human takeover reply for a pipeline failure. Harm if not: the merchant sees silence, then a person
@@ -309,27 +294,22 @@ retry consumes its ask without re-billing parts (115607fe4 + d51b44674 + c897912
 `<pressRunId>:main`. Harm if not: every new prod remix waits at 'reading' forever, or re-bills parts, or never
 joins. This is the one named exception to switch parity, and it ends when the bundle ships.
 
-## Ready ads (approved templates): stock and quality (Sean 2026-11-06)
+## Ready ads (approved templates): stock and quality
 
-Sean: "I need to make sure we're always having ready to go ads on Dev and prod." Then, the same day: "We'll start by
-providing 1 or 2 universal templates for free. This will be either the 'egg drop' template or one other TBD."
-- A merchant's FIRST remix is offered 1-2 UNIVERSAL templates, free (no credits), for EVERY business, not only MQLs
-  (Sean 2026-11-06: "every business"). One free universal remix per org; an MQL org never gets two free remixes. A universal template fits every
+- A merchant's FIRST remix is offered 1-2 UNIVERSAL templates, free (no credits), for EVERY business, not only MQLs.
+  One free universal remix per org; an MQL org never gets two free remixes. A universal template fits every
   category and every product: its hook is kept as the ad's own clip, and only the product scenes are remade.
-- The universal template recipe (Sean 2026-11-06: "Reuse the first clip of the egg rolling (or other suspense clip),
-  then use merchant products to generate stills, then generate a montage. Then generate 2 short clips. Use same
-  audio. That's the template"):
+- The universal template recipe:
   1. Keep the ad's first clip as is: the suspense hook (egg rolling, or another suspense clip) with no product in it.
   2. Make stills (pictures) from the merchant's products.
   3. Cut those stills into a montage, held on the music's beats in the source's own slots.
   4. Make 2 short video clips of the merchant's product (Seedance; the 4 s minimum is trimmed to the slot in the join).
   5. Lay the ad's own audio once over the whole video.
   The hook has no product and everything after it is the merchant's, so it fits any category; the same-type swap rule
-  does not apply to a universal template. Source: Sean's egg drop, yobo prod S3
-  `remix-lab/211/sean-egg-drop-indomie-20261106/source.mp4`.
+  does not apply to a universal template. Source: an owner-made egg-drop ad, yobo prod S3
+  `remix-lab/<org-id>/<ad-folder>/source.mp4`.
   A universal candidate MUST have a reusable product-free opening plus a montage. An ad that starts and ends on the
-  product, is not a montage and has no reusable scene is never universal (Sean 2026-11-07, on the sky-drop ad:
-  "this video starts and ends showing the product. It's not a montage, and it doesn't have reusable scenes").
+  product, is not a montage and has no reusable scene is never universal.
 - A universal template's remade parts NEVER use the swap prompts (lead-6 2026-11-07, YMS-780 U5). The swap prompts
   ("Recreate @Video1 exactly… the only change: the product" / "Replace the product in image 1… keep everything else")
   keep the source's food, packs and actions and put the merchant's product into them: a polo in a noodle bowl. For a
@@ -358,17 +338,15 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   printed health or product claims (claims must never come back in a merchant's ad), several products, or a talking
   head as its core. A source longer than 30 s is read from our own ≤30 s cut by link (houseRead has no time window).
   There is no prod→dev template copy: read the same S3 file on each env's house org.
-- Every remix video is kept (Sean 2026-11-06: "You need to have every video I make with remix in context stored
-  somewhere"). The source ad, every paid output and the final are stored the moment each exists, not only on Save.
+- Every remix video is kept. The source ad, every paid output and the final are stored the moment each exists, not only on Save.
   They are listed in one index in context. A source that was only on someone's laptop is lost (the egg-drop original,
   kedai-egg-reel-v6.mp4).
-- Sizes start at the cheapest (Sean 2026-11-06: "These montage/slide-style videos are super cheap for us to make, so
-  we'll offer more of these at the 'small' or 'tiny' size. Still need to come up with a naming convention"). A
+- Sizes start at the cheapest. A
   montage / slide-style template (stills held on beats, little or no paid video) is the smallest size band, and the
-  ready-ad stock favours them. Size names: XS / S / M / L (Sean 2026-11-07); montage / slide-style = XS. Credits per
+  ready-ad stock favours them. Size names: XS / S / M / L; montage / slide-style = XS. Credits per
   size are interim config rows (`ads_gen.remix_rate_card.credits_per_size`), set now and recalibrated on measured cost.
   Design: KB `slides/_specs/p131-remix-in-ad-studio/arch-review-20261103/SIZING.md`.
-- Every remix after the first is offered per-category ready ads (Sean: "3 per category is after the first one"). Every
+- Every remix after the first is offered per-category ready ads. Every
   category keeps at least 3 approved templates on dev and on prod. A daily check logs `remix_template_stock_low`, and
   the back-office Overview shows a count per category (YMS-778).
 - A business with no fit record for a template is offered that template only when it is in the business's own
@@ -394,10 +372,9 @@ providing 1 or 2 universal templates for free. This will be either the 'egg drop
   Library stored copies (`content_assets.s3_key`) live in the yobo content-library bucket, not the slides env buckets;
   the house read path reads them. Shell traps in such loops: pass `-nostdin` (ffmpeg eats a `while read` loop's
   input), never name a zsh variable `path` (it is `PATH`), and split a zsh list with `${=VAR}`.
-## A reel we cannot download: plain steps, no login (Sean 2026-11-06)
+## A reel we cannot download: plain steps, no login
 
-Sean: "be clear to the user about what a public and private video is. They're not gonna know the difference."
-Then he decided "no login": the server never signs in to Instagram to fetch a reel. Many failed reels are not private.
+Decision: no login: the server never signs in to Instagram to fetch a reel. Many failed reels are not private.
 Instagram hides them from downloaders that are not logged in (yt-dlp "empty media response"). The chat line never
 says "private" or "public". It gives the steps: save the reel on the phone (⋯ → Save, or screen-record it) and send
 the file here, with [Send the video here] and [Pick a ready ad]. It never claims a second try that did not run.
@@ -442,14 +419,14 @@ The first yobo run past storyboard approval hit six gaps in a row. Each rule bel
 Check each one on prod by name before calling a remix release done (switch parity):
 - yobo `SLIDES_API_URL` + `SLIDES_API_KEY` (slides PROD key): the one Ad Library adapter reads slides with them.
   Missing → every staff read fails "That ad could not be read." (log `remix_adlib_read_failed …unset`).
-- yobo `REMIX_HOUSE_ORG_ID` = the prod YoboLabs org (211 on prod; 1 on dev). Prod org 1 is a merchant.
+- yobo `REMIX_HOUSE_ORG_ID` = the prod YoboLabs org (<org-id> on prod; 1 on dev). Prod org 1 is a merchant.
 - `ads_gen.remix_owner_at_start`: global `yobo` on dev and prod (prod since 2026-11-06). The bundle check above applies
   before setting it on any env. The owner is read uncached at each remix_start, and a run keeps the owner it started with.
 
 
 ## Storyboard plan rules and proof traps (2026-11-06, m-remix-build-54)
 
-**Storyboard plan (HOW-REMIX-WORKS §A r7, Sean 22:3x / 22:4x):**
+**Storyboard plan (HOW-REMIX-WORKS §A r7):**
 - A product shot's storyboard is its keyframe sheet from ONE ticked moment up (`KEYFRAME_SHEET_MIN_MOMENTS = 1`, yobo
   `stages/storyboards/references.ts`, slides `remix-storyboards.ts`). People ads keep one label-free picture per shot,
   with a master per camera setup.
@@ -473,7 +450,7 @@ Check each one on prod by name before calling a remix release done (switch parit
   `worker-service*` is running (`docker ps`).
 - A free proof of plan logic: run a tsx script in the dev worker that calls the real function (`decidePlan`,
   `defaultPlanPorts().read`) on the stored run. Put the script in `/tmp`, never `/app`, and remove it as root.
-- Lab publish: send the HTML into a sean-jetdevs cmux tab as base64 chunks (about 90 KB per eval), then call tRPC
+- Lab publish: send the HTML into an owner cmux tab as base64 chunks (about 90 KB per eval), then call tRPC
   `prototypes.update` and verify with curl + cmp. Keep the undo copy first, and copy the new vNNN over remix-lab.html.
 - The secret-guard hook flags regexes like `.*?` and SQL aliases like `v.key` in heredocs. Write those scripts with the
   Write tool and run them by path.

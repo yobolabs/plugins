@@ -69,8 +69,8 @@ Read it in full before the first QC of a session.
    - **All pass and it was waiting for review** → list it as complete; approval follows its breakdown, never a hand press.
    - **Approved and failing** → Hold does not work on approved ones yet: list it for the remix lead, never try to Hold.
    - A warning (⚠) alone never holds anything; list it in the report.
-   - **A recorded exception** (the Remix KB search for this ad's link or name finds a decision by Sean to keep it as is)
-     → write "kept by Sean <date>: <what>" in its row, never a fail to act on.
+   - **A recorded exception** (the Remix KB search for this ad's link or name finds a decision by the owner to keep it as is)
+     → write "kept by the owner <date>: <what>" in its row, never a fail to act on.
 5. Fixing an outdated one is the same as making a new one from its Instagram post (Make, steps 1–5). A fixed reading
    needs a fresh read: old readings are reused per ad.
    Drive a re-teardown with ONE apply call, then watch read-only facts (source key, the parts' created time, teardown time): a repeated apply after a save starts a second teardown.
@@ -86,7 +86,7 @@ Static ready ads are the slides Ad Library's `quality=top` set, not template row
 
 ## Never
 
-- Delete a ready ad or its reading. Hold it instead. A delete is Sean's call.
+- Delete a ready ad or its reading. Hold it instead. A delete is the owner's call.
 - Press Approve, Not usable or Universal, anywhere, or write a template's status to approved.
 - Change anything in the back office other than Save as template and Hold.
 - Start a paid run without saying its size first, or more than one per ready ad.
