@@ -16,7 +16,7 @@ Never put one video's words, names, labels or colours into a type or universal f
 
 1. **Fetch free, no login.** `yt-dlp -o 'source.%(ext)s' --write-info-json <url>`. If the platform hides it, ask
    the owner for the file. Never sign in to fetch.
-2. **Store a copy** in yobo prod S3 `yobo-oss-bucket`, key `remix-lab/211/<kind>-<id>/source.mp4` (HeadObject first,
+2. **Store a copy** in yobo prod S3 `yobo-oss-bucket`, key `remix-lab/<org-id>/<kind>-<id>/source.mp4` (HeadObject first,
    never overwrite). Note length, size and the first 16 hex of its sha256.
 3. **Measure.** Run this skill's `analyze.py` for cuts and beats. Make 2 fps contact sheets
    (`ffmpeg -i source.mp4 -vf "fps=2,scale=270:-1,tile=6x5" grid%02d.jpg`, frame i at t = i × 0.5 s within the

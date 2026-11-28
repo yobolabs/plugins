@@ -102,7 +102,7 @@ def log(path, res):
 
 def tasks_py():
     hits = sorted(glob.glob(os.path.expanduser(
-        "~/.claude/plugins/cache/sean/chief-of-staff/*/skills/chief-of-staff/scripts/lib/tasks.py")))
+        "~/.claude/plugins/cache/*/chief-of-staff/*/skills/chief-of-staff/scripts/lib/tasks.py")))
     return hits[-1] if hits else None
 
 
@@ -110,7 +110,7 @@ def queue_task(urls, now, tasks_dir):
     """ONE task per run listing every new URL (lead rule: never one message per URL)."""
     name = f"m-ig-breakdown-{now.strftime('%m%d-%H%M')}"
     charter = "\n".join([
-        "task goal: Break down new reels from Sean's IG collection and fold their techniques into the skills.",
+        "task goal: Break down new reels from the owner's IG collection and fold their techniques into the skills.",
         "parent goal: Y1",
         "",
         "## Charter",

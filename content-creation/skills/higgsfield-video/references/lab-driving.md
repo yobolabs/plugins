@@ -1,6 +1,6 @@
 # Driving the Remix lab yourself
 
-Back to [SKILL.md](../SKILL.md). Read when the merchant (Sean) asks you to "do it yourself" in the lab: set the ad
+Back to [SKILL.md](../SKILL.md). Read when the owner asks you to "do it yourself" in the lab: set the ad
 up, apply the plan, run the swaps, instead of giving him clicks.
 
 ## The one rule: NEVER attach to the merchant's own Chrome
@@ -8,7 +8,7 @@ up, apply the plan, run the swaps, instead of giving him clicks.
 Chrome's own remote debugging (chrome://inspect, port 9222, `DevToolsActivePort` in his Chrome profile folder) shows
 an **"Allow remote debugging?" pop-up on top of his work for every connection**. Approval does not stick. On
 2026-10-28 it was stopped twice in one evening: first a 20 s status poll, then per-step scripts AND a "single"
-long-lived bridge — each still popped it again and again. Sean: STOP, and remember it.
+long-lived bridge — each still popped it again and again. Rule: stop, and remember it.
 
 - **Drive your OWN browser tab** (cmux: `browser-tab.sh`, your own profile) on the same lab server
   (`http://127.0.0.1:<lab port>/remix-lab.html`). He can watch it in the BROWSERS pane. Paste the dev key into it

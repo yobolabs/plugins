@@ -1,6 +1,6 @@
 # Style: Creator product reel (a compilation of one-shot product ads)
 
-Back to [SKILL.md](../../SKILL.md). Status: **one remix run (2026-10-28), lessons from Sean's review; not yet a
+Back to [SKILL.md](../../SKILL.md). Status: **one remix run (2026-10-28), lessons from the owner's review; not yet a
 finished, approved ad.** Update with evidence after more runs.
 
 ## How to spot it

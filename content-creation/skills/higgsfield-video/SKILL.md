@@ -96,8 +96,7 @@ Rules that came from failed runs — each one cost a paid video:
    distance ("far back, the whole setting in frame").
 6. **Every reference states its job and what it must NOT do** ("defines what it looks like — never framing").
    An unlabelled product picture becomes the opening frame.
-8. **Name every reference with an @ tag, then use only that tag** (Sean 2026-11-04: "the standard prompt protocol is
-   to name the characters or name the items with an @ symbol. And then reference them with that @ name"). Every
+8. **Name every reference with an @ tag, then use only that tag**. Every
    Higgsfield model, Seedance included: bind each input ONCE in ACTIVE REFERENCES by input order (`@Image1` = first
    image, `@Image2` = second, `@Video1` = first video) with its name and job, then write `@Image1`, never "the
    reference image", "the product" or "Image 1", in every later line (action, camera, rules). Shared prompts from
@@ -172,7 +171,7 @@ Driving the merchant's open lab tab for them (one CDP connection, DOM only): `re
 
 ### Edit on the source's own frames (universal)
 
-Beat timing is a basic principle on every video surface and every music track (the source's own or a new one); never gate it behind a toggle or offer it as an optional feature (Sean 2026-10-30). Every cut lands ON the music's beat: the snapped time `cuts[].on_beat`
+Beat timing is a basic principle on every video surface and every music track (the source's own or a new one); never gate it behind a toggle or offer it as an optional feature. Every cut lands ON the music's beat: the snapped time `cuts[].on_beat`
 from `analyze-video` run on the track that plays (nearest beat; the half-beat after it when two cuts share one beat), not the source's own cut
 frame. Source reels often cut 100–250 ms after the beat, and copying their cut times copies that lag (a 23-cut reel
 ran +215 ms late on every beat). Each picture or clip window plays once (hold it 2 beats rather than repeat it), the clip's payoff frame lands on a beat and the end card on the music's last hit. Voiced parts are the exception: their cuts follow the speech. Use frame-exact times,
@@ -201,4 +200,4 @@ Grade every generated image yourself at full size before any gallery, mock or im
 - [ ] Cut count and times stated; no length cap you invented
 - [ ] No logo or text added (end card is post-production); the product's own printed design kept
 - [ ] The person who pays approved the run (renders cost real money)
-- [ ] Re-renders only for items whose product is wrong or absent: never re-process every item, never spin extra test sets or retries to prove a fix; a proof reuses ONE real set or a unit test; ask before any batch re-render (Sean 2026-10-14: "Don't waste money like this")
+- [ ] Re-renders only for items whose product is wrong or absent: never re-process every item, never spin extra test sets or retries to prove a fix; a proof reuses ONE real set or a unit test; ask before any batch re-render
