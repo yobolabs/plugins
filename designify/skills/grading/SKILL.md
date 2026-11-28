@@ -79,7 +79,7 @@ Follow `../simulate/SKILL.md` exactly. The setup that makes or breaks it is the 
 
 A Looker gap → state `insufficient_data`, record the gap itself, write NO plugin entries. Never accept incomplete data silently to force a grade.
 
-## Ground truth — the Looker setup (G3/G4/G5, STORY-010, gated on Sean)
+## Ground truth — the Looker setup (G3/G4/G5, STORY-010, gated on the owner)
 
 Objective grading needs reality's own scores. Without them, L4 stays a wired-but-dormant hook and calibration runs on the Fable-direct diff alone.
 

@@ -124,7 +124,7 @@
       "name": "designify",
       "source": "./designify",
       "description": "Ad-creative craft capability-capture — an agency-model loop (recon, concept directions, human pick, director deepen, adversarial crit, judge gate) that produces craft files with positive AND negative gen-AI prompt guidance, authenticity-first judging, a proof-ladder execute skill over the existing actuators, and blind-replay calibration on real campaign outcomes",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "keywords": [
         "designify",
         "ad-creative",
