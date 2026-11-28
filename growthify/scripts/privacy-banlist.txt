@@ -25,7 +25,7 @@
 #     (standing no-time-estimates rule, spec NFR 6.2).
 
 # --- our-estate org / brand / infra identifiers (banned literals) ---
-# The real list lives in the owner's private vault; it is not published here.
+# The real list lives in the owner's local file (GROWTHIFY_BANLIST_FILE, or ~/.config/growthify/banlist.txt); it is not published here.
 # Add one literal per line below in your private copy, for example:
 # <org-or-brand-name>
 # <internal-host-or-infra-id>

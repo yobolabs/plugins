@@ -32,6 +32,7 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import os from 'node:os';
 
 const SCOPES = ['manifest', 'skills', 'agents', 'lenses', 'cases', 'privacy', 'all'];
 
@@ -108,14 +109,20 @@ function listMd(dir, exclude = []) {
   return readdirSync(dir).filter((f) => f.endsWith('.md') && !skip.has(f.toLowerCase()));
 }
 
+// The committed file is a template. The owner's real literals live in a local
+// file: GROWTHIFY_BANLIST_FILE, or ~/.config/growthify/banlist.txt. Both sources
+// are read when present; the same format applies to each.
 function loadBanlist() {
-  if (!existsSync(banlistPath)) return [];
+  const localPath = process.env.GROWTHIFY_BANLIST_FILE || path.join(os.homedir(), '.config', 'growthify', 'banlist.txt');
   const out = [];
-  for (let line of readFileSync(banlistPath, 'utf8').split(/\r?\n/)) {
-    line = line.trim();
-    if (!line || line.startsWith('#')) continue;
-    line = line.replace(/^["']|["']$/g, '').trim();
-    if (line) out.push(line);
+  for (const src of [banlistPath, localPath]) {
+    if (!existsSync(src)) continue;
+    for (let line of readFileSync(src, 'utf8').split(/\r?\n/)) {
+      line = line.trim();
+      if (!line || line.startsWith('#')) continue;
+      line = line.replace(/^["']|["']$/g, '').trim();
+      if (line) out.push(line);
+    }
   }
   return out;
 }
